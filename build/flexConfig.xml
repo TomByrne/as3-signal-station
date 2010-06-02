@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+
+<flex-config>
+	 <compiler>
+		<keep-as3-metadata>
+			<name>Advice</name>
+			<name>Trigger</name>
+			<name>Property</name>
+		</keep-as3-metadata>
+		<define>
+        	<name>Config::DEBUG</name>
+        	<value>false</value>
+    	</define>
+	 </compiler>
+	 
+	 <metadata>
+		<title>Wiggles World</title>
+		<description>http://www.wigglesworld.com.au</description>
+		<publisher>The Farm Digital</publisher>
+		<creator>Dominic the Gnome</creator>
+		<language>EN</language>
+	 </metadata>
+</flex-config>

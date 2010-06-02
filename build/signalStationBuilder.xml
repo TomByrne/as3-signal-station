@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project name="ANT Project Builder" basedir="../">
+	<!--
+	If memory issues occur:
+	In flex/eclipse Windows>Preferences>Java>Installed JREs>Flex Builder 3
+
+	Add these params to the ‘Default VM Arguments’:
+	-Xmx1024m -XX:MaxPermSize=128m
+	
+	-->
+
+	<!--<property name="FLEX_HOME" value="${application.home}" />-->
+	<property name="FLEX_HOME" value="C:\Program Files\Adobe\Adobe Flash Builder 4 Plug-in\sdks\4.0.0" />
+
+    <taskdef name="swcPackager" classpath="${basedir}\build\SWCPackager.jar" classname="org.farmcode.antTasks.SWCPackager"/>
+	
+    <!--<taskdef resource="flexTasks.tasks" classpath="${FLEX_HOME}\ant\lib\flexTasks.jar"/>-->
+	
+	
+	
+    <property name="FRAMEWORKS" value="${FLEX_HOME}\frameworks\libs"/>
+
+    <target name="SWC Packager" description="Package up code used.">
+    	<swcPackager projectPath="${basedir}" includeMainSource="false" sourceExceptions=""
+    		swcOutput="${basedir}/bin/all.swc" compiler="${FLEX_HOME}\bin\compc.exe"
+    		frameworkDirectory="${FRAMEWORKS}" additionalArgs="-define=Config::DEBUG,false" verbose="false"/>
+
+    	<swcPackager projectPath="${basedir}" includeMainSource="false" sourceExceptions="signalStationSrc,siteStreamSrc"
+    		swcOutput="${basedir}/bin/general.swc" compiler="${FLEX_HOME}\bin\compc.exe"
+    		frameworkDirectory="${FRAMEWORKS}" additionalArgs="-define=Config::DEBUG,false" verbose="false"/>
+
+		<swcPackager projectPath="${basedir}" includeMainSource="false" sourceExceptions="generalSrc,siteStreamSrc"
+			swcOutput="${basedir}/bin/signalStation.swc" compiler="${FLEX_HOME}\bin\compc.exe"
+			frameworkDirectory="${FRAMEWORKS}" additionalArgs="-define=Config::DEBUG,false" verbose="false"/>
+	
+		<swcPackager projectPath="${basedir}" includeMainSource="false" sourceExceptions="signalStationSrc,generalSrc"
+			swcOutput="${basedir}/bin/siteStream.swc" compiler="${FLEX_HOME}\bin\compc.exe"
+			frameworkDirectory="${FRAMEWORKS}" additionalArgs="-define=Config::DEBUG,false" verbose="false"/>
+    </target>
+
+
+    <!--<property name="EXTERNS" value="${basedir}\build\${MAIN_CLASS}_classReport.xml"/>
+	<property name="APP_ROOT" value="src"/>
+    <property name="DEBUG_DIR" value="bin-debug"/>
+    <property name="DEPLOY_DIR" value="bin-deploy\flash"/>
+    <property name="MAIN_CLASS" value="WebApplication"/>-->
+	
+    <!--<target name="Deploy Build" description="Build to deploy directory.">
+    	
+    	<antcall target="copyAssets">
+    		<param name="deployDir" value="${DEPLOY_DIR}"/>
+    	</antcall>
+
+    	<antcall target="compileAll">
+    		<param name="deployDir" value="${DEPLOY_DIR}"/>
+    		<param name="debug" value="false"/>
+    	</antcall>
+
+    	<swcPackager projectPath="${basedir}" includeMainSource="false" sourceExceptions="" swcOutput="${basedir}/build/externals.swc" compiler="${FLEX_HOME}\bin\compc.exe" manifestOutput="${basedir}/build/externals_manifest.xml" frameworkDirectory="${FRAMEWORKS}" additionalArgs="-define=Config::DEBUG,false" verbose="false"/>
+    </target>-->
+	
+
+    <!--<target name="copyAssets">
+    	<copy todir="${deployDir}/xml">
+	        <fileset dir="${basedir}/${DEBUG_DIR}/xml">
+	        	<include name="**" />
+    		</fileset>
+	    </copy>
+    </target>-->
+
+    <!--<target name="compileAll">
+    	<antcall target="compileSWF">
+    		<param name="debug" value="${debug}"/>
+    		<param name="file" value="${basedir}/${APP_ROOT}/${MAIN_CLASS}.as"/>
+    		<param name="output" value="${deployDir}/${MAIN_CLASS}.swf"/>
+    		<param name="linkReport" value="${EXTERNS}"/>
+    		<param name="loadExterns" value=""/>
+    	</antcall>
+    </target>-->
+	
+    <!--<target name="compileSWF">
+    	<mxmlc file="${file}" output="${output}" link-report="${linkReport}" load-externs="${loadExterns}" debug="${debug}" incremental="true">
+            <load-config filename="${FLEX_HOME}/frameworks/flex-config.xml"/>
+            <load-config filename="flexConfig.xml"/>
+        	
+    		<define name="Config::DEBUG" value="false"/>
+    		
+            <source-path path-element="${basedir}\src"/>
+            <source-path path-element="${basedir}\sodality.ext"/>
+            <source-path path-element="${basedir}\siteStream.ext"/>
+            <source-path path-element="${basedir}\openSourceFarm.ext"/>
+            <source-path path-element="${basedir}\closedSourceFarm.ext"/>
+            <source-path path-element="${FLEX_HOME}/frameworks"/>
+        	<compiler.library-path dir="${FLEX_HOME}/frameworks/libs" append="true">
+        		<include name="*.swc" />
+        	</compiler.library-path>
+        	<compiler.library-path dir="libs" append="true">
+        		<include name="**.swc" />
+        	</compiler.library-path>
+        </mxmlc>
+    </target>-->
+</project>
