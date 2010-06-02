@@ -1,0 +1,574 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link rel="stylesheet" href="../../../style.css" type="text/css" media="screen">
+<link rel="stylesheet" href="../../../print.css" type="text/css" media="print">
+<meta content="UnitConversion,org.farmcode.math.UnitConversion,DISTANCE_CENTIMETER,DISTANCE_FEET,DISTANCE_INCH,DISTANCE_KILOMETER,DISTANCE_METER,DISTANCE_MILE,DISTANCE_MILLIMETER,DISTANCE_YARD,MEMORY_BITS,MEMORY_BYTES,MEMORY_GIGABYTES,MEMORY_KILOBITS,MEMORY_KILOBYTES,MEMORY_MEGABYTES,MEMORY_TERABYTES,NUMBER_BILLIONS,NUMBER_HUNDREDS,NUMBER_MILLIONS,NUMBER_ONES,NUMBER_QUADRILLIONS,NUMBER_TENS,NUMBER_THOUSANDS,NUMBER_TRILLIONS,TIME_DAYS,TIME_FORTNIGHTS,TIME_HOURS,TIME_MILLISECONDS,TIME_MINUTES,TIME_MONTHS,TIME_SECONDS,TIME_WEEKS,TIME_YEARS,breakdown,convert" name="keywords">
+<title>org.farmcode.math.UnitConversion</title>
+</head>
+<body>
+<script type="text/javascript" language="javascript" src="../../../asdoc.js"></script><script type="text/javascript" language="javascript" src="../../../cookies.js"></script><script type="text/javascript" language="javascript">
+<!--
+				asdocTitle = 'UnitConversion - The Farm Digital Code Library API';
+				var baseRef = '../../../';
+				window.onload = configPage;
+			--></script>
+<table style="display:none" id="titleTable" cellspacing="0" cellpadding="0" class="titleTable">
+<tr>
+<td align="left" class="titleTableTitle">The Farm Open Source - API Documentation</td><td align="right" class="titleTableTopNav"><a onclick="loadClassListFrame('../../../all-classes.html')" href="../../../package-summary.html">All&nbsp;Packages</a>&nbsp;|&nbsp;<a onclick="loadClassListFrame('../../../all-classes.html')" href="../../../class-summary.html">All&nbsp;Classes</a>&nbsp;|&nbsp;<a onclick="loadClassListFrame('../../../index-list.html')" href="../../../all-index-A.html">Index</a>&nbsp;|&nbsp;<a href="../../../index.html?org/farmcode/math/UnitConversion.html&amp;org/farmcode/math/class-list.html" id="framesLink1">Frames</a><a onclick="parent.location=document.location" href="" style="display:none" id="noFramesLink1">No&nbsp;Frames</a></td><td rowspan="3" align="right" class="titleTableLogo"><img alt="Adobe Logo" title="Adobe Logo" class="logoImage" src="../../../images/logo.jpg"></td>
+</tr>
+<tr class="titleTableRow2">
+<td align="left" id="subTitle" class="titleTableSubTitle">Class&nbsp;UnitConversion</td><td align="right" id="subNav" class="titleTableSubNav"><a href="#methodSummary">Methods</a>&nbsp;| <a href="#constantSummary">Constants</a></td>
+</tr>
+<tr class="titleTableRow3">
+<td colspan="2">&nbsp;</td>
+</tr>
+</table>
+<script type="text/javascript" language="javascript">
+<!--
+if (!isEclipse() || window.name != ECLIPSE_FRAME_NAME) {titleBar_setSubTitle("Class UnitConversion"); titleBar_setSubNav(true,false,false,false,false,false,true,false,false,false,false,false,false,false);}
+--></script>
+<div class="MainContent">
+<table cellspacing="0" cellpadding="0" class="classHeaderTable">
+<tr>
+<td class="classHeaderTableLabel">Package</td><td><a onclick="javascript:loadClassListFrame('class-list.html')" href="package-detail.html">org.farmcode.math</a></td>
+</tr>
+<tr>
+<td class="classHeaderTableLabel">Class</td><td class="classSignature">public class UnitConversion</td>
+</tr>
+</table>
+<p></p>
+  A collection of constants and functions used for dealing with units of 
+  measurement
+  <p></p>
+<br>
+<hr>
+</div>
+<a name="methodSummary"></a>
+<div class="summarySection">
+<div class="summaryTableTitle">Public Methods</div>
+<table id="summaryTableMethod" class="summaryTable " cellpadding="3" cellspacing="0">
+<tr>
+<th>&nbsp;</th><th colspan="2">Method</th><th class="summaryTableOwnerCol">Defined&nbsp;by</th>
+</tr>
+<tr class="">
+<td class="summaryTablePaddingCol">&nbsp;</td><td class="summaryTableInheritanceCol">&nbsp;</td><td class="summaryTableSignatureCol">
+<div class="summarySignature">
+<a class="signatureLink" href="#breakdown()">breakdown</a>(from:Number, fromType:Number, toTypes:Array):Array</div>
+<div class="summaryTableDescription">[static]
+   Converts a number in to an array representing its different base values
+   
+   </div>
+</td><td class="summaryTableOwnerCol">UnitConversion</td>
+</tr>
+<tr class="">
+<td class="summaryTablePaddingCol">&nbsp;</td><td class="summaryTableInheritanceCol">&nbsp;</td><td class="summaryTableSignatureCol">
+<div class="summarySignature">
+<a class="signatureLink" href="#convert()">convert</a>(from:Number, fromType:Number, toType:Number):Number</div>
+<div class="summaryTableDescription">[static]
+   Converts a number's base
+   
+   </div>
+</td><td class="summaryTableOwnerCol">UnitConversion</td>
+</tr>
+</table>
+</div>
+<a name="constantSummary"></a>
+<div class="summarySection">
+<div class="summaryTableTitle">Public Constants</div>
+<table id="summaryTableConstant" class="summaryTable " cellpadding="3" cellspacing="0">
+<tr>
+<th>&nbsp;</th><th colspan="2">Constant</th><th class="summaryTableOwnerCol">Defined&nbsp;by</th>
+</tr>
+<tr class="">
+<td class="summaryTablePaddingCol">&nbsp;</td><td class="summaryTableInheritanceCol">&nbsp;</td><td class="summaryTableSignatureCol"><a class="signatureLink" href="#DISTANCE_CENTIMETER">DISTANCE_CENTIMETER</a> : Number = 10<div class="summaryTableDescription">[static] Millimeters in a centimeter </div>
+</td><td class="summaryTableOwnerCol">UnitConversion</td>
+</tr>
+<tr class="">
+<td class="summaryTablePaddingCol">&nbsp;</td><td class="summaryTableInheritanceCol">&nbsp;</td><td class="summaryTableSignatureCol"><a class="signatureLink" href="#DISTANCE_FEET">DISTANCE_FEET</a> : Number = 304.79999999999995<div class="summaryTableDescription">[static] Millimeters in a foot </div>
+</td><td class="summaryTableOwnerCol">UnitConversion</td>
+</tr>
+<tr class="">
+<td class="summaryTablePaddingCol">&nbsp;</td><td class="summaryTableInheritanceCol">&nbsp;</td><td class="summaryTableSignatureCol"><a class="signatureLink" href="#DISTANCE_INCH">DISTANCE_INCH</a> : Number = 25.4<div class="summaryTableDescription">[static] Millimeters in an inch </div>
+</td><td class="summaryTableOwnerCol">UnitConversion</td>
+</tr>
+<tr class="">
+<td class="summaryTablePaddingCol">&nbsp;</td><td class="summaryTableInheritanceCol">&nbsp;</td><td class="summaryTableSignatureCol"><a class="signatureLink" href="#DISTANCE_KILOMETER">DISTANCE_KILOMETER</a> : Number = 1000000.0<div class="summaryTableDescription">[static] Millimeters in a meter </div>
+</td><td class="summaryTableOwnerCol">UnitConversion</td>
+</tr>
+<tr class="">
+<td class="summaryTablePaddingCol">&nbsp;</td><td class="summaryTableInheritanceCol">&nbsp;</td><td class="summaryTableSignatureCol"><a class="signatureLink" href="#DISTANCE_METER">DISTANCE_METER</a> : Number = 1000.0<div class="summaryTableDescription">[static] Millimeters in a meter </div>
+</td><td class="summaryTableOwnerCol">UnitConversion</td>
+</tr>
+<tr class="">
+<td class="summaryTablePaddingCol">&nbsp;</td><td class="summaryTableInheritanceCol">&nbsp;</td><td class="summaryTableSignatureCol"><a class="signatureLink" href="#DISTANCE_MILE">DISTANCE_MILE</a> : Number = 1609343.9999999998<div class="summaryTableDescription">[static] Millimeters in a mile </div>
+</td><td class="summaryTableOwnerCol">UnitConversion</td>
+</tr>
+<tr class="">
+<td class="summaryTablePaddingCol">&nbsp;</td><td class="summaryTableInheritanceCol">&nbsp;</td><td class="summaryTableSignatureCol"><a class="signatureLink" href="#DISTANCE_MILLIMETER">DISTANCE_MILLIMETER</a> : Number = 1<div class="summaryTableDescription">[static] One Millimeter </div>
+</td><td class="summaryTableOwnerCol">UnitConversion</td>
+</tr>
+<tr class="">
+<td class="summaryTablePaddingCol">&nbsp;</td><td class="summaryTableInheritanceCol">&nbsp;</td><td class="summaryTableSignatureCol"><a class="signatureLink" href="#DISTANCE_YARD">DISTANCE_YARD</a> : Number = 914.3999999999999<div class="summaryTableDescription">[static] Millimeters in a yard </div>
+</td><td class="summaryTableOwnerCol">UnitConversion</td>
+</tr>
+<tr class="">
+<td class="summaryTablePaddingCol">&nbsp;</td><td class="summaryTableInheritanceCol">&nbsp;</td><td class="summaryTableSignatureCol"><a class="signatureLink" href="#MEMORY_BITS">MEMORY_BITS</a> : Number = 1<div class="summaryTableDescription">[static] A single bit </div>
+</td><td class="summaryTableOwnerCol">UnitConversion</td>
+</tr>
+<tr class="">
+<td class="summaryTablePaddingCol">&nbsp;</td><td class="summaryTableInheritanceCol">&nbsp;</td><td class="summaryTableSignatureCol"><a class="signatureLink" href="#MEMORY_BYTES">MEMORY_BYTES</a> : Number = 8<div class="summaryTableDescription">[static] Number of bits in a byte </div>
+</td><td class="summaryTableOwnerCol">UnitConversion</td>
+</tr>
+<tr class="">
+<td class="summaryTablePaddingCol">&nbsp;</td><td class="summaryTableInheritanceCol">&nbsp;</td><td class="summaryTableSignatureCol"><a class="signatureLink" href="#MEMORY_GIGABYTES">MEMORY_GIGABYTES</a> : Number = 8.589934592E9<div class="summaryTableDescription">[static] Number of bits in a gigabyte </div>
+</td><td class="summaryTableOwnerCol">UnitConversion</td>
+</tr>
+<tr class="">
+<td class="summaryTablePaddingCol">&nbsp;</td><td class="summaryTableInheritanceCol">&nbsp;</td><td class="summaryTableSignatureCol"><a class="signatureLink" href="#MEMORY_KILOBITS">MEMORY_KILOBITS</a> : Number = 1024.0<div class="summaryTableDescription">[static] Number of bits in a byte </div>
+</td><td class="summaryTableOwnerCol">UnitConversion</td>
+</tr>
+<tr class="">
+<td class="summaryTablePaddingCol">&nbsp;</td><td class="summaryTableInheritanceCol">&nbsp;</td><td class="summaryTableSignatureCol"><a class="signatureLink" href="#MEMORY_KILOBYTES">MEMORY_KILOBYTES</a> : Number = 8192.0<div class="summaryTableDescription">[static] Number of bits in a kilobyte </div>
+</td><td class="summaryTableOwnerCol">UnitConversion</td>
+</tr>
+<tr class="">
+<td class="summaryTablePaddingCol">&nbsp;</td><td class="summaryTableInheritanceCol">&nbsp;</td><td class="summaryTableSignatureCol"><a class="signatureLink" href="#MEMORY_MEGABYTES">MEMORY_MEGABYTES</a> : Number = 8388608.0<div class="summaryTableDescription">[static] Number of bits in a megabyte </div>
+</td><td class="summaryTableOwnerCol">UnitConversion</td>
+</tr>
+<tr class="">
+<td class="summaryTablePaddingCol">&nbsp;</td><td class="summaryTableInheritanceCol">&nbsp;</td><td class="summaryTableSignatureCol"><a class="signatureLink" href="#MEMORY_TERABYTES">MEMORY_TERABYTES</a> : Number = 8.796093022208E12<div class="summaryTableDescription">[static] Number of bits in a terabyte </div>
+</td><td class="summaryTableOwnerCol">UnitConversion</td>
+</tr>
+<tr class="">
+<td class="summaryTablePaddingCol">&nbsp;</td><td class="summaryTableInheritanceCol">&nbsp;</td><td class="summaryTableSignatureCol"><a class="signatureLink" href="#NUMBER_BILLIONS">NUMBER_BILLIONS</a> : Number = 1.0E9<div class="summaryTableDescription">[static] Base for billions </div>
+</td><td class="summaryTableOwnerCol">UnitConversion</td>
+</tr>
+<tr class="">
+<td class="summaryTablePaddingCol">&nbsp;</td><td class="summaryTableInheritanceCol">&nbsp;</td><td class="summaryTableSignatureCol"><a class="signatureLink" href="#NUMBER_HUNDREDS">NUMBER_HUNDREDS</a> : Number = 100.0<div class="summaryTableDescription">[static] Base for hundreds </div>
+</td><td class="summaryTableOwnerCol">UnitConversion</td>
+</tr>
+<tr class="">
+<td class="summaryTablePaddingCol">&nbsp;</td><td class="summaryTableInheritanceCol">&nbsp;</td><td class="summaryTableSignatureCol"><a class="signatureLink" href="#NUMBER_MILLIONS">NUMBER_MILLIONS</a> : Number = 1000000.0<div class="summaryTableDescription">[static] Base for millions </div>
+</td><td class="summaryTableOwnerCol">UnitConversion</td>
+</tr>
+<tr class="">
+<td class="summaryTablePaddingCol">&nbsp;</td><td class="summaryTableInheritanceCol">&nbsp;</td><td class="summaryTableSignatureCol"><a class="signatureLink" href="#NUMBER_ONES">NUMBER_ONES</a> : Number = 1<div class="summaryTableDescription">[static] Base for single digit numbers </div>
+</td><td class="summaryTableOwnerCol">UnitConversion</td>
+</tr>
+<tr class="">
+<td class="summaryTablePaddingCol">&nbsp;</td><td class="summaryTableInheritanceCol">&nbsp;</td><td class="summaryTableSignatureCol"><a class="signatureLink" href="#NUMBER_QUADRILLIONS">NUMBER_QUADRILLIONS</a> : Number = 1.0E12<div class="summaryTableDescription">[static] Base for quadrillions </div>
+</td><td class="summaryTableOwnerCol">UnitConversion</td>
+</tr>
+<tr class="">
+<td class="summaryTablePaddingCol">&nbsp;</td><td class="summaryTableInheritanceCol">&nbsp;</td><td class="summaryTableSignatureCol"><a class="signatureLink" href="#NUMBER_TENS">NUMBER_TENS</a> : Number = 10<div class="summaryTableDescription">[static] Base for tens </div>
+</td><td class="summaryTableOwnerCol">UnitConversion</td>
+</tr>
+<tr class="">
+<td class="summaryTablePaddingCol">&nbsp;</td><td class="summaryTableInheritanceCol">&nbsp;</td><td class="summaryTableSignatureCol"><a class="signatureLink" href="#NUMBER_THOUSANDS">NUMBER_THOUSANDS</a> : Number = 1000.0<div class="summaryTableDescription">[static] Base for thousands </div>
+</td><td class="summaryTableOwnerCol">UnitConversion</td>
+</tr>
+<tr class="">
+<td class="summaryTablePaddingCol">&nbsp;</td><td class="summaryTableInheritanceCol">&nbsp;</td><td class="summaryTableSignatureCol"><a class="signatureLink" href="#NUMBER_TRILLIONS">NUMBER_TRILLIONS</a> : Number = 1.0E9<div class="summaryTableDescription">[static] Base for trillions </div>
+</td><td class="summaryTableOwnerCol">UnitConversion</td>
+</tr>
+<tr class="">
+<td class="summaryTablePaddingCol">&nbsp;</td><td class="summaryTableInheritanceCol">&nbsp;</td><td class="summaryTableSignatureCol"><a class="signatureLink" href="#TIME_DAYS">TIME_DAYS</a> : Number = 8.64E7<div class="summaryTableDescription">[static] Number of milliseconds in a day </div>
+</td><td class="summaryTableOwnerCol">UnitConversion</td>
+</tr>
+<tr class="">
+<td class="summaryTablePaddingCol">&nbsp;</td><td class="summaryTableInheritanceCol">&nbsp;</td><td class="summaryTableSignatureCol"><a class="signatureLink" href="#TIME_FORTNIGHTS">TIME_FORTNIGHTS</a> : Number = 4.1472E9<div class="summaryTableDescription">[static] Number of milliseconds in a fortnight </div>
+</td><td class="summaryTableOwnerCol">UnitConversion</td>
+</tr>
+<tr class="">
+<td class="summaryTablePaddingCol">&nbsp;</td><td class="summaryTableInheritanceCol">&nbsp;</td><td class="summaryTableSignatureCol"><a class="signatureLink" href="#TIME_HOURS">TIME_HOURS</a> : Number = 3600000.0<div class="summaryTableDescription">[static] Number of milliseconds in an hour </div>
+</td><td class="summaryTableOwnerCol">UnitConversion</td>
+</tr>
+<tr class="">
+<td class="summaryTablePaddingCol">&nbsp;</td><td class="summaryTableInheritanceCol">&nbsp;</td><td class="summaryTableSignatureCol"><a class="signatureLink" href="#TIME_MILLISECONDS">TIME_MILLISECONDS</a> : Number = 1<div class="summaryTableDescription">[static] A single millisecond </div>
+</td><td class="summaryTableOwnerCol">UnitConversion</td>
+</tr>
+<tr class="">
+<td class="summaryTablePaddingCol">&nbsp;</td><td class="summaryTableInheritanceCol">&nbsp;</td><td class="summaryTableSignatureCol"><a class="signatureLink" href="#TIME_MINUTES">TIME_MINUTES</a> : Number = 60000.0<div class="summaryTableDescription">[static] Number of milliseconds in a minute </div>
+</td><td class="summaryTableOwnerCol">UnitConversion</td>
+</tr>
+<tr class="">
+<td class="summaryTablePaddingCol">&nbsp;</td><td class="summaryTableInheritanceCol">&nbsp;</td><td class="summaryTableSignatureCol"><a class="signatureLink" href="#TIME_MONTHS">TIME_MONTHS</a> : Number = 2.628E9<div class="summaryTableDescription">[static] Number of milliseconds in an average month in a 365 day year </div>
+</td><td class="summaryTableOwnerCol">UnitConversion</td>
+</tr>
+<tr class="">
+<td class="summaryTablePaddingCol">&nbsp;</td><td class="summaryTableInheritanceCol">&nbsp;</td><td class="summaryTableSignatureCol"><a class="signatureLink" href="#TIME_SECONDS">TIME_SECONDS</a> : Number = 1000<div class="summaryTableDescription">[static] Number of milliseconds in a second </div>
+</td><td class="summaryTableOwnerCol">UnitConversion</td>
+</tr>
+<tr class="">
+<td class="summaryTablePaddingCol">&nbsp;</td><td class="summaryTableInheritanceCol">&nbsp;</td><td class="summaryTableSignatureCol"><a class="signatureLink" href="#TIME_WEEKS">TIME_WEEKS</a> : Number = 2.0736E9<div class="summaryTableDescription">[static] Number of milliseconds in a week </div>
+</td><td class="summaryTableOwnerCol">UnitConversion</td>
+</tr>
+<tr class="">
+<td class="summaryTablePaddingCol">&nbsp;</td><td class="summaryTableInheritanceCol">&nbsp;</td><td class="summaryTableSignatureCol"><a class="signatureLink" href="#TIME_YEARS">TIME_YEARS</a> : Number = 3.1536E10<div class="summaryTableDescription">[static] Number of milliseconds in a 365 day year </div>
+</td><td class="summaryTableOwnerCol">UnitConversion</td>
+</tr>
+</table>
+</div>
+<script type="text/javascript" language="javascript">
+<!--
+showHideInherited();
+--></script>
+<div class="MainContent">
+<a name="methodDetail"></a>
+<div class="detailSectionHeader">Method detail</div>
+<a name="breakdown()"></a>
+<table cellspacing="0" cellpadding="0" class="detailHeader">
+<tr>
+<td class="detailHeaderName">breakdown</td><td class="detailHeaderParens">()</td><td class="detailHeaderType">method</td>
+</tr>
+</table>
+<div class="detailBody">
+<code>public static function breakdown(from:Number, fromType:Number, toTypes:Array):Array</code><p>
+   Converts a number in to an array representing its different base values
+   
+   </p><span class="label">Parameters</span>
+<table border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td width="20px"></td><td><code><span class="label">from</span>:Number</code> &mdash;  The number to convert
+   </td>
+</tr>
+<tr>
+<td class="paramSpacer">&nbsp;</td>
+</tr>
+<tr>
+<td width="20px"></td><td><code><span class="label">fromType</span>:Number</code> &mdash; The base of the number from. Use the NUMBER 
+         constants to represent this
+   </td>
+</tr>
+<tr>
+<td class="paramSpacer">&nbsp;</td>
+</tr>
+<tr>
+<td width="20px"></td><td><code><span class="label">toTypes</span>:Array</code> &mdash;  An array of bases to convert to
+   
+   </td>
+</tr>
+</table>
+<p></p>
+<span class="label">Returns</span>
+<table border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td width="20"></td><td><code>Array</code> &mdash; An array of numbers. The index of each returned number will
+      correspond to the indicies of the given toTypes array
+   </td>
+</tr>
+</table>
+</div>
+<a name="convert()"></a>
+<table cellspacing="0" cellpadding="0" class="detailHeader">
+<tr>
+<td class="detailHeaderName">convert</td><td class="detailHeaderParens">()</td><td class="detailHeaderType">method</td><td class="detailHeaderRule">&nbsp;</td>
+</tr>
+</table>
+<div class="detailBody">
+<code>public static function convert(from:Number, fromType:Number, toType:Number):Number</code><p>
+   Converts a number's base
+   
+   </p><span class="label">Parameters</span>
+<table border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td width="20px"></td><td><code><span class="label">from</span>:Number</code> &mdash;  The number to convert
+   </td>
+</tr>
+<tr>
+<td class="paramSpacer">&nbsp;</td>
+</tr>
+<tr>
+<td width="20px"></td><td><code><span class="label">fromType</span>:Number</code> &mdash; The base of number from. Use the NUMBER constants
+         to represent this
+   </td>
+</tr>
+<tr>
+<td class="paramSpacer">&nbsp;</td>
+</tr>
+<tr>
+<td width="20px"></td><td><code><span class="label">toType</span>:Number</code> &mdash;  The base to convert to. Use the NUMBER constants
+         to represent this
+   
+   </td>
+</tr>
+</table>
+<p></p>
+<span class="label">Returns</span>
+<table border="0" cellspacing="0" cellpadding="0">
+<tr>
+<td width="20"></td><td><code>Number</code> &mdash; The converted number
+   </td>
+</tr>
+</table>
+</div>
+<a name="constantDetail"></a>
+<div class="detailSectionHeader">Constant detail</div>
+<a name="DISTANCE_CENTIMETER"></a>
+<table cellspacing="0" cellpadding="0" class="detailHeader">
+<tr>
+<td class="detailHeaderName">DISTANCE_CENTIMETER</td><td class="detailHeaderType">constant</td>
+</tr>
+</table>
+<div class="detailBody">
+<code>public static const DISTANCE_CENTIMETER:Number = 10</code><p> Millimeters in a centimeter </p></div>
+<a name="DISTANCE_FEET"></a>
+<table cellspacing="0" cellpadding="0" class="detailHeader">
+<tr>
+<td class="detailHeaderName">DISTANCE_FEET</td><td class="detailHeaderType">constant</td><td class="detailHeaderRule">&nbsp;</td>
+</tr>
+</table>
+<div class="detailBody">
+<code>public static const DISTANCE_FEET:Number = 304.79999999999995</code><p> Millimeters in a foot </p></div>
+<a name="DISTANCE_INCH"></a>
+<table cellspacing="0" cellpadding="0" class="detailHeader">
+<tr>
+<td class="detailHeaderName">DISTANCE_INCH</td><td class="detailHeaderType">constant</td><td class="detailHeaderRule">&nbsp;</td>
+</tr>
+</table>
+<div class="detailBody">
+<code>public static const DISTANCE_INCH:Number = 25.4</code><p> Millimeters in an inch </p></div>
+<a name="DISTANCE_KILOMETER"></a>
+<table cellspacing="0" cellpadding="0" class="detailHeader">
+<tr>
+<td class="detailHeaderName">DISTANCE_KILOMETER</td><td class="detailHeaderType">constant</td><td class="detailHeaderRule">&nbsp;</td>
+</tr>
+</table>
+<div class="detailBody">
+<code>public static const DISTANCE_KILOMETER:Number = 1000000.0</code><p> Millimeters in a meter </p></div>
+<a name="DISTANCE_METER"></a>
+<table cellspacing="0" cellpadding="0" class="detailHeader">
+<tr>
+<td class="detailHeaderName">DISTANCE_METER</td><td class="detailHeaderType">constant</td><td class="detailHeaderRule">&nbsp;</td>
+</tr>
+</table>
+<div class="detailBody">
+<code>public static const DISTANCE_METER:Number = 1000.0</code><p> Millimeters in a meter </p></div>
+<a name="DISTANCE_MILE"></a>
+<table cellspacing="0" cellpadding="0" class="detailHeader">
+<tr>
+<td class="detailHeaderName">DISTANCE_MILE</td><td class="detailHeaderType">constant</td><td class="detailHeaderRule">&nbsp;</td>
+</tr>
+</table>
+<div class="detailBody">
+<code>public static const DISTANCE_MILE:Number = 1609343.9999999998</code><p> Millimeters in a mile </p></div>
+<a name="DISTANCE_MILLIMETER"></a>
+<table cellspacing="0" cellpadding="0" class="detailHeader">
+<tr>
+<td class="detailHeaderName">DISTANCE_MILLIMETER</td><td class="detailHeaderType">constant</td><td class="detailHeaderRule">&nbsp;</td>
+</tr>
+</table>
+<div class="detailBody">
+<code>public static const DISTANCE_MILLIMETER:Number = 1</code><p> One Millimeter </p></div>
+<a name="DISTANCE_YARD"></a>
+<table cellspacing="0" cellpadding="0" class="detailHeader">
+<tr>
+<td class="detailHeaderName">DISTANCE_YARD</td><td class="detailHeaderType">constant</td><td class="detailHeaderRule">&nbsp;</td>
+</tr>
+</table>
+<div class="detailBody">
+<code>public static const DISTANCE_YARD:Number = 914.3999999999999</code><p> Millimeters in a yard </p></div>
+<a name="MEMORY_BITS"></a>
+<table cellspacing="0" cellpadding="0" class="detailHeader">
+<tr>
+<td class="detailHeaderName">MEMORY_BITS</td><td class="detailHeaderType">constant</td><td class="detailHeaderRule">&nbsp;</td>
+</tr>
+</table>
+<div class="detailBody">
+<code>public static const MEMORY_BITS:Number = 1</code><p> A single bit </p></div>
+<a name="MEMORY_BYTES"></a>
+<table cellspacing="0" cellpadding="0" class="detailHeader">
+<tr>
+<td class="detailHeaderName">MEMORY_BYTES</td><td class="detailHeaderType">constant</td><td class="detailHeaderRule">&nbsp;</td>
+</tr>
+</table>
+<div class="detailBody">
+<code>public static const MEMORY_BYTES:Number = 8</code><p> Number of bits in a byte </p></div>
+<a name="MEMORY_GIGABYTES"></a>
+<table cellspacing="0" cellpadding="0" class="detailHeader">
+<tr>
+<td class="detailHeaderName">MEMORY_GIGABYTES</td><td class="detailHeaderType">constant</td><td class="detailHeaderRule">&nbsp;</td>
+</tr>
+</table>
+<div class="detailBody">
+<code>public static const MEMORY_GIGABYTES:Number = 8.589934592E9</code><p> Number of bits in a gigabyte </p></div>
+<a name="MEMORY_KILOBITS"></a>
+<table cellspacing="0" cellpadding="0" class="detailHeader">
+<tr>
+<td class="detailHeaderName">MEMORY_KILOBITS</td><td class="detailHeaderType">constant</td><td class="detailHeaderRule">&nbsp;</td>
+</tr>
+</table>
+<div class="detailBody">
+<code>public static const MEMORY_KILOBITS:Number = 1024.0</code><p> Number of bits in a byte </p></div>
+<a name="MEMORY_KILOBYTES"></a>
+<table cellspacing="0" cellpadding="0" class="detailHeader">
+<tr>
+<td class="detailHeaderName">MEMORY_KILOBYTES</td><td class="detailHeaderType">constant</td><td class="detailHeaderRule">&nbsp;</td>
+</tr>
+</table>
+<div class="detailBody">
+<code>public static const MEMORY_KILOBYTES:Number = 8192.0</code><p> Number of bits in a kilobyte </p></div>
+<a name="MEMORY_MEGABYTES"></a>
+<table cellspacing="0" cellpadding="0" class="detailHeader">
+<tr>
+<td class="detailHeaderName">MEMORY_MEGABYTES</td><td class="detailHeaderType">constant</td><td class="detailHeaderRule">&nbsp;</td>
+</tr>
+</table>
+<div class="detailBody">
+<code>public static const MEMORY_MEGABYTES:Number = 8388608.0</code><p> Number of bits in a megabyte </p></div>
+<a name="MEMORY_TERABYTES"></a>
+<table cellspacing="0" cellpadding="0" class="detailHeader">
+<tr>
+<td class="detailHeaderName">MEMORY_TERABYTES</td><td class="detailHeaderType">constant</td><td class="detailHeaderRule">&nbsp;</td>
+</tr>
+</table>
+<div class="detailBody">
+<code>public static const MEMORY_TERABYTES:Number = 8.796093022208E12</code><p> Number of bits in a terabyte </p></div>
+<a name="NUMBER_BILLIONS"></a>
+<table cellspacing="0" cellpadding="0" class="detailHeader">
+<tr>
+<td class="detailHeaderName">NUMBER_BILLIONS</td><td class="detailHeaderType">constant</td><td class="detailHeaderRule">&nbsp;</td>
+</tr>
+</table>
+<div class="detailBody">
+<code>public static const NUMBER_BILLIONS:Number = 1.0E9</code><p> Base for billions </p></div>
+<a name="NUMBER_HUNDREDS"></a>
+<table cellspacing="0" cellpadding="0" class="detailHeader">
+<tr>
+<td class="detailHeaderName">NUMBER_HUNDREDS</td><td class="detailHeaderType">constant</td><td class="detailHeaderRule">&nbsp;</td>
+</tr>
+</table>
+<div class="detailBody">
+<code>public static const NUMBER_HUNDREDS:Number = 100.0</code><p> Base for hundreds </p></div>
+<a name="NUMBER_MILLIONS"></a>
+<table cellspacing="0" cellpadding="0" class="detailHeader">
+<tr>
+<td class="detailHeaderName">NUMBER_MILLIONS</td><td class="detailHeaderType">constant</td><td class="detailHeaderRule">&nbsp;</td>
+</tr>
+</table>
+<div class="detailBody">
+<code>public static const NUMBER_MILLIONS:Number = 1000000.0</code><p> Base for millions </p></div>
+<a name="NUMBER_ONES"></a>
+<table cellspacing="0" cellpadding="0" class="detailHeader">
+<tr>
+<td class="detailHeaderName">NUMBER_ONES</td><td class="detailHeaderType">constant</td><td class="detailHeaderRule">&nbsp;</td>
+</tr>
+</table>
+<div class="detailBody">
+<code>public static const NUMBER_ONES:Number = 1</code><p> Base for single digit numbers </p></div>
+<a name="NUMBER_QUADRILLIONS"></a>
+<table cellspacing="0" cellpadding="0" class="detailHeader">
+<tr>
+<td class="detailHeaderName">NUMBER_QUADRILLIONS</td><td class="detailHeaderType">constant</td><td class="detailHeaderRule">&nbsp;</td>
+</tr>
+</table>
+<div class="detailBody">
+<code>public static const NUMBER_QUADRILLIONS:Number = 1.0E12</code><p> Base for quadrillions </p></div>
+<a name="NUMBER_TENS"></a>
+<table cellspacing="0" cellpadding="0" class="detailHeader">
+<tr>
+<td class="detailHeaderName">NUMBER_TENS</td><td class="detailHeaderType">constant</td><td class="detailHeaderRule">&nbsp;</td>
+</tr>
+</table>
+<div class="detailBody">
+<code>public static const NUMBER_TENS:Number = 10</code><p> Base for tens </p></div>
+<a name="NUMBER_THOUSANDS"></a>
+<table cellspacing="0" cellpadding="0" class="detailHeader">
+<tr>
+<td class="detailHeaderName">NUMBER_THOUSANDS</td><td class="detailHeaderType">constant</td><td class="detailHeaderRule">&nbsp;</td>
+</tr>
+</table>
+<div class="detailBody">
+<code>public static const NUMBER_THOUSANDS:Number = 1000.0</code><p> Base for thousands </p></div>
+<a name="NUMBER_TRILLIONS"></a>
+<table cellspacing="0" cellpadding="0" class="detailHeader">
+<tr>
+<td class="detailHeaderName">NUMBER_TRILLIONS</td><td class="detailHeaderType">constant</td><td class="detailHeaderRule">&nbsp;</td>
+</tr>
+</table>
+<div class="detailBody">
+<code>public static const NUMBER_TRILLIONS:Number = 1.0E9</code><p> Base for trillions </p></div>
+<a name="TIME_DAYS"></a>
+<table cellspacing="0" cellpadding="0" class="detailHeader">
+<tr>
+<td class="detailHeaderName">TIME_DAYS</td><td class="detailHeaderType">constant</td><td class="detailHeaderRule">&nbsp;</td>
+</tr>
+</table>
+<div class="detailBody">
+<code>public static const TIME_DAYS:Number = 8.64E7</code><p> Number of milliseconds in a day </p></div>
+<a name="TIME_FORTNIGHTS"></a>
+<table cellspacing="0" cellpadding="0" class="detailHeader">
+<tr>
+<td class="detailHeaderName">TIME_FORTNIGHTS</td><td class="detailHeaderType">constant</td><td class="detailHeaderRule">&nbsp;</td>
+</tr>
+</table>
+<div class="detailBody">
+<code>public static const TIME_FORTNIGHTS:Number = 4.1472E9</code><p> Number of milliseconds in a fortnight </p></div>
+<a name="TIME_HOURS"></a>
+<table cellspacing="0" cellpadding="0" class="detailHeader">
+<tr>
+<td class="detailHeaderName">TIME_HOURS</td><td class="detailHeaderType">constant</td><td class="detailHeaderRule">&nbsp;</td>
+</tr>
+</table>
+<div class="detailBody">
+<code>public static const TIME_HOURS:Number = 3600000.0</code><p> Number of milliseconds in an hour </p></div>
+<a name="TIME_MILLISECONDS"></a>
+<table cellspacing="0" cellpadding="0" class="detailHeader">
+<tr>
+<td class="detailHeaderName">TIME_MILLISECONDS</td><td class="detailHeaderType">constant</td><td class="detailHeaderRule">&nbsp;</td>
+</tr>
+</table>
+<div class="detailBody">
+<code>public static const TIME_MILLISECONDS:Number = 1</code><p> A single millisecond </p></div>
+<a name="TIME_MINUTES"></a>
+<table cellspacing="0" cellpadding="0" class="detailHeader">
+<tr>
+<td class="detailHeaderName">TIME_MINUTES</td><td class="detailHeaderType">constant</td><td class="detailHeaderRule">&nbsp;</td>
+</tr>
+</table>
+<div class="detailBody">
+<code>public static const TIME_MINUTES:Number = 60000.0</code><p> Number of milliseconds in a minute </p></div>
+<a name="TIME_MONTHS"></a>
+<table cellspacing="0" cellpadding="0" class="detailHeader">
+<tr>
+<td class="detailHeaderName">TIME_MONTHS</td><td class="detailHeaderType">constant</td><td class="detailHeaderRule">&nbsp;</td>
+</tr>
+</table>
+<div class="detailBody">
+<code>public static const TIME_MONTHS:Number = 2.628E9</code><p> Number of milliseconds in an average month in a 365 day year </p></div>
+<a name="TIME_SECONDS"></a>
+<table cellspacing="0" cellpadding="0" class="detailHeader">
+<tr>
+<td class="detailHeaderName">TIME_SECONDS</td><td class="detailHeaderType">constant</td><td class="detailHeaderRule">&nbsp;</td>
+</tr>
+</table>
+<div class="detailBody">
+<code>public static const TIME_SECONDS:Number = 1000</code><p> Number of milliseconds in a second </p></div>
+<a name="TIME_WEEKS"></a>
+<table cellspacing="0" cellpadding="0" class="detailHeader">
+<tr>
+<td class="detailHeaderName">TIME_WEEKS</td><td class="detailHeaderType">constant</td><td class="detailHeaderRule">&nbsp;</td>
+</tr>
+</table>
+<div class="detailBody">
+<code>public static const TIME_WEEKS:Number = 2.0736E9</code><p> Number of milliseconds in a week </p></div>
+<a name="TIME_YEARS"></a>
+<table cellspacing="0" cellpadding="0" class="detailHeader">
+<tr>
+<td class="detailHeaderName">TIME_YEARS</td><td class="detailHeaderType">constant</td><td class="detailHeaderRule">&nbsp;</td>
+</tr>
+</table>
+<div class="detailBody">
+<code>public static const TIME_YEARS:Number = 3.1536E10</code><p> Number of milliseconds in a 365 day year </p></div>
+<br>
+<br>
+<hr>
+<br>
+<p></p>
+<center class="copyright">Copyright 2009 The Farm Digital</center>
+</div>
+</body>
+</html>
+<!--Copyright 2009 The Farm Digital-->
