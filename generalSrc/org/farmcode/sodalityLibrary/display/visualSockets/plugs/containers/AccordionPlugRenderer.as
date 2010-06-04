@@ -6,9 +6,9 @@ package org.farmcode.sodalityLibrary.display.visualSockets.plugs.containers
 	import flash.geom.Rectangle;
 	
 	import org.farmcode.data.dataTypes.IStringProvider;
-	import org.farmcode.display.behaviour.containers.ScrollWrapper;
-	import org.farmcode.display.behaviour.containers.accordion.AccordionRenderer;
 	import org.farmcode.display.constants.Direction;
+	import org.farmcode.display.containers.ScrollWrapper;
+	import org.farmcode.display.containers.accordion.AccordionRenderer2;
 	import org.farmcode.display.layout.ILayoutSubject;
 	import org.farmcode.sodality.advisors.DynamicAdvisor;
 	import org.farmcode.sodality.events.AdvisorEvent;
@@ -18,7 +18,7 @@ package org.farmcode.sodalityLibrary.display.visualSockets.plugs.containers
 	import org.farmcode.sodalityLibrary.display.visualSockets.socketContainers.SocketContainerUtils;
 	import org.farmcode.sodalityLibrary.display.visualSockets.sockets.DisplaySocket;
 	
-	public class AccordionPlugRenderer extends AccordionRenderer implements ISocketContainer
+	public class AccordionPlugRenderer extends AccordionRenderer2 implements ISocketContainer
 	{
 		override public function set asset(value:DisplayObject) : void{
 			super.asset = value;
@@ -77,7 +77,7 @@ package org.farmcode.sodalityLibrary.display.visualSockets.plugs.containers
 		}
 		override protected function bindToAsset() : void{
 			super.bindToAsset();
-			containerAsset.addChild(_displaySocket.container);
+			_containerAsset.addChild(_displaySocket.container);
 			if(_scrollBar){
 				_scrollBar.scrollSubject = _scrollWrapper;
 				if(_scrollBar.direction==Direction.HORIZONTAL){
@@ -90,7 +90,7 @@ package org.farmcode.sodalityLibrary.display.visualSockets.plugs.containers
 			}
 		}
 		override protected function unbindFromAsset() : void{
-			containerAsset.removeChild(_displaySocket.container);
+			_containerAsset.removeChild(_displaySocket.container);
 			super.unbindFromAsset();
 		}
 		override protected function getContainerMeasurements() : Rectangle{
@@ -110,7 +110,7 @@ package org.farmcode.sodalityLibrary.display.visualSockets.plugs.containers
 			super.draw();
 			_scrollRect.width = displayPosition.width;
 			_scrollRect.height = displayPosition.height;
-			containerAsset.scrollRect = _scrollRect;
+			_containerAsset.scrollRect = _scrollRect;
 		}
 		public function attemptFillSocket():void{
 			if(_dynamicAdvisor.addedToPresident && _displaySocket.socketId!=null && open){

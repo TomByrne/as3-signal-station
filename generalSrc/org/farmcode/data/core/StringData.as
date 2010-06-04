@@ -38,5 +38,8 @@ package org.farmcode.data.core
 		
 		public function StringData(){
 		}
+		public function toString():String{
+			return _stringValue;
+		}
 	}
 }

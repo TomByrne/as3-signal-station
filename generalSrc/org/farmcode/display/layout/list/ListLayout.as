@@ -43,6 +43,5 @@ package org.farmcode.display.layout.list
 		public function set direction(value:String):void{
 			_flowDirection = value;
 		}
-
 	}
 }

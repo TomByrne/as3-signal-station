@@ -5,7 +5,7 @@ package org.farmcode.formatters.numberFormatters
 
 	public class DecimalFormatter extends AbstractNumberFormatter
 	{
-		private static const REMOVE_CHARS:RegExp = /[^\d|\.]+/g;
+		private static const REMOVE_CHARS:RegExp = /[^\d|\.|-]+/g;
 		
 		public function get decimalSeperator():String{
 			return _decimalSeperator;
@@ -76,19 +76,33 @@ package org.farmcode.formatters.numberFormatters
 		
 		private var _decimalSeperator:String = ".";
 		
+		/**
+		 * Sometimes, as somebody is typing a value (e.g. -0), there
+		 * is a need to store the sign outside of the number value
+		 * so that it doesn't get formatted away while they're typing the
+		 * value.
+		 */
+		protected var _useNegativeSign:Boolean = false;
+		
 		public function DecimalFormatter(numberProvider:INumberProvider=null){
 			super(numberProvider);
 		}
 		
 		override protected function formatString(number:Number):String{
 			var ret:String;
-			var roundNumber:int = int(number);
-			if(_digitGroupSeperator && _digitGroupSize>0 && roundNumber>0){
+			if(isNaN(number)){
+				if(_useNegativeSign){
+					_useNegativeSign = false;
+					return "-";
+				}else return "";
+			}
+			var roundNumber:int = int(number>0?number:-number);
+			if(_digitGroupSeperator && _digitGroupSize>0 && roundNumber!=0){
 				ret = "";
 				var groupSize:int = int(Math.pow(10,_digitGroupSize));
 				var remaining:int = roundNumber;
 				var first:Boolean = true;
-				while(remaining>0){
+				while(remaining!=0){
 					var value:int = int(remaining%groupSize);
 					if(first){
 						first = false;
@@ -96,14 +110,22 @@ package org.farmcode.formatters.numberFormatters
 						ret = _digitGroupSeperator+ret;
 					}
 					remaining /= groupSize;
-					if(remaining>0){
-						ret = String(value+groupSize).slice(1)+ret;
+					if(remaining!=0){
+						ret = String(Math.abs(value+groupSize)).slice(1)+ret;
 					}else{
 						ret = String(value)+ret;
 					}
 				}
+				if(number<0){
+					ret = "-"+ret;
+				}
 			}else{
-				ret = String(roundNumber);
+				if(_useNegativeSign && number==0){
+					ret = "-0";
+				}else{
+					ret = String(roundNumber);
+				}
+				_useNegativeSign = false;
 			}
 			if(_decimalSeperator && _maxDecimalPlaces){
 				var decStr:String = String(number);
@@ -127,6 +149,7 @@ package org.farmcode.formatters.numberFormatters
 			return ret;
 		}
 		override protected function parseString(string:String):Number{
+			if(!string.length)return NaN;
 			var decIndex:int=-1;
 			if(_decimalSeperator){
 				var first:Boolean = true;
@@ -147,9 +170,25 @@ package org.farmcode.formatters.numberFormatters
 			while((digitIndex = string.indexOf(_digitGroupSeperator))!=-1 && (digitIndex<decIndex || decIndex==-1)){
 				string = string.slice(0,digitIndex)+string.slice(digitIndex+1);
 			}
-			string = string.replace(REMOVE_CHARS,"");
-			var ret:Number = parseFloat(string);
-			if(!isNaN(ret)){
+			var containsIllegal:Boolean = REMOVE_CHARS.test(string);
+			if(containsIllegal)string = string.replace(REMOVE_CHARS,"");
+			var ret:Number;
+			var newNegSign:Boolean;
+			if(string=="-"){
+				newNegSign = true;
+			}else{
+				ret = parseFloat(string);
+				if(ret==0){
+					newNegSign = (string.charAt(0)=="-");
+				}else{
+					newNegSign = false;
+				}
+			}
+			if(newNegSign!=_useNegativeSign){
+				_useNegativeSign = newNegSign;
+				invalidateString();
+			}
+			if(!isNaN(ret) || !containsIllegal){
 				return ret;
 			}else{
 				return _numericalValue;

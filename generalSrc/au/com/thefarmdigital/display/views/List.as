@@ -537,7 +537,7 @@ package au.com.thefarmdigital.display.views
 			
 			if(_outerSeparators ){
 				if(!_firstSeparator){
-					addToStack(protoSeparator);
+					_addToStack(protoSeparator);
 					_firstSeparator = protoSeparator;
 					container.setChildIndex(_firstSeparator,0);
 				}
@@ -546,7 +546,7 @@ package au.com.thefarmdigital.display.views
 			}
 			for(var i:int=_itemRenderers.length; i<maxItems; ++i){
 				var renderer:ISelectableControl = getRenderer();
-				addToStack(renderer.display);
+				_addToStack(renderer.display);
 				_itemRenderers.push(renderer);
 				container.setChildIndex(renderer.display,i);
 			}
@@ -569,7 +569,7 @@ package au.com.thefarmdigital.display.views
 				max = Math.max(max, 0);
 				for(i=_otherSeparators.length; i<max; ++i){
 					var separator:DisplayObject = getSeparator();
-					addToStack(separator);
+					_addToStack(separator);
 					_otherSeparators.push(separator);
 					container.setChildIndex(separator,(i*2)+(_outerSeparators?0:1));
 				}

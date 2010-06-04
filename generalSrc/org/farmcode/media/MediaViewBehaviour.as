@@ -1,12 +1,11 @@
 package org.farmcode.media
 {
 	import flash.display.DisplayObject;
-	import flash.events.Event;
 	import flash.geom.Rectangle;
 	
-	import org.farmcode.display.behaviour.LayoutViewBehaviour;
+	import org.farmcode.display.core.LayoutView;
 	
-	public class MediaViewBehaviour extends LayoutViewBehaviour
+	public class MediaViewBehaviour extends LayoutView
 	{
 		public function MediaViewBehaviour(asset:DisplayObject, displayMeasurements:Rectangle){
 			super(asset);
@@ -19,8 +18,7 @@ package org.farmcode.media
 			// ignore
 		}
 		override protected function draw() : void{
-			asset.x = displayPosition.x;
-			asset.y = displayPosition.y;
+			positionAsset();
 			asset.width = displayPosition.width;
 			asset.height = displayPosition.height;
 		}

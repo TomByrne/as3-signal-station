@@ -3,7 +3,7 @@ package org.farmcode.sodalityLibrary.display.visualSockets.plugs.controls
 	import flash.events.Event;
 	
 	import org.farmcode.data.dataTypes.ITriggerableAction;
-	import org.farmcode.display.behaviour.controls.TextLabelButton;
+	import org.farmcode.display.controls.TextLabelButton;
 	import org.farmcode.sodality.advice.IAdvice;
 	import org.farmcode.sodality.advisors.DynamicAdvisor;
 	import org.farmcode.sodality.advisors.INonVisualAdvisor;

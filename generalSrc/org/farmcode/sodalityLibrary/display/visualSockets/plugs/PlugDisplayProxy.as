@@ -1,15 +1,15 @@
 package org.farmcode.sodalityLibrary.display.visualSockets.plugs
 {
-	import org.farmcode.display.behaviour.ViewBehaviour;
+	import org.farmcode.display.core.View;
 	import org.farmcode.sodality.advice.IAdvice;
 	
 	public class PlugDisplayProxy extends AbstractPlugDisplayProxy
 	{
 		
-		public function get target():ViewBehaviour{
+		public function get target():View{
 			return _target;
 		}
-		public function set target(value:ViewBehaviour):void{
+		public function set target(value:View):void{
 			setTarget(value);
 		}
 		
@@ -26,7 +26,7 @@ package org.farmcode.sodalityLibrary.display.visualSockets.plugs
 		
 		private var _dataField:String;
 		
-		public function PlugDisplayProxy(target:ViewBehaviour=null){
+		public function PlugDisplayProxy(target:View=null){
 			super(target);
 		}
 		override public function setDataProvider(value:*, cause:IAdvice=null):void{

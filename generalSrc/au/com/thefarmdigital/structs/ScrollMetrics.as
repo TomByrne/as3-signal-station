@@ -23,6 +23,8 @@ package au.com.thefarmdigital.structs
 		[Property(toString="true")]
 		public var value:Number;
 		
+		private var _value:Number;
+		
 		/**
 		 * Creates a new scroll instruction.
 		 * 

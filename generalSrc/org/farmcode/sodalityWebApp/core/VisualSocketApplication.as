@@ -20,6 +20,7 @@ package org.farmcode.sodalityWebApp.core
 	import org.farmcode.sodalityLibrary.display.visualSockets.sockets.DisplaySocket;
 	import org.farmcode.sodalityLibrary.display.visualSockets.sockets.IDisplaySocket;
 	import org.farmcode.sodalityLibrary.external.browser.BrowserAdvisor;
+	import org.farmcode.sodalityLibrary.external.swfaddress.SWFAddressUtilities;
 	import org.farmcode.sodalityLibrary.external.swfaddress.advice.SetSWFAddressAdvice;
 	import org.farmcode.sodalityLibrary.external.swfaddress.adviceTypes.ISetSWFAddressAdvice;
 	import org.farmcode.sodalityLibrary.utils.config.advice.GetConfigParamAdvice;
@@ -73,6 +74,7 @@ package org.farmcode.sodalityWebApp.core
 			_proxiedDisplaySocket = new DisplaySocket("");
 			_proxiedDisplaySocket.displayDepth = 0;// forces app to lowest level, allowing debug bar to sit at top.
 			_proxiedDisplaySocket.addEventListener(DisplaySocketEvent.PLUG_DISPLAY_CHANGED, onPlugDisplayChanged);
+			_proxiedDisplaySocket.measurementsChanged
 		}
 		protected function onPlugDisplayChanged(event:DisplaySocketEvent):void{
 			dispatchEvent(event);
@@ -104,7 +106,11 @@ package org.farmcode.sodalityWebApp.core
 		override protected function setRootObject(object:Object):IAdvice{
 			_config = object as IVisualSocketAppConfig;
 			_visSocketAdvisor.rootDataMappers = _config.rootDataMappers;
-			return super.setRootObject(object);
+			super.setRootObject(object);
+			
 		}
+		
+		
+		
 	}
 }

@@ -4,7 +4,7 @@ package org.farmcode.media
 	
 	import org.farmcode.acting.actTypes.IAct;
 	import org.farmcode.acting.acts.Act;
-	import org.farmcode.display.behaviour.ILayoutViewBehaviour;
+	import org.farmcode.display.core.ILayoutView;
 	
 	public class MediaSource implements IMediaSource
 	{
@@ -41,7 +41,7 @@ package org.farmcode.media
 			if(_cacheMediaDisplays!=value){
 				_cacheMediaDisplays = value;
 				while(_cache.length>_cacheMediaDisplays){
-					var display:ILayoutViewBehaviour = _cache.pop();
+					var display:ILayoutView = _cache.pop();
 					delete _allMediaDisplays[display];
 					destroyMediaDisplay(display);
 				}
@@ -56,15 +56,6 @@ package org.farmcode.media
 			return _loadCompleted;
 		}
 		
-		/**
-		 * @inheritDoc
-		 */
-		public function get loadFailed():IAct{
-			if(!_loadFailed)_loadFailed = new Act();
-			return _loadFailed;
-		}
-		
-		protected var _loadFailed:Act;
 		protected var _loadCompleted:Act;
 		protected var _loadProgressChanged:Act;
 		protected var _loadTotalChanged:Act;
@@ -81,16 +72,16 @@ package org.farmcode.media
 		public function MediaSource(){
 		}
 		
-		public function takeMediaDisplay():ILayoutViewBehaviour{
+		public function takeMediaDisplay():ILayoutView{
 			if(_cache.length){
 				return _cache.pop();
 			}else{
-				var ret:ILayoutViewBehaviour = createMediaDisplay();
+				var ret:ILayoutView = createMediaDisplay();
 				_allMediaDisplays[ret] = true;
 				return ret;
 			}
 		}
-		public function returnMediaDisplay(value:ILayoutViewBehaviour):void{
+		public function returnMediaDisplay(value:ILayoutView):void{
 			if(_cache.length<_cacheMediaDisplays){
 				_cache.push(value);
 			}else{
@@ -100,11 +91,6 @@ package org.farmcode.media
 		}
 		
 		protected function setLoadProps(progress:Number, total:Number):void{
-			
-			if(progress>total && total!=-1){
-				throw new Error("Progress cannot be greater than total");
-			}
-			
 			if(progress!=_loadProgress){
 				_loadProgress = progress;
 				if(_loadProgressChanged)_loadProgressChanged.perform(this);
@@ -122,11 +108,11 @@ package org.farmcode.media
 			}
 		}
 		
-		protected function createMediaDisplay():ILayoutViewBehaviour{
+		protected function createMediaDisplay():ILayoutView{
 			// override me
 			return null;
 		}
-		protected function destroyMediaDisplay(value:ILayoutViewBehaviour):void{
+		protected function destroyMediaDisplay(value:ILayoutView):void{
 			// override me
 		}
 	}

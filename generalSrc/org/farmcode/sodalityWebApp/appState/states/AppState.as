@@ -16,9 +16,7 @@ package org.farmcode.sodalityWebApp.appState.states
 		override public function reconstitute(match:AppStateMatch):String{
 			var ret:String = path;
 			for(var prop:String in match.parameters){
-				if(prop==AppStateConstants.ALL_STRING){
-					ret = match.parameters[prop];
-				}else if(prop==AppStateConstants.STAR_STRING){
+				if(prop=="*"){
 					ret = ret.replace(AppStateConstants.STAR_MATCHER,match.parameters[prop]);
 				}else{
 					var matchStr:String = AppStateConstants.LABEL_RECON.replace("$name",prop);

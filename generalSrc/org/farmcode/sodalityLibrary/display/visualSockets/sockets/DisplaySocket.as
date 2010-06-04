@@ -10,8 +10,8 @@ package org.farmcode.sodalityLibrary.display.visualSockets.sockets
 	import org.farmcode.acting.actTypes.IAct;
 	import org.farmcode.acting.acts.Act;
 	import org.farmcode.core.DelayedCall;
-	import org.farmcode.display.ISelfAnimatingView;
-	import org.farmcode.display.behaviour.IViewBehaviour;
+	import org.farmcode.display.core.IOutroView;
+	import org.farmcode.display.core.IView;
 	import org.farmcode.display.layout.ILayoutSubject;
 	import org.farmcode.display.layout.core.ILayoutInfo;
 	import org.farmcode.sodality.advisors.INonVisualAdvisor;
@@ -20,7 +20,7 @@ package org.farmcode.sodalityLibrary.display.visualSockets.sockets
 	import org.farmcode.sodalityLibrary.display.visualSockets.plugs.IPlugDisplay;
 
 	[Event(name="plugDisplayChanged",type="org.farmcode.sodalityLibrary.display.visualSockets.events.DisplaySocketEvent")]
-	public class DisplaySocket extends EventDispatcher implements IDisplaySocket, ILayoutSubject, IViewBehaviour
+	public class DisplaySocket extends EventDispatcher implements IDisplaySocket, ILayoutSubject, IView
 	{
 		
 		/**
@@ -244,7 +244,7 @@ package org.farmcode.sodalityLibrary.display.visualSockets.sockets
 		}
 		protected function removeDisplay(plugDisplay:IPlugDisplay):int{
 			var depth:int = _container.getChildIndex(plugDisplay.display);
-			var cast:ISelfAnimatingView = plugDisplay as ISelfAnimatingView;
+			var cast:IOutroView = plugDisplay as IOutroView;
 			if(cast){
 				_outroLength = cast.showOutro();
 				if(_outroLength){

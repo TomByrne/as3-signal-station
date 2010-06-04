@@ -7,7 +7,7 @@ package org.farmcode.data.dataTypes
 		function get booleanValue():Boolean;
 		
 		/**
-		 * handler(from:INumericalData)
+		 * handler(from:IBooleanProvider)
 		 */
 		function get booleanValueChanged():IAct;
 	}

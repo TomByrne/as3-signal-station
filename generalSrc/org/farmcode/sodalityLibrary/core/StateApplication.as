@@ -6,6 +6,7 @@ package org.farmcode.sodalityLibrary.core
 	import org.farmcode.sodality.advice.IAdvice;
 	import org.farmcode.sodality.advice.MethodAdvice;
 	import org.farmcode.sodality.events.AdviceEvent;
+	import org.farmcode.sodalityLibrary.external.swfaddress.SWFAddressUtilities;
 	import org.farmcode.sodalityLibrary.external.swfaddress.advice.SetSWFAddressAdvice;
 	import org.farmcode.sodalityLibrary.external.swfaddress.adviceTypes.ISetSWFAddressAdvice;
 	import org.farmcode.sodalityLibrary.utils.config.advice.GetConfigParamAdvice;
@@ -13,8 +14,6 @@ package org.farmcode.sodalityLibrary.core
 	import org.farmcode.sodalityWebApp.appState.advice.SetAppStatesAdvice;
 	import org.farmcode.sodalityWebApp.appState.advice.SetSerialisedStateAdvice;
 	import org.farmcode.sodalityWebApp.appState.adviceTypes.ISetSerialisedStateAdvice;
-
-	import com.asual.swfaddress.SWFAddressUtilities;
 	
 	public class StateApplication extends ConfiguredApplication
 	{

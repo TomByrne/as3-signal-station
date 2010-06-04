@@ -174,17 +174,20 @@ package au.com.thefarmdigital.display.views
 		}
 		public function addToStack(display:DisplayObject, at:int=-1):void{
 			if(display.parent!=container){
-				if(display.parent)display.parent.removeChild(display);
-				if(at>=0)container.addChildAt(display,at);
-				else container.addChild(display);
-				
-				var cast:View = (display as View);
-				if(cast){
-					cast.addEventListener(ControlEvent.MEASUREMENTS_CHANGE, onChildMeasurementsChange);
-				}
-				invalidateMeasurements();
+				_addToStack(display,at);
 				validate(true);
 			}
+		}
+		protected function _addToStack(display:DisplayObject, at:int=-1):void{
+			if(display.parent)display.parent.removeChild(display);
+			if(at>=0)container.addChildAt(display,at);
+			else container.addChild(display);
+			
+			var cast:View = (display as View);
+			if(cast){
+				cast.addEventListener(ControlEvent.MEASUREMENTS_CHANGE, onChildMeasurementsChange);
+			}
+			invalidateMeasurements();
 		}
 		protected function onChildMeasurementsChange(e:Event):void{
 			invalidateMeasurements();

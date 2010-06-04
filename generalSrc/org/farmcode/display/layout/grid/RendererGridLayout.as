@@ -9,14 +9,15 @@ package org.farmcode.display.layout.grid
 	import org.farmcode.acting.actTypes.IAct;
 	import org.farmcode.acting.acts.Act;
 	import org.farmcode.collections.ICollection;
+	import org.farmcode.collections.ICollection2D;
 	import org.farmcode.collections.IIterator;
 	import org.farmcode.collections.IIterator2D;
 	import org.farmcode.collections.linkedList.LinkedListConverter;
-	import org.farmcode.display.behaviour.ILayoutViewBehaviour;
 	import org.farmcode.display.constants.Direction;
 	import org.farmcode.display.layout.ILayoutSubject;
 	import org.farmcode.display.layout.core.ILayoutInfo;
 	import org.farmcode.display.layout.list.ListLayoutInfo;
+	import org.farmcode.display.validation.ValidationFlag;
 	import org.farmcode.instanceFactory.IInstanceFactory;
 
 	public class RendererGridLayout extends AbstractGridLayout
@@ -84,6 +85,7 @@ package org.farmcode.display.layout.grid
 			if(_rendererFactory!=value){
 				_rendererFactory = value;
 				_protoRenderer = null;
+				_cellMeasCache = new Dictionary();
 				removeAllRenderers();
 				invalidateAll();
 				dispatchMeasurementChange();
@@ -95,21 +97,35 @@ package org.farmcode.display.layout.grid
 		}
 		public function set dataProvider(value:*):void{
 			if(_dataProvider!=value){
+				if(_dataProviderCollection2D){
+					_dataProviderCollection2D.collection2DChanged.removeHandler(onCollection2DChanged);
+				}else if(_dataProviderCollection){
+					_dataProviderCollection.collectionChanged.removeHandler(onCollectionChanged);
+				}
 				_dataProvider = value;
+				_cellMeasCache = new Dictionary();
+				_dataToRenderers = new Dictionary();
 				if(value){
-					_dataProviderCollection = (value as ICollection);
-					if(!_dataProviderCollection){
-						_dataProviderCollection = LinkedListConverter.fromNativeCollection(value);
+					_dataProviderCollection2D = (value as ICollection2D);
+					if(_dataProviderCollection2D){
+						_dataProviderCollection = _dataProviderCollection2D;
+						_dataProviderCollection2D.collection2DChanged.addHandler(onCollection2DChanged);
+					}else{
+						_dataProviderCollection = (value as ICollection);
+						if(!_dataProviderCollection){
+							_dataProviderCollection = LinkedListConverter.fromNativeCollection(value);
+						}
+						if(_dataProviderCollection){
+							_dataProviderCollection.collectionChanged.addHandler(onCollectionChanged);
+						}
 					}
 				}else{
 					_dataProviderCollection = null;
+					_dataProviderCollection2D = null;
 				}
 				_cellKeys = _cellLayouts = null;
 				
-				_dataChecked = false;
-				_dataLayouts = new Dictionary();
-				_dataMap = new Dictionary();
-				_dataIndices = new Dictionary();
+				clearDataChecks();
 				
 				invalidateAll();
 				dispatchMeasurementChange();
@@ -174,25 +190,36 @@ package org.farmcode.display.layout.grid
 			if(!_addRendererAct)_addRendererAct = new Act();
 			return _addRendererAct;
 		}
+		/**
+		 * handler(layout:RendererGridLayout, renderer:ILayoutSubject, data:*, dataField:String)
+		 */
+		public function get setRendererDataAct():IAct{
+			if(!_setRendererDataAct)_setRendererDataAct = new Act();
+			return _setRendererDataAct;
+		}
 		protected var _addRendererAct:Act;
 		protected var _removeRendererAct:Act;
 		protected var _fitRenderersAct:Act;
+		protected var _setRendererDataAct:Act;
 		
 		private var _renderEmptyCells:Boolean;
-		private var _dataField:String;
+		protected var _dataField:String;
 		private var _dataProvider:*;
 		private var _dataProviderCollection:ICollection;
-		private var _rendererFactory:IInstanceFactory;
-		private var _protoRenderer:ILayoutSubject;
+		private var _dataProviderCollection2D:ICollection2D;
+		protected var _rendererFactory:IInstanceFactory;
+		protected var _protoRenderer:ILayoutSubject;
+		protected var _cullRenderersFlag:ValidationFlag = new ValidationFlag(cullRenderers,true);
 		
 		private var _dataChecked:Boolean;
-		private var _dataCount:int;
+		protected var _dataCount:int;
 		private var _dataLayouts:Dictionary = new Dictionary();
-		private var _dataMap:Dictionary = new Dictionary();
+		protected var _dataMap:Dictionary = new Dictionary();
 		private var _dataIndices:Dictionary = new Dictionary();
+		protected var _dataToRenderers:Dictionary = new Dictionary();
 		private var _renderers:Array = [];
-		private var _positionCache:Array = [];
-		private var _coordCache:Array = [];
+		protected var _positionCache:Array = [];
+		protected var _coordCache:Array = [];
 		
 		private var _cellKeys:Dictionary;
 		private var _cellLayouts:Dictionary;
@@ -207,6 +234,16 @@ package org.farmcode.display.layout.grid
 		public function RendererGridLayout(){
 			super();
 		}
+		public function onCollection2DChanged(from:ICollection2D, fromX:Number, toX:Number, fromY:Number, toY:Number):void{
+			clearDataChecks();
+			//TODO: use parameters to limit invalidation (would require refactor of data checking logic)
+			invalidateAll();
+		}
+		public function onCollectionChanged(from:ICollection, fromX:Number, toX:Number):void{
+			clearDataChecks();
+			//TODO: use parameters to limit invalidation (would require refactor of data checking logic)
+			invalidateAll();
+		}
 		public function getDataLayout(data:*) : ILayoutInfo{
 			validate();
 			var index:int = _dataIndices[data];
@@ -217,7 +254,7 @@ package org.farmcode.display.layout.grid
 			return _dataCount;
 		}
 		public function getDataAt(index:int):*{
-			validate();
+			getChildKeys();
 			return _dataMap[index];
 		}
 		public function getDataPosition(index:int, fillRect:Rectangle=null):Rectangle{
@@ -247,9 +284,13 @@ package org.farmcode.display.layout.grid
 			}
 			return fillPoint;
 		}
+		override protected function invalidateAll() : void{
+			super.invalidateAll();
+		}
 		override protected function draw(): void{
 			if(_rendererFactory){
 				super.draw();
+				_cullRenderersFlag.validate();
 			}else{
 				_allInvalid = false; // to allow invalidateAll() call to go through again
 			}
@@ -276,6 +317,7 @@ package org.farmcode.display.layout.grid
 						++i;
 					}
 				}
+				iterator.release();
 				_dataCount = i;
 			}
 			var keyCount:int = (_fitRenderers>_dataCount?_fitRenderers:_dataCount);
@@ -292,6 +334,12 @@ package org.farmcode.display.layout.grid
 			}
 			return _cellKeys;
 		}
+		public function clearDataChecks():void{
+			_dataChecked = false;
+			_dataLayouts = new Dictionary();
+			_dataMap = new Dictionary();
+			_dataIndices = new Dictionary();
+		}
 		override protected function remeasureChild(key:*) : Boolean{
 			return (!_cellMeasCache[key]);
 		}
@@ -299,12 +347,25 @@ package org.farmcode.display.layout.grid
 			if(key>=_dataCount){
 				return null;
 			}
-			if(!_protoRenderer){
-				_protoRenderer = _rendererFactory.createInstance();
-			}
 			var data:* = _dataMap[key];
-			_protoRenderer[_dataField] = data;
-			return _protoRenderer.displayMeasurements.clone();
+			var renderer:ILayoutSubject = _dataToRenderers[data];
+			if(!renderer){
+				if(!_protoRenderer){
+					_protoRenderer = _rendererFactory.createInstance();
+				}
+				_protoRenderer[_dataField] = data;
+				if(_setRendererDataAct)_setRendererDataAct.perform(this,_protoRenderer,data,_dataField);
+				renderer = _protoRenderer;
+				
+				var ret:Rectangle = renderer.displayMeasurements.clone();
+				
+				_protoRenderer[_dataField] = null;
+				if(_setRendererDataAct)_setRendererDataAct.perform(this,_protoRenderer,null,_dataField);
+				
+				return ret;
+			}else{
+				return renderer.displayMeasurements;
+			}
 		}
 		override protected function getChildLayoutInfo(key:*) : ILayoutInfo{
 			return _dataLayouts[key] || _cellLayouts[key];
@@ -314,44 +375,74 @@ package org.farmcode.display.layout.grid
 			var maxLength:int = this[_lengthDimRef+"IndexMax"];
 			var minBreadth:int = this[_breadthDimRef+"Index"];
 			var maxBreadth:int = this[_breadthDimRef+"IndexMax"];
-			var renderIndex:int = ((maxBreadth-minBreadth-1)*(length-minLength))+(breadth-minBreadth);
-			var renderer:ILayoutViewBehaviour = _renderers[renderIndex];
+			var renderIndex:int = ((maxBreadth-minBreadth)*(length-minLength))+(breadth-minBreadth);
+			var renderer:ILayoutSubject = _renderers[renderIndex];
 			if(length>=minLength && length<maxLength && breadth>=minBreadth && breadth<maxBreadth && (key<_dataCount || _renderEmptyCells)){
 				var data:* = _dataMap[key];
 				if(!renderer){
 					renderer = _rendererFactory.createInstance();
 					_renderers[renderIndex] = renderer;
-					if(_addRendererAct)_addRendererAct.perform(this,renderer);
+					rendererAdded(renderer);
+					_cullRenderersFlag.invalidate();
 				}
-				renderer[_dataField] = data;
+				if(renderer[_dataField] != data){
+					renderer[_dataField] = data;
+					if(_setRendererDataAct)_setRendererDataAct.perform(this,renderer,data,_dataField);
+				}
+				_dataToRenderers[data] = renderer;
 				return renderer;
 			}else{
 				if(renderer){
 					delete _renderers[renderIndex];
-					if(_removeRendererAct)_removeRendererAct.perform(this,renderer);
+					rendererRemoved(renderer);
 				}
 				return null;
 			}
 		}
-		override protected function validateCellPos():void{
-			super.validateCellPos();
-			
+		protected function rendererAdded(renderer:ILayoutSubject):void{
+			renderer.measurementsChanged.addHandler(onRendMeasChanged);
+			if(_addRendererAct)_addRendererAct.perform(this,renderer);
+		}
+		protected function rendererRemoved(renderer:ILayoutSubject):void{
+			delete _dataToRenderers[renderer[_dataField]];
+			renderer.measurementsChanged.removeHandler(onRendMeasChanged);
+			if(_removeRendererAct)_removeRendererAct.perform(this,renderer);
+		}
+		protected function onRendMeasChanged(from:ILayoutSubject, oldX:Number, oldY:Number, oldWidth:Number, oldHeight:Number):void{
+			var data:* = from[_dataField];
+			delete _cellMeasCache[data];
+			invalidateAll();
+		}
+		protected function cullRenderers():void{
 			/*
 			Remove renderers which fall within the visible area but do not relate
 			to any data any more.
 			*/
-			var keyCount:int = _dataCount;
-			if(_renderEmptyCells && _fitRenderers>_dataCount){
-				keyCount = _fitRenderers;
-			}
-			if(keyCount<_renderers.length){
-				for(var i:int=keyCount; i<_renderers.length; i++){
-					var renderer:ILayoutViewBehaviour = _renderers[i];
-					if(renderer && _removeRendererAct){
-						_removeRendererAct.perform(this,renderer);
+			
+			var minLength:int = this[_lengthDimRef+"Index"];
+			var maxLength:int = this[_lengthDimRef+"IndexMax"];
+			var minBreadth:int = this[_breadthDimRef+"Index"];
+			var maxBreadth:int = this[_breadthDimRef+"IndexMax"];
+			var breadthRange:int = (maxBreadth-minBreadth);
+			
+			var totRend:int = _renderers.length;
+			var remove:Boolean;
+			for(var i:int=0; i<totRend; ++i){
+				var renderer:ILayoutSubject = _renderers[i];
+				if(renderer){
+					remove = false;
+					var breadth:int = i%breadthRange;
+					var length:int = ((i-breadth)/breadthRange)+minLength;
+					breadth += minBreadth;
+					if(length<minLength || 
+						length>maxLength ||
+						(!_renderEmptyCells && _cellPosCache[length][breadth]==null)){
+						
+						delete _renderers[i];
+						renderer[_dataField] = null;
+						rendererRemoved(renderer);
 					}
 				}
-				_renderers.splice(keyCount,_renderers.length-keyCount);
 			}
 		}
 		protected function calcRange(index:int, indexMax:int):int{
@@ -390,6 +481,7 @@ package org.farmcode.display.layout.grid
 				_fitRenderers = (breadthRange)*(lengthRange);
 				if(oldTotal!=_fitRenderers && _fitRenderersAct){
 					_fitRenderersAct.perform(this,_fitRenderers);
+					_cullRenderersFlag.invalidate();
 				}
 				if(oldTotal!=_fitRenderers && _renderEmptyCells && _fitRenderers>_dataCount){
 					validateCellMeas();
@@ -406,7 +498,7 @@ package org.farmcode.display.layout.grid
 					for(var length:int=0; length<=oldLengthRange; length++){
 						for(var breadth:int=0; breadth<=oldBreadthRange; breadth++){
 							var oldRenderIndex:int = ((oldBreadthRange+1)*length)+breadth;
-							var renderer:ILayoutViewBehaviour = _renderers[oldRenderIndex];
+							var renderer:ILayoutSubject = _renderers[oldRenderIndex];
 							if(renderer){
 								var newLength:int = length;
 								var newBreadth:int = breadth;
@@ -431,9 +523,10 @@ package org.farmcode.display.layout.grid
 								// test whether the renderer is still needed
 								renderIndex = ((breadthRange+1)*newLength)+newBreadth;
 								if(renderIndex<=_fitRenderers && !newRenderers[renderIndex]){
+									delete _dataToRenderers[renderer[_dataField]];
 									newRenderers[renderIndex] = renderer;
-								}else if(_removeRendererAct){
-									_removeRendererAct.perform(this,renderer);
+								}else{
+									rendererRemoved(renderer);
 								}
 							}
 						}
@@ -506,10 +599,13 @@ package org.farmcode.display.layout.grid
 				}
 				if(_protoRenderer){
 					var defaultDim:Number = _protoRenderer.displayMeasurements[realDimDef];
-					var defMax:int = int((realDim-forePadding+gap)/(defaultDim+gap))+int(1);
-					if(max<defMax){
-						max = defMax;
-						pixScrollMax += ((max-measurements.length)*(defaultDim+gap))-gap;
+					var leftOver:Number = (realDim-forePadding+gap-pixScrollMax);
+					if(leftOver>0){
+						var defMax:int = max+int(leftOver/(defaultDim+gap));
+						if(max<defMax){
+							max = defMax;
+							pixScrollMax += ((max-measurements.length)*(defaultDim+gap))-gap;
+						}
 					}
 				}
 				newIndexMax = max;
@@ -529,10 +625,8 @@ package org.farmcode.display.layout.grid
 			}
 		}
 		protected function removeAllRenderers():void{
-			if(_removeRendererAct){
-				for each(var renderer:ILayoutSubject in _renderers){
-					_removeRendererAct.perform(this,renderer);
-				}
+			for each(var renderer:ILayoutSubject in _renderers){
+				rendererRemoved(renderer);
 			}
 			_renderers = [];
 		}

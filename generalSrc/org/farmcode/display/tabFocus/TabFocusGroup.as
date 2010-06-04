@@ -1,17 +1,15 @@
 package org.farmcode.display.tabFocus
 {
 	import flash.display.InteractiveObject;
-	import flash.events.EventDispatcher;
 	import flash.events.FocusEvent;
 	
+	import org.farmcode.acting.acts.Act;
 	import org.farmcode.core.DelayedCall;
-	import org.farmcode.display.ValidationFlag;
+	import org.farmcode.display.validation.ValidationFlag;
 
-	[Event(name="focusIn",type="flash.events.FocusEvent")]
-	[Event(name="focusOut",type="flash.events.FocusEvent")]
-	public class TabFocusGroup extends EventDispatcher implements ITabFocusable
+	public class TabFocusGroup extends AbstractTabFocusable implements ITabFocusable
 	{
-		public function set tabIndex(value:int):void{
+		override public function set tabIndex(value:int):void{
 			if(_tabIndex != value){
 				_tabIndex = value;
 				
@@ -23,7 +21,7 @@ package org.farmcode.display.tabFocus
 				}
 			}
 		}
-		public function set tabEnabled(value:Boolean):void{
+		override public function set tabEnabled(value:Boolean):void{
 			if(_tabEnabled!=value){
 				_tabEnabled = value;
 				
@@ -35,19 +33,22 @@ package org.farmcode.display.tabFocus
 				}
 			}
 		}
-		public function get tabIndicesRequired():uint{
+		override public function get tabIndicesRequired():uint{
 			_tabCountFlag.validate();
 			return _tabCount;
 		}
-		public function get focused():Boolean{
+		override public function get focused():Boolean{
 			return _focused;
 		}
-		public function set focused(value:Boolean):void{
+		override public function set focused(value:Boolean):void{
 			if(_focused!=value){
 				_focused = value;
 				_tabIndicesFlag.validate(true);
-				if(value)dispatchEventIf(FocusEvent.FOCUS_IN,FocusEvent);
-				else dispatchEventIf(FocusEvent.FOCUS_OUT,FocusEvent);
+				if(value){
+					if(_focusIn)_focusIn.perform(this);
+				}else if(_focusOut){
+					_focusOut.perform(this);
+				}
 			}
 		}
 		public function get items():Array{
@@ -161,8 +162,10 @@ package org.farmcode.display.tabFocus
 		
 		
 		public function _addTabFocusable(tabFocusable:ITabFocusable, index:uint):void{
-			tabFocusable.addEventListener(FocusEvent.FOCUS_IN, onFocusIn);
-			tabFocusable.addEventListener(FocusEvent.FOCUS_OUT, onFocusOut);
+			//tabFocusable.addEventListener(FocusEvent.FOCUS_IN, onFocusIn);
+			//tabFocusable.addEventListener(FocusEvent.FOCUS_OUT, onFocusOut);
+			tabFocusable.focusIn.addHandler(onFocusIn);
+			tabFocusable.focusOut.addHandler(onFocusOut);
 			_tabFocusableElements.splice(index,0,tabFocusable);
 			_tabIndicesFlag.invalidate();
 			_tabCountFlag.invalidate();
@@ -178,8 +181,10 @@ package org.farmcode.display.tabFocus
 		public function _removeItem(index:uint):void{
 			_rawElements.splice(index,1);
 			var tabFocusable:ITabFocusable = _tabFocusableElements.splice(index,1)[0];
-			tabFocusable.removeEventListener(FocusEvent.FOCUS_IN, onFocusIn);
-			tabFocusable.removeEventListener(FocusEvent.FOCUS_OUT, onFocusOut);
+			//tabFocusable.removeEventListener(FocusEvent.FOCUS_IN, onFocusIn);
+			//tabFocusable.removeEventListener(FocusEvent.FOCUS_OUT, onFocusOut);
+			tabFocusable.focusIn.removeHandler(onFocusIn);
+			tabFocusable.focusOut.removeHandler(onFocusOut);
 			clearTabFocusable(tabFocusable);
 			_tabIndicesFlag.invalidate();
 			_tabCountFlag.invalidate();
@@ -190,15 +195,15 @@ package org.farmcode.display.tabFocus
 				_tabIndicesFlag.validate();
 			}
 		}
-		protected function onFocusIn(e:FocusEvent):void{
+		protected function onFocusIn(e:Event, from:ITabFocusable):void{
 			if(_doFocusOutCall){
 				_doFocusOutCall.clear();
 				_doFocusOutCall = null;
 			}
-			_focusedItem = (e.target as ITabFocusable);
+			_focusedItem = from;
 			focused = true;
 		}
-		protected function onFocusOut(e:FocusEvent):void{
+		protected function onFocusOut(e:Event, from:ITabFocusable):void{
 			if(focused){
 				_doFocusOutCall = new DelayedCall(commitFocusOut,1,false);
 				_doFocusOutCall.begin();
@@ -241,11 +246,6 @@ package org.farmcode.display.tabFocus
 			if(tabFocusable.focused)tabFocusable.focused = false;
 			tabFocusable.tabIndex = -1;
 			tabFocusable.tabEnabled = false;
-		}
-		protected function dispatchEventIf(eventType:String, eventClass:Class):void{
-			if(hasEventListener(eventType)){
-				dispatchEvent(new eventClass(eventType));
-			}
 		}
 	}
 }

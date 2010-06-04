@@ -34,9 +34,7 @@ package org.farmcode.instanceFactory
 			return _instanceClass;
 		}
 		public function set instanceClass(value:Class):void{
-			if(_instanceClass!=value){
-				_instanceClass = value;
-			}
+			_instanceClass = value;
 		}
 		
 		override public function createInstance():*{
@@ -44,14 +42,14 @@ package org.farmcode.instanceFactory
 			for each(var props:Dictionary in _propertyDicts){
 				fillObject(ret, props);
 			}
-			_itemCreatedAct.perform(this,ret);
+			if(_itemCreatedAct)_itemCreatedAct.perform(this,ret);
 			return ret;
 		}
 		override public function initialiseInstance(object:*):void{
 			for each(var props:Dictionary in _propertyDicts){
 				fillObject(object, props);
 			}
-			_itemCreatedAct.perform(this,object);
+			if(_itemCreatedAct)_itemCreatedAct.perform(this,object);
 		}
 		override public function matchesType(object:*):Boolean{
 			return (object is _instanceClass);

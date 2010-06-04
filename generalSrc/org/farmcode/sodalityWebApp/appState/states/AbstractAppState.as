@@ -2,7 +2,6 @@ package org.farmcode.sodalityWebApp.appState.states
 {
 	import flash.utils.Dictionary;
 	
-	import org.farmcode.sodalityWebApp.appState.AppStateConstants;
 	import org.farmcode.sodalityWebApp.appState.AppStateMatch;
 
 	public class AbstractAppState implements IAppState
@@ -27,12 +26,11 @@ package org.farmcode.sodalityWebApp.appState.states
 			return null;
 		}
 		public function reconstitute(match:AppStateMatch):String{
-			return match.parameters?match.parameters[AppStateConstants.STAR_STRING]:null;
+			return match.parameters?match.parameters["*"]:null;
 		}
 		protected function getBaseParams(path:String):Dictionary{
 			var params:Dictionary = new Dictionary();
-			params[AppStateConstants.STAR_STRING] = path;
-			params[AppStateConstants.ALL_STRING] = path;
+			params["*"] = path;
 			return params;
 		}
 	}

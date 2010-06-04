@@ -1,7 +1,7 @@
 package org.farmcode.media
 {
 	import org.farmcode.acting.actTypes.IAct;
-	import org.farmcode.display.behaviour.ILayoutViewBehaviour;
+	import org.farmcode.display.core.ILayoutView;
 
 	public interface IMediaSource
 	{
@@ -24,12 +24,7 @@ package org.farmcode.media
 		 */
 		function get loadCompleted():IAct;
 		
-		/**
-		 * handler(from:IMediaSource)
-		 */
-		function get loadFailed():IAct;
-		
-		function takeMediaDisplay():ILayoutViewBehaviour;
-		function returnMediaDisplay(value:ILayoutViewBehaviour):void;
+		function takeMediaDisplay():ILayoutView;
+		function returnMediaDisplay(value:ILayoutView):void;
 	}
 }

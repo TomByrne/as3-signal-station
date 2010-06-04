@@ -4,19 +4,26 @@ package org.farmcode.display.utils
 	import flash.events.Event;
 	import flash.events.FocusEvent;
 	import flash.events.KeyboardEvent;
-	import flash.events.MouseEvent;
 	import flash.text.TextField;
 	import flash.ui.Keyboard;
 	
-	import org.farmcode.display.behaviour.ViewBehaviour;
+	import org.farmcode.display.DisplayNamespace;
+	import org.farmcode.display.actInfo.IMouseActInfo;
+	import org.farmcode.display.assets.IAsset;
+	import org.farmcode.display.assets.IDisplayAsset;
+	import org.farmcode.display.assets.IInteractiveObjectAsset;
+	import org.farmcode.display.assets.ITextFieldAsset;
+	import org.farmcode.display.controls.TextInput;
+	import org.farmcode.display.core.View;
+	
+	use namespace DisplayNamespace;
 	
 	/**
 	 * Adds 'Insert' behaviour to TextInputs (i.e. where there is always one
 	 * character selected when typing).
 	 */
-	public class TextFieldSelectionBehaviour extends ViewBehaviour
+	public class TextFieldSelectionBehaviour extends View
 	{
-		
 		public function get skipCharSelection():String{
 			return _skipCharSelection;
 		}
@@ -52,23 +59,24 @@ package org.farmcode.display.utils
 		protected var _replaceMode:Boolean = false;
 		protected var _allowMultiCharSelect:Boolean = true;
 		protected var _skipCharSelection:String;
-		protected var _textField:TextField;
+		protected var _textField:ITextFieldAsset;
 		protected var _lastBegin:int;
 		
-		public function TextFieldSelectionBehaviour(asset:DisplayObject=null){
+		public function TextFieldSelectionBehaviour(asset:IDisplayAsset=null){
 			super(asset);
 		}
 		override protected function bindToAsset() : void{
-			_textField = containerAsset.getChildByName("textField") as TextField;
-			_textField.addEventListener(MouseEvent.CLICK, onClick);
-			_textField.addEventListener(KeyboardEvent.KEY_UP, onKeyUp);
-			_textField.addEventListener(FocusEvent.FOCUS_IN, onFocusIn);
+			_textField = _containerAsset.takeAssetByName(TextInput.TEXT_FIELD_CHILD, ITextFieldAsset);
+			_textField.click.addHandler(onClick);
+			_textField.keyUp.addHandler(onKeyUp);
+			_textField.focusIn.addHandler(onFocusIn);
 			assessSelection();
 		}
 		override protected function unbindFromAsset() : void{
-			_textField.removeEventListener(MouseEvent.CLICK, onClick);
-			_textField.removeEventListener(KeyboardEvent.KEY_UP, onKeyUp);
-			_textField.removeEventListener(FocusEvent.FOCUS_IN, onFocusIn);
+			_textField.click.removeHandler(onClick);
+			_textField.keyUp.removeHandler(onKeyUp);
+			_textField.focusIn.removeHandler(onFocusIn);
+			_containerAsset.returnAsset(_textField);
 			_textField = null;
 		}
 		
@@ -137,13 +145,13 @@ package org.farmcode.display.utils
 			}
 		}
 		
-		protected function onFocusIn(e:Event):void{
+		protected function onFocusIn(e:Event, from:IInteractiveObjectAsset):void{
 			assessSelection();
 		}
-		protected function onClick(e:Event):void{
+		protected function onClick(from:IInteractiveObjectAsset, info:IMouseActInfo):void{
 			assessSelection();
 		}
-		protected function onKeyUp(e:KeyboardEvent):void{
+		protected function onKeyUp(e:KeyboardEvent, from:IInteractiveObjectAsset):void{
 			if(_replaceMode &&
 				(e.keyCode==Keyboard.LEFT || e.keyCode==Keyboard.BACKSPACE) &&
 				_textField.selectionEndIndex<=_textField.selectionBeginIndex+1){

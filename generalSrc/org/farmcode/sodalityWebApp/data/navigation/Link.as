@@ -15,11 +15,12 @@ package org.farmcode.sodalityWebApp.data.navigation
 		
 		private var _triggerAction:IAdvice;
 		
-		public function Link() {
-			super();
+		public function Link(stringValue:String=null, advice:IAdvice=null) {
+			super(stringValue);
+			this.advice = advice;
 		}
 		
-		override public function triggerAction():IAdvice{
+		override protected function getAdvice():IAdvice{
 			return _triggerAction;
 		}				
 	}

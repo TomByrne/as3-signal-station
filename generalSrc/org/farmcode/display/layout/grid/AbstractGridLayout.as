@@ -8,7 +8,7 @@ package org.farmcode.display.layout.grid
 	
 	import org.farmcode.acting.actTypes.IAct;
 	import org.farmcode.acting.acts.Act;
-	import org.farmcode.display.ValidationFlag;
+	import org.farmcode.display.validation.ValidationFlag;
 	import org.farmcode.display.constants.Direction;
 	import org.farmcode.display.layout.AbstractLayout;
 	import org.farmcode.display.layout.ILayoutSubject;
@@ -21,6 +21,7 @@ package org.farmcode.display.layout.grid
 	 * the direction along the stacking of the list (i.e. height for vertical lists, width for
 	 * horizontal lists).
 	 */
+	// TODO: All prop caching should be stored within 'Axis' objects, which can be swapped between 'Breadth' and 'Length'
 	public class AbstractGridLayout extends AbstractLayout implements IScrollable
 	{
 		public function get marginTop():Number{
@@ -676,7 +677,7 @@ package org.farmcode.display.layout.grid
 				
 				if(_hasCellLengths){
 					var specLength:Number = _cellLengths[i%_cellLengthsCount];
-					if(!isNaN(specLength) && subLengthDim<specLength){
+					if(!isNaN(specLength)){
 						_maxCellLengths[i] = specLength;
 					}
 				}
@@ -693,7 +694,7 @@ package org.farmcode.display.layout.grid
 				
 				if(_hasCellBreadths){
 					var specBreadth:Number = _cellBreadths[i%_cellBreadthsCount];
-					if(!isNaN(specBreadth) && subBreadthDim<specBreadth){
+					if(!isNaN(specBreadth)){
 						_maxCellBreadths[i] = specBreadth;
 					}
 				}

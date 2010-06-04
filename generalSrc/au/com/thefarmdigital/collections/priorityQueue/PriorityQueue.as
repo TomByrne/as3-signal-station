@@ -1,23 +1,10 @@
-// TODO: confirm that this class is useful, potentially merge it's functionality into Queue class
 package au.com.thefarmdigital.collections.priorityQueue
 {
-	import org.farmcode.acting.actTypes.IAct;
-	import org.farmcode.acting.acts.Act;
 	import org.farmcode.collections.ICollection;
 	import org.farmcode.collections.IIterator;
 	
 	public class PriorityQueue implements ICollection
 	{
-		
-		/**
-		 * @inheritDoc
-		 */
-		public function get collectionChanged():IAct{
-			if(!_collectionChanged)_collectionChanged = new Act();
-			return _collectionChanged;
-		}
-		
-		protected var _collectionChanged:Act;
 		protected var _ascending: Boolean;
 		protected var bundles: Array;
 		protected var orderValid: Boolean;
@@ -55,7 +42,6 @@ package au.com.thefarmdigital.collections.priorityQueue
 		{
 			this.bundles.push(new ItemBundle(item, priority));
 			this.invalidateOrder();
-			if(_collectionChanged)_collectionChanged.perform(this,0,length);
 		}
 		
 		public function get(priorityIndex: int): *
@@ -78,7 +64,6 @@ package au.com.thefarmdigital.collections.priorityQueue
 			{
 				var bundle: ItemBundle = this.bundles.shift();
 				item = bundle.item;
-				if(_collectionChanged)_collectionChanged.perform(this,bundles.length,bundles.length);
 			}
 			return item;
 		}
@@ -91,7 +76,6 @@ package au.com.thefarmdigital.collections.priorityQueue
 			{
 				this.bundles.splice(index, 1);
 				present = true;
-				if(_collectionChanged)_collectionChanged.perform(this,index,index);
 			}
 			else
 			{

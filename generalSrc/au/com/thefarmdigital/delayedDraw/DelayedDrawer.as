@@ -34,6 +34,11 @@ package au.com.thefarmdigital.delayedDraw
 		 * @private
 		 */
 		protected static var drawingNow:Dictionary = new Dictionary();
+		/**
+		 * @private
+		 * This is a temporary measure until a frame-based validation flag can be built.
+		 */
+		protected static var invalidAfterDraw:Dictionary = new Dictionary();
 		
 		/**
 		 * @private
@@ -56,19 +61,24 @@ package au.com.thefarmdigital.delayedDraw
 		 * This adds/removes views from either the currently executing draw list or the main invalid list.
 		 */
 		public static function changeValidity(drawable:IDrawable, value:Boolean):void{
+			var invalid:Dictionary = invalid;
 			if(executingDraw){
 				if(value){
 					delete executingInvalid[drawable];
 					return;
-				}else if(drawable.readyForDraw && isDescendant(executingDrawRoots,drawable)){
+				}else if(drawable.readyForDraw && isDescendant(executingDrawRoots,drawable) && !executingInvalid[drawable]){
 					executingInvalid[drawable] = true;
 					invalid[drawable] = true;
 					return;
 				}
 			}
 			if(!value){
-				invalid[drawable] = true;
-				invalidateCall.begin();
+				if(drawingNow[drawable]==true){
+					invalidAfterDraw[drawable] = true;
+				}else{
+					invalid[drawable] = true;
+					invalidateCall.begin();
+				}
 			}else{
 				delete invalid[drawable];
 			}
@@ -88,6 +98,7 @@ package au.com.thefarmdigital.delayedDraw
 		 * still be tracked).
 		 */
 		public static function doDraw(root:IDrawable=null):void{
+			var invalid:Dictionary = invalid;
 			if(root && (checkValidity(root) || drawingNow[root])){
 				return;
 			}
@@ -141,6 +152,10 @@ package au.com.thefarmdigital.delayedDraw
 						delete drawingNow[drawable];
 					}
 				}
+				for(i in invalidAfterDraw){
+					invalid[i] = true;
+				}
+				invalidAfterDraw = new Dictionary();
 				if(!invalidateCall.running){
 					for(i in invalid){
 						invalidateCall.begin();

@@ -1,6 +1,6 @@
 package org.farmcode.sodalityLibrary.display.visualSockets.plugs.controls
 {
-	import org.farmcode.display.behaviour.controls.TextLabel;
+	import org.farmcode.display.controls.TextLabel;
 	import org.farmcode.sodality.advice.IAdvice;
 	import org.farmcode.sodalityLibrary.display.visualSockets.plugs.AbstractPlugDisplayProxy;
 	

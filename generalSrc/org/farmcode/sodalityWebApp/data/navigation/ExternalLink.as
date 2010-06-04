@@ -1,7 +1,6 @@
 package org.farmcode.sodalityWebApp.data.navigation
 {
 	import org.farmcode.data.dataTypes.IStringProvider;
-	import org.farmcode.data.dataTypes.ITriggerableAction;
 	import org.farmcode.sodality.advice.IAdvice;
 	import org.farmcode.sodalityLibrary.external.browser.advice.NavigateToURLAdvice;
 
@@ -20,7 +19,7 @@ package org.farmcode.sodalityWebApp.data.navigation
 			_triggerAction.targetWindow = value;
 		}
 		
-		override public function triggerAction():IAdvice{
+		override protected function getAdvice():IAdvice{
 			return _triggerAction;
 		}		
 		

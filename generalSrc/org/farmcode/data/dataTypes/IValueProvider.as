@@ -7,7 +7,7 @@ package org.farmcode.data.dataTypes
 		function get value():*;
 		
 		/**
-		 * handler(from:IStringProvider)
+		 * handler(from:IValueProvider)
 		 */
 		function get valueChanged():IAct;
 	}

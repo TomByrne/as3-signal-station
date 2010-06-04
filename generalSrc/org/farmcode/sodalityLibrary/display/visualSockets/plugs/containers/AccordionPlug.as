@@ -2,7 +2,7 @@ package org.farmcode.sodalityLibrary.display.visualSockets.plugs.containers
 {
 	import flash.display.DisplayObject;
 	
-	import org.farmcode.display.behaviour.containers.accordion.AccordionView;
+	import org.farmcode.display.containers.accordion.AccordionView2;
 	import org.farmcode.instanceFactory.IInstanceFactory;
 	import org.farmcode.sodality.advice.IAdvice;
 	import org.farmcode.sodality.advisors.DynamicAdvisor;
@@ -45,13 +45,13 @@ package org.farmcode.sodalityLibrary.display.visualSockets.plugs.containers
 			accordionView.gap = value
 		}
 		
-		private var accordionView:AccordionView;
+		private var accordionView:AccordionView2;
 		private var _rendererSocketProperty:String = "childView";
 		private var _rendererLabelProperty:String = "title";
 		private var _dynamicAdvisor:DynamicAdvisor;
 		
 		public function AccordionPlug(){
-			accordionView = new AccordionView();
+			accordionView = new AccordionView2();
 			super(accordionView);
 			_dynamicAdvisor = new DynamicAdvisor();
 		}

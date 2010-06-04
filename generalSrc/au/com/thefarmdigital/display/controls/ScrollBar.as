@@ -428,7 +428,7 @@ package au.com.thefarmdigital.display.controls
 			}
 			stage.removeEventListener(MouseEvent.MOUSE_UP,endScroll);
 		}
-		protected function onMouseWheel(from:IScrollable, delta:int):void{
+		protected function onMouseWheel(e:MouseEvent, from:IScrollable):void{
 			if(_scrollMetrics.pageSize>_scrollMetrics.maximum-_scrollMetrics.minimum){
 				_scrollMetrics.value = 0;
 			}else{

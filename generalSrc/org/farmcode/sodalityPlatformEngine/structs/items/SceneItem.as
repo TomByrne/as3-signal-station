@@ -1,5 +1,8 @@
 package org.farmcode.sodalityPlatformEngine.structs.items
 {
+	import Box2D.Common.Math.b2Vec2;
+	import Box2D.Dynamics.b2World;
+	
 	import au.com.thefarmdigital.parallax.IParallaxDisplay;
 	import au.com.thefarmdigital.parallax.ParallaxDisplay;
 	import au.com.thefarmdigital.parallax.Point3D;
@@ -16,10 +19,12 @@ package org.farmcode.sodalityPlatformEngine.structs.items
 	import org.farmcode.sodality.advisors.DynamicAdvisor;
 	import org.farmcode.sodality.advisors.INonVisualAdvisor;
 	import org.farmcode.sodalityPlatformEngine.parallax.IParallaxItem;
+	import org.farmcode.sodalityPlatformEngine.physics.IPhysicsItem;
+	import org.farmcode.sodalityPlatformEngine.physics.binders.IPhysicsBinder;
 	import org.farmcode.sodalityPlatformEngine.scene.IScene;
 	import org.farmcode.sodalityPlatformEngine.scene.ISceneItem;
 
-	public class SceneItem extends EventDispatcher implements ISceneItem, IParallaxItem, INonVisualAdvisor
+	public class SceneItem extends EventDispatcher implements ISceneItem, IParallaxItem, IPhysicsItem, INonVisualAdvisor
 	{
 		public function get parallaxDisplay():IParallaxDisplay{
 			return _parallaxDisplay;
@@ -46,6 +51,7 @@ package org.farmcode.sodalityPlatformEngine.structs.items
 					shiftX -= _parallaxDisplay.position.x;
 					shiftY -= _parallaxDisplay.position.y;
 				}
+				shiftPhysics(new Point(shiftX,shiftY));
 			}
 			_parallaxDisplay.position = value;
 		}
@@ -69,6 +75,9 @@ package org.farmcode.sodalityPlatformEngine.structs.items
 		}
 		public function set rotation(value:Number):void{
 			_parallaxDisplay.display.rotation = value;
+		}
+		public function get addToPhysics():Boolean{
+			return bindings.length>0;
 		}
 		public function get scene():IScene{
 			return _scene;
@@ -134,6 +143,8 @@ package org.farmcode.sodalityPlatformEngine.structs.items
 		}
 		
 		protected var _id:String;
+		protected var currentWorld:b2World;
+		public var bindings:Array = [];
 		
 		protected var _parallaxDisplay:ParallaxDisplay;
 		protected var _parallaxScale:Number;
@@ -156,7 +167,59 @@ package org.farmcode.sodalityPlatformEngine.structs.items
 		protected function onDisplayChanged(e:Event):void{
 			assessAdvisor();
 		}
+		public function createPhysics(world:b2World, scale:Number):void{
+			currentWorld = world;
+			_scale = scale;
+			for(var i:int=0; i<bindings.length; ++i){
+				var binder:IPhysicsBinder = bindings[i];
+				binder.create(world, scale);
+			}
+		}
+		public function stepPhysics():void{
+			if(currentWorld){
+				for(var i:int=0; i<bindings.length; ++i){
+					var binder:IPhysicsBinder = bindings[i];
+					binder.step(currentWorld);
+				}
+			}
+		}
+		public function destroyPhysics(world:b2World):void{
+			currentWorld = null;
+			for(var i:int=0; i<bindings.length; ++i){
+				var binder:IPhysicsBinder = bindings[i];
+				binder.destroy(world);
+			}
+			bindings = [];
+		}
+		protected function shiftPhysics(shift:Point):void{
+			for each(var binding:IPhysicsBinder in bindings){
+				binding.shift(shift.x*_scale,shift.y*_scale);
+			}
+		}
+		public function applyImpulse(impulse:Point):void{
+			var _impulse:b2Vec2 = new b2Vec2(impulse.x,impulse.y);
+			for each(var binding:IPhysicsBinder in bindings){
+				binding.body.ApplyImpulse(_impulse,binding.body.GetWorldCenter());
+			}
+			if(!bindings || !bindings.length){
+				bindings = bindings;
+			}
+		}
 		
+		protected function addBinding(binding:IPhysicsBinder):void{
+			var index:Number = bindings.indexOf(binding);
+			if(index==-1){
+				bindings.push(binding);
+				if(currentWorld)binding.create(currentWorld, _scale);
+			}
+		}
+		protected function removeBinding(binding:IPhysicsBinder):void{
+			var index:Number = bindings.indexOf(binding);
+			if(index!=-1){
+				if(currentWorld)binding.destroy(currentWorld);
+				bindings.splice(index,1);
+			}
+		}
 		protected function assessAdvisor():void{
 			if (this.isAdvisor){
 				if(!_dynamicAdvisor){

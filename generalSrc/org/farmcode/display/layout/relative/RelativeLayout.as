@@ -4,7 +4,9 @@ package org.farmcode.display.layout.relative
 	import flash.geom.Point;
 	import flash.geom.Rectangle;
 	
-	import org.farmcode.display.behaviour.IViewBehaviour;
+	import org.farmcode.display.assets.IDisplayAsset;
+	import org.farmcode.display.assets.IStageAsset;
+	import org.farmcode.display.core.IView;
 	import org.farmcode.display.layout.ILayoutSubject;
 	import org.farmcode.display.layout.stage.StageFillLayout;
 	
@@ -12,14 +14,14 @@ package org.farmcode.display.layout.relative
 	{
 		private static const ORIGIN:Point = new Point();
 		
-		public function RelativeLayout(stage:Stage=null){
+		public function RelativeLayout(stage:IStageAsset=null){
 			super(stage);
 		}
 		override protected function drawSubject(subject:ILayoutSubject) : void{
 			var subMeas:Rectangle = subject.displayMeasurements;
 			var layoutInfo:IRelativeLayoutInfo = (subject.layoutInfo as IRelativeLayoutInfo);
 			if(layoutInfo){
-				var castView:IViewBehaviour = (subject as IViewBehaviour);
+				var castView:IView = (subject as IView);
 				if(!stage && castView && castView.asset.stage){
 					stage = castView.asset.stage;
 				}

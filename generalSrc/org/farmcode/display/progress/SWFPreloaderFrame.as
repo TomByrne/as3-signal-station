@@ -13,9 +13,9 @@ package org.farmcode.display.progress
 	import flash.utils.getTimer;
 	
 	import org.farmcode.core.IApplication;
-	import org.farmcode.display.ISelfAnimatingView;
-	import org.farmcode.display.behaviour.ILayoutViewBehaviour;
-	import org.farmcode.display.behaviour.IViewBehaviour;
+	import org.farmcode.display.core.IOutroView;
+	import org.farmcode.display.core.ILayoutView;
+	import org.farmcode.display.core.IView;
 	
 	public class SWFPreloaderFrame extends Sprite
 	{
@@ -27,25 +27,23 @@ package org.farmcode.display.progress
 		}
 		public function set progressDisplay(value:IProgressDisplay):void{
 			if(_progressDisplay!=value){
-				if(_progressDisplayView && _progressDisplayView.asset && _progressDisplayView.asset.stage){
-					removeChild(_progressDisplayView.asset);
+				if(_progressDisplay){
+					removeChild(_progressDisplay.display);
 				}
 				_progressDisplay = value;
 				if(_progressDisplay){
-					_progressDisplayView = (value as ILayoutViewBehaviour);
-					if(_progressDisplayView && _progressDisplayView.asset){
-						addChild(_progressDisplayView.asset);
+					if(_progressDisplay.layoutView){
+						addChild(_progressDisplay.display);
 						applySizeToProgressDisplay();
 					}
-					_progressDisplayAnim = (value as ISelfAnimatingView);
+					_progressDisplayAnim = (_progressDisplay.layoutView as IOutroView);
 				}
 			}
 		}
 		public var mainClasspath:String;
 		
 		private var _progressDisplay:IProgressDisplay;
-		private var _progressDisplayView:ILayoutViewBehaviour;
-		private var _progressDisplayAnim:ISelfAnimatingView;
+		private var _progressDisplayAnim:IOutroView;
 		private var _totalFound:Boolean = false;
 		private var _measureFactor:Number;
 		private var _application:IApplication;
@@ -126,11 +124,11 @@ package org.farmcode.display.progress
 			_progressDisplay.measurable = false;
 		}
 		private function onStageResize(event: Event): void{
-			if(_progressDisplayView)applySizeToProgressDisplay();
+			if(_progressDisplay.layoutView)applySizeToProgressDisplay();
 			if(_application)applySizeToApplication();
 		}
 		private function applySizeToProgressDisplay(): void{
-			_progressDisplayView.setDisplayPosition(0,0,stage.stageWidth,stage.stageHeight);
+			_progressDisplay.layoutView.setDisplayPosition(0,0,stage.stageWidth,stage.stageHeight);
 		}
 		private function applySizeToApplication(): void{
 			_application.setDisplayPosition(0,0,stage.stageWidth,stage.stageHeight);
@@ -159,9 +157,7 @@ package org.farmcode.display.progress
 			addAppToStage();
 		}
 		protected function addAppToStage():void{
-			if(_progressDisplayView && _progressDisplayView.asset){
-				removeChild(_progressDisplayView.asset);
-			}
+			removeChild(_progressDisplay.display);
 			_application.container = stage;
 			applySizeToApplication();
 		}

@@ -1,5 +1,6 @@
 package org.farmcode.sodalityLibrary.display.visualSockets.plugs
 {
+	
 	import flash.display.DisplayObject;
 	import flash.geom.Rectangle;
 	
@@ -7,7 +8,7 @@ package org.farmcode.sodalityLibrary.display.visualSockets.plugs
 	import org.farmcode.acting.actTypes.IUniversalAct;
 	import org.farmcode.acting.acts.Act;
 	import org.farmcode.acting.acts.UniversalAct;
-	import org.farmcode.display.behaviour.ViewBehaviour;
+	import org.farmcode.display.core.View;
 	import org.farmcode.display.layout.ILayoutSubject;
 	import org.farmcode.display.layout.core.ILayoutInfo;
 	import org.farmcode.sodality.advice.IAdvice;
@@ -61,11 +62,11 @@ package org.farmcode.sodalityLibrary.display.visualSockets.plugs
 		
 		protected var _dataProvider:*;
 		protected var _displaySocket:IDisplaySocket;
-		protected var _target:ViewBehaviour;
+		protected var _target:View;
 		protected var _asset:DisplayObject;
 		protected var _layoutTarget:ILayoutSubject;
 		
-		public function AbstractPlugDisplayProxy(target:ViewBehaviour=null){
+		public function AbstractPlugDisplayProxy(target:View=null){
 			setTarget(target);
 		}
 		public function setDataProvider(value:*, cause:IAdvice=null):void{
@@ -78,7 +79,7 @@ package org.farmcode.sodalityLibrary.display.visualSockets.plugs
 		public function getDataProvider():*{
 			return _dataProvider;
 		}
-		protected function setTarget(value:ViewBehaviour):void{
+		protected function setTarget(value:View):void{
 			if(_target!=value){
 				if(_target){
 					if(_asset)_target.asset = null;

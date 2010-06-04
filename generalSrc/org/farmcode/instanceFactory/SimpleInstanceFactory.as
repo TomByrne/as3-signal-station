@@ -21,12 +21,12 @@ package org.farmcode.instanceFactory
 		override public function createInstance():*{
 			var ret:* = new instanceClass();
 			fillObject(ret, instanceProperties);
-			_itemCreatedAct.perform(this,ret);
+			if(_itemCreatedAct)_itemCreatedAct.perform(this,ret);
 			return ret;
 		}
 		override public function initialiseInstance(object:*):void{
 			fillObject(object, instanceProperties);
-			_itemCreatedAct.perform(this,object);
+			if(_itemCreatedAct)_itemCreatedAct.perform(this,object);
 		}
 		override public function matchesType(object:*):Boolean{
 			return (object!=null) && (object["constructor"]==instanceClass);

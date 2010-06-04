@@ -4,15 +4,14 @@ package org.farmcode.sodalityLibrary.display.visualSockets.plugs
 	import flash.events.Event;
 	
 	import org.farmcode.acting.actTypes.IUniversalAct;
-	import org.farmcode.acting.acts.Act;
 	import org.farmcode.acting.acts.UniversalAct;
-	import org.farmcode.display.ISelfAnimatingView;
-	import org.farmcode.display.behaviour.LayoutViewBehaviour;
+	import org.farmcode.display.core.IOutroView;
+	import org.farmcode.display.core.LayoutView;
 	import org.farmcode.sodality.advice.IAdvice;
 	import org.farmcode.sodalityLibrary.display.visualSockets.sockets.IDisplaySocket;
 	
 	[Event(name="displayChanged",type="org.farmcode.sodalityLibrary.display.visualSockets.events.PlugDisplayEvent")]
-	public class PlugDisplay extends LayoutViewBehaviour implements ISelfAnimatingView, IPlugDisplay
+	public class PlugDisplay extends LayoutView implements IOutroView, IPlugDisplay
 	{
 		override public function set asset(value:DisplayObject):void{
 			if(super.asset!=value){

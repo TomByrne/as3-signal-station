@@ -5,10 +5,10 @@ package au.com.thefarmdigital.display
 	import flash.geom.Point;
 	import flash.geom.Rectangle;
 	
-	import org.farmcode.display.DisplayFramer;
 	import org.farmcode.display.constants.Anchor;
 	import org.farmcode.display.constants.Fit;
 	import org.farmcode.display.constants.Scale;
+	import org.farmcode.display.utils.DisplayFramer;
 	
 	/**
 	 * The MediaView class is used to scale and crop content according to it's fitPolicy and scalePolicy.

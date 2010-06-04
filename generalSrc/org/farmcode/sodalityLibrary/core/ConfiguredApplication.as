@@ -7,9 +7,13 @@ package org.farmcode.sodalityLibrary.core
 	import flash.display.Sprite;
 	import flash.display.Stage;
 	import flash.events.Event;
+	import flash.events.EventDispatcher;
+	import flash.events.IEventDispatcher;
 	import flash.events.KeyboardEvent;
 	
 	import org.farmcode.core.Application;
+	import org.farmcode.display.assets.IAsset;
+	import org.farmcode.display.assets.IDisplayAsset;
 	import org.farmcode.sodality.President;
 	import org.farmcode.sodality.advice.IAdvice;
 	import org.farmcode.sodality.advisors.DynamicAdvisor;
@@ -33,7 +37,7 @@ package org.farmcode.sodalityLibrary.core
 	 */
 	/*[SWF(width=1000, height=750, frameRate=30, backgroundColor="#ffffff")]
 	[Frame(factoryClass="org.farmcode.display.progress.SimpleSWFPreloaderFrame")] */ // this must be on subclass
-	public class ConfiguredApplication extends Application implements INonVisualAdvisor
+	public class ConfiguredApplication extends Application implements INonVisualAdvisor, IEventDispatcher
 	{
 		protected static const CONFIG_URL_PARAM:String = "configURL";
 		
@@ -49,6 +53,11 @@ package org.farmcode.sodalityLibrary.core
 				}else{
 					super.container.addEventListener(Event.ADDED_TO_STAGE, onContainerAdded);
 				}
+				
+				/*Config::DEBUG
+				{
+					_lastStage.setChildIndex(_debugArea,_lastStage.numChildren-1);
+				}*/
 			}
 		}
 		public function get configURL():String{
@@ -76,21 +85,23 @@ package org.farmcode.sodalityLibrary.core
 			_dynamicAdvisor.addedToPresident = value;
 		}
 		
+		protected var _eventDispatcher:EventDispatcher = new EventDispatcher();
 		protected var _dynamicAdvisor:DynamicAdvisor;
 		protected var _siteStreamAdvisor:SiteStreamAdvisor;
 		protected var _lastStage:Stage;
 		protected var _swfAddressAdvisor:SWFAddressAdvisor;
 		protected var _appConfig:IAppConfig;
+		protected var _configAdvisor:ConfigAdvisor;
 		
 		private var _president:President;
 		private var _configURL:String;
 		
-		Config::DEBUG
+		/*Config::DEBUG
 		{
 			protected var _debugArea:Sprite;
-		}
+		}*/
 		
-		public function ConfiguredApplication(asset:DisplayObject=null){
+		public function ConfiguredApplication(asset:IDisplayAsset=null){
 			super(asset);
 			this.addEventListener(AdvisorEvent.ADVISOR_ADDED, onAddedToPresident);
 		}
@@ -111,11 +122,11 @@ package org.farmcode.sodalityLibrary.core
 			_swfAddressAdvisor = new SWFAddressAdvisor();
 			_swfAddressAdvisor.advisorDisplay = container;
 			
-			var configAdvisor:ConfigAdvisor = new ConfigAdvisor();
-			configAdvisor.defaultConfigs["configURL"] = "xml/config.xml";
-			configAdvisor.defaultConfigs["baseDataURL"] = "";
-			configAdvisor.defaultConfigs["baseClassURL"] = "";
-			configAdvisor.advisorDisplay = container;
+			_configAdvisor = new ConfigAdvisor();
+			_configAdvisor.defaultConfigs["configURL"] = "xml/config.xml";
+			_configAdvisor.defaultConfigs["baseDataURL"] = "";
+			_configAdvisor.defaultConfigs["baseClassURL"] = "";
+			_configAdvisor.advisorDisplay = container;
 			
 			var errorAdvisor:ErrorAdvisor = new ErrorAdvisor();
 			errorAdvisor.advisorDisplay = container;
@@ -132,8 +143,8 @@ package org.farmcode.sodalityLibrary.core
 				var executionChecker:ExecutionChecker = new ExecutionChecker(container);
 				//var siteStreamDebugger:SiteStreamDebugger = new SiteStreamDebugger(_siteStreamAdvisor.siteStream);
 				
-				_debugArea = new Sprite();
-				_lastStage.addChild(_debugArea);
+				/*_debugArea = new Sprite();
+				_lastStage.addChild(_debugArea);*/
 				
 				var onKeyDown:Function = function(e:KeyboardEvent):void{
 					if(e.ctrlKey && e.altKey){
@@ -144,7 +155,7 @@ package org.farmcode.sodalityLibrary.core
 				_lastStage.addEventListener(KeyboardEvent.KEY_DOWN, onKeyDown);
 				
 				var toolbar:SimpleDebugToolbar = new SimpleDebugToolbar(_siteStreamAdvisor.siteStream,_president);
-				_debugArea.addChild(toolbar);
+				_lastStage.addChild(toolbar);
 			}
 		}
 		public function onAddedToPresident(e:Event) : void{
@@ -176,6 +187,26 @@ package org.farmcode.sodalityLibrary.core
 				}
 			}
 			return lastAdvice;
+		}
+		
+		
+		
+		
+		// IEventDispatcher
+		public function addEventListener(type:String, listener:Function, useCapture:Boolean = false, priority:int = 0, useWeakReference:Boolean = false):void{
+			_eventDispatcher.addEventListener(type, listener, useCapture, priority, useWeakReference);
+		}
+		public function dispatchEvent(event:Event):Boolean{
+			return _eventDispatcher.dispatchEvent(event);
+		}
+		public function hasEventListener(type:String):Boolean{
+			return _eventDispatcher.hasEventListener(type);
+		}
+		public function removeEventListener(type:String, listener:Function, useCapture:Boolean  = false):void{
+			_eventDispatcher.removeEventListener(type, listener, useCapture);
+		}
+		public function willTrigger(type:String):Boolean{
+			return _eventDispatcher.willTrigger(type);
 		}
 	}
 }

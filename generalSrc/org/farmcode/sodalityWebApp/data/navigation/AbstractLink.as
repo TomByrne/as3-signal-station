@@ -1,12 +1,13 @@
 package org.farmcode.sodalityWebApp.data.navigation
 {
 	import org.farmcode.acting.actTypes.IAct;
-	import org.farmcode.acting.acts.Act;	
+	import org.farmcode.acting.acts.Act;
+	import org.farmcode.data.core.TriggerableAction;
 	import org.farmcode.data.dataTypes.IStringProvider;
 	import org.farmcode.data.dataTypes.ITriggerableAction;
-	import org.farmcode.sodality.advice.IAdvice;	
+	import org.farmcode.sodality.advice.IAdvice;
 	
-	public class AbstractLink implements IStringProvider, ITriggerableAction
+	public class AbstractLink extends TriggerableAction implements IStringProvider
 	{
 		public function get stringValue():String{
 			return _stringValue;
@@ -17,6 +18,9 @@ package org.farmcode.sodalityWebApp.data.navigation
 				if(_stringValueChanged)_stringValueChanged.perform(this)
 			}
 		}
+		public function get value():*{
+			return stringValue;
+		}
 
 		/**
 		 * @inheritDoc
@@ -25,15 +29,18 @@ package org.farmcode.sodalityWebApp.data.navigation
 			if(!_stringValueChanged)_stringValueChanged = new Act();
 			return _stringValueChanged;
 		}
-	
-		public function triggerAction():IAdvice {
-			return null;
-		}		
-				
+		/**
+		 * @inheritDoc
+		 */			
+		public function get valueChanged():IAct {
+			return stringValueChanged;
+		}
+		
 		protected var _stringValueChanged:Act;
-				
 		private var _stringValue:String;
 				
-		public function AbstractLink() { }				
+		public function AbstractLink(stringValue:String=null) {
+			this.stringValue = stringValue;
+		}				
 	}
 }

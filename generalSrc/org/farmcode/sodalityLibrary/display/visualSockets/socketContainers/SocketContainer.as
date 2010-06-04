@@ -6,7 +6,7 @@ package org.farmcode.sodalityLibrary.display.visualSockets.socketContainers
 	import flash.display.Sprite;
 	import flash.utils.Dictionary;
 	
-	import org.farmcode.display.ISelfAnimatingView;
+	import org.farmcode.display.core.IOutroView;
 	import org.farmcode.display.layout.ILayout;
 	import org.farmcode.display.layout.ILayoutSubject;
 	import org.farmcode.sodality.advice.IAdvice;
@@ -21,14 +21,14 @@ package org.farmcode.sodalityLibrary.display.visualSockets.socketContainers
 			checkHelper();
 		}
 		override public function set asset(value:DisplayObject):void{
-			if(containerAsset){
-				containerAsset.removeChild(childContainer);
+			if(_containerAsset){
+				_containerAsset.removeChild(childContainer);
 			}
 			super.asset = value;
 			_advisor.advisorDisplay = value;
 			checkHelper();
-			if(containerAsset){
-				containerAsset.addChild(childContainer);
+			if(_containerAsset){
+				_containerAsset.addChild(childContainer);
 			}
 		}
 		
@@ -135,7 +135,7 @@ package org.farmcode.sodalityLibrary.display.visualSockets.socketContainers
 			var ret:Number = super.doShowOutro();
 			for each(var socket:IDisplaySocket in childSockets){
 				if(socket.plugDisplay){
-					var cast:ISelfAnimatingView = (socket.plugDisplay as ISelfAnimatingView);
+					var cast:IOutroView = (socket.plugDisplay as IOutroView);
 					ret = Math.max(ret,cast.showOutro());
 				}
 			}
@@ -151,18 +151,18 @@ package org.farmcode.sodalityLibrary.display.visualSockets.socketContainers
 		override protected function draw():void{
 			super.draw();
 			drawLayout();
-			if(containerAsset){
-				if(containerAsset.scaleX!=0 && containerAsset.scaleX!=Infinity){
-					childContainer.scaleX = 1/containerAsset.scaleX;
+			if(_containerAsset){
+				if(_containerAsset.scaleX!=0 && _containerAsset.scaleX!=Infinity){
+					_containerAsset.scaleX = 1/_containerAsset.scaleX;
 				}
-				if(containerAsset.scaleY!=0 && containerAsset.scaleY!=Infinity){
-					childContainer.scaleY = 1/containerAsset.scaleY;
+				if(_containerAsset.scaleY!=0 && _containerAsset.scaleY!=Infinity){
+					_containerAsset.scaleY = 1/_containerAsset.scaleY;
 				}
 			}
 		}
 		protected function drawLayout():void{
 			if(_layout){
-				_layout.setLayoutSize(displayPosition.x-containerAsset.x,displayPosition.y-containerAsset.y,displayPosition.width,displayPosition.height);
+				_layout.setLayoutSize(displayPosition.x-_containerAsset.x,displayPosition.y-_containerAsset.y,displayPosition.width,displayPosition.height);
 			}
 		}
 	}
