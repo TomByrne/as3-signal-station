@@ -24,11 +24,6 @@ package org.farmcode.media
 		 */
 		function get loadCompleted():IAct;
 		
-		/**
-		 * handler(from:IMediaSource)
-		 */
-		function get loadFailed():IAct;
-		
 		function takeMediaDisplay():ILayoutViewBehaviour;
 		function returnMediaDisplay(value:ILayoutViewBehaviour):void;
 	}

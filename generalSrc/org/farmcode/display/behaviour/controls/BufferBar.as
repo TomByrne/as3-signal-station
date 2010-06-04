@@ -37,6 +37,9 @@ package org.farmcode.display.behaviour.controls
 				}
 			}
 		}
+		override public function get displayMeasurements() : Rectangle{
+			return _slider.displayMeasurements;
+		}
 		
 		private var _videoSource:IVideoSource;
 		private var _slider:Slider;
@@ -62,8 +65,8 @@ package org.farmcode.display.behaviour.controls
 		override protected function draw() : void{
 			
 			
-			var playedFract:Number = (_videoSource && _videoSource.totalTime>0?_videoSource.currentTime/_videoSource.totalTime:0);
-			var loadFract:Number = (_videoSource?_videoSource.loadProgress/_videoSource.loadTotal:0);
+			var playedFract:Number = (_videoSource.totalTime>0?_videoSource.currentTime/_videoSource.totalTime:0);
+			var loadFract:Number = _videoSource.loadProgress/_videoSource.loadTotal;
 			
 			if(_slider.direction==Direction.VERTICAL){
 				
@@ -123,9 +126,6 @@ package org.farmcode.display.behaviour.controls
 		}
 		protected function onSliderMeasChange(from:ILayoutSubject, oldX:Number, oldY:Number, oldWidth:Number, oldHeight:Number):void{
 			dispatchMeasurementChange();
-		}
-		override protected function measure():void{
-			_displayMeasurements = _slider.displayMeasurements;
 		}
 		protected function onLoadChange(from:IMediaSource):void{
 			invalidate();

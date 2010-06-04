@@ -7,8 +7,6 @@ package org.farmcode.display.behaviour.containers
 	
 	public class ContainerView extends LayoutViewBehaviour
 	{
-		private static const BACKING:String = "backing";
-		
 		protected var _backing:DisplayObject;
 		
 		public function ContainerView(asset:DisplayObject=null){
@@ -16,7 +14,7 @@ package org.farmcode.display.behaviour.containers
 		}
 		override protected function bindToAsset() : void{
 			if(containerAsset){
-				_backing = containerAsset.getChildByName(BACKING);
+				_backing = containerAsset.getChildByName("backing");
 			}
 		}
 		override protected function unbindFromAsset() : void{

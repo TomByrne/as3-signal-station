@@ -1,7 +1,7 @@
 package au.com.thefarmdigital.effects
 {
-	import au.com.thefarmdigital.transitions.ITransition;
-	import au.com.thefarmdigital.transitions.TransitionTiming;
+	import org.farmcode.display.transition.ITransition;
+	import org.farmcode.display.transition.TransitionTiming;
 	
 	import flash.display.Bitmap;
 	import flash.display.DisplayObject;

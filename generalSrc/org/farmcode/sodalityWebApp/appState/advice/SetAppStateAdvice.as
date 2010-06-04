@@ -3,13 +3,12 @@ package org.farmcode.sodalityWebApp.appState.advice
 	import flash.utils.Dictionary;
 	
 	import org.farmcode.sodality.advice.Advice;
-	import org.farmcode.sodalityLibrary.display.progress.adviceTypes.IExecutionProgressAdvice;
-	import org.farmcode.sodalityWebApp.appState.AppStateConstants;
+	import org.farmcode.actLibrary.display.progress.actTypes.IExecutionProgressAct;
 	import org.farmcode.sodalityWebApp.appState.AppStateMatch;
 	import org.farmcode.sodalityWebApp.appState.adviceTypes.ISetAppStateAdvice;
 	import org.farmcode.sodalityWebApp.appState.states.IAppState;
 	
-	public class SetAppStateAdvice extends Advice implements ISetAppStateAdvice, IExecutionProgressAdvice
+	public class SetAppStateAdvice extends Advice implements ISetAppStateAdvice, IExecutionProgressAct
 	{
 		
 		[Property(toString="true",clonable="true")]
@@ -64,7 +63,7 @@ package org.farmcode.sodalityWebApp.appState.advice
 			this.stateId = stateId;
 			this.parameters = parameters;
 		}
-		public function addParameter(data:*, parameter:String = "@"):void{
+		public function addParameter(data:*, parameter:String = "*"):void{
 			if(data!=null){
 				if(!_appStateMatch)_appStateMatch = new AppStateMatch();
 				if(!_appStateMatch.parameters)_appStateMatch.parameters = new Dictionary();

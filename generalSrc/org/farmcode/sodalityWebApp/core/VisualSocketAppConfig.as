@@ -1,6 +1,6 @@
 package org.farmcode.sodalityWebApp.core
 {
-	import org.farmcode.sodalityLibrary.core.StateAppConfig;
+	import org.farmcode.actLibrary.application.StateAppConfig;
 
 	public class VisualSocketAppConfig extends StateAppConfig implements IVisualSocketAppConfig
 	{

@@ -3,9 +3,9 @@ package org.farmcode.sodalityLibrary.display.transition.advice
 	import flash.display.DisplayObject;
 	
 	import org.farmcode.sodality.advice.Advice;
-	import org.farmcode.sodalityLibrary.display.transition.adviceTypes.IAdvancedTransitionAdvice;
+	import org.farmcode.actLibrary.display.transition.actTypes.IAdvancedTransitionAct;
 
-	public class TransitionAdvice extends Advice implements IAdvancedTransitionAdvice
+	public class TransitionAdvice extends Advice implements IAdvancedTransitionAct
 	{
 		[Property(toString="true",clonable="true")]
 		public function get startDisplay():DisplayObject{

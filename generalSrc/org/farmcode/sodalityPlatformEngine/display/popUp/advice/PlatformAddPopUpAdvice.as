@@ -4,11 +4,11 @@ package org.farmcode.sodalityPlatformEngine.display.popUp.advice
 	import flash.display.DisplayObjectContainer;
 	import flash.utils.Dictionary;
 	
-	import org.farmcode.sodalityLibrary.display.popUp.advice.AdvancedAddPopUpAdvice;
+	import org.farmcode.actLibrary.display.popup.acts.AdvancedAddPopupAct;
 	import org.farmcode.sodalityPlatformEngine.display.DisplayLayer;
 	import org.farmcode.sodalityPlatformEngine.display.popUp.adviceTypes.IPlatformAddPopUpAdvice;
 
-	public class PlatformAddPopUpAdvice extends AdvancedAddPopUpAdvice implements IPlatformAddPopUpAdvice
+	public class PlatformAddPopUpAdvice extends AdvancedAddPopupAct implements IPlatformAddPopUpAdvice
 	{
 		[Property(toString="true",clonable="true")]
 		public function get displayLayer():DisplayLayer{

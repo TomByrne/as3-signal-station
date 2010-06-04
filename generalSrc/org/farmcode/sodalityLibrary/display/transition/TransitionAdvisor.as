@@ -5,8 +5,8 @@ package org.farmcode.sodalityLibrary.display.transition
 	import org.farmcode.sodality.advice.AsyncMethodAdvice;
 	import org.farmcode.sodality.advisors.DynamicAdvisor;
 	import org.farmcode.sodalityLibrary.display.transition.adviceTypes.*;
-	import au.com.thefarmdigital.transitions.TransitionExecution;
-	import au.com.thefarmdigital.transitions.TransitionManager;
+	import org.farmcode.display.transition.TransitionExecution;
+	import org.farmcode.display.transition.TransitionManager;
 	import au.com.thefarmdigital.utils.DisplayObjectSnapshot;
 	import au.com.thefarmdigital.utils.DisplayUtils;
 	
@@ -56,7 +56,7 @@ package org.farmcode.sodalityLibrary.display.transition
 		{
 			if(cause.doTransition)
 			{
-				var adv:IAdvancedTransitionAdvice = (cause as IAdvancedTransitionAdvice);
+				var adv:IAdvancedTransitionAdvice = (cause as IAdvancedTransitionAct);
 				var startDisplay:DisplayObject = (adv && adv.startDisplay?adv.startDisplay:_defaultDisplay);
 				var endDisplay:DisplayObject = (adv && adv.endDisplay?adv.endDisplay:startDisplay);
 				var hiddenDisplay:DisplayObject;
@@ -111,7 +111,7 @@ package org.farmcode.sodalityLibrary.display.transition
 			if(bundle){
 				delete _snapshots[cause];
 				if(cause.doTransition){
-					var adv:IAdvancedTransitionAdvice = (cause as IAdvancedTransitionAdvice);
+					var adv:IAdvancedTransitionAdvice = (cause as IAdvancedTransitionAct);
 					bundle.advice = advice;
 					var easing:Function = (adv && adv.easing!=null?adv.easing:_defaultEasing);
 					var transitions:Array = (adv && adv.transitions?adv.transitions:_defaultTransitions);

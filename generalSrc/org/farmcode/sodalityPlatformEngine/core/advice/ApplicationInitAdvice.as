@@ -5,12 +5,12 @@ package org.farmcode.sodalityPlatformEngine.core.advice
 	
 	import org.farmcode.hoborg.Cloner;
 	import org.farmcode.sodality.advice.Advice;
-	import org.farmcode.sodalityLibrary.display.progress.adviceTypes.IExecutionProgressAdvice;
+	import org.farmcode.actLibrary.display.progress.actTypes.IExecutionProgressAct;
 	import org.farmcode.sodalityLibrary.external.siteStream.adviceTypes.IResolvePathsAdvice;
 	import org.farmcode.sodalityPlatformEngine.core.IApplicationData;
 	import org.farmcode.sodalityPlatformEngine.core.adviceTypes.IApplicationInitAdvice;
 
-	public class ApplicationInitAdvice extends Advice implements IApplicationInitAdvice, IExecutionProgressAdvice, IResolvePathsAdvice
+	public class ApplicationInitAdvice extends Advice implements IApplicationInitAdvice, IExecutionProgressAct, IResolvePathsAdvice
 	{
 		[Property(toString="true",clonable="true")]
 		public function get appBounds():Rectangle{

@@ -2,6 +2,8 @@ package au.com.thefarmdigital.sound.soundControls
 {
 	import flash.events.EventDispatcher;
 	import flash.media.SoundTransform;
+	
+	import org.farmcode.utils.ObjectUtils;
 
 	public class SoundTransformControl extends EventDispatcher implements ISoundControl
 	{
@@ -64,7 +66,7 @@ package au.com.thefarmdigital.sound.soundControls
 		
 		protected function renderTransform():void{
 			if(_subject && _transformProperty){
-				var trans:SoundTransform = getProperty(_subject,_transformProperty);
+				var trans:SoundTransform = ObjectUtils.getProperty(_subject,_transformProperty);
 				if(!trans){
 					trans = new SoundTransform();
 				}
@@ -73,7 +75,7 @@ package au.com.thefarmdigital.sound.soundControls
 				}else{
 					trans.volume = 0;
 				}
-				setProperty(_subject,_transformProperty,trans);
+				ObjectUtils.setProperty(_subject,_transformProperty,trans);
 			}
 		}
 		/**
@@ -81,23 +83,9 @@ package au.com.thefarmdigital.sound.soundControls
 		 */
 		protected function takeVolume():void{
 			if(_subject && _transformProperty && isNaN(_volumeMultiplier)){
-				var trans:SoundTransform = getProperty(_subject,_transformProperty);
+				var trans:SoundTransform = ObjectUtils.getProperty(_subject,_transformProperty);
 				if(trans)_volumeMultiplier = trans.volume;
 			}
-		}
-		protected function setProperty(into:Object, prop:String, value:*):void{
-			var parts:Array = prop.split(".");
-			while(parts.length>1){
-				into = into[parts.shift()];
-			}
-			into[parts[0]] = value;
-		}
-		protected function getProperty(from:Object, prop:String):*{
-			var parts:Array = prop.split(".");
-			while(parts.length){
-				from = from[parts.shift()];
-			}
-			return from;
 		}
 	}
 }

@@ -10,8 +10,8 @@ package org.farmcode.sodalityWebApp.core
 	import org.farmcode.sodality.advice.IAdvice;
 	import org.farmcode.sodality.advice.MethodAdvice;
 	import org.farmcode.sodality.events.AdviceEvent;
-	import org.farmcode.sodalityLibrary.core.ConfiguredApplication;
-	import org.farmcode.sodalityLibrary.core.StateApplication;
+	import org.farmcode.actLibrary.application.ConfiguredApplication;
+	import org.farmcode.actLibrary.application.StateApplication;
 	import org.farmcode.sodalityLibrary.display.visualSockets.VisualSocketAdvisor;
 	import org.farmcode.sodalityLibrary.display.visualSockets.VisualSocketNamespace;
 	import org.farmcode.sodalityLibrary.display.visualSockets.debug.VisualSocketOutliner;
@@ -20,6 +20,7 @@ package org.farmcode.sodalityWebApp.core
 	import org.farmcode.sodalityLibrary.display.visualSockets.sockets.DisplaySocket;
 	import org.farmcode.sodalityLibrary.display.visualSockets.sockets.IDisplaySocket;
 	import org.farmcode.sodalityLibrary.external.browser.BrowserAdvisor;
+	import com.asual.swfaddress.SWFAddressUtilities;
 	import org.farmcode.sodalityLibrary.external.swfaddress.advice.SetSWFAddressAdvice;
 	import org.farmcode.sodalityLibrary.external.swfaddress.adviceTypes.ISetSWFAddressAdvice;
 	import org.farmcode.sodalityLibrary.utils.config.advice.GetConfigParamAdvice;

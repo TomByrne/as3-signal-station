@@ -3,7 +3,6 @@ package org.farmcode.sodalityWebApp.appState.states
 	import flash.utils.Dictionary;
 	
 	import org.farmcode.reflection.Deliterator;
-	import org.farmcode.sodalityWebApp.appState.AppStateConstants;
 	import org.farmcode.sodalityWebApp.appState.AppStateMatch;
 
 	public class RegExpAppState extends AbstractAppState
@@ -35,10 +34,9 @@ package org.farmcode.sodalityWebApp.appState.states
 					var ret:AppStateMatch = new AppStateMatch();
 					var params:Dictionary = getBaseParams(path);
 					for(var prop:String in result){
-						var destProp:String = (prop==STAR_PSUEDONYM?AppStateConstants.STAR_STRING:prop)
+						var destProp:String = (prop==STAR_PSUEDONYM?"*":prop)
 						params[destProp] = Deliterator.deliterate(result[prop]);
 					}
-					params[AppStateConstants.ALL_STRING] = path;
 					ret.parameters = params;
 					return ret;
 				}
@@ -53,7 +51,7 @@ package org.farmcode.sodalityWebApp.appState.states
 			}
 		}
 		override public function reconstitute(match:AppStateMatch):String{
-			return match.parameters[AppStateConstants.STAR_STRING];
+			return match.parameters["*"];
 		}
 		protected function getStripPattern(path:String) : String{
 			return path;

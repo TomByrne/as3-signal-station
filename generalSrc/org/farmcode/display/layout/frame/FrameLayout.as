@@ -14,7 +14,7 @@ package org.farmcode.display.layout.frame
 		
 		override protected function drawSubject(subject:ILayoutSubject) : void{
 			var cast:IFrameLayoutInfo = (subject.layoutInfo as IFrameLayoutInfo);
-			if(cast && subject.displayMeasurements){
+			if(cast){
 				
 				getMarginAffectedArea(_displayPosition, subject.layoutInfo, marginAffectedPosition, marginRect);
 				

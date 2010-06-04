@@ -8,7 +8,7 @@ package org.farmcode.display.layout.grid
 	
 	import org.farmcode.acting.actTypes.IAct;
 	import org.farmcode.acting.acts.Act;
-	import org.farmcode.display.ValidationFlag;
+	import org.farmcode.flags.ValidationFlag;
 	import org.farmcode.display.constants.Direction;
 	import org.farmcode.display.layout.AbstractLayout;
 	import org.farmcode.display.layout.ILayoutSubject;

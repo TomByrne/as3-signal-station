@@ -4,10 +4,10 @@ package org.farmcode.sodalityLibrary.display.popUp.advice
 	import flash.utils.Dictionary;
 	
 	import org.farmcode.hoborg.Cloner;
-	import org.farmcode.sodalityLibrary.display.transition.advice.TransitionAdvice;
+	import org.farmcode.actLibrary.display.transition.acts.TransitionAct;
 	import org.farmcode.sodalityLibrary.external.siteStream.adviceTypes.IResolvePathsAdvice;
 
-	public class AbstractPopUpAdvice extends TransitionAdvice implements IResolvePathsAdvice
+	public class AbstractPopUpAdvice extends TransitionAct implements IResolvePathsAdvice
 	{
 		
 		public function AbstractPopUpAdvice(displayPath:String=null, display:DisplayObject=null){

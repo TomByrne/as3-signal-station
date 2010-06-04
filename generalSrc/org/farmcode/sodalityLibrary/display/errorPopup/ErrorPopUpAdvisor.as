@@ -7,7 +7,7 @@ package org.farmcode.sodalityLibrary.display.errorPopup
 	
 	import org.farmcode.sodality.advice.AsyncMethodAdvice;
 	import org.farmcode.sodality.advisors.DynamicAdvisor;
-	import org.farmcode.sodalityLibrary.display.popUp.advice.AdvancedAddPopUpAdvice;
+	import org.farmcode.actLibrary.display.popup.acts.AdvancedAddPopupAct;
 	import org.farmcode.sodalityLibrary.errors.ErrorDetails;
 	import org.farmcode.sodalityLibrary.errors.IErrorDisplay;
 	import org.farmcode.sodalityLibrary.errors.adviceTypes.IDetailedErrorAdvice;
@@ -49,7 +49,7 @@ package org.farmcode.sodalityLibrary.display.errorPopup
 					if(display){
 						display.errorDetails = details;
 						
-						var popUpAdvice:AdvancedAddPopUpAdvice = new AdvancedAddPopUpAdvice();
+						var popUpAdvice:AdvancedAddPopupAct = new AdvancedAddPopupAct();
 						popUpAdvice.popUpParent = popUpParent;
 						popUpAdvice.display = display.display;
 						popUpAdvice.modal = true;

@@ -12,7 +12,7 @@ package org.farmcode.display.behaviour.containers.accordion
 	import org.farmcode.acting.actTypes.IAct;
 	import org.farmcode.acting.acts.Act;
 	import org.farmcode.data.dataTypes.IStringProvider;
-	import org.farmcode.display.ValidationFlag;
+	import org.farmcode.flags.ValidationFlag;
 	import org.farmcode.display.behaviour.LayoutViewBehaviour;
 	import org.farmcode.display.behaviour.controls.ScrollBar;
 	import org.farmcode.display.behaviour.controls.TextLabel;

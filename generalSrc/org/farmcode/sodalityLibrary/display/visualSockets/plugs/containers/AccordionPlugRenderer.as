@@ -17,6 +17,7 @@ package org.farmcode.sodalityLibrary.display.visualSockets.plugs.containers
 	import org.farmcode.sodalityLibrary.display.visualSockets.socketContainers.SocketContainerHelper;
 	import org.farmcode.sodalityLibrary.display.visualSockets.socketContainers.SocketContainerUtils;
 	import org.farmcode.sodalityLibrary.display.visualSockets.sockets.DisplaySocket;
+	import org.farmcode.utils.ObjectUtils;
 	
 	public class AccordionPlugRenderer extends AccordionRenderer implements ISocketContainer
 	{
@@ -114,7 +115,7 @@ package org.farmcode.sodalityLibrary.display.visualSockets.plugs.containers
 		}
 		public function attemptFillSocket():void{
 			if(_dynamicAdvisor.addedToPresident && _displaySocket.socketId!=null && open){
-				var childData:* = SocketContainerUtils.getProperty(data,_dataProperty);
+				var childData:* = ObjectUtils.getProperty(data,_dataProperty);
 				var fillAdvice:FillSocketAdvice;
 				var doFill:Boolean;
 				if(_socketFilled && childData==null){

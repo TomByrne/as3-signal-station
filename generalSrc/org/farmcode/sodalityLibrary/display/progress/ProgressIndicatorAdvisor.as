@@ -11,8 +11,8 @@ package org.farmcode.sodalityLibrary.display.progress
 	import org.farmcode.sodality.advisors.IPresidentAwareAdvisor;
 	import org.farmcode.sodality.events.PresidentEvent;
 	import org.farmcode.sodality.utils.AdviceExecutionNode;
-	import org.farmcode.sodalityLibrary.display.popUp.advice.RemovePopUpAdvice;
-	import org.farmcode.sodalityLibrary.display.progress.adviceTypes.IExecutionProgressAdvice;
+	import org.farmcode.actLibrary.display.popup.acts.RemovePopupAct;
+	import org.farmcode.actLibrary.display.progress.actTypes.IExecutionProgressAct;
 	import org.farmcode.sodalityPlatformEngine.display.popUp.advice.PlatformAddPopUpAdvice;
 	
 	use namespace SodalityNamespace;
@@ -78,7 +78,7 @@ package org.farmcode.sodalityLibrary.display.progress
 						delayedCall.begin();
 					}else{
 						delayedCall.clear();
-						var closePopUpAdvice:RemovePopUpAdvice = new RemovePopUpAdvice(null,_progressDisplay.display);
+						var closePopUpAdvice:RemovePopupAct = new RemovePopupAct(null,_progressDisplay.display);
 						dispatchEvent(closePopUpAdvice);
 					}
 				}
@@ -162,7 +162,7 @@ package org.farmcode.sodalityLibrary.display.progress
 		}
 		protected function addProgressNode(node:AdviceExecutionNode):void{
 			if(!progAdviceMap[node]){
-				var cast:IExecutionProgressAdvice = (node.advice as IExecutionProgressAdvice);
+				var cast:IExecutionProgressAct = (node.advice as IExecutionProgressAct);
 				if(cast){
 					var bundle:ProgressAdviceBundle = new ProgressAdviceBundle(cast,node);
 					progAdviceMap[node] = bundle
@@ -186,8 +186,8 @@ import org.farmcode.sodality.advice.IAdvice;
 import org.farmcode.sodality.events.AdviceEvent;
 import org.farmcode.sodality.events.PresidentEvent;
 import org.farmcode.sodality.utils.AdviceExecutionNode;
-import org.farmcode.sodalityLibrary.display.progress.adviceTypes.IExecutionProgressAdvice;
-import org.farmcode.sodalityLibrary.display.progress.adviceTypes.IProgressAdvice;
+import org.farmcode.actLibrary.display.progress.actTypes.IExecutionProgressAct;
+import org.farmcode.actLibrary.display.progress.actTypes.IProgressAct;
 
 use namespace SodalityNamespace;
 	
@@ -230,15 +230,15 @@ class ProgressAdviceBundle{
 	}
 	
 	
-	private var advice:IExecutionProgressAdvice;
-	private var progAdvice:IProgressAdvice;
+	private var advice:IExecutionProgressAct;
+	private var progAdvice:IProgressAct;
 	private var _total:Number = 0;
 	private var _complete:Number = 0;
 	private var _node:AdviceExecutionNode;
 	
-	public function ProgressAdviceBundle(advice:IExecutionProgressAdvice, node:AdviceExecutionNode){
+	public function ProgressAdviceBundle(advice:IExecutionProgressAct, node:AdviceExecutionNode){
 		this.advice = advice;
-		this.progAdvice = (advice as IProgressAdvice);
+		this.progAdvice = (advice as IProgressAct);
 		_node = node;
 		node.addEventListener(PresidentEvent.ADVICE_EXECUTE, onAddChild);
 		searchNode(node);

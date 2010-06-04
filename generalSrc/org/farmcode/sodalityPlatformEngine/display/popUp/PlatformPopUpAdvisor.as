@@ -1,6 +1,6 @@
 package org.farmcode.sodalityPlatformEngine.display.popUp
 {
-	import au.com.thefarmdigital.display.popUp.PopUpEvent;
+	import org.farmcode.display.popup.PopupEvent;
 	
 	import flash.display.DisplayObject;
 	import flash.events.Event;
@@ -13,10 +13,10 @@ package org.farmcode.sodalityPlatformEngine.display.popUp
 	import org.farmcode.sodality.events.AdviceEvent;
 	import org.farmcode.sodalityLibrary.core.adviceTypes.IRevertableAdvice;
 	import org.farmcode.sodalityLibrary.display.popUp.PopUpAdvisor;
-	import org.farmcode.sodalityLibrary.display.popUp.advice.RemovePopUpAdvice;
+	import org.farmcode.actLibrary.display.popup.acts.RemovePopupAct;
 	import org.farmcode.sodalityLibrary.display.popUp.adviceTypes.IAddPopUpAdvice;
-	import org.farmcode.sodalityLibrary.display.popUp.adviceTypes.IAdvancedAddPopUpAdvice;
-	import org.farmcode.sodalityLibrary.display.popUp.adviceTypes.IRemovePopUpAdvice;
+	import org.farmcode.actLibrary.display.popup.actTypes.IAdvancedAddPopupAct;
+	import org.farmcode.actLibrary.display.popup.actTypes.IRemovePopupAct;
 	import org.farmcode.sodalityPlatformEngine.core.adviceTypes.IApplicationInitAdvice;
 	import org.farmcode.sodalityPlatformEngine.display.popUp.advice.FocusOnSceneAdvice;
 	import org.farmcode.sodalityPlatformEngine.display.popUp.adviceTypes.IFocusOnSceneAdvice;
@@ -54,7 +54,7 @@ package org.farmcode.sodalityPlatformEngine.display.popUp
 			this.revertAdvice = new Array();
 			
 			this._sceneInFocus = true;
-			popUpManager.addEventListener(PopUpEvent.FOCUS_CHANGE, onFocusChange);
+			popUpManager.addEventListener(PopupEvent.FOCUS_CHANGE, onFocusChange);
 		}
 		
 		protected function setSceneInFocus(value: Boolean, before: IAdvice = null): void
@@ -77,7 +77,7 @@ package org.farmcode.sodalityPlatformEngine.display.popUp
 			return this._sceneInFocus;
 		}
 		
-		protected function onFocusChange(e:PopUpEvent):void{
+		protected function onFocusChange(e:PopupEvent):void{
 			if(e.popUpDisplay){
 				focusedPopUp = e.popUpDisplay;
 				this.executeAdviceList(focusAdviceMap[e.popUpDisplay]);
@@ -265,7 +265,7 @@ package org.farmcode.sodalityPlatformEngine.display.popUp
 		override public function onBeforeAddPopUp(cause:IAddPopUpAdvice):void
 		{
 			var castCause:IPlatformAddPopUpAdvice = (cause as IPlatformAddPopUpAdvice);
-			var advancedCause: IAdvancedAddPopUpAdvice = cause as IAdvancedAddPopUpAdvice;
+			var advancedCause: IAdvancedAddPopupAct = cause as IAdvancedAddPopupAct;
 			var focusable: Boolean = (advancedCause == null || advancedCause.focusable);
 			if(castCause && focusable){
 				focusAdviceMap[castCause.display] = castCause.focusAdvice?castCause.focusAdvice:[];
@@ -284,13 +284,13 @@ package org.farmcode.sodalityPlatformEngine.display.popUp
 		
 		override protected function onRemovePopUp(e:AdviceEvent):void
 		{
-			this.beforeAdvice = (e.target as IRemovePopUpAdvice);
+			this.beforeAdvice = (e.target as IRemovePopupAct);
 			super.onRemovePopUp(e);
 			this.beforeAdvice = null;
 		}
 		
 		[Trigger(triggerTiming="before")]
-		override public function onBeforeRemovePopUp(cause:IRemovePopUpAdvice):void
+		override public function onBeforeRemovePopUp(cause:IRemovePopupAct):void
 		{
 			var index:Number = modalPopUps.indexOf(cause.display);
 			if(index!=-1)modalPopUps.splice(index,1);
@@ -336,7 +336,7 @@ package org.farmcode.sodalityPlatformEngine.display.popUp
 		[Trigger(triggerTiming="before")]
 		public function onRemoveFocusedPopUp( cause: IRemoveFocusedPopUpAdvice):void{
 			if(focusedPopUp){
-				var removeAdvice:RemovePopUpAdvice = new RemovePopUpAdvice(null, this.focusedPopUp);
+				var removeAdvice:RemovePopupAct = new RemovePopupAct(null, this.focusedPopUp);
 				// MERGE DIF: removeAdvice.executeAfter = advice;
 				removeAdvice.executeBefore = cause;
 				dispatchEvent(removeAdvice);

@@ -11,9 +11,9 @@ package org.farmcode.acting.acts
 		}
 		public function set eventDispatcher(value:IEventDispatcher):void{
 			if(_eventDispatcher!=value){
-				attemptRemove();
+				if(_handlerCount)attemptRemove();
 				_eventDispatcher = value;
-				attemptAdd();
+				if(_handlerCount)attemptAdd();
 			}
 		}
 		
@@ -22,9 +22,9 @@ package org.farmcode.acting.acts
 		}
 		public function set eventName(value:String):void{
 			if(_eventName!=value){
-				attemptRemove();
+				if(_handlerCount)attemptRemove();
 				_eventName = value;
-				attemptAdd();
+				if(_handlerCount)attemptAdd();
 			}
 		}
 		
@@ -33,9 +33,9 @@ package org.farmcode.acting.acts
 		}
 		public function set useCapture(value:Boolean):void{
 			if(_useCapture!=value){
-				attemptRemove();
+				if(_handlerCount)attemptRemove();
 				_useCapture = value;
-				attemptAdd();
+				if(_handlerCount)attemptAdd();
 			}
 		}
 		
@@ -44,11 +44,13 @@ package org.farmcode.acting.acts
 		}
 		public function set priority(value:int):void{
 			if(_priority!=value){
-				attemptRemove();
+				if(_handlerCount)attemptRemove();
 				_priority = value;
-				attemptAdd();
+				if(_handlerCount)attemptAdd();
 			}
 		}
+		
+		public var parameters:Array;
 		
 		private var _priority:int = 0;
 		private var _useCapture:Boolean=false;
@@ -56,10 +58,16 @@ package org.farmcode.acting.acts
 		private var _eventDispatcher:IEventDispatcher;
 		private var _listening:Boolean;
 		
-		public function NativeAct(eventDispatcher:IEventDispatcher=null, eventName:String=null){
+		public function NativeAct(eventDispatcher:IEventDispatcher=null, eventName:String=null, parameters:Array=null){
 			super();
 			this.eventDispatcher = eventDispatcher;
 			this.eventName = eventName;
+			this.parameters = parameters;
+		}
+		override protected function setHandlerCount(value:int):void{
+			super.setHandlerCount(value);
+			if(_handlerCount)attemptAdd();
+			else attemptRemove();
 		}
 		protected function attemptAdd():void{
 			if(!_listening && _eventDispatcher && _eventName){
@@ -74,7 +82,12 @@ package org.farmcode.acting.acts
 			}
 		}
 		protected function eventHandler(e:Event):void{
-			perform(e);
+			if(parameters){
+				var realParams:Array = [e].concat(parameters);
+				perform.apply(null,realParams);
+			}else{
+				perform(e);
+			}
 		}
 	}
 }

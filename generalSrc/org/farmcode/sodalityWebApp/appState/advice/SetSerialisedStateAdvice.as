@@ -1,9 +1,9 @@
 package org.farmcode.sodalityWebApp.appState.advice
 {
 	import org.farmcode.sodality.advice.Advice;
-	import org.farmcode.sodalityWebApp.appState.adviceTypes.ISetSerialisedStateAdvice;
+	import org.farmcode.actLibrary.application.states.actTypes.ISetSerialisedStateAct;
 	
-	public class SetSerialisedStateAdvice extends Advice implements ISetSerialisedStateAdvice
+	public class SetSerialisedStateAdvice extends Advice implements ISetSerialisedStateAct
 	{
 		
 		[Property(toString="true",clonable="true")]

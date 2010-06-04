@@ -9,7 +9,7 @@ package org.farmcode.display.layout
 	
 	import org.farmcode.acting.actTypes.IAct;
 	import org.farmcode.acting.acts.Act;
-	import org.farmcode.display.ValidationFlag;
+	import org.farmcode.flags.ValidationFlag;
 	import org.farmcode.display.layout.core.ILayoutInfo;
 	
 	public class AbstractLayout implements ILayout, IDrawable, ILayoutSubject

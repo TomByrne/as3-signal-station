@@ -5,8 +5,9 @@ package org.farmcode.sodalityWebApp.appState.advice
 	import org.farmcode.hoborg.Cloner;
 	import org.farmcode.sodalityLibrary.external.siteStream.adviceTypes.IResolvePathsAdvice;
 	import org.farmcode.sodalityWebApp.appState.AppStateMatch;
+	import org.farmcode.actLibrary.application.states.acts.SetAppStateAct;
 
-	public class LookupSetAppStateAdvice extends SetAppStateAdvice implements IResolvePathsAdvice
+	public class LookupSetAppStateAdvice extends SetAppStateAct implements IResolvePathsAdvice
 	{
 		override public function get appStateMatch():AppStateMatch{
 			var ret:AppStateMatch = super.appStateMatch;

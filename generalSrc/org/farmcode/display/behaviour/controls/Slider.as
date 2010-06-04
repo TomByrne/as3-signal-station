@@ -199,9 +199,9 @@ package org.farmcode.display.behaviour.controls
 			_dragDelay.clear();
 			setValueToMouse();
 			_dragOffset = 0;
-			if(!_updateDuringDrag && _dragStartValue!=value){
-				if(_valueChange)_valueChange.perform(this,value);
-				if(_valueChangeByUser)_valueChangeByUser.perform(this,value);
+			if(!_updateDuringDrag && _dragStartValue!=_value){
+				if(_valueChange)_valueChange.perform(this,_value);
+				if(_valueChangeByUser)_valueChangeByUser.perform(this,_value);
 			}
 		}
 		protected function setValueToMouse():void{
@@ -216,8 +216,8 @@ package org.farmcode.display.behaviour.controls
 				_value = newVal;
 				validate(true);
 				if(_updateDuringDrag || !_dragDelay.running){
-					if(_valueChange)_valueChange.perform(this,value);
-					if(_valueChangeByUser)_valueChangeByUser.perform(this,value);
+					if(_valueChange)_valueChange.perform(this,_value);
+					if(_valueChangeByUser)_valueChangeByUser.perform(this,_value);
 				}
 			}
 		}

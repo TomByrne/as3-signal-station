@@ -15,6 +15,7 @@ package org.farmcode.sodalityLibrary.display.visualSockets.socketContainers
 	import org.farmcode.sodalityLibrary.display.visualSockets.events.SocketContainerEvent;
 	import org.farmcode.sodalityLibrary.display.visualSockets.sockets.DisplaySocket;
 	import org.farmcode.sodalityLibrary.display.visualSockets.sockets.IDisplaySocket;
+	import org.farmcode.utils.ObjectUtils;
 
 	public class SocketContainerHelper
 	{
@@ -160,7 +161,7 @@ package org.farmcode.sodalityLibrary.display.visualSockets.socketContainers
 						var childData:*;
 						var parts:Array = prop.split(",");
 						for each(prop in parts){
-							childData = SocketContainerUtils.getProperty(_dataProvider,prop);
+							childData = ObjectUtils.getProperty(_dataProvider,prop);
 							if(childData)break;
 						}
 						var filter:* = _childDataFilter[socket];

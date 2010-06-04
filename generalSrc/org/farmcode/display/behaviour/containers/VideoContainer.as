@@ -30,16 +30,12 @@ package org.farmcode.display.behaviour.containers
 		override public function set mediaSource(value:IMediaSource):void{
 			if(super.mediaSource != value){
 				if(_videoSource){
-					_videoSource.mutedChanged.removeHandler(onMutedChanged);
-					_videoSource.volumeChanged.removeHandler(onVolumeChanged);
-					_videoSource.playingChanged.removeHandler(onPlayingChanged);
+					_videoSource.playingChanged.removeHandler(onPlayingChange);
 				}
 				super.mediaSource = value;
 				_videoSource = (value as IVideoSource);
 				if(_videoSource){
-					_videoSource.mutedChanged.addHandler(onMutedChanged);
-					_videoSource.volumeChanged.addHandler(onVolumeChanged);
-					_videoSource.playingChanged.addHandler(onPlayingChanged);
+					_videoSource.playingChanged.addHandler(onPlayingChange);
 					syncToData();
 				}
 			}
@@ -59,7 +55,7 @@ package org.farmcode.display.behaviour.containers
 		
 		private var _fullscreenUtil:FullscreenUtil;
 		
-		protected var _uiLayout:CanvasLayout = new CanvasLayout();
+		private var _uiLayout:CanvasLayout = new CanvasLayout();
 		
 		private var _videoSource:IVideoSource;
 		
@@ -106,10 +102,15 @@ package org.farmcode.display.behaviour.containers
 				if(_bufferBar){
 					_bufferBar.videoSource = _videoSource;
 				}
+				if(_volumeSlider){
+					_volumeSlider.value = _videoSource.volume;
+				}
 				if(_playPauseButton){
 					_playPauseButton.selected = _videoSource.playing;
 				}
-				assessVolume();
+				if(_muteButton){
+					_muteButton.selected = _videoSource.muted;
+				}
 				assessPlaying();
 			}
 		}
@@ -199,14 +200,8 @@ package org.farmcode.display.behaviour.containers
 				_videoSource.currentTime = 0;
 			}
 		}
-		protected function onPlayingChanged(from:IVideoSource):void{
+		protected function onPlayingChange(from:IVideoSource):void{
 			assessPlaying();
-		}
-		protected function onVolumeChanged(from:IVideoSource):void{
-			assessVolume();
-		}
-		protected function onMutedChanged(from:IVideoSource):void{
-			assessVolume();
 		}
 		protected function assessPlaying():void{
 			if(_videoSource){
@@ -217,29 +212,14 @@ package org.farmcode.display.behaviour.containers
 				}
 			}
 		}
-		protected function assessVolume():void{
+		protected function assessMuted():void{
 			if(_videoSource){
-				if(_videoSource.muted){
-					if(_muteButton)_muteButton.selected = true;
-					if(_volumeSlider){
-						_volumeSlider.value = 0;
-					}
-				}else{
-					if(_muteButton)_muteButton.selected = false;
-					if(_volumeSlider){
-						_volumeSlider.value = _videoSource.volume;
-					}
-				}
+				if(_muteButton)_muteButton.selected = _videoSource.muted;
 			}
 		}
 		protected function onVolumeSliderChange(from:Slider, value:Number):void{
 			if(_videoSource){
-				if(value){
-					_videoSource.muted = false;
-					_videoSource.volume = value;
-				}else{
-					_videoSource.muted = true;
-				}
+				_videoSource.volume = value;
 			}
 		}
 		protected function onMuteClick(from:ToggleButton):void{

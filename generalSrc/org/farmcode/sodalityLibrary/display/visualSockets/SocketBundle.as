@@ -50,8 +50,10 @@ package org.farmcode.sodalityLibrary.display.visualSockets
 			_fillingSocket = fillingSocket;
 			_childSockets = new Dictionary();
 			
-			_beforeDisplayChange = new AsynchronousAct(beforeDisplayChange);
-			_afterDisplayChange = new AsynchronousAct(afterDisplayChange);
+			_beforeDisplayChange = new AsynchronousAct();
+			_beforeDisplayChange.addAsyncHandler(beforeDisplayChange);
+			_afterDisplayChange = new AsynchronousAct();
+			_afterDisplayChange.addAsyncHandler(afterDisplayChange);
 		}
 		public function get id(): String{
 			return _fillingSocket.socketId;

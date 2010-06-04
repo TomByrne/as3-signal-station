@@ -4,8 +4,10 @@ package org.farmcode.sodalityLibrary.display.popUp.advice
 	
 	import org.farmcode.sodality.advice.Advice;
 	import org.farmcode.sodalityLibrary.display.popUp.adviceTypes.IAddPopUpAdvice;
+	import org.farmcode.actLibrary.display.popup.acts.AbstractPopupAct;
+	import org.farmcode.actLibrary.display.popup.acts.RemovePopupAct;
 	
-	public class AddPopUpAdvice extends AbstractPopUpAdvice implements IAddPopUpAdvice
+	public class AddPopUpAdvice extends AbstractPopupAct implements IAddPopUpAdvice
 	{
 		
 		public function AddPopUpAdvice(displayPath:String=null, display:DisplayObject=null, modal: Boolean = false){
@@ -33,7 +35,7 @@ package org.farmcode.sodalityLibrary.display.popUp.advice
 			}
 		}
 		public function get revertAdvice(): Advice{
-			return new RemovePopUpAdvice(_displayPath,display);
+			return new RemovePopupAct(_displayPath,display);
 		}
 	}
 }

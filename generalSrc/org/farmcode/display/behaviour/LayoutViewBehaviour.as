@@ -6,7 +6,7 @@ package org.farmcode.display.behaviour
 	
 	import org.farmcode.acting.actTypes.IAct;
 	import org.farmcode.acting.acts.Act;
-	import org.farmcode.display.ValidationFlag;
+	import org.farmcode.flags.ValidationFlag;
 	import org.farmcode.display.layout.core.ILayoutInfo;
 	
 	public class LayoutViewBehaviour extends ViewBehaviour implements ILayoutViewBehaviour
@@ -116,10 +116,6 @@ package org.farmcode.display.behaviour
 			}
 			return boundsSubject.getBounds(asset);
 		}
-		override protected function bindToAsset():void{
-			super.bindToAsset();
-			dispatchMeasurementChange();
-		}
 		override protected function draw():void{
 			_measureFlag.validate();
 			var pos:Rectangle = displayPosition;
@@ -163,10 +159,7 @@ package org.farmcode.display.behaviour
 			_measureFlag.invalidate();
 		}
 		protected function onMeasInvalidate(validationFlag:ValidationFlag):void{
-			if(_measurementsChanged){
-				if(_displayMeasurements)_measurementsChanged.perform(this, _displayMeasurements.x, _displayMeasurements.y, _displayMeasurements.width, _displayMeasurements.height);
-				else _measurementsChanged.perform(this, NaN, NaN, NaN, NaN);
-			}
+			if(_measurementsChanged)_measurementsChanged.perform(this, _displayMeasurements.x, _displayMeasurements.y, _displayMeasurements.width, _displayMeasurements.height);
 		}
 		protected function dispatchEventIf(eventType:String, eventClass:Class):void{
 			if(willTrigger(eventType)){

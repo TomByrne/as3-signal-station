@@ -10,6 +10,7 @@ package org.farmcode.sodalityPlatformEngine.display.assets
 	import org.farmcode.sodality.advice.IAdvice;
 	import org.farmcode.sodality.advisors.DynamicAdvisor;
 	import org.farmcode.sodalityLibrary.core.adviceTypes.IRevertableAdvice;
+	import org.farmcode.utils.ObjectUtils;
 
 	public class AssetAdvisor extends DynamicAdvisor
 	{	
@@ -48,7 +49,7 @@ package org.farmcode.sodalityPlatformEngine.display.assets
 			for each(var assetType:AssetType in assetTypes){
 				if(child is assetType.assetClass){
 					var advice:IAdvice = assetType.advice.cloneAdvice();
-					setProperty(advice, assetType.adviceProperty, getProperty(child, assetType.assetProperty));
+					ObjectUtils.setProperty(advice, assetType.adviceProperty, ObjectUtils.getProperty(child, assetType.assetProperty));
 					dispatchEvent(advice as Event);
 					if(advice is IRevertableAdvice){
 						adviceList.push(advice);
@@ -76,22 +77,6 @@ package org.farmcode.sodalityPlatformEngine.display.assets
 				}
 				delete _firedAdvice[child];
 			}
-		}
-		protected function setProperty(into:Object, prop:String, value:*):void{
-			var parts:Array = prop.split(".");
-			while(parts.length>1){
-				into = into[parts.shift()];
-			}
-			into[parts[0]] = value;
-		}
-		protected function getProperty(from:Object, prop:String):*{
-			if(prop){
-				var parts:Array = prop.split(".");
-				while(parts.length){
-					from = from[parts.shift()];
-				}
-			}
-			return from;
 		}
 	}
 }

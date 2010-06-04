@@ -1,7 +1,5 @@
 package org.farmcode.sodalityWebApp.data.navigation
 {
-	import com.asual.swfaddress.SWFAddressUtilities;
-	
 	import flash.events.Event;
 	
 	import org.farmcode.acting.actTypes.IAct;
@@ -13,6 +11,7 @@ package org.farmcode.sodalityWebApp.data.navigation
 	import org.farmcode.sodality.advice.IAdvice;
 	import org.farmcode.sodality.advisors.DynamicAdvisor;
 	import org.farmcode.sodality.events.AdviceEvent;
+	import com.asual.swfaddress.SWFAddressUtilities;
 	import org.farmcode.sodalityLibrary.external.swfaddress.advice.GetSWFAddressAdvice;
 	import org.farmcode.sodalityLibrary.external.swfaddress.advice.SetSWFAddressAdvice;
 	import org.farmcode.sodalityLibrary.external.swfaddress.adviceTypes.ISetSWFAddressAdvice;

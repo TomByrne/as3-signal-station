@@ -56,15 +56,6 @@ package org.farmcode.media
 			return _loadCompleted;
 		}
 		
-		/**
-		 * @inheritDoc
-		 */
-		public function get loadFailed():IAct{
-			if(!_loadFailed)_loadFailed = new Act();
-			return _loadFailed;
-		}
-		
-		protected var _loadFailed:Act;
 		protected var _loadCompleted:Act;
 		protected var _loadProgressChanged:Act;
 		protected var _loadTotalChanged:Act;
@@ -100,11 +91,6 @@ package org.farmcode.media
 		}
 		
 		protected function setLoadProps(progress:Number, total:Number):void{
-			
-			if(progress>total && total!=-1){
-				throw new Error("Progress cannot be greater than total");
-			}
-			
 			if(progress!=_loadProgress){
 				_loadProgress = progress;
 				if(_loadProgressChanged)_loadProgressChanged.perform(this);

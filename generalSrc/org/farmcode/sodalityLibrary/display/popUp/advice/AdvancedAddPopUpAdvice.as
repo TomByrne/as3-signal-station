@@ -4,9 +4,10 @@ package org.farmcode.sodalityLibrary.display.popUp.advice
 	import flash.display.DisplayObjectContainer;
 	import flash.geom.Point;
 	
-	import org.farmcode.sodalityLibrary.display.popUp.adviceTypes.IAdvancedAddPopUpAdvice;
+	import org.farmcode.actLibrary.display.popup.actTypes.IAdvancedAddPopupAct;
+	import org.farmcode.actLibrary.display.popup.acts.AddPopupAct;
 	
-	public class AdvancedAddPopUpAdvice extends AddPopUpAdvice implements IAdvancedAddPopUpAdvice
+	public class AdvancedAddPopUpAdvice extends AddPopupAct implements IAdvancedAddPopupAct
 	{
 		private var _popUpParent: DisplayObjectContainer;
 		private var _bgTransitionTime: Number;

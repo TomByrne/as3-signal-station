@@ -5,7 +5,7 @@ package org.farmcode.display.tabFocus
 	import flash.events.FocusEvent;
 	
 	import org.farmcode.core.DelayedCall;
-	import org.farmcode.display.ValidationFlag;
+	import org.farmcode.flags.ValidationFlag;
 
 	[Event(name="focusIn",type="flash.events.FocusEvent")]
 	[Event(name="focusOut",type="flash.events.FocusEvent")]

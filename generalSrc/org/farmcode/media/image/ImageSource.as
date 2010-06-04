@@ -2,9 +2,7 @@ package org.farmcode.media.image
 {
 	import flash.display.Loader;
 	import flash.events.Event;
-	import flash.events.IOErrorEvent;
 	import flash.events.ProgressEvent;
-	import flash.events.SecurityErrorEvent;
 	import flash.geom.Rectangle;
 	import flash.net.URLLoader;
 	import flash.net.URLLoaderDataFormat;
@@ -36,7 +34,8 @@ package org.farmcode.media.image
 				_url = value;
 				_loadStarted = false;
 				if(_url && _displaysTaken>0){
-					startLoad();
+					_loadStarted = true;
+					_urlLoader.load(new URLRequest(url));
 				}
 			}
 		}
@@ -71,8 +70,6 @@ package org.farmcode.media.image
 			_urlLoader = new URLLoader();
 			_urlLoader.dataFormat = URLLoaderDataFormat.BINARY;
 			_urlLoader.addEventListener(Event.COMPLETE, onLoadComplete);
-			_urlLoader.addEventListener(IOErrorEvent.IO_ERROR, onLoadError);
-			_urlLoader.addEventListener(SecurityErrorEvent.SECURITY_ERROR, onLoadError);
 			_urlLoader.addEventListener(ProgressEvent.PROGRESS, onLoadProgress);
 			this.url = url;
 		}
@@ -89,22 +86,13 @@ package org.farmcode.media.image
 		protected function onLoadProgress(e:Event):void{
 			setLoadProps(_urlLoader.bytesLoaded,_urlLoader.bytesTotal);
 		}
-		protected function onLoadError(e:Event):void{
-			if(_loadFailed)_loadFailed.perform(this);
-		}
 		override public function takeMediaDisplay():ILayoutViewBehaviour{
 			_displaysTaken++;
-			if(_url){
-				startLoad();
+			if(!_loadStarted && _url){
+				_loadStarted = true;
+				_urlLoader.load(new URLRequest(url));
 			}
 			return super.takeMediaDisplay();
-		}
-		public function startLoad():void{
-			if(!_url)throw new Error("startLoad cannot be called until url is set");
-			if(!_loadStarted){
-				_loadStarted = true;
-				_urlLoader.load(new URLRequest(_url));
-			}
 		}
 		override public function returnMediaDisplay(value:ILayoutViewBehaviour):void{
 			_displaysTaken--;

@@ -1,14 +1,14 @@
 package org.farmcode.sodalityLibrary.display.popUp
 {
-	import au.com.thefarmdigital.display.popUp.PopUpManager;
+	import org.farmcode.display.popup.PopupManager;
 	import org.farmcode.sodality.advisors.DynamicAdvisor;
 	import org.farmcode.sodality.events.AdviceEvent;
-	import org.farmcode.sodalityLibrary.display.popUp.advice.RemovePopUpAdvice;
+	import org.farmcode.actLibrary.display.popup.acts.RemovePopupAct;
 	import org.farmcode.sodalityLibrary.display.popUp.adviceTypes.IAddPopUpAdvice;
-	import org.farmcode.sodalityLibrary.display.popUp.adviceTypes.IAdvancedAddPopUpAdvice;
-	import org.farmcode.sodalityLibrary.display.popUp.adviceTypes.IRemoveAllPopUpsAdvice;
-	import org.farmcode.sodalityLibrary.display.popUp.adviceTypes.IRemovePopUpAdvice;
-	import org.farmcode.sodalityLibrary.display.transition.adviceTypes.ITransitionAdvice;
+	import org.farmcode.actLibrary.display.popup.actTypes.IAdvancedAddPopupAct;
+	import org.farmcode.actLibrary.display.popup.actTypes.IRemoveAllPopupsAct;
+	import org.farmcode.actLibrary.display.popup.actTypes.IRemovePopupAct;
+	import org.farmcode.actLibrary.display.transition.actTypes.ITransitionAct;
 	
 	import flash.display.DisplayObject;
 	import flash.display.DisplayObjectContainer;
@@ -44,14 +44,14 @@ package org.farmcode.sodalityLibrary.display.popUp
 		}
 		
 		
-		protected var popUpManager:PopUpManager;
+		protected var popUpManager:PopupManager;
 		private var _defaultParent:DisplayObjectContainer;
 		private var pendingPopUps:Dictionary = new Dictionary(true);
 		private var openPopUps:Dictionary = new Dictionary(true);
 		
 		public function PopUpAdvisor(){
 			super();
-			popUpManager = new PopUpManager();
+			popUpManager = new PopupManager();
 			popUpManager.respondToCloseEvents = false;
 		}
 		
@@ -72,8 +72,8 @@ package org.farmcode.sodalityLibrary.display.popUp
 			var bgFillColour:Number = 0;
 			var bgAlpha:Number = 0;
 			var bgTransitionTime:Number = 0;
-			if(cause is IAdvancedAddPopUpAdvice){
-				var adv:IAdvancedAddPopUpAdvice = (cause as IAdvancedAddPopUpAdvice);
+			if(cause is IAdvancedAddPopupAct){
+				var adv:IAdvancedAddPopupAct = (cause as IAdvancedAddPopupAct);
 				if(adv.popUpParent)parent = adv.popUpParent;
 				centre = adv.centre;
 				keepInCentre = adv.keepInCentre;
@@ -99,11 +99,11 @@ package org.farmcode.sodalityLibrary.display.popUp
 			}
 		}
 		[Trigger(triggerTiming="before")]
-		public function onBeforeRemovePopUp(cause:IRemovePopUpAdvice):void{
+		public function onBeforeRemovePopUp(cause:IRemovePopupAct):void{
 			cause.addEventListener(AdviceEvent.EXECUTE, onRemovePopUp);
 		}
 		protected function onRemovePopUp(e:AdviceEvent):void{
-			var cause:IRemovePopUpAdvice = (e.target as IRemovePopUpAdvice);
+			var cause:IRemovePopupAct = (e.target as IRemovePopupAct);
 			cause.removeEventListener(AdviceEvent.EXECUTE, onRemovePopUp);
 			if(pendingPopUps[cause.display]){
 				delete pendingPopUps[cause.display];
@@ -117,21 +117,21 @@ package org.farmcode.sodalityLibrary.display.popUp
 			var popUp:DisplayObject = e.target as DisplayObject;
 			
 			var addAdvice: IAddPopUpAdvice = this.openPopUps[popUp];
-			var advice:RemovePopUpAdvice = new RemovePopUpAdvice(null, popUp);
-			if (addAdvice is ITransitionAdvice)
+			var advice:RemovePopupAct = new RemovePopupAct(null, popUp);
+			if (addAdvice is ITransitionAct)
 			{
-				var tranAddAdvice: ITransitionAdvice = addAdvice as ITransitionAdvice;
+				var tranAddAdvice: ITransitionAct = addAdvice as ITransitionAct;
 				advice.doTransition = tranAddAdvice.doTransition;
 			}
 			dispatchEvent(advice);
 		}
 		
 		[Trigger(triggerTiming="before")]
-		public function onBeforeRemoveAllPopUps(cause:IRemoveAllPopUpsAdvice):void{
+		public function onBeforeRemoveAllPopUps(cause:IRemoveAllPopupsAct):void{
 			cause.addEventListener(AdviceEvent.EXECUTE, onRemoveAllPopUps);
 		}
 		protected function onRemoveAllPopUps(e:AdviceEvent):void{
-			var cause:IRemoveAllPopUpsAdvice = (e.target as IRemoveAllPopUpsAdvice);
+			var cause:IRemoveAllPopupsAct = (e.target as IRemoveAllPopupsAct);
 			cause.removeEventListener(AdviceEvent.EXECUTE, onRemoveAllPopUps);
 			popUpManager.removeAllPopups();
 		}
