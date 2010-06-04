@@ -50,19 +50,16 @@ package org.farmcode.acting.acts
 			}
 		}
 		
-		public var parameters:Array;
-		
 		private var _priority:int = 0;
 		private var _useCapture:Boolean=false;
 		private var _eventName:String;
 		private var _eventDispatcher:IEventDispatcher;
 		private var _listening:Boolean;
 		
-		public function NativeAct(eventDispatcher:IEventDispatcher=null, eventName:String=null, parameters:Array=null){
+		public function NativeAct(eventDispatcher:IEventDispatcher=null, eventName:String=null){
 			super();
 			this.eventDispatcher = eventDispatcher;
 			this.eventName = eventName;
-			this.parameters = parameters;
 		}
 		protected function attemptAdd():void{
 			if(!_listening && _eventDispatcher && _eventName){
@@ -77,12 +74,7 @@ package org.farmcode.acting.acts
 			}
 		}
 		protected function eventHandler(e:Event):void{
-			if(parameters){
-				var realParams:Array = [e].concat(parameters);
-				perform.apply(null,realParams);
-			}else{
-				perform(e);
-			}
+			perform(e);
 		}
 	}
 }

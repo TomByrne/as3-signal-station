@@ -12,7 +12,6 @@ package org.farmcode.acting.acts
 		
 		private var handlers:Array = new Array();
 		private var handlerIndices:Dictionary = new Dictionary();
-		private var handlerExecCount:Dictionary = new Dictionary();
 		
 		private var performing:Boolean;
 		private var removeAll:Boolean;
@@ -31,20 +30,12 @@ package org.farmcode.acting.acts
 					thisParams = params;
 				}
 				actHandler.handler.apply(null,thisParams);
-				if(actHandler.executions>0){
-					--actHandler.executions;
-					if(actHandler.executions==0){
-						toRemove.push(actHandler.handler);
-					}
-				}
 			}
 			performing = false;
-			var removeLength:int = (toRemove.length);
-			if(removeAll || (removeLength && toRemove.length==handlers.length)){
+			if(removeAll || toRemove.length==handlers.length){
 				removeAllHandlers();
 				removeAll = false;
-				if(removeLength)toRemove = new Array();
-			}else if(removeLength){
+			}else if(toRemove.length){
 				for each(var handler:Function in toRemove){
 					removeHandler(handler);
 				}
@@ -53,26 +44,13 @@ package org.farmcode.acting.acts
 		}
 		
 		public function addHandler(handler:Function, additionalArguments:Array=null):void{
-			_addHandler(handler, additionalArguments, handlerIndices, handlers);
-		}
-		protected function _addHandler(handler:Function, additionalArguments:Array, handlerIndices:Dictionary, handlers:Array):ActHandler{
 			if(handlerIndices[handler]==null){
 				handlerIndices[handler] = handlers.length;
-				var ret:ActHandler = ActHandler.getNew(handler,additionalArguments);
-				handlers.push(ret);
-				return ret;
+				handlers.push(ActHandler.getNew(handler,additionalArguments));
 			}
-			return null;
-		}
-		public function addTempHandler(handler:Function, additionalArguments:Array=null):void{
-			var actHandler:ActHandler = _addHandler(handler, additionalArguments, handlerIndices, handlers);
-			actHandler.executions = 1;
 		}
 		
 		public function removeHandler(handler:Function):void{
-			_removeHandler(handler, handlerIndices, handlers, toRemove, performing);
-		}
-		protected function _removeHandler(handler:Function, handlerIndices:Dictionary, handlers:Array, toRemove:Array, performing:Boolean):void{
 			var _index:* = handlerIndices[handler];
 			if(_index!=null){
 				if(performing){
@@ -118,7 +96,6 @@ class ActHandler{
 	
 	public var handler:Function;
 	public var additionalArguments:Array;
-	public var executions:int = 0;
 	
 	public function ActHandler(handler:Function, additionalArguments:Array){
 		this.handler = handler;
