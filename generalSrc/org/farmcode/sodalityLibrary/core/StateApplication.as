@@ -1,12 +1,13 @@
 package org.farmcode.sodalityLibrary.core
 {
-	import flash.display.DisplayObject;
+	import com.asual.swfaddress.SWFAddressUtilities;
+	
 	import flash.events.Event;
 	
+	import org.farmcode.display.assets.IDisplayAsset;
 	import org.farmcode.sodality.advice.IAdvice;
 	import org.farmcode.sodality.advice.MethodAdvice;
 	import org.farmcode.sodality.events.AdviceEvent;
-	import org.farmcode.sodalityLibrary.external.swfaddress.SWFAddressUtilities;
 	import org.farmcode.sodalityLibrary.external.swfaddress.advice.SetSWFAddressAdvice;
 	import org.farmcode.sodalityLibrary.external.swfaddress.adviceTypes.ISetSWFAddressAdvice;
 	import org.farmcode.sodalityLibrary.utils.config.advice.GetConfigParamAdvice;
@@ -23,7 +24,7 @@ package org.farmcode.sodalityLibrary.core
 		protected var _defaultAppStatePath:String;
 		protected var _stateAppConfig:IStateAppConfig;
 		
-		public function StateApplication(asset:DisplayObject=null)
+		public function StateApplication(asset:IDisplayAsset=null)
 		{
 			super(asset);
 		}

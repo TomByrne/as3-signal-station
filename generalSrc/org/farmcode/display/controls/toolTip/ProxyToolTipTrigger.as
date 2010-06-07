@@ -26,6 +26,9 @@ package org.farmcode.display.controls.toolTip
 				if(_dataAnchorChanged)_dataAnchorChanged.perform(this);
 			}
 		}
+		public function get tipType():String{
+			return _toolTipTrigger?_toolTipTrigger.tipType:null
+		}
 		
 		/**
 		 * @inheritDoc

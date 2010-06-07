@@ -292,10 +292,12 @@ package org.farmcode.display.assets.nativeAssets {
 		public function globalToLocal(point:Point):Point {
 			return _displayObject.globalToLocal(point);
 		}
-		
-		
 		public function localToGlobal(point:Point):Point {
 			return _displayObject.localToGlobal(point);
+		}
+		public function getBounds(space:IDisplayAsset):Rectangle {
+			var cast:DisplayObjectAsset = (space as DisplayObjectAsset);
+			return _displayObject.getBounds(cast.displayObject);
 		}
 		
 		public function getCloneFactory():IInstanceFactory{

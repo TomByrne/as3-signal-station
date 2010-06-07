@@ -8,8 +8,9 @@ package org.farmcode.display.containers
 	
 	import org.farmcode.acting.actTypes.IAct;
 	import org.farmcode.acting.acts.Act;
-	import org.farmcode.display.core.IView;
+	import org.farmcode.display.assets.IInteractiveObjectAsset;
 	import org.farmcode.display.constants.Direction;
+	import org.farmcode.display.core.IView;
 	import org.farmcode.display.layout.ILayoutSubject;
 	import org.farmcode.display.layout.ProxyLayoutSubject;
 	
@@ -17,13 +18,15 @@ package org.farmcode.display.containers
 	{
 		override public function set target(value:ILayoutSubject):void{
 			if(super.target!=value){
-				if(_targetView){
-					_targetView.asset.scrollRect = null;
+				if(_targetAsset){
+					_targetAsset.mouseWheel.removeHandler(onMouseWheel);
+					_targetAsset.scrollRect = null;
 				}
 				super.target = value;
 				_targetView = (value as IView);
-				if(_targetView){
-					_targetView.asset.addEventListener(MouseEvent.MOUSE_WHEEL, onMouseWheel);
+				_targetAsset = (_targetView.asset as IInteractiveObjectAsset);
+				if(_targetAsset){
+					_targetAsset.mouseWheel.addHandler(onMouseWheel);
 				}
 				checkScrolling(true);
 				dispatchMeasurementsChanged();
@@ -73,6 +76,7 @@ package org.farmcode.display.containers
 		private var _allowVerticalScroll:Boolean = true;
 		private var _target:ILayoutSubject;
 		private var _targetView:IView;
+		private var _targetAsset:IInteractiveObjectAsset;
 		private var _vScrollMetrics:ScrollMetrics = new ScrollMetrics(0,0,0);
 		private var _hScrollMetrics:ScrollMetrics = new ScrollMetrics(0,0,0);
 		private var _scrollRect:Rectangle = new Rectangle();
@@ -195,9 +199,9 @@ package org.farmcode.display.containers
 		}
 		protected function setScrollRect(rect:Rectangle):void{
 			if(_targetView){
-				_targetView.asset.x = _displayPosition.x;
-				_targetView.asset.y = _displayPosition.y;
-				_targetView.asset.scrollRect = rect;
+				_targetAsset.x = _displayPosition.x;
+				_targetAsset.y = _displayPosition.y;
+				_targetAsset.scrollRect = rect;
 			}
 		}
 		protected function onMouseWheel(e:MouseEvent):void{

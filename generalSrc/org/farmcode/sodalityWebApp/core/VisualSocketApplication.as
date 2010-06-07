@@ -1,16 +1,12 @@
 package org.farmcode.sodalityWebApp.core
 {
-	import flash.display.DisplayObject;
 	import flash.display.DisplayObjectContainer;
-	import flash.events.Event;
 	import flash.events.KeyboardEvent;
 	import flash.geom.Rectangle;
 	
 	import org.farmcode.acting.actTypes.IAct;
+	import org.farmcode.display.assets.IDisplayAsset;
 	import org.farmcode.sodality.advice.IAdvice;
-	import org.farmcode.sodality.advice.MethodAdvice;
-	import org.farmcode.sodality.events.AdviceEvent;
-	import org.farmcode.sodalityLibrary.core.ConfiguredApplication;
 	import org.farmcode.sodalityLibrary.core.StateApplication;
 	import org.farmcode.sodalityLibrary.display.visualSockets.VisualSocketAdvisor;
 	import org.farmcode.sodalityLibrary.display.visualSockets.VisualSocketNamespace;
@@ -20,11 +16,6 @@ package org.farmcode.sodalityWebApp.core
 	import org.farmcode.sodalityLibrary.display.visualSockets.sockets.DisplaySocket;
 	import org.farmcode.sodalityLibrary.display.visualSockets.sockets.IDisplaySocket;
 	import org.farmcode.sodalityLibrary.external.browser.BrowserAdvisor;
-	import org.farmcode.sodalityLibrary.external.swfaddress.SWFAddressUtilities;
-	import org.farmcode.sodalityLibrary.external.swfaddress.advice.SetSWFAddressAdvice;
-	import org.farmcode.sodalityLibrary.external.swfaddress.adviceTypes.ISetSWFAddressAdvice;
-	import org.farmcode.sodalityLibrary.utils.config.advice.GetConfigParamAdvice;
-	import org.farmcode.sodalityWebApp.appState.AppStateAdvisor;
 	
 	use namespace VisualSocketNamespace;
 	
@@ -32,11 +23,6 @@ package org.farmcode.sodalityWebApp.core
 	[Frame(factoryClass="org.farmcode.display.progress.SimpleSWFPreloaderFrame")] */ // this must be on subclass
 	public class VisualSocketApplication extends StateApplication implements IDisplaySocket
 	{
-		
-		override public function set container(value:DisplayObjectContainer) : void{
-			super.container = value;
-			_proxiedDisplaySocket.container = value;
-		}
 		public function get socketId(): String{
 			return _proxiedDisplaySocket.socketId;
 		}
@@ -69,7 +55,7 @@ package org.farmcode.sodalityWebApp.core
 		protected var _config:IVisualSocketAppConfig;
 		protected var _proxiedDisplaySocket:DisplaySocket;
 		
-		public function VisualSocketApplication(asset:DisplayObject=null){
+		public function VisualSocketApplication(asset:IDisplayAsset=null){
 			super(asset);
 			_proxiedDisplaySocket = new DisplaySocket("");
 			_proxiedDisplaySocket.displayDepth = 0;// forces app to lowest level, allowing debug bar to sit at top.
@@ -78,6 +64,14 @@ package org.farmcode.sodalityWebApp.core
 		}
 		protected function onPlugDisplayChanged(event:DisplaySocketEvent):void{
 			dispatchEvent(event);
+		}
+		override public function removeMainDisplay():void{
+			super.removeMainDisplay();
+			_proxiedDisplaySocket.container = null;
+		}
+		override public function addMainDisplay():void{
+			super.addMainDisplay();
+			_proxiedDisplaySocket.container = _asset.parent;
 		}
 		override public function setDisplayPosition(x:Number, y:Number, width:Number, height:Number) : void{
 			super.setDisplayPosition(x, y, width, height);
@@ -106,11 +100,7 @@ package org.farmcode.sodalityWebApp.core
 		override protected function setRootObject(object:Object):IAdvice{
 			_config = object as IVisualSocketAppConfig;
 			_visSocketAdvisor.rootDataMappers = _config.rootDataMappers;
-			super.setRootObject(object);
-			
+			return super.setRootObject(object);
 		}
-		
-		
-		
 	}
 }

@@ -432,7 +432,7 @@ package au.com.thefarmdigital.display.controls
 			if(_scrollMetrics.pageSize>_scrollMetrics.maximum-_scrollMetrics.minimum){
 				_scrollMetrics.value = 0;
 			}else{
-				_scrollMetrics.value = Math.min(Math.max(_scrollMetrics.value-delta*scrollLines,_scrollMetrics.minimum),_scrollMetrics.maximum-_scrollMetrics.pageSize);
+				_scrollMetrics.value = Math.min(Math.max(_scrollMetrics.value-e.delta*scrollLines,_scrollMetrics.minimum),_scrollMetrics.maximum-_scrollMetrics.pageSize);
 			}
 			this.commitScrollMetrics(true);
 		}

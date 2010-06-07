@@ -1,9 +1,8 @@
 package org.farmcode.display.tabFocus
 {
 	import flash.display.InteractiveObject;
-	import flash.events.FocusEvent;
+	import flash.events.Event;
 	
-	import org.farmcode.acting.acts.Act;
 	import org.farmcode.core.DelayedCall;
 	import org.farmcode.display.validation.ValidationFlag;
 

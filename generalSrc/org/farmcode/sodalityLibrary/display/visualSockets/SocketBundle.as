@@ -1,7 +1,5 @@
 package org.farmcode.sodalityLibrary.display.visualSockets
 {
-	import flash.display.DisplayObject;
-	import flash.display.DisplayObjectContainer;
 	import flash.display.Loader;
 	import flash.events.Event;
 	import flash.utils.Dictionary;
@@ -9,6 +7,8 @@ package org.farmcode.sodalityLibrary.display.visualSockets
 	import org.farmcode.acting.acts.AsynchronousAct;
 	import org.farmcode.acting.universal.rules.AfterAct;
 	import org.farmcode.acting.universal.rules.BeforeAct;
+	import org.farmcode.display.assets.IContainerAsset;
+	import org.farmcode.display.assets.IDisplayAsset;
 	import org.farmcode.sodality.advice.IAdvice;
 	import org.farmcode.sodalityLibrary.display.visualSockets.events.SocketContainerEvent;
 	import org.farmcode.sodalityLibrary.display.visualSockets.plugs.IPlugDisplay;
@@ -18,7 +18,7 @@ package org.farmcode.sodalityLibrary.display.visualSockets
 	public class SocketBundle
 	{
 		// There doesn't appear to be a security checking method that doesn't involve error catching
-		static protected function securityCheck(displayObject:DisplayObject):Boolean{
+		static protected function securityCheck(displayObject:IDisplayAsset):Boolean{
 			var loader:Loader = (displayObject as Loader);
 			if(loader && loader.contentLoaderInfo.url){
 				try{
@@ -35,8 +35,8 @@ package org.farmcode.sodalityLibrary.display.visualSockets
 		private var _parentContainer:ISocketContainer;
 		private var _fillingSocket: IDisplaySocket;
 		private var _childSockets:Dictionary;
-		private var _displayObject:DisplayObject;
-		private var _oldDisplayObject:DisplayObject;
+		private var _displayObject:IDisplayAsset;
+		private var _oldDisplayObject:IDisplayAsset;
 		
 		private var _beforeDisplayChange:AsynchronousAct;
 		private var _afterDisplayChange:AsynchronousAct;
@@ -163,40 +163,41 @@ package org.farmcode.sodalityLibrary.display.visualSockets
 			completeRemoveListener();
 			endHandler();
 		}
-		protected function setDisplayObject(displayObject:DisplayObject, removeRemoveListener:Boolean):void{
+		// TODO: get rid of this event shit
+		protected function setDisplayObject(displayObject:IDisplayAsset, removeRemoveListener:Boolean):void{
 			completeRemoveListener();
 			if(_displayObject!=displayObject){
 				if(_displayObject){
-					_displayObject.removeEventListener(SocketContainerEvent.SOCKET_CONTAINER_ADDED, onAdded);
-					_displayObject.removeEventListener(SocketContainerEvent.SOCKETS_CHANGED, onSocketsChanged);
+					_displayObject.drawDisplay.removeEventListener(SocketContainerEvent.SOCKET_CONTAINER_ADDED, onAdded);
+					_displayObject.drawDisplay.removeEventListener(SocketContainerEvent.SOCKETS_CHANGED, onSocketsChanged);
 					if(removeRemoveListener){
-						_displayObject.removeEventListener(SocketContainerEvent.SOCKET_CONTAINER_REMOVED, onRemoved);
+						_displayObject.drawDisplay.removeEventListener(SocketContainerEvent.SOCKET_CONTAINER_REMOVED, onRemoved);
 					}else{
 						_oldDisplayObject = _displayObject;
 					}
 				}
 				_displayObject = displayObject;
 				if(_displayObject){
-					_displayObject.addEventListener(SocketContainerEvent.SOCKET_CONTAINER_ADDED, onAdded);
-					_displayObject.addEventListener(SocketContainerEvent.SOCKET_CONTAINER_REMOVED, onRemoved);
-					_displayObject.addEventListener(SocketContainerEvent.SOCKETS_CHANGED, onSocketsChanged);
+					_displayObject.drawDisplay.addEventListener(SocketContainerEvent.SOCKET_CONTAINER_ADDED, onAdded);
+					_displayObject.drawDisplay.addEventListener(SocketContainerEvent.SOCKET_CONTAINER_REMOVED, onRemoved);
+					_displayObject.drawDisplay.addEventListener(SocketContainerEvent.SOCKETS_CHANGED, onSocketsChanged);
 				}
 			}
 		}
 		protected function completeRemoveListener():void{
 			if(_oldDisplayObject){
-				_oldDisplayObject.removeEventListener(SocketContainerEvent.SOCKET_CONTAINER_REMOVED, onRemoved);
+				_oldDisplayObject.drawDisplay.removeEventListener(SocketContainerEvent.SOCKET_CONTAINER_REMOVED, onRemoved);
 				_oldDisplayObject = null;
 			}
 		}
 		protected function onAdded(e:SocketContainerEvent): void{
-			var cast:DisplayObject = (e.target as DisplayObject);
+			var cast:IDisplayAsset = (e.target as IDisplayAsset);
 			if(cast)findSocketContainers(cast,true);
 			addChildContainer(e.socketContainer);
 			e.stopImmediatePropagation();
 		}
 		protected function onRemoved(e:SocketContainerEvent): void{
-			var cast:DisplayObject = (e.target as DisplayObject);
+			var cast:IDisplayAsset = (e.target as IDisplayAsset);
 			if(cast)findSocketContainers(cast,false);
 			removeChildContainer(e.socketContainer);
 			e.stopImmediatePropagation();
@@ -228,11 +229,11 @@ package org.farmcode.sodalityLibrary.display.visualSockets
 			}
 			e.stopImmediatePropagation();
 		}
-		protected function findSocketContainers(display:DisplayObject, add:Boolean): void{
-			var parent:DisplayObjectContainer = (display as DisplayObjectContainer);
+		protected function findSocketContainers(display:IDisplayAsset, add:Boolean): void{
+			var parent:IContainerAsset = (display as IContainerAsset);
 			if(parent && securityCheck(parent)){
 				for(var i:int=0; i<parent.numChildren; i++){
-					var child:DisplayObject = parent.getChildAt(i);
+					var child:IDisplayAsset = parent.getAssetAt(i);
 					if(!(child is IPlugDisplay)){
 						findSocketContainers(child, add);
 					}

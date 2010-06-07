@@ -403,7 +403,13 @@ package org.farmcode.display.layout.grid
 			renderer.measurementsChanged.addHandler(onRendMeasChanged);
 			if(_addRendererAct)_addRendererAct.perform(this,renderer);
 		}
+		// TODO: avoid casting all the time
 		protected function rendererRemoved(renderer:ILayoutSubject):void{
+			var cast:IGridLayoutSubject = (renderer as IGridLayoutSubject);
+			if(cast){
+				cast.columnIndex = -1;
+				cast.rowIndex = -1;
+			}
 			delete _dataToRenderers[renderer[_dataField]];
 			renderer.measurementsChanged.removeHandler(onRendMeasChanged);
 			if(_removeRendererAct)_removeRendererAct.perform(this,renderer);

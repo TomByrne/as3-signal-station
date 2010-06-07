@@ -42,6 +42,7 @@ import flash.utils.Dictionary;
 
 import org.farmcode.display.assets.IAsset;
 import org.farmcode.display.assets.IContainerAsset;
+import org.farmcode.display.assets.IDisplayAsset;
 import org.farmcode.display.assets.IStageAsset;
 
 class TopLayerBundle{
@@ -57,7 +58,7 @@ class TopLayerBundle{
 		stage.addAsset(container);
 		stage.added.addHandler(onAdded);
 	}
-	public function addDisplay(display:IAsset):void{
+	public function addDisplay(display:IDisplayAsset):void{
 		if(!displays[display]){
 			++addedDisplays;
 			displays[display] = true;
@@ -65,7 +66,7 @@ class TopLayerBundle{
 		}
 	}
 	// returns true if it is now empty and should be removed
-	public function removeDisplay(display:IAsset):Boolean{
+	public function removeDisplay(display:IDisplayAsset):Boolean{
 		if(displays[display]){
 			delete displays[display];
 			--addedDisplays;

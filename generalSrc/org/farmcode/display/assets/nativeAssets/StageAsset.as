@@ -4,6 +4,7 @@ package org.farmcode.display.assets.nativeAssets
 	import flash.display.InteractiveObject;
 	import flash.display.Stage;
 	import flash.events.Event;
+	import flash.events.FullScreenEvent;
 	
 	import org.farmcode.acting.actTypes.IAct;
 	import org.farmcode.acting.acts.NativeAct;
@@ -19,6 +20,13 @@ package org.farmcode.display.assets.nativeAssets
 		public function get resize():IAct{
 			if(!_resize)_resize = new NativeAct(_stage,Event.RESIZE,[this]);
 			return _resize;
+		}
+		/**
+		 * @inheritDoc
+		 */
+		public function get fullScreen():IAct{
+			if(!_fullScreen)_fullScreen = new NativeAct(_stage,FullScreenEvent.FULL_SCREEN,[this]);
+			return _fullScreen;
 		}
 		
 		override public function set displayObject(value:DisplayObject):void{
@@ -58,10 +66,17 @@ package org.farmcode.display.assets.nativeAssets
 		public function get frameRate():Number{
 			return _stage.frameRate;
 		}
+		public function get displayState():String{
+			return _stage.displayState;
+		}
+		public function set displayState(value:String):void{
+			_stage.displayState = value;
+		}
 		
 		private var _stage:Stage;
 		private var _focus:InteractiveObjectAsset;
 		protected var _resize:NativeAct;
+		protected var _fullScreen:NativeAct;
 		
 		public function StageAsset(){
 			super();

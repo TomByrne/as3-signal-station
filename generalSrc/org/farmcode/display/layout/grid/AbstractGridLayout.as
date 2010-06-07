@@ -8,12 +8,12 @@ package org.farmcode.display.layout.grid
 	
 	import org.farmcode.acting.actTypes.IAct;
 	import org.farmcode.acting.acts.Act;
-	import org.farmcode.display.validation.ValidationFlag;
 	import org.farmcode.display.constants.Direction;
 	import org.farmcode.display.layout.AbstractLayout;
 	import org.farmcode.display.layout.ILayoutSubject;
 	import org.farmcode.display.layout.core.ILayoutInfo;
 	import org.farmcode.display.layout.list.IListLayoutInfo;
+	import org.farmcode.display.validation.ValidationFlag;
 	
 	/**
 	 * In the AbstractGridLayout class, length is treated as the direction across the stacking of the list
@@ -349,6 +349,17 @@ package org.farmcode.display.layout.grid
 		private var _equaliseCellBreadthsRef:String;
 		private var _equaliseCellLengthsRef:String;
 		
+		protected var _breadthIndexRef:String;
+		protected var _lengthIndexRef:String;
+		
+		override public function removeSubject(subject:ILayoutSubject):void{
+			super.removeSubject(subject);
+			var cast:IGridLayoutSubject = (subject as IGridLayoutSubject);
+			if(cast){
+				cast.columnIndex = -1;
+				cast.rowIndex = -1;
+			}
+		}
 		/**
 		 * Gets the collection of keys that will be used generate and store
 		 * measurements and cell coordinates. In a normal case this would be
@@ -429,6 +440,9 @@ package org.farmcode.display.layout.grid
 				
 				_equaliseCellBreadthsRef = "_equaliseCellHeights";
 				_equaliseCellLengthsRef = "_equaliseCellWidths";
+				
+				_breadthIndexRef = "rowIndex";
+				_lengthIndexRef = "columnIndex";
 			}else{
 				_breadthCoordRef = "x";
 				_breadthDimRef = "width";
@@ -456,6 +470,9 @@ package org.farmcode.display.layout.grid
 				
 				_equaliseCellBreadthsRef = "_equaliseCellWidths";
 				_equaliseCellLengthsRef = "_equaliseCellHeights";
+				
+				_breadthIndexRef = "columnIndex";
+				_lengthIndexRef = "rowIndex";
 			}
 			_marginFlag.invalidate();
 			_cellMappingFlag.invalidate();
@@ -819,8 +836,14 @@ package org.farmcode.display.layout.grid
 				lengthStack += length+_lengthGap;
 			}
 		}
+		// TODO: avoid casting all the time
 		protected function positionRenderer(key:*, length:int, breadth:int, x:Number, y:Number, width:Number, height:Number):void{
 			var renderer:ILayoutSubject = getChildRenderer(key,length,breadth);
+			var cast:IGridLayoutSubject = (renderer as IGridLayoutSubject);
+			if(cast){
+				cast[_lengthIndexRef] = length;
+				cast[_breadthIndexRef] = breadth;
+			}
 			if(renderer)renderer.setDisplayPosition(x,y,width,height);
 		}
 		

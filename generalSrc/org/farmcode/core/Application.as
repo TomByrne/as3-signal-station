@@ -18,13 +18,9 @@ package org.farmcode.core
 		}
 		public function set container(value:DisplayObjectContainer):void{
 			if(_container!=value){
-				if(_mainDisplay && _container){
-					_container.removeChild(_mainDisplay);
-				}
+				removeMainDisplay();
 				_container = value;
-				if(_mainDisplay && _container){
-					_container.addChild(_mainDisplay);
-				}
+				addMainDisplay();
 			}
 		}
 		public function get mainDisplay():DisplayObject{
@@ -32,13 +28,9 @@ package org.farmcode.core
 		}
 		public function set mainDisplay(value:DisplayObject):void{
 			if(_mainDisplay!=value){
-				if(_mainDisplay && _container){
-					_container.removeChild(_mainDisplay);
-				}
+				removeMainDisplay();
 				_mainDisplay = value;
-				if(_mainDisplay && _container){
-					_container.addChild(_mainDisplay);
-				}
+				addMainDisplay();
 			}
 		}
 		
@@ -47,6 +39,16 @@ package org.farmcode.core
 		
 		public function Application(asset:IDisplayAsset=null){
 			super(asset);
+		}
+		public function removeMainDisplay():void{
+			if(_mainDisplay && _container){
+				_container.removeChild(_mainDisplay);
+			}
+		}
+		public function addMainDisplay():void{
+			if(_mainDisplay && _container){
+				_container.addChild(_mainDisplay);
+			}
 		}
 	}
 }

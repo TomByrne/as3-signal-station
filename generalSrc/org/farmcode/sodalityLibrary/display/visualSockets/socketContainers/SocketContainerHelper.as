@@ -1,13 +1,14 @@
 package org.farmcode.sodalityLibrary.display.visualSockets.socketContainers
 {
 	import flash.display.DisplayObject;
-	import flash.display.DisplayObjectContainer;
 	import flash.events.Event;
 	import flash.events.IEventDispatcher;
 	import flash.utils.Dictionary;
 	
 	import org.farmcode.acting.actTypes.IAct;
 	import org.farmcode.acting.acts.Act;
+	import org.farmcode.display.assets.IContainerAsset;
+	import org.farmcode.display.assets.IDisplayAsset;
 	import org.farmcode.sodality.advice.IAdvice;
 	import org.farmcode.sodality.advisors.IAdvisor;
 	import org.farmcode.sodalityLibrary.display.visualSockets.advice.FillSocketAdvice;
@@ -32,13 +33,13 @@ package org.farmcode.sodalityLibrary.display.visualSockets.socketContainers
 		protected var _lastDataProvider:*;
 		protected var _dataProviderDispatcher:IEventDispatcher;
 		protected var _advisor:IAdvisor;
-		protected var _display:DisplayObject;
+		protected var _display:IDisplayAsset;
 		private var _childSockets: Array = [];
 		private var _socketContainer:ISocketContainer;
 		private var _dataPropertyBindings:Dictionary;
 		private var _childDataFilter:Dictionary;
 		private var _added:Boolean;
-		private var _defaultContainer:DisplayObjectContainer;
+		private var _defaultContainer:IContainerAsset;
 		
 		public function SocketContainerHelper(socketContainer:ISocketContainer, advisor:IAdvisor){
 			_socketContainer = socketContainer;
@@ -70,10 +71,10 @@ package org.farmcode.sodalityLibrary.display.visualSockets.socketContainers
 				if(changed)dispatchSocketChange();
 			}
 		}
-		public function get defaultContainer(): DisplayObjectContainer{
+		public function get defaultContainer(): IContainerAsset{
 			return this._defaultContainer;
 		}
-		public function set defaultContainer(value: DisplayObjectContainer):void{
+		public function set defaultContainer(value: IContainerAsset):void{
 			if(_defaultContainer!=value){
 				for each(var socket:IDisplaySocket in _childSockets){
 					var cast:DisplaySocket = (socket as DisplaySocket);
@@ -93,22 +94,22 @@ package org.farmcode.sodalityLibrary.display.visualSockets.socketContainers
 				checkDataProvider();
 			}
 		}
-		public function set display(value:DisplayObject):void{
+		public function set display(value:IDisplayAsset):void{
 			if(_display!=value){
 				if(_display){
-					_display.removeEventListener(Event.ADDED_TO_STAGE, onAdded);
-					_display.removeEventListener(Event.REMOVED_FROM_STAGE, onRemoved);
+					_display.addedToStage.removeHandler(onAdded);
+					_display.removedFromStage.removeHandler(onRemoved);
 					if(_display.stage)onRemoved();
 				}
 				_display = value;
-				if(value){
-					value.addEventListener(Event.ADDED_TO_STAGE, onAdded);
-					value.addEventListener(Event.REMOVED_FROM_STAGE, onRemoved);
-					if(value.stage)onAdded();
+				if(_display){
+					_display.addedToStage.addHandler(onAdded);
+					_display.removedFromStage.addHandler(onRemoved);
+					if(_display.stage)onAdded();
 				}
 			}
 		}
-		public function get display():DisplayObject{
+		public function get display():IDisplayAsset{
 			return _display;
 		}
 		public function setDataProvider(value:*, cause:IAdvice=null):void{
@@ -127,17 +128,19 @@ package org.farmcode.sodalityLibrary.display.visualSockets.socketContainers
 				checkDataProvider(cause);
 			}
 		}
+		// TODO: use some registration system instead of event dispatching
 		protected function onAdded(e:Event=null): void{
 			if(!_added){
 				_added = true;
-				_display.dispatchEvent(new SocketContainerEvent(SocketContainerEvent.SOCKET_CONTAINER_ADDED,_socketContainer,true));
+				_display.drawDisplay.dispatchEvent(new SocketContainerEvent(SocketContainerEvent.SOCKET_CONTAINER_ADDED,_socketContainer,true));
 				if(_dataProvider!=null)checkDataProvider();
 			}
 		}
+		// TODO: use some registration system instead of event dispatching
 		protected function onRemoved(e:Event=null): void{
 			if(_added){
 				_added = false;
-				_display.dispatchEvent(new SocketContainerEvent(SocketContainerEvent.SOCKET_CONTAINER_REMOVED,_socketContainer,true));
+				_display.drawDisplay.dispatchEvent(new SocketContainerEvent(SocketContainerEvent.SOCKET_CONTAINER_REMOVED,_socketContainer,true));
 			}
 		}
 		protected function onDataChange(e:Event): void{
@@ -230,8 +233,9 @@ package org.farmcode.sodalityLibrary.display.visualSockets.socketContainers
 			}
 			return -1;
 		}
+		// TODO: use some registration system instead of event dispatching
 		protected function dispatchSocketChange():void{
-			if(_display && _display.stage)_display.dispatchEvent(new SocketContainerEvent(SocketContainerEvent.SOCKETS_CHANGED,_socketContainer,true));
+			if(_display && _display.stage)_display.drawDisplay.dispatchEvent(new SocketContainerEvent(SocketContainerEvent.SOCKETS_CHANGED,_socketContainer,true));
 		}
 	}
 }

@@ -10,8 +10,9 @@ package org.farmcode.display.controls
 	import flash.utils.Timer;
 	import flash.utils.getTimer;
 	
-	import org.farmcode.display.core.LayoutView;
+	import org.farmcode.display.assets.IDisplayAsset;
 	import org.farmcode.display.constants.Direction;
+	import org.farmcode.display.core.LayoutView;
 	
 	public class ScrollButtons extends LayoutView
 	{
@@ -53,7 +54,7 @@ package org.farmcode.display.controls
 		
 		private var _scrollMetrics:ScrollMetrics = new ScrollMetrics();
 		
-		public function ScrollButtons(asset:DisplayObject=null){
+		public function ScrollButtons(asset:IDisplayAsset=null){
 			_foreButton = new Button();
 			_foreButton.mouseDownAct.addHandler(onForeDown);
 			_foreButton.mouseUpAct.addHandler(onButtonUp);
@@ -69,11 +70,15 @@ package org.farmcode.display.controls
 		}
 		override protected function bindToAsset() : void{
 			super.bindToAsset();
-			_foreButton.asset = _containerAsset.getChildByName("foreButton");
-			_aftButton.asset = _containerAsset.getChildByName("aftButton");
+			_foreButton.asset = _containerAsset.takeAssetByName("foreButton",IDisplayAsset);
+			_aftButton.asset = _containerAsset.takeAssetByName("aftButton",IDisplayAsset);
 		}
 		override protected function unbindFromAsset() : void{
 			super.unbindFromAsset();
+			_containerAsset.returnAsset(_foreButton.asset);
+			_containerAsset.returnAsset(_aftButton.asset);
+			_foreButton.asset = null;
+			_aftButton.asset = null;
 		}
 		override protected function measure() : void{
 			super.measure();

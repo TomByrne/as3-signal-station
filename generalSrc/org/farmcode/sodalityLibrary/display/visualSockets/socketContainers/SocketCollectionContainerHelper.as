@@ -5,6 +5,7 @@ package org.farmcode.sodalityLibrary.display.visualSockets.socketContainers
 	
 	import org.farmcode.acting.actTypes.IAct;
 	import org.farmcode.acting.acts.Act;
+	import org.farmcode.display.assets.IContainerAsset;
 	import org.farmcode.display.layout.list.ListLayoutInfo;
 	import org.farmcode.sodality.advice.IAdvice;
 	import org.farmcode.sodality.advisors.IAdvisor;
@@ -43,7 +44,7 @@ package org.farmcode.sodalityLibrary.display.visualSockets.socketContainers
 		public function get collectionSocketsChanged():IAct{
 			return _collectionSocketsChanged;
 		}
-		override public function set defaultContainer(value: DisplayObjectContainer):void{
+		override public function set defaultContainer(value: IContainerAsset):void{
 			if(super.defaultContainer!=value){
 				for each(var socket:IDisplaySocket in _collectionSockets){
 					var cast:DisplaySocket = (socket as DisplaySocket);

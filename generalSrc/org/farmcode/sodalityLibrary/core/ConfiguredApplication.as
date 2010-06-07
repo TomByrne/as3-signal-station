@@ -96,10 +96,10 @@ package org.farmcode.sodalityLibrary.core
 		private var _president:President;
 		private var _configURL:String;
 		
-		/*Config::DEBUG
+		Config::DEBUG
 		{
 			protected var _debugArea:Sprite;
-		}*/
+		}
 		
 		public function ConfiguredApplication(asset:IDisplayAsset=null){
 			super(asset);

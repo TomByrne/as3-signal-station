@@ -87,6 +87,7 @@ package org.farmcode.display.assets
 		function position(x:Number, y:Number, width:Number, height:Number):void;
 		function globalToLocal(point:Point):Point;
 		function localToGlobal(point:Point):Point;
+		function getBounds(space:IDisplayAsset):Rectangle;
 		
 		function getCloneFactory():IInstanceFactory;
 	}

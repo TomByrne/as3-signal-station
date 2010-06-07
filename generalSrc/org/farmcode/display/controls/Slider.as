@@ -7,6 +7,8 @@ package org.farmcode.display.controls
 	import org.farmcode.acting.actTypes.IAct;
 	import org.farmcode.acting.acts.Act;
 	import org.farmcode.core.DelayedCall;
+	import org.farmcode.display.assets.IDisplayAsset;
+	import org.farmcode.display.assets.IInteractiveObjectAsset;
 	import org.farmcode.display.constants.Direction;
 	
 	public class Slider extends Control
@@ -118,11 +120,11 @@ package org.farmcode.display.controls
 			super.bindToAsset();
 			
 			_button.asset = _containerAsset;
-			_track = _containerAsset.getChildByName(TRACK) as InteractiveObject;
+			_track = _containerAsset.takeAssetByName(TRACK,IInteractiveObjectAsset);
 			
 			_assumedDirection = (_track.width>_track.height?Direction.HORIZONTAL:Direction.VERTICAL);
 			
-			_thumb.asset = _containerAsset.getChildByName(THUMB) as InteractiveObject;
+			_thumb.asset = _containerAsset.takeAssetByName(THUMB,IInteractiveObjectAsset);
 			
 			_assumedThumbX = _thumb.asset.x;
 			_assumedThumbY = _thumb.asset.y;
@@ -133,7 +135,9 @@ package org.farmcode.display.controls
 		}
 		override protected function unbindFromAsset() : void{
 			super.unbindFromAsset();
+			_containerAsset.returnAsset(_button.asset);
 			_button.asset = null;
+			_containerAsset.returnAsset(_thumb.asset);
 			_thumb.asset = null;
 			_track = null;
 		}
@@ -174,7 +178,7 @@ package org.farmcode.display.controls
 			_thumb.setDisplayPosition(thumbX,thumbY,_thumb.asset.width,_thumb.asset.height);
 			_button.setDisplayPosition(displayPosition.x,displayPosition.y,displayPosition.width,displayPosition.height);
 		}
-		override public function setAssetAndPosition(asset:DisplayObject) : void{
+		override public function setAssetAndPosition(asset:IDisplayAsset) : void{
 			super.setAssetAndPosition(asset);
 			checkIsBound();
 			_direction = _assumedDirection;

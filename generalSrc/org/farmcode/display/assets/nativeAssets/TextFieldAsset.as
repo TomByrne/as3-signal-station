@@ -1,19 +1,14 @@
 package org.farmcode.display.assets.nativeAssets
 {
-	import com.hurlant.eval.ast.StrictEqual;
-	
 	import flash.display.DisplayObject;
 	import flash.display.MovieClip;
 	import flash.display.TextFieldGutter;
 	import flash.events.Event;
-	import flash.events.TextEvent;
 	import flash.text.TextField;
 	import flash.text.TextFormat;
-	import flash.utils.Dictionary;
 	
 	import org.farmcode.acting.actTypes.IAct;
 	import org.farmcode.acting.acts.NativeAct;
-	import org.farmcode.core.DelayedCall;
 	import org.farmcode.display.assets.IDisplayAsset;
 	import org.farmcode.display.assets.ITextFieldAsset;
 	import org.farmcode.display.assets.states.IStateDef;

@@ -2,6 +2,7 @@ package org.farmcode.sodalityLibrary.display.visualSockets.socketContainers
 {
 	import flash.display.DisplayObject;
 	
+	import org.farmcode.display.assets.IDisplayAsset;
 	import org.farmcode.display.layout.ILayout;
 	import org.farmcode.display.layout.ILayoutSubject;
 	
@@ -75,7 +76,7 @@ package org.farmcode.sodalityLibrary.display.visualSockets.socketContainers
 		private var _collectionLayoutSubject:ILayoutSubject;
 		private var _socketCollContHelper:SocketCollectionContainerHelper;
 		
-		public function SocketCollectionContainer(asset:DisplayObject=null){
+		public function SocketCollectionContainer(asset:IDisplayAsset=null){
 			super(asset);
 		}
 		override public function get childSockets(): Array{
@@ -86,7 +87,7 @@ package org.farmcode.sodalityLibrary.display.visualSockets.socketContainers
 				_socketCollContHelper = new SocketCollectionContainerHelper(this,_advisor);
 				_socketCollContHelper.collectionSocketsChanged.addHandler(collectionSocketsChanged);
 				_socketContHelper = _socketCollContHelper;
-				_socketContHelper.defaultContainer = childContainer;
+				_socketContHelper.defaultContainer = _childContainer;
 			}
 			return _socketContHelper;
 		}

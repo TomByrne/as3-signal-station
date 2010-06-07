@@ -1,10 +1,11 @@
 package org.farmcode.sodalityLibrary.display.visualSockets.plugs
 {
-	import flash.display.DisplayObject;
 	import flash.events.Event;
 	
 	import org.farmcode.acting.actTypes.IUniversalAct;
 	import org.farmcode.acting.acts.UniversalAct;
+	import org.farmcode.display.assets.IAsset;
+	import org.farmcode.display.assets.IDisplayAsset;
 	import org.farmcode.display.core.IOutroView;
 	import org.farmcode.display.core.LayoutView;
 	import org.farmcode.sodality.advice.IAdvice;
@@ -13,9 +14,9 @@ package org.farmcode.sodalityLibrary.display.visualSockets.plugs
 	[Event(name="displayChanged",type="org.farmcode.sodalityLibrary.display.visualSockets.events.PlugDisplayEvent")]
 	public class PlugDisplay extends LayoutView implements IOutroView, IPlugDisplay
 	{
-		override public function set asset(value:DisplayObject):void{
+		override public function set asset(value:IDisplayAsset):void{
 			if(super.asset!=value){
-				var oldDisplay:DisplayObject = super.asset;
+				var oldDisplay:IDisplayAsset = super.asset;
 				super.asset = value;
 				if(_displayChanged)_displayChanged.perform(this, oldDisplay, value);
 			}
@@ -30,7 +31,7 @@ package org.farmcode.sodalityLibrary.display.visualSockets.plugs
 				_initialDataSet = false;
 			}
 		}
-		public function get display():DisplayObject{
+		public function get display():IDisplayAsset{
 			return asset;
 		}
 		
@@ -49,7 +50,7 @@ package org.farmcode.sodalityLibrary.display.visualSockets.plugs
 		private var _displaySocket:IDisplaySocket;
 		private var _initialDataSet:Boolean;
 		
-		public function PlugDisplay(asset:DisplayObject=null){
+		public function PlugDisplay(asset:IDisplayAsset=null){
 			super(asset);
 		}
 		public function getDataProvider():*{
@@ -66,8 +67,8 @@ package org.farmcode.sodalityLibrary.display.visualSockets.plugs
 				}
 			}
 		}
-		override protected function onAddedToStage(e:Event):void{
-			super.onAddedToStage(e);
+		override protected function onAddedToStage(e:Event, from:IAsset):void{
+			super.onAddedToStage(e,from);
 			if(_initialDataSet)validate();
 		}
 		override protected function checkIsBound():void{

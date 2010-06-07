@@ -24,7 +24,7 @@ package org.farmcode.sodalityLibrary.display.visualSockets.plugs.controls
 		override protected function commitData(cause:IAdvice=null):void{
 			_advisorData = (_dataProvider as INonVisualAdvisor);
 			if(_advisorData){
-				_advisorData.advisorDisplay = _asset;
+				_advisorData.advisorDisplay = _asset?_asset.drawDisplay:null;
 			}
 			_actionData = (_dataProvider as ITriggerableAction);
 			_textLabelButton.data = _dataProvider;
@@ -40,22 +40,24 @@ package org.farmcode.sodalityLibrary.display.visualSockets.plugs.controls
 		override protected function commitAsset():void{
 			super.commitAsset();
 			if(_dynamicAdvisor){
-				_dynamicAdvisor.advisorDisplay = _asset;
+				_dynamicAdvisor.advisorDisplay = _asset?_asset.drawDisplay:null;
 			}
 			if(_advisorData){
-				_advisorData.advisorDisplay = _asset;
+				_advisorData.advisorDisplay = _asset?_asset.drawDisplay:null;
 			}
 		}
+		// TODO: clean this shit up (triggerAction probably gets called already in Button)
 		protected function onButtonClick(from:TextLabelButton):void{
 			if(_actionData){
-				var advice:IAdvice = _actionData.triggerAction();
+				_actionData.triggerAction(_asset.drawDisplay);
+				/*var advice:IAdvice = _actionData.triggerAction(_asset.drawDisplay);
 				if(advice){
 					if(!_dynamicAdvisor){
 						_dynamicAdvisor = new DynamicAdvisor();
 					}
-					_dynamicAdvisor.advisorDisplay = _asset;
+					_dynamicAdvisor.advisorDisplay = _asset?_asset.drawDisplay:null;
 					_dynamicAdvisor.dispatchEvent(advice as Event);
-				}
+				}*/
 			}
 		}
 	}

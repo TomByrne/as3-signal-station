@@ -1,13 +1,13 @@
 package org.farmcode.sodalityLibrary.display.visualSockets.plugs
 {
 	
-	import flash.display.DisplayObject;
 	import flash.geom.Rectangle;
 	
 	import org.farmcode.acting.actTypes.IAct;
 	import org.farmcode.acting.actTypes.IUniversalAct;
 	import org.farmcode.acting.acts.Act;
 	import org.farmcode.acting.acts.UniversalAct;
+	import org.farmcode.display.assets.IDisplayAsset;
 	import org.farmcode.display.core.View;
 	import org.farmcode.display.layout.ILayoutSubject;
 	import org.farmcode.display.layout.core.ILayoutInfo;
@@ -16,16 +16,16 @@ package org.farmcode.sodalityLibrary.display.visualSockets.plugs
 	
 	public class AbstractPlugDisplayProxy implements ILayoutSubject, IPlugDisplay
 	{
-		public function get asset():DisplayObject{
+		public function get asset():IDisplayAsset{
 			return _asset;
 		}
-		public function set asset(value:DisplayObject):void{
+		public function set asset(value:IDisplayAsset):void{
 			if(_asset!=value){
 				_asset = value;
 				commitAsset();
 			}
 		}
-		public function get display():DisplayObject{
+		public function get display():IDisplayAsset{
 			return _asset;
 		}
 		
@@ -34,6 +34,14 @@ package org.farmcode.sodalityLibrary.display.visualSockets.plugs
 		}
 		public function set displaySocket(value:IDisplaySocket):void{
 			_displaySocket = value;
+		}
+		
+		//TODO: these shouldn't be tied to _layoutTarget
+		public function get displayPosition():Rectangle{
+			return _layoutTarget.displayPosition;
+		}
+		public function get positionChanged():IAct{
+			return _layoutTarget.positionChanged;
 		}
 		
 		
@@ -63,7 +71,7 @@ package org.farmcode.sodalityLibrary.display.visualSockets.plugs
 		protected var _dataProvider:*;
 		protected var _displaySocket:IDisplaySocket;
 		protected var _target:View;
-		protected var _asset:DisplayObject;
+		protected var _asset:IDisplayAsset;
 		protected var _layoutTarget:ILayoutSubject;
 		
 		public function AbstractPlugDisplayProxy(target:View=null){

@@ -1,5 +1,8 @@
 package org.farmcode.sodalityWebApp.data.navigation
 {
+	import com.asual.swfaddress.SWFAddressUtilities;
+	
+	import flash.display.DisplayObject;
 	import flash.events.Event;
 	
 	import org.farmcode.acting.actTypes.IAct;
@@ -11,7 +14,6 @@ package org.farmcode.sodalityWebApp.data.navigation
 	import org.farmcode.sodality.advice.IAdvice;
 	import org.farmcode.sodality.advisors.DynamicAdvisor;
 	import org.farmcode.sodality.events.AdviceEvent;
-	import org.farmcode.sodalityLibrary.external.swfaddress.SWFAddressUtilities;
 	import org.farmcode.sodalityLibrary.external.swfaddress.advice.GetSWFAddressAdvice;
 	import org.farmcode.sodalityLibrary.external.swfaddress.advice.SetSWFAddressAdvice;
 	import org.farmcode.sodalityLibrary.external.swfaddress.adviceTypes.ISetSWFAddressAdvice;
@@ -19,6 +21,9 @@ package org.farmcode.sodalityWebApp.data.navigation
 	public class InternalLink extends DynamicAdvisor implements IBooleanConsumer, IBooleanProvider, IStringProvider, ITriggerableAction
 	{
 		
+		public function get value():*{
+			return stringValue;
+		}
 		public function get stringValue():String{
 			return _stringValue;
 		}
@@ -86,6 +91,12 @@ package org.farmcode.sodalityWebApp.data.navigation
 		public function get stringValueChanged():IAct{
 			if(!_stringValueChanged)_stringValueChanged = new Act();
 			return _stringValueChanged;
+		}
+		/**
+		 * @inheritDoc
+		 */
+		public function get valueChanged():IAct{
+			return stringValueChanged;
 		}
 		
 		protected var _stringValueChanged:Act;

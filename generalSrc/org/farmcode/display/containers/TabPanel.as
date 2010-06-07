@@ -65,7 +65,7 @@ package org.farmcode.display.containers
 		
 		private var _panelDisplay:ILayoutView;
 		private var _castDisplay:LayoutView;
-		private var _panelAsset:IAsset;
+		private var _panelAsset:IDisplayAsset;
 		private var _assumedPanelAsset:IDisplayAsset;
 		private var _panelDataField:String;
 		private var _listMeasure:Rectangle;
@@ -240,7 +240,7 @@ package org.farmcode.display.containers
 				_castDisplay.asset = _assumedPanelAsset;
 			}
 		}
-		protected function setPanelAsset(value:IAsset):void{
+		protected function setPanelAsset(value:IDisplayAsset):void{
 			if(_panelAsset!=value){
 				if(_panelAsset && _containerAsset){
 					_containerAsset.removeAsset(_panelAsset);

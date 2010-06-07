@@ -5,11 +5,14 @@ package org.farmcode.sodalityLibrary.display.visualSockets.plugs.containers
 	import flash.events.Event;
 	import flash.geom.Rectangle;
 	
-	import org.farmcode.data.dataTypes.IStringProvider;
+	import org.farmcode.data.dataTypes.IBooleanProvider;
+	import org.farmcode.display.assets.IContainerAsset;
+	import org.farmcode.display.assets.IDisplayAsset;
 	import org.farmcode.display.constants.Direction;
 	import org.farmcode.display.containers.ScrollWrapper;
-	import org.farmcode.display.containers.accordion.AccordionRenderer2;
+	import org.farmcode.display.containers.accordion.AccordionRenderer;
 	import org.farmcode.display.layout.ILayoutSubject;
+	import org.farmcode.display.layout.grid.IGridLayoutSubject;
 	import org.farmcode.sodality.advisors.DynamicAdvisor;
 	import org.farmcode.sodality.events.AdvisorEvent;
 	import org.farmcode.sodalityLibrary.display.visualSockets.advice.FillSocketAdvice;
@@ -18,24 +21,20 @@ package org.farmcode.sodalityLibrary.display.visualSockets.plugs.containers
 	import org.farmcode.sodalityLibrary.display.visualSockets.socketContainers.SocketContainerUtils;
 	import org.farmcode.sodalityLibrary.display.visualSockets.sockets.DisplaySocket;
 	
-	public class AccordionPlugRenderer extends AccordionRenderer2 implements ISocketContainer
+	public class AccordionPlugRenderer extends AccordionRenderer implements ISocketContainer, IGridLayoutSubject
 	{
-		override public function set asset(value:DisplayObject) : void{
+		override public function set asset(value:IDisplayAsset) : void{
 			super.asset = value;
-			_dynamicAdvisor.advisorDisplay = value;
+			_dynamicAdvisor.advisorDisplay = value?value.drawDisplay:null;
 			_socketContainerHelper.display = value;
 			attemptFillSocket();
 		}
-		override public function set data(value:IStringProvider) : void{
+		override public function set data(value:IBooleanProvider) : void{
 			if(super.data != value){
 				super.data = value;
 				_dataChanged = true;
 				attemptFillSocket();
 			}
-		}
-		override public function set accordionIndex(value:int) : void{
-			_displaySocket.socketId = String(value);
-			attemptFillSocket();
 		}
 		public function get childSockets():Array{
 			return _socketContainerHelper.childSockets;
@@ -51,10 +50,38 @@ package org.farmcode.sodalityLibrary.display.visualSockets.plugs.containers
 				attemptFillSocket();
 			}
 		}
-		override public function set open(value:Boolean):void{
-			super.open = value;
-			attemptFillSocket();
+		public function get columnIndex():int{
+			return _columnIndex;
 		}
+		public function set columnIndex(value:int):void{
+			if(_columnIndex!=value){
+				_columnIndex = value;
+				if(_rowIndex!=-1 && _columnIndex!=-1){
+					_displaySocket.socketId = String(_rowIndex+_columnIndex);
+				}else{
+					_displaySocket.socketId = null;
+				}
+				attemptFillSocket();
+			}
+		}
+		
+		public function get rowIndex():int{
+			return _rowIndex;
+		}
+		public function set rowIndex(value:int):void{
+			if(_rowIndex!=value){
+				_rowIndex = value;
+				if(_rowIndex!=-1 && _columnIndex!=-1){
+					_displaySocket.socketId = String(_rowIndex+_columnIndex);
+				}else{
+					_displaySocket.socketId = null;
+				}
+				attemptFillSocket();
+			}
+		}
+		
+		private var _rowIndex:int = -1;
+		private var _columnIndex:int = -1;
 		
 		private var _dataProperty:String;
 		protected var _accordionIndex:int;
@@ -66,9 +93,8 @@ package org.farmcode.sodalityLibrary.display.visualSockets.plugs.containers
 		protected var _scrollRect:Rectangle = new Rectangle();
 		protected var _scrollWrapper:ScrollWrapper;
 		
-		public function AccordionPlugRenderer(asset:DisplayObject=null){
+		public function AccordionPlugRenderer(asset:IDisplayAsset=null){
 			_displaySocket.measurementsChanged.addHandler(onSocketMeasChange);
-			_displaySocket.container = new Sprite();
 			_scrollWrapper = new ScrollWrapper(_displaySocket);
 			_dynamicAdvisor.addEventListener(AdvisorEvent.ADVISOR_ADDED, onAdvisorAdded);
 			_socketContainerHelper = new SocketContainerHelper(this,_dynamicAdvisor);
@@ -77,7 +103,8 @@ package org.farmcode.sodalityLibrary.display.visualSockets.plugs.containers
 		}
 		override protected function bindToAsset() : void{
 			super.bindToAsset();
-			_containerAsset.addChild(_displaySocket.container);
+			_displaySocket.container = _asset.createAsset("container",IContainerAsset);
+			_containerAsset.addAsset(_displaySocket.container);
 			if(_scrollBar){
 				_scrollBar.scrollSubject = _scrollWrapper;
 				if(_scrollBar.direction==Direction.HORIZONTAL){
@@ -90,7 +117,9 @@ package org.farmcode.sodalityLibrary.display.visualSockets.plugs.containers
 			}
 		}
 		override protected function unbindFromAsset() : void{
-			_containerAsset.removeChild(_displaySocket.container);
+			_containerAsset.removeAsset(_displaySocket.container);
+			_asset.destroyAsset(_displaySocket.container);
+			_displaySocket.container = null;
 			super.unbindFromAsset();
 		}
 		override protected function getContainerMeasurements() : Rectangle{
@@ -100,7 +129,7 @@ package org.farmcode.sodalityLibrary.display.visualSockets.plugs.containers
 			_scrollWrapper.setDisplayPosition(x,y,width,height);
 		}
 		protected function onSocketMeasChange(from:ILayoutSubject, oldX:Number, oldY:Number, oldWidth:Number, oldHeight:Number):void{
-			_maximumSizeFlag.invalidate();
+			dispatchMeasurementChange();
 			invalidate();
 		}
 		protected function onAdvisorAdded(e:Event):void{
@@ -112,8 +141,12 @@ package org.farmcode.sodalityLibrary.display.visualSockets.plugs.containers
 			_scrollRect.height = displayPosition.height;
 			_containerAsset.scrollRect = _scrollRect;
 		}
+		override public function commitProviderState():void{
+			attemptFillSocket();
+			super.commitProviderState();
+		}
 		public function attemptFillSocket():void{
-			if(_dynamicAdvisor.addedToPresident && _displaySocket.socketId!=null && open){
+			if(_dynamicAdvisor.addedToPresident && _displaySocket.socketId!=null && openFract){
 				var childData:* = SocketContainerUtils.getProperty(data,_dataProperty);
 				var fillAdvice:FillSocketAdvice;
 				var doFill:Boolean;

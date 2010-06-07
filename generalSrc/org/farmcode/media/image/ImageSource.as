@@ -8,6 +8,9 @@ package org.farmcode.media.image
 	import flash.net.URLLoaderDataFormat;
 	import flash.net.URLRequest;
 	
+	import org.farmcode.display.assets.IDisplayAsset;
+	import org.farmcode.display.assets.ILoaderAsset;
+	import org.farmcode.display.assets.nativeAssets.NativeAssetFactory;
 	import org.farmcode.display.core.ILayoutView;
 	import org.farmcode.display.layout.frame.FrameLayoutInfo;
 	import org.farmcode.math.UnitConversion;
@@ -107,7 +110,8 @@ package org.farmcode.media.image
 				_protoLoader = loader;
 				_protoLoader.contentLoaderInfo.addEventListener(Event.COMPLETE, onProtoLoaded);
 			}
-			var view:ImageViewBehaviour = new ImageViewBehaviour(loader,_displayMeasurements,smoothing);
+			var loaderAsset:ILoaderAsset = NativeAssetFactory.getNew(loader);
+			var view:ImageViewBehaviour = new ImageViewBehaviour(loaderAsset,_displayMeasurements,smoothing);
 			view.layoutInfo = new FrameLayoutInfo();
 			return view;
 		}

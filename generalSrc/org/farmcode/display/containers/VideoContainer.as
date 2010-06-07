@@ -3,6 +3,8 @@ package org.farmcode.display.containers
 	import flash.display.DisplayObject;
 	import flash.geom.Rectangle;
 	
+	import org.farmcode.display.assets.IDisplayAsset;
+	import org.farmcode.display.assets.IInteractiveObjectAsset;
 	import org.farmcode.display.controls.BufferBar;
 	import org.farmcode.display.controls.Button;
 	import org.farmcode.display.controls.Control;
@@ -59,7 +61,7 @@ package org.farmcode.display.containers
 		
 		private var _videoSource:IVideoSource;
 		
-		public function VideoContainer(asset:DisplayObject=null){
+		public function VideoContainer(asset:IDisplayAsset=null){
 			super(asset);
 		}
 		override protected function bindToAsset() : void{
@@ -70,7 +72,7 @@ package org.farmcode.display.containers
 			_rewindButton = bindButton(_rewindButton, Button,REWIND_BUTTON,onRewindClick);
 			_muteButton = bindButton(_muteButton, ToggleButton,MUTE_BUTTON,onMuteClick) as ToggleButton;
 			
-			var asset:DisplayObject = _containerAsset.getChildByName(CENTERED_PAUSE_BUTTON);
+			var asset:IInteractiveObjectAsset = _containerAsset.takeAssetByName(CENTERED_PAUSE_BUTTON,IInteractiveObjectAsset);
 			if(asset){
 				if(!_centredPauseButton){
 					_centredPauseButton = new ToggleButton();
@@ -120,7 +122,7 @@ package org.farmcode.display.containers
 			return ret;
 		}
 		protected function bindControl(control:Control, controlClass:Class, name:String, bindBothSides:Boolean):Control{
-			var asset:DisplayObject = _containerAsset.getChildByName(name);
+			var asset:IInteractiveObjectAsset = _containerAsset.takeAssetByName(name,IInteractiveObjectAsset);
 			if(asset){
 				if(!control){
 					control = new controlClass();
@@ -159,6 +161,7 @@ package org.farmcode.display.containers
 		}
 		protected function unbindControl(control:Control):void{
 			if(control){
+				_containerAsset.returnAsset(control.asset);
 				control.asset = null;
 			}
 		}

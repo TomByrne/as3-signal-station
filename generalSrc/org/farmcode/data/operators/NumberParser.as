@@ -2,17 +2,21 @@ package org.farmcode.data.operators
 {
 	import org.farmcode.acting.actTypes.IAct;
 	import org.farmcode.acting.acts.Act;
+	import org.farmcode.data.dataTypes.INumberConsumer;
 	import org.farmcode.data.dataTypes.INumberProvider;
 	import org.farmcode.data.dataTypes.IStringConsumer;
 	import org.farmcode.data.dataTypes.IStringProvider;
 	
 	public class NumberParser implements IStringConsumer, IStringProvider
 	{
+		public function get value():*{
+			return stringValue;
+		}
 		public function get stringValue():String{
-			return String(_numberProvider.numericalValue);
+			return _numberProvider?String(_numberProvider.numericalValue):null;
 		}
 		public function set stringValue(value:String):void{
-			_numberProvider.numericalValue = parseFloat(value);
+			if(_numberConsumer)_numberConsumer.numericalValue = parseFloat(value);
 		}
 		
 		public function get numberProvider():INumberProvider{
@@ -24,9 +28,11 @@ package org.farmcode.data.operators
 					_numberProvider.numericalValueChanged.removeHandler(onNumberChanged);
 				}
 				_numberProvider = value;
+				_numberConsumer = (value as INumberConsumer);
 				if(_numberProvider){
 					_numberProvider.numericalValueChanged.addHandler(onNumberChanged);
 				}
+				if(_stringValueChanged)_stringValueChanged.perform(this);
 			}
 		}
 		
@@ -37,9 +43,16 @@ package org.farmcode.data.operators
 			if(!_stringValueChanged)_stringValueChanged = new Act();
 			return _stringValueChanged;
 		}
+		/**
+		 * @inheritDoc
+		 */
+		public function get valueChanged():IAct{
+			return stringValueChanged;
+		}
 		
 		protected var _stringValueChanged:Act;
 		private var _numberProvider:INumberProvider;
+		private var _numberConsumer:INumberConsumer;
 		
 		protected function onNumberChanged(from:INumberProvider):void{
 			if(_stringValueChanged)_stringValueChanged.perform(this);

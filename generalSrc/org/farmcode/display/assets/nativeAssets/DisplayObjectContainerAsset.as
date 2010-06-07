@@ -69,6 +69,14 @@ package org.farmcode.display.assets.nativeAssets
 		public function DisplayObjectContainerAsset(){
 		}
 		
+		public function getAssetIndex(asset:IDisplayAsset):int{
+			if(_displayObjectContainer){
+				var cast:DisplayObjectAsset = (asset as DisplayObjectAsset);
+				return _displayObjectContainer.getChildIndex(cast.displayObject);
+			}else{
+				throw new Error("This method cannot be called before a displayObject is set");
+			}
+		}
 		public function containsAssetByName(name:String):Boolean{
 			if(_displayObjectContainer){
 				var displayObject:DisplayObject = _displayObjectContainer.getChildByName(name);
@@ -95,20 +103,39 @@ package org.farmcode.display.assets.nativeAssets
 				throw new Error("This method cannot be called before a displayObject is set");
 			}
 		}
-		public function returnAsset(asset:IAsset):void{
+		public function returnAsset(asset:IDisplayAsset):void{
 			// nothing to do
 		}
-		public function addAsset(asset:IAsset):void{
+		public function addAsset(asset:IDisplayAsset):void{
 			var cast:DisplayObjectAsset = (asset as DisplayObjectAsset);
 			_displayObjectContainer.addChild(cast.displayObject);
 			storeChildAsset(cast,cast.displayObject);
 		}
-		public function removeAsset(asset:IAsset):void{
+		public function removeAsset(asset:IDisplayAsset):void{
 			var cast:DisplayObjectAsset = (asset as DisplayObjectAsset);
 			_displayObjectContainer.removeChild(cast.displayObject);
 			removeChildAsset(cast,cast.displayObject);
 		}
-		public function setAssetIndex(asset:IAsset, index:int):void{
+		public function addAssetAt(asset:IDisplayAsset, index:int):IDisplayAsset{
+			var cast:DisplayObjectAsset = (asset as DisplayObjectAsset);
+			_displayObjectContainer.addChildAt(cast.displayObject,index);
+			storeChildAsset(cast,cast.displayObject);
+			return asset;
+		}
+		public function getAssetAt(index:int):IDisplayAsset{
+			if(_displayObjectContainer){
+				var displayObject:DisplayObject = _displayObjectContainer.getChildByName(name);
+				var ret:DisplayObjectAsset = _children[displayObject];
+				if(!ret){
+					ret = NativeAssetFactory.getNew(displayObject);
+					storeChildAsset(ret,displayObject);
+				}
+				return ret;
+			}else{
+				throw new Error("This method cannot be called before a displayObject is set");
+			}
+		}
+		public function setAssetIndex(asset:IDisplayAsset, index:int):void{
 			var cast:DisplayObjectAsset = (asset as DisplayObjectAsset);
 			_displayObjectContainer.setChildIndex(cast.displayObject,index);
 			storeChildAsset(cast,cast.displayObject);

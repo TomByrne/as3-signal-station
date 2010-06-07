@@ -6,6 +6,8 @@ package org.farmcode.sodalityLibrary.display.visualSockets.socketContainers
 	import flash.display.Sprite;
 	import flash.utils.Dictionary;
 	
+	import org.farmcode.display.assets.IContainerAsset;
+	import org.farmcode.display.assets.IDisplayAsset;
 	import org.farmcode.display.core.IOutroView;
 	import org.farmcode.display.layout.ILayout;
 	import org.farmcode.display.layout.ILayoutSubject;
@@ -20,16 +22,10 @@ package org.farmcode.sodalityLibrary.display.visualSockets.socketContainers
 			super.displaySocket = value;
 			checkHelper();
 		}
-		override public function set asset(value:DisplayObject):void{
-			if(_containerAsset){
-				_containerAsset.removeChild(childContainer);
-			}
+		override public function set asset(value:IDisplayAsset):void{
 			super.asset = value;
-			_advisor.advisorDisplay = value;
+			_advisor.advisorDisplay = value.drawDisplay;
 			checkHelper();
-			if(_containerAsset){
-				_containerAsset.addChild(childContainer);
-			}
 		}
 		
 		public function get layout():ILayout{
@@ -56,10 +52,12 @@ package org.farmcode.sodalityLibrary.display.visualSockets.socketContainers
 				}
 			}
 		}
-		override public function get display():DisplayObject{
-			var ret:DisplayObject = super.display;
+		override public function get display():IDisplayAsset{
+			var ret:IDisplayAsset = super.display;
 			if(!ret){
-				ret = asset = new Sprite();
+				// TODO: fix this
+				//ret = asset = new Sprite();
+				throw new Error();
 			}
 			return ret;
 		}
@@ -68,10 +66,20 @@ package org.farmcode.sodalityLibrary.display.visualSockets.socketContainers
 		private var _layoutView:IDrawable;
 		protected var _socketContHelper:SocketContainerHelper;
 		protected var _advisor:DynamicAdvisor = new DynamicAdvisor();
-		protected var childContainer:Sprite = new Sprite();
+		protected var _childContainer:IContainerAsset;
 		
-		public function SocketContainer(asset:DisplayObject=null){
+		public function SocketContainer(asset:IDisplayAsset=null){
 			super(asset);
+		}
+		override protected function bindToAsset() : void{
+			super.bindToAsset();
+			_childContainer = _asset.createAsset("childContainer",IContainerAsset);
+			_containerAsset.addAsset(_childContainer);
+		}
+		override protected function unbindFromAsset() : void{
+			_containerAsset.removeAsset(_childContainer);
+			_asset.destroyAsset(_childContainer);
+			super.unbindFromAsset();
 		}
 		override public function setDataProvider(value:*, cause:IAdvice=null):void{
 			super.setDataProvider(value,cause);
@@ -115,7 +123,7 @@ package org.farmcode.sodalityLibrary.display.visualSockets.socketContainers
 		protected function get socketContHelper(): SocketContainerHelper{
 			if(!_socketContHelper){
 				_socketContHelper = new SocketContainerHelper(this,_advisor);
-				_socketContHelper.defaultContainer = childContainer;
+				_socketContHelper.defaultContainer = _childContainer;
 				_socketContHelper.childDataAssessed.addHandler(onChildDataAssessed);
 			}
 			return _socketContHelper;

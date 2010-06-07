@@ -4,6 +4,8 @@ package org.farmcode.display.containers
 	import flash.display.Sprite;
 	import flash.geom.Rectangle;
 	
+	import org.farmcode.display.assets.IContainerAsset;
+	import org.farmcode.display.assets.IDisplayAsset;
 	import org.farmcode.display.core.ILayoutView;
 	import org.farmcode.display.layout.ILayoutSubject;
 	import org.farmcode.display.layout.ProxyLayoutSubject;
@@ -24,7 +26,7 @@ package org.farmcode.display.containers
 				if(_mediaSource){
 					_mediaSource.returnMediaDisplay(_mediaSourceDisplay);
 					_mediaSourceDisplay.measurementsChanged.removeHandler(onMediaMeasChange);
-					_mediaContainer.removeChild(_mediaSourceDisplay.asset);
+					if(_mediaContainer)_mediaContainer.removeAsset(_mediaSourceDisplay.asset);
 					_mediaSourceDisplay = null;
 					_layoutProxy.target = null;
 				}
@@ -32,7 +34,7 @@ package org.farmcode.display.containers
 				if(_mediaSource){
 					_mediaSourceDisplay = _mediaSource.takeMediaDisplay();
 					_mediaSourceDisplay.measurementsChanged.addHandler(onMediaMeasChange);
-					_mediaContainer.addChild(_mediaSourceDisplay.asset);
+					if(_mediaContainer)_mediaContainer.addAsset(_mediaSourceDisplay.asset);
 					_layoutProxy.target = _mediaSourceDisplay;
 					invalidate();
 				}
@@ -57,14 +59,14 @@ package org.farmcode.display.containers
 		private var _mediaSourceDisplay:ILayoutView;
 		private var _layoutProxy:ProxyLayoutSubject = new ProxyLayoutSubject();
 		private var _layout:FrameLayout = new FrameLayout();
-		protected var _mediaContainer:Sprite = new Sprite();
+		protected var _mediaContainer:IContainerAsset;
 		
 		private var _scrollRect:Rectangle = new Rectangle();
 		
-		private var _mediaBounds:DisplayObject;
+		private var _mediaBounds:IDisplayAsset;
 		private var _assumedLayoutInfo:FrameLayoutInfo;
 		
-		public function MediaContainer(asset:DisplayObject=null){
+		public function MediaContainer(asset:IDisplayAsset=null){
 			super(asset);
 			_layout.addSubject(_layoutProxy);
 		}
@@ -73,7 +75,9 @@ package org.farmcode.display.containers
 		}
 		override protected function bindToAsset() : void{
 			super.bindToAsset()
-			_mediaBounds = _containerAsset.getChildByName("mediaBounds");
+			_mediaContainer = _asset.createAsset("mediaContainer",IContainerAsset);
+			if(_mediaSourceDisplay)_mediaContainer.addAsset(_mediaSourceDisplay.asset);
+			_mediaBounds = _containerAsset.takeAssetByName("mediaBounds",IDisplayAsset);
 			if(_mediaBounds){
 				if(!_assumedLayoutInfo){
 					_assumedLayoutInfo = new FrameLayoutInfo();
@@ -89,14 +93,17 @@ package org.farmcode.display.containers
 				}
 			}
 			if(_backing){
-				_containerAsset.addChildAt(_mediaContainer,_containerAsset.getChildIndex(_backing)+1);
+				_containerAsset.addAssetAt(_mediaContainer,_containerAsset.getAssetIndex(_backing)+1);
 			}else{
-				_containerAsset.addChildAt(_mediaContainer,0);
+				_containerAsset.addAssetAt(_mediaContainer,0);
 			}
 		}
 		override protected function unbindFromAsset() : void{
 			super.unbindFromAsset();
-			_containerAsset.removeChild(_mediaContainer);
+			_containerAsset.removeAsset(_mediaContainer);
+			
+			if(_mediaSourceDisplay)_mediaContainer.removeAsset(_mediaSourceDisplay.asset);
+			_asset.destroyAsset(_mediaContainer);
 		}
 		override protected function draw() : void{
 			super.draw();

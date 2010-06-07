@@ -1,10 +1,7 @@
 package org.farmcode.display.assets.nativeAssets
 {
-	import flash.utils.Dictionary;
-	
 	import org.farmcode.display.assets.IAsset;
 	import org.farmcode.display.assets.states.IStateDef;
-	import org.farmcode.russell.formatters.OptionFormatter;
 	
 	public class Asset implements IAsset
 	{

@@ -9,8 +9,10 @@ package org.farmcode.display.layout.accordion
 	import org.farmcode.display.layout.AbstractLayout;
 	import org.farmcode.display.layout.ILayoutSubject;
 	import org.farmcode.display.layout.IMinimisableLayoutSubject;
+	import org.farmcode.display.layout.grid.IGridLayoutSubject;
 	import org.farmcode.display.layout.grid.RendererGridLayout;
-
+	
+	//TODO: support a maximiseContainerSize property
 	public class AccordionLayout extends RendererGridLayout
 	{
 		
@@ -93,6 +95,11 @@ package org.farmcode.display.layout.accordion
 		
 		override protected function positionRenderer(key:*, length:int, breadth:int, x:Number, y:Number, width:Number, height:Number):void{
 			var renderer:IMinimisableLayoutSubject = getChildRenderer(key,length,breadth) as IMinimisableLayoutSubject;
+			var cast:IGridLayoutSubject = (renderer as IGridLayoutSubject);
+			if(cast){
+				cast[_lengthIndexRef] = length;
+				cast[_breadthIndexRef] = breadth;
+			}
 			
 			var posIndex:int = (key as int)*int(4);
 			_positionCache[posIndex] = x;

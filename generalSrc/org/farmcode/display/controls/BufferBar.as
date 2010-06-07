@@ -4,6 +4,7 @@ package org.farmcode.display.controls
 	import flash.display.DisplayObject;
 	import flash.geom.Rectangle;
 	
+	import org.farmcode.display.assets.IDisplayAsset;
 	import org.farmcode.display.constants.Direction;
 	import org.farmcode.display.layout.ILayoutSubject;
 	import org.farmcode.media.IMediaSource;
@@ -43,8 +44,8 @@ package org.farmcode.display.controls
 		
 		private var _videoSource:IVideoSource;
 		private var _slider:Slider;
-		private var _playedBar:DisplayObject;
-		private var _bufferedBar:DisplayObject;
+		private var _playedBar:IDisplayAsset;
+		private var _bufferedBar:IDisplayAsset;
 		
 		public function BufferBar(){
 			super();
@@ -54,12 +55,14 @@ package org.farmcode.display.controls
 		}
 		override protected function bindToAsset() : void{
 			_slider.asset = asset;
-			_playedBar = _containerAsset.getChildByName(PLAYED_BAR);
-			_bufferedBar = _containerAsset.getChildByName(BUFFERED_BAR);
+			_playedBar = _containerAsset.takeAssetByName(PLAYED_BAR,IDisplayAsset);
+			_bufferedBar = _containerAsset.takeAssetByName(BUFFERED_BAR,IDisplayAsset);
 		}
 		override protected function unbindFromAsset() : void{
 			_slider.asset = null;
+			_containerAsset.returnAsset(_playedBar);
 			_playedBar = null;
+			_containerAsset.returnAsset(_bufferedBar);
 			_bufferedBar = null;
 		}
 		override protected function draw() : void{

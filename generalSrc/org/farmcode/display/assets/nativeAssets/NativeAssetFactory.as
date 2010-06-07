@@ -1,11 +1,7 @@
 package org.farmcode.display.assets.nativeAssets
 {
-	import flash.display.DisplayObject;
-	import flash.display.MovieClip;
-	import flash.display.Shape;
-	import flash.display.SimpleButton;
-	import flash.display.Sprite;
-	import flash.display.Stage;
+	import flash.display.*;
+	import flash.media.Video;
 	import flash.text.TextField;
 	import flash.utils.Dictionary;
 	
@@ -27,7 +23,9 @@ package org.farmcode.display.assets.nativeAssets
 						new TypeBundle(MovieClipAsset, [IMovieClipAsset], MovieClip),
 						new TypeBundle(StageAsset, [IStageAsset], Stage),
 						new TypeBundle(SpriteAsset, [ISpriteAsset,IContainerAsset], Sprite),
-						new TypeBundle(InteractiveObjectAsset, [IInteractiveObjectAsset], SimpleButton)];
+						new TypeBundle(LoaderAsset, [ILoaderAsset], Loader),
+						new TypeBundle(InteractiveObjectAsset, [IInteractiveObjectAsset], SimpleButton),
+						new TypeBundle(VideoAsset, [IVideoAsset], Video)];
 		}
 		
 		public static function getNew(displayObject:DisplayObject):*{
