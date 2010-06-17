@@ -1,8 +1,9 @@
 package org.farmcode.media.video
 {
 	import flash.events.NetStatusEvent;
-	import flash.net.NetConnectionStatus;
 	import flash.net.NetStream;
+	
+	import org.osmf.net.NetConnectionCodes;
 	
 	import org.openvideoplayer.events.OvpEvent;
 	import org.openvideoplayer.net.OvpConnection;
@@ -92,11 +93,11 @@ package org.farmcode.media.video
 		}
 		protected function onConnectionStatus(e:NetStatusEvent):void{
 			switch(e.info.code){
-				case NetConnectionStatus.CONNECT_SUCCESS:
+				case NetConnectionCodes.CONNECT_SUCCESS:
 					_connected = true;
 					assessStream();
 					break;
-				case NetConnectionStatus.CONNECT_REJECTED:
+				case NetConnectionCodes.CONNECT_REJECTED:
 					_connectionStarted = false;
 					throw new Error("StreamingVideoSource: connect rejected by server; "+e.info.description);
 					break;

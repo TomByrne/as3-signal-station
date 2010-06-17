@@ -4,6 +4,7 @@ package org.farmcode.display
 	import flash.display.DisplayObjectContainer;
 	import flash.display.Sprite;
 	import flash.display.Stage;
+	import flash.events.Event;
 	import flash.utils.Dictionary;
 
 	public class TopLayerManager
@@ -26,7 +27,7 @@ package org.farmcode.display
 			var manager:TopLayerManager = containerLookup[container];
 			if(manager.removeDisplay(display)){
 				delete containerLookup[container];
-				bundle.dispose();
+				manager.dispose();
 			}
 		}
 		public static function sendToFront(display:DisplayObject):void{
@@ -82,14 +83,14 @@ package org.farmcode.display
 			}
 		}
 		internal function dispose():void{
-			stage.removeEventListener(Event.ADDED, onAdded);
-			stage.removeChild(innerContainer);
-			stage = null;
+			container.removeEventListener(Event.ADDED, onAdded);
+			container.removeChild(innerContainer);
+			container = null;
 		}
 		private function onAdded(e:Event):void{
 			var added:DisplayObject = (e.target as DisplayObject);
-			if(added.parent==stage){
-				stage.setChildIndex(innerContainer,container.numChildren-1);
+			if(added.parent==container){
+				container.setChildIndex(innerContainer,container.numChildren-1);
 			}
 		}
 	}

@@ -1,9 +1,9 @@
 package org.farmcode.data.dataTypes
 {
-	import org.farmcode.sodality.advice.IAdvice;
+	import flash.display.DisplayObject;
 
 	public interface ITriggerableAction
 	{
-		function triggerAction():IAdvice;
+		function triggerAction(scopeDisplay:DisplayObject):void;
 	}
 }

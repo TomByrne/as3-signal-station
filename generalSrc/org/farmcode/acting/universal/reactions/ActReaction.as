@@ -21,15 +21,25 @@ package org.farmcode.acting.universal.reactions
 		protected var _universalRules:Array = new Array();
 		protected var _universalRuleAddedAct:Act = new Act();
 		protected var _universalRuleRemovedAct:Act = new Act();
+		protected var _univAdded:Boolean;
 		
 		public function ActReaction(){
 			addedChanged.addHandler(onAddedChanged);
+			scopeDisplayChanged.addHandler(onDisplayChanged);
 		}
 		private function onAddedChanged(from:ScopeDisplayObject):void{
 			if(added){
+				_univAdded = true;
 				UniversalActManager.addReaction(this);
 			}else{
+				_univAdded = false;
 				UniversalActManager.removeReaction(this);
+			}
+		}
+		private function onDisplayChanged(from:ScopeDisplayObject):void{
+			if(_univAdded){
+				UniversalActManager.removeReaction(this);
+				UniversalActManager.addReaction(this);
 			}
 		}
 		

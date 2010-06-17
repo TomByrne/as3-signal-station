@@ -80,13 +80,15 @@ package org.farmcode
 			var shouldAdd:Boolean = shouldAddToManager();
 			if(shouldAdd){
 				if(!_added){
-					_added = true;
-					if(_addedChanged)_addedChanged.perform(this);
+					setAdded(true);
 				}
 			}else if(_added){
-				_added = false;
-				if(_addedChanged)_addedChanged.perform(this);
+				setAdded(false);
 			}
+		}
+		protected function setAdded(value:Boolean):void{
+			_added = value;
+			if(_addedChanged)_addedChanged.perform(this);
 		}
 		protected function shouldAddToManager():Boolean{
 			return _active && _scopeDisplay!=null && _scopeDisplayStage;

@@ -14,16 +14,16 @@ package org.farmcode.acting.acts
 	{
 		
 		public function get active():Boolean{
-			return _scopeDispalyObject.active;
+			return _scopeDisplayObject.active;
 		}
 		public function set active(value:Boolean):void{
-			_scopeDispalyObject.active = value;
+			_scopeDisplayObject.active = value;
 		}
 		public function get scopeDisplay():DisplayObject{
-			return _scopeDispalyObject.scopeDisplay;
+			return _scopeDisplayObject.scopeDisplay;
 		}
 		public function set scopeDisplay(value:DisplayObject):void{
-			_scopeDispalyObject.scopeDisplay = value;
+			_scopeDisplayObject.scopeDisplay = value;
 		}
 		
 		/**
@@ -35,14 +35,14 @@ package org.farmcode.acting.acts
 		}
 		
 		protected var _scopeDisplayChanged:Act;
-		private var _scopeDispalyObject:ScopeDisplayObject = new ScopeDisplayObject();
+		private var _scopeDisplayObject:ScopeDisplayObject = new ScopeDisplayObject();
 		
 		public function UniversalAct(){
-			_scopeDispalyObject.addedChanged.addHandler(onAddedChanged);
-			_scopeDispalyObject.scopeDisplayChanged.addHandler(onScopeDisplayChanged);
+			_scopeDisplayObject.addedChanged.addHandler(onAddedChanged);
+			_scopeDisplayObject.scopeDisplayChanged.addHandler(onScopeDisplayChanged);
 		}
 		private function onAddedChanged(from:ScopeDisplayObject):void{
-			if(_scopeDispalyObject.added){
+			if(_scopeDisplayObject.added){
 				UniversalActManager.addAct(this);
 			}else{
 				UniversalActManager.removeAct(this);
@@ -58,7 +58,7 @@ package org.farmcode.acting.acts
 			this.scopeDisplay = null;
 		}
 		override public function perform(...params):void{
-			if(!_scopeDispalyObject.scopeDisplay){
+			if(!_scopeDisplayObject.scopeDisplay){
 				trace("WARNING: UniversalAct being performed without scopeDisplay (it will not act universally)");
 			}
 			super.perform.apply(null,params);

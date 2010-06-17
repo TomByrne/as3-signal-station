@@ -9,7 +9,7 @@
 	import flash.media.SoundTransform;
 	import flash.net.NetConnection;
 	import flash.net.NetStream;
-	import flash.net.NetStreamStatus;
+	import flash.net.NetStreamCodes;
 	import flash.utils.getTimer;
 	
 	import org.farmcode.core.DelayedCall;
@@ -323,7 +323,7 @@
 	    }
 	    protected function onNetStatus(e:NetStatusEvent):void{
 	    	switch(e.info.code){
-	    		case NetStreamStatus.BUFFER_EMPTY:
+	    		case NetStreamCodes.BUFFER_EMPTY:
 	    			setBufferSize();
     				if(!playing)
     				{
@@ -331,7 +331,7 @@
     				}
     				this.assessPoll();
 	    			break;
-	    		case NetStreamStatus.BUFFER_FULL:
+	    		case NetStreamCodes.BUFFER_FULL:
 	    			this._netStreamPlaying = true;
 	    			if(!isNaN(_totalTime) && _netStream.bufferTime>=_totalTime){
 	    				_completelyLoaded = true;
@@ -343,11 +343,11 @@
     				}
     				this.assessPoll();
 	    			break;
-	    		case NetStreamStatus.BUFFER_FLUSH:
+	    		case NetStreamCodes.BUFFER_FLUSH:
 	    			setBufferSize();
 					assessPoll();
 	    			break;
-	    		case NetStreamStatus.PLAY_START:
+	    		case NetStreamCodes.PLAY_START:
 	    			this._netStreamPlaying = true;
 	    			if(!isNaN(_totalTime)){
 	    				setBufferSize();
@@ -371,7 +371,7 @@
 		    			if(playing)dispatchEvent(new VideoEvent(VideoEvent.PLAY_START));
 	    			}
 	    			break;
-	    		case NetStreamStatus.PLAY_STOP:	
+	    		case NetStreamCodes.PLAY_STOP:	
 	    			this._netStreamPlaying = false;
 	    			playing = false;
 	    			if(autoRewind){
@@ -386,7 +386,7 @@
 	    			}
 	    			dispatchEvent(new VideoEvent(VideoEvent.PLAY_STOP));
 	    			break;
-	    		case NetStreamStatus.SEEK_NOTIFY:
+	    		case NetStreamCodes.SEEK_NOTIFY:
 	    			setBufferSize();
 	    			//pendingSeek = false;
 	    			if(!playing){

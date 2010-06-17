@@ -1,7 +1,5 @@
 package au.com.thefarmdigital.effects
 {
-	import au.com.thefarmdigital.transitions.ITransition;
-	
 	import flash.display.DisplayObject;
 	
 	public interface IEffect
