@@ -83,7 +83,7 @@ package org.farmcode.actLibrary.display.visualSockets.socketContainers
 		}
 		override protected function get socketContHelper(): SocketContainerHelper{
 			if(!_socketContHelper){
-				_socketCollContHelper = new SocketCollectionContainerHelper(this,_advisor);
+				_socketCollContHelper = new SocketCollectionContainerHelper(this);
 				_socketCollContHelper.collectionSocketsChanged.addHandler(collectionSocketsChanged);
 				_socketContHelper = _socketCollContHelper;
 				_socketContHelper.defaultContainer = childContainer;

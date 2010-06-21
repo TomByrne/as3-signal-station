@@ -2,7 +2,6 @@ package org.farmcode.actLibrary.sound.acts
 {
 	import org.farmcode.actLibrary.sound.actTypes.IAddSoundGroupAct;
 	import org.farmcode.acting.acts.UniversalAct;
-	import org.farmcode.sodality.advice.Advice;
 	import org.farmcode.sound.SoundGroupSettings;
 
 	public class AddSoundGroupAct extends UniversalAct implements IAddSoundGroupAct

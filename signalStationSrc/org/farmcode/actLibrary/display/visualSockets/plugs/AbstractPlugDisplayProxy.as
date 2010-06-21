@@ -3,12 +3,12 @@ package org.farmcode.actLibrary.display.visualSockets.plugs
 	import flash.display.DisplayObject;
 	import flash.geom.Rectangle;
 	
-	import org.farmcode.actLibrary.display.visualSockets.actTypes.IFillSocketAct;
 	import org.farmcode.actLibrary.display.visualSockets.sockets.IDisplaySocket;
 	import org.farmcode.acting.actTypes.IAct;
 	import org.farmcode.acting.actTypes.IUniversalAct;
 	import org.farmcode.acting.acts.Act;
 	import org.farmcode.acting.acts.UniversalAct;
+	import org.farmcode.acting.universal.UniversalActExecution;
 	import org.farmcode.display.behaviour.ViewBehaviour;
 	import org.farmcode.display.layout.ILayoutSubject;
 	import org.farmcode.display.layout.core.ILayoutInfo;
@@ -68,11 +68,11 @@ package org.farmcode.actLibrary.display.visualSockets.plugs
 		public function AbstractPlugDisplayProxy(target:ViewBehaviour=null){
 			setTarget(target);
 		}
-		public function setDataProvider(value:*, cause:IFillSocketAct=null):void{
+		public function setDataProvider(value:*, execution:UniversalActExecution=null):void{
 			if(_dataProvider!=value){
-				if(_target && _dataProvider)uncommitData(cause);
+				if(_target && _dataProvider)uncommitData(execution);
 				_dataProvider = value;
-				if(_target && _dataProvider)commitData(cause);
+				if(_target && _dataProvider)commitData(execution);
 			}
 		}
 		public function getDataProvider():*{
@@ -130,10 +130,10 @@ package org.farmcode.actLibrary.display.visualSockets.plugs
 		protected function commitAsset():void{
 			if(_target)_target.asset = _asset;
 		}
-		protected function commitData(cause:IFillSocketAct=null):void{
+		protected function commitData(execution:UniversalActExecution=null):void{
 			// override me
 		}
-		protected function uncommitData(cause:IFillSocketAct=null):void{
+		protected function uncommitData(execution:UniversalActExecution=null):void{
 			// override me
 		}
 		protected function onLayoutMeasChange(from:ILayoutSubject, oldX:Number, oldY:Number, oldWidth:Number, oldHeight:Number):void{

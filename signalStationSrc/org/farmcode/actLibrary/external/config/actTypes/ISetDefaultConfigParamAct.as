@@ -5,6 +5,6 @@ package org.farmcode.actLibrary.external.config.actTypes
 	public interface ISetDefaultConfigParamAct extends IUniversalAct
 	{
 		function get paramName():String;
-		function get value():String;
+		function get value():*;
 	}
 }

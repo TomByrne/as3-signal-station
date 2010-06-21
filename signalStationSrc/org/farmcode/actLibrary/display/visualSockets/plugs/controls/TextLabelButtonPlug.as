@@ -1,14 +1,15 @@
 package org.farmcode.actLibrary.display.visualSockets.plugs.controls
 {
-	import org.farmcode.actLibrary.display.visualSockets.actTypes.IFillSocketAct;
 	import org.farmcode.actLibrary.display.visualSockets.plugs.AbstractPlugDisplayProxy;
+	import org.farmcode.acting.IScopeDisplayObject;
+	import org.farmcode.acting.universal.UniversalActExecution;
 	import org.farmcode.data.dataTypes.ITriggerableAction;
 	import org.farmcode.display.behaviour.controls.TextLabelButton;
-	import org.farmcode.sodality.advisors.INonVisualAdvisor;
 	
 	public class TextLabelButtonPlug extends AbstractPlugDisplayProxy
 	{
-		private var _advisorData:INonVisualAdvisor;
+		
+		private var _scopeDisplayData:IScopeDisplayObject;
 		private var _actionData:ITriggerableAction;
 		private var _textLabelButton:TextLabelButton;
 		
@@ -17,34 +18,31 @@ package org.farmcode.actLibrary.display.visualSockets.plugs.controls
 			_textLabelButton.clickAct.addHandler(onButtonClick);
 			super(_textLabelButton);
 		}
-		override protected function commitData(cause:IFillSocketAct=null):void{
-			_advisorData = (_dataProvider as INonVisualAdvisor);
-			if(_advisorData){
-				_advisorData.advisorDisplay = _asset;
+		override protected function commitData(execution:UniversalActExecution=null):void{
+			_scopeDisplayData = (_dataProvider as IScopeDisplayObject);
+			if(_scopeDisplayData && !_scopeDisplayData.scopeDisplay){
+				_scopeDisplayData.scopeDisplay = _asset;
 			}
 			_actionData = (_dataProvider as ITriggerableAction);
 			_textLabelButton.data = _dataProvider;
 		}
-		override protected function uncommitData(cause:IFillSocketAct=null):void{
-			if(_advisorData){
-				_advisorData.advisorDisplay = null;
-				_advisorData = null;
+		override protected function uncommitData(execution:UniversalActExecution=null):void{
+			if(_scopeDisplayData && _scopeDisplayData.scopeDisplay==_asset){
+				_scopeDisplayData.scopeDisplay = null;
+				_scopeDisplayData = null;
 			}
 			_actionData = null;
 			_textLabelButton.data = null;
 		}
 		override protected function commitAsset():void{
 			super.commitAsset();
-			if(_dynamicAdvisor){
-				_dynamicAdvisor.advisorDisplay = _asset;
-			}
-			if(_advisorData){
-				_advisorData.advisorDisplay = _asset;
+			if(_scopeDisplayData && !_scopeDisplayData.scopeDisplay){
+				_scopeDisplayData.scopeDisplay = _asset;
 			}
 		}
 		protected function onButtonClick(from:TextLabelButton):void{
 			if(_actionData){
-				_actionData.triggerAct(_asset);
+				_actionData.triggerAction(_asset);
 			}
 		}
 	}

@@ -11,6 +11,7 @@ package org.farmcode.actLibrary.display.visualSockets
 	import org.farmcode.actLibrary.display.visualSockets.plugs.IPlugDisplay;
 	import org.farmcode.actLibrary.display.visualSockets.socketContainers.ISocketContainer;
 	import org.farmcode.actLibrary.display.visualSockets.sockets.IDisplaySocket;
+	import org.farmcode.acting.universal.UniversalActExecution;
 	import org.farmcode.acting.universal.reactions.MethodReaction;
 	import org.farmcode.acting.universal.rules.ActInstanceRule;
 	
@@ -140,7 +141,7 @@ package org.farmcode.actLibrary.display.visualSockets
 			}
 			return null;
 		}
-		public function setPlugDisplay(plugDisplay:IPlugDisplay,cause:IFillSocketAct, dataProvider:*=null): void{
+		public function setPlugDisplay(plugDisplay:IPlugDisplay, execution:UniversalActExecution, dataProvider:*=null): void{
 			if(_fillingSocket.plugDisplay!=plugDisplay){
 				var oldPlugDisplay:IPlugDisplay = _fillingSocket.plugDisplay;
 				
@@ -159,7 +160,7 @@ package org.farmcode.actLibrary.display.visualSockets
 				if(oldPlugDisplay){
 					/* must clear dataProvider of old PlugDisplay before switching to
 					new one so that it can clear any any child sockets*/
-					oldPlugDisplay.setDataProvider(null,cause);
+					oldPlugDisplay.setDataProvider(null,execution);
 					//_beforeDisplayChange.removeUniversalRule(_beforeRule);
 					//_afterDisplayChange.removeUniversalRule(_afterRule);
 					_beforeRule = null;
@@ -171,7 +172,7 @@ package org.farmcode.actLibrary.display.visualSockets
 			}
 			// this must be done after adding the plugDisplay to the stage so that acts can be fired to set child slots
 			if(plugDisplay){
-				plugDisplay.setDataProvider(dataProvider,cause);
+				plugDisplay.setDataProvider(dataProvider,execution);
 			}
 		}
 		protected function beforeDisplayChange(endHandler:Function):void{

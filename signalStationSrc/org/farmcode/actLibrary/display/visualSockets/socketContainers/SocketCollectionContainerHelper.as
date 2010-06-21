@@ -10,8 +10,8 @@ package org.farmcode.actLibrary.display.visualSockets.socketContainers
 	import org.farmcode.actLibrary.display.visualSockets.sockets.IDisplaySocket;
 	import org.farmcode.acting.actTypes.IAct;
 	import org.farmcode.acting.acts.Act;
+	import org.farmcode.acting.universal.UniversalActExecution;
 	import org.farmcode.display.layout.list.ListLayoutInfo;
-	import org.farmcode.sodality.advisors.IAdvisor;
 	
 	public class SocketCollectionContainerHelper extends SocketContainerHelper
 	{
@@ -74,19 +74,21 @@ package org.farmcode.actLibrary.display.visualSockets.socketContainers
 		private var _allChildSocket:Array = [];
 		private var _collectionSockets:Array = [];
 		private var _collectionSocketsChanged:Act = new Act();
+		private var _lookupFillActs:Array = [];
+		private var _fillActs:Array = [];
 		
-		public function SocketCollectionContainerHelper(socketContainer:ISocketContainer, advisor:IAdvisor){
-			super(socketContainer, advisor);
+		public function SocketCollectionContainerHelper(socketContainer:ISocketContainer){
+			super(socketContainer);
 		}
-		override protected function checkChildData(cause:IFillSocketAct=null): void{
-			if(_display && _display.stage){
-				super.checkChildData(cause);
+		override protected function checkChildData(execution:UniversalActExecution=null): void{
+			if(_added){
+				super.checkChildData(execution);
 				
 				var collection:*;
 				var collectionCount:int;
 				var socket:DisplaySocket;
 				var change:Boolean;
-				var _acts:Array = [];
+				var performActs:Array = [];
 				var fillSocket:FillSocketAct;
 				
 				var added:Array = [];
@@ -115,6 +117,9 @@ package org.farmcode.actLibrary.display.visualSockets.socketContainers
 				}
 				
 				if(collection){
+					var fillIndex:int = 0;
+					var lookupIndex:int = 0;
+					
 					var i:int=0;
 					for each(var childData:* in collection){
 						if(i<_collectionSockets.length){
@@ -127,15 +132,14 @@ package org.farmcode.actLibrary.display.visualSockets.socketContainers
 						}
 						socket.socketId = _collectionSocketId+i;
 						if(typeof(childData)=="string"){
-							fillSocket = new LookupFillSocketAct(null,childData);
+							lookupIndex++;
+							fillSocket = getLookupAct(_lookupFillActs, lookupIndex,childData);
 						}else{
-							fillSocket = new FillSocketAct(null, childData)
+							fillIndex++;
+							fillSocket = getFillAct(_fillActs, fillIndex, childData)
 						}
 						fillSocket.displaySocket = socket;
-						if(cause){
-							fillSocket.executeBefore = cause;
-						}
-						_acts.push(fillSocket);
+						performActs.push(fillSocket);
 						_allChildSocket.push(socket);
 						socket.container = defaultContainer;
 						change = true;
@@ -159,8 +163,8 @@ package org.farmcode.actLibrary.display.visualSockets.socketContainers
 				_collectionSockets.splice(collectionCount,_collectionSockets.length-collectionCount);
 				if(change){
 					dispatchSocketChange();
-					for each(fillSocket in _acts){
-						_advisor.dispatchEvent(fillSocket);
+					for each(fillSocket in performActs){
+						fillSocket.perform(execution);
 					}
 				}
 				_collectionSocketsChanged.perform(added,removed);

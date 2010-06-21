@@ -9,10 +9,10 @@ package org.farmcode.actLibrary.display.visualSockets.socketContainers
 	import org.farmcode.actLibrary.display.visualSockets.actTypes.IFillSocketAct;
 	import org.farmcode.actLibrary.display.visualSockets.plugs.PlugDisplay;
 	import org.farmcode.actLibrary.display.visualSockets.sockets.IDisplaySocket;
+	import org.farmcode.acting.universal.UniversalActExecution;
 	import org.farmcode.display.ISelfAnimatingView;
 	import org.farmcode.display.layout.ILayout;
 	import org.farmcode.display.layout.ILayoutSubject;
-	import org.farmcode.sodality.advisors.DynamicAdvisor;
 	
 	public class SocketContainer extends PlugDisplay implements ISocketContainer
 	{
@@ -25,7 +25,6 @@ package org.farmcode.actLibrary.display.visualSockets.socketContainers
 				containerAsset.removeChild(childContainer);
 			}
 			super.asset = value;
-			_advisor.advisorDisplay = value;
 			checkHelper();
 			if(containerAsset){
 				containerAsset.addChild(childContainer);
@@ -67,15 +66,14 @@ package org.farmcode.actLibrary.display.visualSockets.socketContainers
 		private var _layout:ILayout;
 		private var _layoutView:IDrawable;
 		protected var _socketContHelper:SocketContainerHelper;
-		protected var _advisor:DynamicAdvisor = new DynamicAdvisor();
 		protected var childContainer:Sprite = new Sprite();
 		
 		public function SocketContainer(asset:DisplayObject=null){
 			super(asset);
 		}
-		override public function setDataProvider(value:*, cause:IFillSocketAct=null):void{
-			super.setDataProvider(value,cause);
-			socketContHelper.setDataProvider(value,cause);
+		override public function setDataProvider(value:*, execution:UniversalActExecution=null):void{
+			super.setDataProvider(value,execution);
+			socketContHelper.setDataProvider(value,execution);
 		}
 		public function get childSockets(): Array{
 			return socketContHelper.childSockets;
@@ -114,7 +112,7 @@ package org.farmcode.actLibrary.display.visualSockets.socketContainers
 		}
 		protected function get socketContHelper(): SocketContainerHelper{
 			if(!_socketContHelper){
-				_socketContHelper = new SocketContainerHelper(this,_advisor);
+				_socketContHelper = new SocketContainerHelper(this);
 				_socketContHelper.defaultContainer = childContainer;
 				_socketContHelper.childDataAssessed.addHandler(onChildDataAssessed);
 			}
@@ -143,9 +141,9 @@ package org.farmcode.actLibrary.display.visualSockets.socketContainers
 		}
 		protected function checkHelper():void{
 			if(!_outroShown && displaySocket){
-				socketContHelper.display = asset;
+				socketContHelper.scopeDisplay = asset;
 			}else{
-				socketContHelper.display = null;
+				socketContHelper.scopeDisplay = null;
 			}
 		}
 		override protected function draw():void{

@@ -29,6 +29,14 @@ package org.farmcode.actLibrary.application.states.acts
 			return ret;
 		}
 		
+		public function get resolveSuccessful():Boolean{
+			return _resolveSuccessful;
+		}
+		public function set resolveSuccessful(value:Boolean):void{
+			_resolveSuccessful = value;
+		}
+		
+		private var _resolveSuccessful:Boolean;
 		private var _data:*;
 		private var _dataPath:String;
 		

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <actionScriptProperties mainApplicationPath="TestInclude.as" projectUUID="9d8ca8eb-8a21-4587-9a27-f04bf862a2fb" version="6">
-  <compiler additionalCompilerArguments="-keep-as3-metadata+=Advice,Trigger,Property -define=Config::DEBUG,true" autoRSLOrdering="true" copyDependentFiles="false" fteInMXComponents="false" generateAccessible="false" htmlExpressInstall="true" htmlGenerate="false" htmlHistoryManagement="true" htmlPlayerVersionCheck="true" includeNetmonSwc="false" outputFolderPath="bin-debug" sourceFolderPath="debugSrc" strict="true" targetPlayerVersion="0.0.0" useApolloConfig="false" useDebugRSLSwfs="true" verifyDigests="true" warn="true">
+  <compiler additionalCompilerArguments="-keep-as3-metadata+=Advice,Trigger,Property -define=Config::DEBUG,true" autoRSLOrdering="true" copyDependentFiles="false" flexSDK="Flex 3.5" fteInMXComponents="false" generateAccessible="false" htmlExpressInstall="true" htmlGenerate="false" htmlHistoryManagement="true" htmlPlayerVersionCheck="true" includeNetmonSwc="false" outputFolderPath="bin-debug" sourceFolderPath="debugSrc" strict="true" targetPlayerVersion="0.0.0" useApolloConfig="false" useDebugRSLSwfs="true" verifyDigests="true" warn="true">
     <compilerSourcePath>
       <compilerSourcePathEntry kind="1" linkType="1" path="generalSrc"/>
       <compilerSourcePathEntry kind="1" linkType="1" path="siteStreamSrc"/>

@@ -40,12 +40,12 @@ package org.farmcode.actLibrary.external.remoteMethod
 		
 		public function findConnection(id:String):IConnection{
 			var connection:IConnection;
-			if(!cause.connectionId){
+			if(!id){
 				connection = _defaultConnection;
 				if(!connection)throw new Error("RemoteMethodAdvisor.onSetCredentials: Default connection has not been set");
 			}else{
-				connection = _connections[cause.connectionId];
-				if(!connection)throw new Error("RemoteMethodAdvisor.onSetCredentials: Connection with id "+cause.connectionId+" does not exist");
+				connection = _connections[id];
+				if(!connection)throw new Error("RemoteMethodAdvisor.onSetCredentials: Connection with id "+id+" does not exist");
 			}
 			return connection;
 		}

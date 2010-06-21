@@ -7,6 +7,7 @@ package org.farmcode.actLibrary.display.visualSockets.plugs
 	import org.farmcode.actLibrary.display.visualSockets.sockets.IDisplaySocket;
 	import org.farmcode.acting.actTypes.IUniversalAct;
 	import org.farmcode.acting.acts.UniversalAct;
+	import org.farmcode.acting.universal.UniversalActExecution;
 	import org.farmcode.display.ISelfAnimatingView;
 	import org.farmcode.display.behaviour.LayoutViewBehaviour;
 	
@@ -55,7 +56,7 @@ package org.farmcode.actLibrary.display.visualSockets.plugs
 		public function getDataProvider():*{
 			return _dataProvider;
 		}
-		public function setDataProvider(value:*, cause:IFillSocketAct=null):void{
+		public function setDataProvider(value:*, execution:UniversalActExecution=null):void{
 			if(_dataProvider!=value){
 				_dataProvider = value;
 				if(!_initialDataSet){

@@ -63,7 +63,7 @@ package org.farmcode.actLibrary.display.visualSockets.mappers
 					result.complete = false;
 					
 					_pendingPaths.push(new ResolveBundle(path,result,currentDisplay));
-					if(this.addedToPresident){
+					if(_added){
 						resolveNextPath();
 					}
 					

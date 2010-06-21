@@ -1,9 +1,8 @@
 package org.farmcode.media.video
 {
 	import flash.events.NetStatusEvent;
+	import flash.net.NetConnectionCodes;
 	import flash.net.NetStream;
-	
-	import org.osmf.net.NetConnectionCodes;
 	
 	import org.openvideoplayer.events.OvpEvent;
 	import org.openvideoplayer.net.OvpConnection;

@@ -2,14 +2,14 @@ package org.farmcode.actLibrary.display.visualSockets.plugs
 {
 	import flash.display.DisplayObject;
 	
-	import org.farmcode.actLibrary.display.visualSockets.actTypes.IFillSocketAct;
 	import org.farmcode.actLibrary.display.visualSockets.sockets.IDisplaySocket;
 	import org.farmcode.acting.actTypes.IUniversalAct;
+	import org.farmcode.acting.universal.UniversalActExecution;
 	import org.farmcode.display.layout.ILayoutSubject;
 	
 	public interface IPlugDisplay extends ILayoutSubject
 	{
-		function setDataProvider(value: *, cause:IFillSocketAct=null): void;
+		function setDataProvider(value: *, execution:UniversalActExecution=null): void;
 		
 		/**
 		 * handler(from:IPlugDisplay, oldDisplay:DisplayObject, newDisplay:DisplayObject)

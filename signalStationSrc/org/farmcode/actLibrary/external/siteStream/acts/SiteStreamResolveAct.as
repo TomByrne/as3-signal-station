@@ -22,6 +22,14 @@ package org.farmcode.actLibrary.external.siteStream.acts
 			_resolvedObject = value;
 		}
 		
+		public function get resolveSuccessful():Boolean{
+			return _resolveSuccessful;
+		}
+		public function set resolveSuccessful(value:Boolean):void{
+			_resolveSuccessful = value;
+		}
+		
+		private var _resolveSuccessful:Boolean;
 		private var _resolvedObject:*;
 		private var _resolvePath:String;
 		

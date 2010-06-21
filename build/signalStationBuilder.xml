@@ -29,13 +29,13 @@
     		swcOutput="${basedir}/bin/general.swc" compiler="${FLEX_HOME}\bin\compc.exe"
     		frameworkDirectory="${FRAMEWORKS}" additionalArgs="-define=Config::DEBUG,false" verbose="false"/>
 
-		<swcPackager projectPath="${basedir}" includeMainSource="false" sourceExceptions="generalSrc,siteStreamSrc"
-			swcOutput="${basedir}/bin/signalStation.swc" compiler="${FLEX_HOME}\bin\compc.exe"
-			frameworkDirectory="${FRAMEWORKS}" additionalArgs="-define=Config::DEBUG,false" verbose="false"/>
-	
-		<swcPackager projectPath="${basedir}" includeMainSource="false" sourceExceptions="signalStationSrc,generalSrc"
-			swcOutput="${basedir}/bin/siteStream.swc" compiler="${FLEX_HOME}\bin\compc.exe"
-			frameworkDirectory="${FRAMEWORKS}" additionalArgs="-define=Config::DEBUG,false" verbose="false"/>
+	<swcPackager projectPath="${basedir}" includeMainSource="false" sourceExceptions="generalSrc,siteStreamSrc"
+		swcOutput="${basedir}/bin/signalStation.swc" compiler="${FLEX_HOME}\bin\compc.exe"
+		frameworkDirectory="${FRAMEWORKS}" additionalArgs="-define=Config::DEBUG,false" verbose="false"/>
+
+	<swcPackager projectPath="${basedir}" includeMainSource="false" sourceExceptions="signalStationSrc,generalSrc"
+		swcOutput="${basedir}/bin/siteStream.swc" compiler="${FLEX_HOME}\bin\compc.exe"
+		frameworkDirectory="${FRAMEWORKS}" additionalArgs="-define=Config::DEBUG,false" verbose="false"/>
     </target>
 
 

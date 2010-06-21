@@ -26,6 +26,14 @@ package org.farmcode.actLibrary.application.states.acts
 			_lookupParams = value;
 		}
 		
+		public function get resolveSuccessful():Boolean{
+			return _resolveSuccessful;
+		}
+		public function set resolveSuccessful(value:Boolean):void{
+			_resolveSuccessful = value;
+		}
+		
+		private var _resolveSuccessful:Boolean;
 		private var _lookupParams:Dictionary;
 		
 		public function LookupSetAppStateAct(stateId:String=null, parameters:Object=null){

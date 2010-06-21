@@ -1,12 +1,11 @@
 package org.farmcode.actLibrary.display.visualSockets.socketContainers
 {
-	import flash.display.DisplayObject;
 	import flash.display.DisplayObjectContainer;
 	import flash.events.Event;
 	import flash.events.IEventDispatcher;
 	import flash.utils.Dictionary;
 	
-	import org.farmcode.actLibrary.display.visualSockets.actTypes.IFillSocketAct;
+	import org.farmcode.actLibrary.core.UniversalActorHelper;
 	import org.farmcode.actLibrary.display.visualSockets.acts.FillSocketAct;
 	import org.farmcode.actLibrary.display.visualSockets.acts.LookupFillSocketAct;
 	import org.farmcode.actLibrary.display.visualSockets.events.SocketContainerEvent;
@@ -14,10 +13,10 @@ package org.farmcode.actLibrary.display.visualSockets.socketContainers
 	import org.farmcode.actLibrary.display.visualSockets.sockets.IDisplaySocket;
 	import org.farmcode.acting.actTypes.IAct;
 	import org.farmcode.acting.acts.Act;
-	import org.farmcode.sodality.advisors.IAdvisor;
+	import org.farmcode.acting.universal.UniversalActExecution;
 	import org.farmcode.utils.ObjectUtils;
 
-	public class SocketContainerHelper
+	public class SocketContainerHelper extends UniversalActorHelper
 	{
 		
 		/**
@@ -32,18 +31,18 @@ package org.farmcode.actLibrary.display.visualSockets.socketContainers
 		protected var _dataProvider:*;
 		protected var _lastDataProvider:*;
 		protected var _dataProviderDispatcher:IEventDispatcher;
-		protected var _advisor:IAdvisor;
-		protected var _display:DisplayObject;
+		//protected var _display:DisplayObject;
 		private var _childSockets: Array = [];
 		private var _socketContainer:ISocketContainer;
 		private var _dataPropertyBindings:Dictionary;
 		private var _childDataFilter:Dictionary;
-		private var _added:Boolean;
+		//private var _added:Boolean;
 		private var _defaultContainer:DisplayObjectContainer;
+		private var _lookupFillActs:Array = [];
+		private var _fillActs:Array = [];
 		
-		public function SocketContainerHelper(socketContainer:ISocketContainer, advisor:IAdvisor){
+		public function SocketContainerHelper(socketContainer:ISocketContainer){
 			_socketContainer = socketContainer;
-			_advisor = advisor;
 		}
 		
 		public function get childSockets(): Array{
@@ -94,7 +93,7 @@ package org.farmcode.actLibrary.display.visualSockets.socketContainers
 				checkDataProvider();
 			}
 		}
-		public function set display(value:DisplayObject):void{
+		/*public function set display(value:DisplayObject):void{
 			if(_display!=value){
 				if(_display){
 					_display.removeEventListener(Event.ADDED_TO_STAGE, onAdded);
@@ -111,8 +110,8 @@ package org.farmcode.actLibrary.display.visualSockets.socketContainers
 		}
 		public function get display():DisplayObject{
 			return _display;
-		}
-		public function setDataProvider(value:*, cause:IFillSocketAct=null):void{
+		}*/
+		public function setDataProvider(value:*, execution:UniversalActExecution=null):void{
 			if(_dataProvider!=value){
 				if(_dataProviderDispatcher){
 					_dataProviderDispatcher.removeEventListener(Event.CHANGE, onDataChange);
@@ -125,10 +124,10 @@ package org.farmcode.actLibrary.display.visualSockets.socketContainers
 				if(!_childDataFilter){
 					_childDataFilter = new Dictionary(true);
 				}
-				checkDataProvider(cause);
+				checkDataProvider(execution);
 			}
 		}
-		protected function onAdded(e:Event=null): void{
+		/*protected function onAdded(e:Event=null): void{
 			if(!_added){
 				_added = true;
 				_display.dispatchEvent(new SocketContainerEvent(SocketContainerEvent.SOCKET_CONTAINER_ADDED,_socketContainer,true));
@@ -140,19 +139,31 @@ package org.farmcode.actLibrary.display.visualSockets.socketContainers
 				_added = false;
 				_display.dispatchEvent(new SocketContainerEvent(SocketContainerEvent.SOCKET_CONTAINER_REMOVED,_socketContainer,true));
 			}
+		}*/
+		
+		override protected function setAdded(value:Boolean):void{
+			super.setAdded(value);
+			if(value){
+				_scopeDisplay.dispatchEvent(new SocketContainerEvent(SocketContainerEvent.SOCKET_CONTAINER_ADDED,_socketContainer,true));
+				if(_dataProvider!=null)checkDataProvider();
+			}else{
+				_scopeDisplay.dispatchEvent(new SocketContainerEvent(SocketContainerEvent.SOCKET_CONTAINER_REMOVED,_socketContainer,true));
+			}
 		}
 		protected function onDataChange(e:Event): void{
 			checkChildData();
 		}
-		protected function checkDataProvider(cause:IFillSocketAct=null): void{
-			if(_display && _display.stage && (_dataProvider!=_lastDataProvider)){
+		protected function checkDataProvider(execution:UniversalActExecution=null): void{
+			if(_added && (_dataProvider!=_lastDataProvider)){
 				_lastDataProvider = _dataProvider;
-				checkChildData(cause);
+				checkChildData(execution);
 			}
 		}
-		protected function checkChildData(cause:IFillSocketAct=null): void{
-			if(_display && _display.stage){
+		protected function checkChildData(execution:UniversalActExecution=null): void{
+			if(_added){
 				if(_childDataAssessed)_childDataAssessed.perform(this);
+				var fillIndex:int = 0;
+				var lookupIndex:int = 0;
 				for(var socketId:String in _dataPropertyBindings){
 					var index:int = getSocketIndex(socketId, _childSockets);
 					var socket:IDisplaySocket = _childSockets[index];
@@ -173,19 +184,41 @@ package org.farmcode.actLibrary.display.visualSockets.socketContainers
 							}
 							var fillSocket:FillSocketAct;
 							if(typeof(childData)=="string"){
-								fillSocket = new LookupFillSocketAct(null,childData);
+								lookupIndex++;
+								fillSocket = getLookupAct(_lookupFillActs, lookupIndex,childData);
 							}else{
-								fillSocket = new FillSocketAct(null, childData)
+								fillIndex++;
+								fillSocket = getFillAct(_fillActs, fillIndex, childData)
 							}
 							fillSocket.displaySocket = socket;
-							if(cause){
-								fillSocket.executeAfter = cause;
-							}
-							_advisor.dispatchEvent(fillSocket);
+							fillSocket.perform(execution);
 						}
 					}
 				}
 			}
+		}
+		public function getLookupAct(from:Array, index:int, dataPath:String): LookupFillSocketAct{
+			var lookupAct:LookupFillSocketAct = from[index];
+			if(!lookupAct){
+				lookupAct = new LookupFillSocketAct(null,dataPath);
+				from[index] = lookupAct;
+				addChild(lookupAct);
+			}else{
+				lookupAct.dataPath = dataPath;
+			}
+			return lookupAct;
+		}
+		public function getFillAct(from:Array, index:int, childData:*): FillSocketAct{
+			var fillSocket:FillSocketAct = new FillSocketAct(null, childData)
+			fillSocket = from[index];
+			if(!fillSocket){
+				fillSocket = new FillSocketAct(null,childData);
+				from[index] = fillSocket;
+				addChild(fillSocket);
+			}else{
+				fillSocket.dataProvider = childData;
+			}
+			return fillSocket;
 		}
 		public function addSocket(socket:IDisplaySocket, dataProperty:String=null): void{
 			_addSocket(socket, dataProperty, true);
@@ -232,7 +265,7 @@ package org.farmcode.actLibrary.display.visualSockets.socketContainers
 			return -1;
 		}
 		protected function dispatchSocketChange():void{
-			if(_display && _display.stage)_display.dispatchEvent(new SocketContainerEvent(SocketContainerEvent.SOCKETS_CHANGED,_socketContainer,true));
+			if(_added)_scopeDisplay.dispatchEvent(new SocketContainerEvent(SocketContainerEvent.SOCKETS_CHANGED,_socketContainer,true));
 		}
 	}
 }

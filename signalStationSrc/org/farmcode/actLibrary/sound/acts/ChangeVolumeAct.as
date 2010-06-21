@@ -2,7 +2,6 @@ package org.farmcode.actLibrary.sound.acts
 {
 	import org.farmcode.actLibrary.sound.actTypes.IChangeVolumeAct;
 	import org.farmcode.acting.acts.UniversalAct;
-	import org.farmcode.sodality.advice.Advice;
 
 	public class ChangeVolumeAct extends UniversalAct implements IChangeVolumeAct
 	{

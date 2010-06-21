@@ -1,6 +1,6 @@
 package org.farmcode.actLibrary.display.visualSockets.plugs
 {
-	import org.farmcode.actLibrary.display.visualSockets.actTypes.IFillSocketAct;
+	import org.farmcode.acting.universal.UniversalActExecution;
 	import org.farmcode.display.behaviour.ViewBehaviour;
 	
 	public class PlugDisplayProxy extends AbstractPlugDisplayProxy
@@ -29,17 +29,17 @@ package org.farmcode.actLibrary.display.visualSockets.plugs
 		public function PlugDisplayProxy(target:ViewBehaviour=null){
 			super(target);
 		}
-		override public function setDataProvider(value:*, cause:IFillSocketAct=null):void{
+		override public function setDataProvider(value:*, execution:UniversalActExecution=null):void{
 			if(_dataProvider!=value){
-				if(_target && _dataProvider && _dataField)uncommitData(cause);
+				if(_target && _dataProvider && _dataField)uncommitData(execution);
 				_dataProvider = value;
-				if(_target && _dataProvider && _dataField)commitData(cause);
+				if(_target && _dataProvider && _dataField)commitData(execution);
 			}
 		}
-		override protected function commitData(cause:IFillSocketAct=null):void{
+		override protected function commitData(execution:UniversalActExecution=null):void{
 			_target[_dataField] = _dataProvider;
 		}
-		override protected function uncommitData(cause:IFillSocketAct=null):void{
+		override protected function uncommitData(execution:UniversalActExecution=null):void{
 			_target[_dataField] = null;
 		}
 	}

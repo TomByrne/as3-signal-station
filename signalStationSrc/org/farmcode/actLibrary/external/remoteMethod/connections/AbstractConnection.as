@@ -57,7 +57,7 @@ package org.farmcode.actLibrary.external.remoteMethod.connections
 				var pendingRemoteCall:PendingRemoteCall = PendingRemoteCall.getNew(execution, remoteCallAct);
 				var timeout:Number = doExecute(pendingRemoteCall, execution, remoteCallAct);
 				if(!isNaN(timeout)){
-					var onTimeout:Function = function(e:TimerEvent){
+					var onTimeout:Function = function(e:TimerEvent):void{
 						pendingRemoteCall.onTimeout();
 					}
 					var timer:Timer = new Timer(timeout*1000,1);
