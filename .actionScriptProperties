@@ -28,10 +28,8 @@
     <sourceAttachmentPath/>
   </compiler>
   <applications>
+    <application path="Tester.as"/>
     <application path="TestInclude.as"/>
-    <application path="SmallApplication.as"/>
-    <application path="SmallWidget.as"/>
-    <application path="WebApplication.as"/>
   </applications>
   <modules/>
   <buildCSSFiles/>

@@ -3,8 +3,9 @@ package org.farmcode.media.video
 	import flash.net.SharedObject;
 	
 	import org.farmcode.acting.actTypes.IAct;
-	import org.farmcode.display.behaviour.ILayoutViewBehaviour;
+	import org.farmcode.display.core.ILayoutView;
 	
+	// TODO: this doesn't need to inherit from IVideoSource does it?
 	public class VolumeMemory implements IVideoSource
 	{
 		private static var _storage:SharedObject;
@@ -129,12 +130,12 @@ package org.farmcode.media.video
 		public function get loadCompleted():IAct{
 			return _videoSource.loadCompleted;
 		}
-		public function takeMediaDisplay():ILayoutViewBehaviour{
+		public function takeMediaDisplay():ILayoutView{
 			if(!_displayCount)registerInstance(this);
 			++_displayCount;
 			return _videoSource.takeMediaDisplay();
 		}
-		public function returnMediaDisplay(value:ILayoutViewBehaviour):void{
+		public function returnMediaDisplay(value:ILayoutView):void{
 			--_displayCount;
 			if(!_displayCount)unregisterInstance(this);
 			_videoSource.returnMediaDisplay(value);

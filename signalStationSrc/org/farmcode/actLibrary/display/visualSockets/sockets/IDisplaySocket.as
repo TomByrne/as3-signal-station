@@ -6,7 +6,7 @@ package org.farmcode.actLibrary.display.visualSockets.sockets
 	import org.farmcode.actLibrary.display.visualSockets.plugs.IPlugDisplay;
 	import org.farmcode.acting.actTypes.IAct;
 
-	public interface IDisplaySocket extends IEventDispatcher
+	public interface IDisplaySocket
 	{
 		
 		/**

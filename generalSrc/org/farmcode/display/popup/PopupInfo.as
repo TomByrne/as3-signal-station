@@ -1,16 +1,13 @@
 package org.farmcode.display.popup
 {
-	import flash.display.DisplayObject;
-	import flash.display.DisplayObjectContainer;
-	import flash.display.Stage;
 	import flash.events.Event;
-	import flash.geom.Point;
 	import flash.geom.Rectangle;
 	
 	import org.farmcode.actLibrary.core.IRevertableAct;
 	import org.farmcode.acting.actTypes.IAct;
 	import org.farmcode.acting.actTypes.IUniversalAct;
-	import org.farmcode.display.transition.WipeTransition;
+	import org.farmcode.display.assets.IDisplayAsset;
+	import org.farmcode.display.assets.IStageAsset;
 
 	public class PopupInfo extends AbstractPopupInfo implements IPopupInfo
 	{
@@ -30,15 +27,15 @@ package org.farmcode.display.popup
 			_focusActs = value;
 			assessFocused();
 		}
-		override public function set popupDisplay(value:DisplayObject):void{
+		override public function set popupDisplay(value:IDisplayAsset):void{
 			if(_popupDisplay){
-				_popupDisplay.removeEventListener(Event.ADDED_TO_STAGE, onAdded);
-				_popupDisplay.removeEventListener(Event.REMOVED_FROM_STAGE, onRemoved);
+				_popupDisplay.addedToStage.removeHandler(onAdded);
+				_popupDisplay.removedFromStage.removeHandler(onRemoved);
 			}
 			super.popupDisplay = value;
 			if(_popupDisplay){
-				_popupDisplay.addEventListener(Event.ADDED_TO_STAGE, onAdded);
-				_popupDisplay.addEventListener(Event.REMOVED_FROM_STAGE, onRemoved);
+				_popupDisplay.addedToStage.addHandler(onAdded);
+				_popupDisplay.removedFromStage.addHandler(onRemoved);
 				setStage(_popupDisplay.stage);
 			}else{
 				setStage(null);
@@ -57,9 +54,9 @@ package org.farmcode.display.popup
 		private var _focusActs:Array;
 		private var _centreToStage:Boolean;
 		private var _focusActsPerformed:Boolean;
-		private var _lastStage:Stage;
+		private var _lastStage:IStageAsset;
 		
-		public function PopupInfo(popupDisplay:DisplayObject=null, isModal:Boolean=false){
+		public function PopupInfo(popupDisplay:IDisplayAsset=null, isModal:Boolean=false){
 			super(popupDisplay, isModal);
 		}
 		private function assessCentre():void{
@@ -88,12 +85,14 @@ package org.farmcode.display.popup
 				if(act){
 					var revert:IAct = act.revertAct;
 					var uniAct:IUniversalAct = revert as IUniversalAct;
-					if(uniAct){
-						uniAct.scopeDisplay = _popupDisplay;
+					var setScope:Boolean;
+					if(uniAct && !uniAct.scope){
+						uniAct.scope = _popupDisplay;
+						setScope = true;
 					}
 					act.revertAct.perform();
-					if(uniAct){
-						uniAct.scopeDisplay = null;
+					if(setScope){
+						uniAct.scope = null;
 					}
 				}
 			}
@@ -103,32 +102,34 @@ package org.farmcode.display.popup
 			for each(var act:IAct in _focusActs){
 				if(act){
 					var uniAct:IUniversalAct = act as IUniversalAct;
-					if(uniAct){
-						uniAct.scopeDisplay = _popupDisplay;
+					var setScope:Boolean;
+					if(uniAct && !uniAct.scope){
+						uniAct.scope = _popupDisplay;
+						setScope = true;
 					}
 					act.perform();
-					if(uniAct){
-						uniAct.scopeDisplay = null;
+					if(setScope){
+						uniAct.scope = null;
 					}
 				}
 			}
 		}
-		private function onAdded(e:Event):void{
+		private function onAdded(e:Event, from:IDisplayAsset):void{
 			setStage(_popupDisplay.stage);
 			assessFocused();
 		}
-		private function onRemoved(e:Event):void{
+		private function onRemoved(e:Event, from:IDisplayAsset):void{
 			setStage(null);
 			assessFocused();
 		}
-		private function setStage(value:Stage):void{
+		private function setStage(value:IStageAsset):void{
 			if(_lastStage != value){
 				if(_lastStage){
-					_lastStage.removeEventListener(Event.RESIZE, onStageResize);
+					_lastStage.resize.removeHandler(onStageResize);
 				}
 				_lastStage = value;
 				if(_lastStage){
-					_lastStage.addEventListener(Event.RESIZE, onStageResize);
+					_lastStage.resize.addHandler(onStageResize);
 					assessCentre();
 				}
 			}

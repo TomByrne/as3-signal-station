@@ -1,8 +1,7 @@
 package org.farmcode.display.transition
 {
-	import flash.display.Bitmap;
-	import flash.display.DisplayObject;
-	import flash.geom.Rectangle;
+	import org.farmcode.display.assets.IBitmapAsset;
+	import org.farmcode.display.assets.IDisplayAsset;
 
 	public class Transition implements ITransition
 	{
@@ -26,13 +25,13 @@ package org.farmcode.display.transition
 		private var _timing:String = TransitionTiming.CONCURRENT;
 		private var _duration:Number = 1000;
 		
-		public function beginTransition(start:DisplayObject, finish:DisplayObject, bitmap:Bitmap, duration:Number):void{
+		public function beginTransition(start:IDisplayAsset, finish:IDisplayAsset, bitmap:IBitmapAsset, duration:Number):void{
 		}
 		
-		public function doTransition(start:DisplayObject, finish:DisplayObject, bitmap:Bitmap, duration:Number, currentTime:Number):void{
+		public function doTransition(start:IDisplayAsset, finish:IDisplayAsset, bitmap:IBitmapAsset, duration:Number, currentTime:Number):void{
 		}
 		
-		public function endTransition(start:DisplayObject, finish:DisplayObject, bitmap:Bitmap, duration:Number):void{
+		public function endTransition(start:IDisplayAsset, finish:IDisplayAsset, bitmap:IBitmapAsset, duration:Number):void{
 		}
 		
 	}

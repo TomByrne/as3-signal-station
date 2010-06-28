@@ -1,16 +1,14 @@
 package org.farmcode.actLibrary.display.visualSockets.socketContainers
 {
-	import flash.display.DisplayObjectContainer;
 	import flash.utils.Dictionary;
 	
-	import org.farmcode.actLibrary.display.visualSockets.actTypes.IFillSocketAct;
 	import org.farmcode.actLibrary.display.visualSockets.acts.FillSocketAct;
-	import org.farmcode.actLibrary.display.visualSockets.acts.LookupFillSocketAct;
 	import org.farmcode.actLibrary.display.visualSockets.sockets.DisplaySocket;
 	import org.farmcode.actLibrary.display.visualSockets.sockets.IDisplaySocket;
 	import org.farmcode.acting.actTypes.IAct;
 	import org.farmcode.acting.acts.Act;
 	import org.farmcode.acting.universal.UniversalActExecution;
+	import org.farmcode.display.assets.IContainerAsset;
 	import org.farmcode.display.layout.list.ListLayoutInfo;
 	
 	public class SocketCollectionContainerHelper extends SocketContainerHelper
@@ -43,7 +41,7 @@ package org.farmcode.actLibrary.display.visualSockets.socketContainers
 		public function get collectionSocketsChanged():IAct{
 			return _collectionSocketsChanged;
 		}
-		override public function set defaultContainer(value: DisplayObjectContainer):void{
+		override public function set defaultContainer(value: IContainerAsset):void{
 			if(super.defaultContainer!=value){
 				for each(var socket:IDisplaySocket in _collectionSockets){
 					var cast:DisplaySocket = (socket as DisplaySocket);
@@ -77,8 +75,8 @@ package org.farmcode.actLibrary.display.visualSockets.socketContainers
 		private var _lookupFillActs:Array = [];
 		private var _fillActs:Array = [];
 		
-		public function SocketCollectionContainerHelper(socketContainer:ISocketContainer){
-			super(socketContainer);
+		public function SocketCollectionContainerHelper(socketContainer:ISocketContainer, socketsChanged:Act){
+			super(socketContainer, socketsChanged);
 		}
 		override protected function checkChildData(execution:UniversalActExecution=null): void{
 			if(_added){
@@ -162,7 +160,7 @@ package org.farmcode.actLibrary.display.visualSockets.socketContainers
 				}
 				_collectionSockets.splice(collectionCount,_collectionSockets.length-collectionCount);
 				if(change){
-					dispatchSocketChange();
+					_socketsChanged.perform(_socketContainer);
 					for each(fillSocket in performActs){
 						fillSocket.perform(execution);
 					}

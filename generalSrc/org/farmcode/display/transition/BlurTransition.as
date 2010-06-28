@@ -1,11 +1,12 @@
 package org.farmcode.display.transition
 {
-	import flash.display.Bitmap;
-	import flash.display.DisplayObject;
 	import flash.filters.BlurFilter;
 	import flash.geom.ColorTransform;
 	import flash.geom.Matrix;
 	import flash.geom.Point;
+	
+	import org.farmcode.display.assets.IBitmapAsset;
+	import org.farmcode.display.assets.IDisplayAsset;
 	
 	public class BlurTransition extends Transition
 	{
@@ -25,12 +26,12 @@ package org.farmcode.display.transition
 			this.blurY = blurY;
 		}
 		
-		override public function doTransition(start:DisplayObject, finish:DisplayObject, bitmap:Bitmap, duration:Number, currentTime:Number):void{
+		override public function doTransition(start:IDisplayAsset, finish:IDisplayAsset, bitmap:IBitmapAsset, duration:Number, currentTime:Number):void{
 			var bitmapMatrix:Matrix = bitmap.transform.concatenatedMatrix;
 			bitmapMatrix.invert();
 			
 			var fract:Number = currentTime/duration;
-			var subject:DisplayObject;
+			var subject:IDisplayAsset;
 			if(fract<=0.5){
 				fract = (fract)/0.5;
 				subject = start;
@@ -49,7 +50,7 @@ package org.farmcode.display.transition
 			var colorTrans:ColorTransform = subject.transform.colorTransform;
 			colorTrans.alphaMultiplier = 1-fract;
 			
-			bitmap.bitmapData.draw(subject,matrix,colorTrans,subject.blendMode);
+			bitmap.bitmapData.draw(subject.bitmapDrawable,matrix,colorTrans,subject.blendMode);
 			bitmap.bitmapData.applyFilter(bitmap.bitmapData,bitmap.bitmapData.rect,new Point(),_blurFilter);
 		}
 	}

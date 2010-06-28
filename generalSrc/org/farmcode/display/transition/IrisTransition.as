@@ -1,15 +1,16 @@
 package org.farmcode.display.transition
 {
-	import flash.display.Bitmap;
 	import flash.display.BitmapData;
 	import flash.display.BitmapDataChannel;
 	import flash.display.BlendMode;
-	import flash.display.DisplayObject;
 	import flash.display.Sprite;
 	import flash.geom.Matrix;
 	import flash.geom.Point;
 	import flash.geom.Rectangle;
 	import flash.utils.Dictionary;
+	
+	import org.farmcode.display.assets.IBitmapAsset;
+	import org.farmcode.display.assets.IDisplayAsset;
 	
 	public class IrisTransition extends Transition
 	{
@@ -33,14 +34,14 @@ package org.farmcode.display.transition
 			this.reflect = reflect;
 		}
 		
-		override public function beginTransition(start:DisplayObject, finish:DisplayObject, bitmap:Bitmap, duration:Number):void{
+		override public function beginTransition(start:IDisplayAsset, finish:IDisplayAsset, bitmap:IBitmapAsset, duration:Number):void{
 			var bundle:BitmapBundle = new BitmapBundle();
 			bundle.drawArea = new BitmapData(bitmap.width,bitmap.height,true,0);
 			bundle.maskBitmapData = new BitmapData(bitmap.width,bitmap.height,false,0);
 			bundle.alphaBitmapData = new BitmapData(bitmap.width,bitmap.height,false,0);
 			bundles[start] = bundle;
 		}
-		override public function doTransition(start:DisplayObject, finish:DisplayObject, bitmap:Bitmap, duration:Number, currentTime:Number):void{
+		override public function doTransition(start:IDisplayAsset, finish:IDisplayAsset, bitmap:IBitmapAsset, duration:Number, currentTime:Number):void{
 			
 			var bitmapMatrix:Matrix = bitmap.transform.concatenatedMatrix;
 			bitmapMatrix.invert();
@@ -49,8 +50,8 @@ package org.farmcode.display.transition
 			
 			var innerSizeFract:Number;
 			var outerSizeFract:Number;
-			var innerSubject:DisplayObject;
-			var outerSubject:DisplayObject;
+			var innerSubject:IDisplayAsset;
+			var outerSubject:IDisplayAsset;
 			if(direction==OUT){
 				innerSizeFract = currentTime/duration;
 				innerSubject = start;
@@ -74,7 +75,7 @@ package org.farmcode.display.transition
 			
 			var matrix:Matrix = innerSubject.transform.concatenatedMatrix;
 			matrix.concat(bitmapMatrix);
-			bitmap.bitmapData.draw(innerSubject,matrix,innerSubject.transform.colorTransform,innerSubject.blendMode);
+			bitmap.bitmapData.draw(innerSubject.bitmapDrawable,matrix,innerSubject.transform.colorTransform,innerSubject.blendMode);
 			bitmap.bitmapData.draw(CIRCLE_MASK,CIRCLE_MASK.transform.matrix,null,BlendMode.ERASE);
 			
 			if(outerSizeFract!=innerSizeFract){
@@ -83,7 +84,7 @@ package org.farmcode.display.transition
 			
 			matrix = outerSubject.transform.concatenatedMatrix;
 			matrix.concat(bitmapMatrix);
-			bundle.drawArea.draw(outerSubject,matrix,null,null);
+			bundle.drawArea.draw(outerSubject.bitmapDrawable,matrix,null,null);
 			
 			bundle.maskBitmapData.fillRect(bundle.maskBitmapData.rect,0);
 			bundle.maskBitmapData.draw(CIRCLE_MASK,CIRCLE_MASK.transform.matrix,null);
@@ -94,7 +95,7 @@ package org.farmcode.display.transition
 				
 			bitmap.bitmapData.draw(bundle.drawArea,null,finish.transform.colorTransform);
 		}
-		override public function endTransition(start:DisplayObject, finish:DisplayObject, bitmap:Bitmap, duration:Number):void{
+		override public function endTransition(start:IDisplayAsset, finish:IDisplayAsset, bitmap:IBitmapAsset, duration:Number):void{
 			var bundle:BitmapBundle = bundles[start];
 			bundle.drawArea.dispose();
 			bundle.maskBitmapData.dispose();
@@ -103,7 +104,7 @@ package org.farmcode.display.transition
 		}
 	}
 }
-	import flash.display.BitmapData;
+import flash.display.BitmapData;
 	
 class BitmapBundle{
 	public var drawArea:BitmapData;

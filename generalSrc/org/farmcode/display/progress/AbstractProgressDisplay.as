@@ -2,9 +2,13 @@ package org.farmcode.display.progress
 {
 	import flash.display.DisplayObject;
 	
-	import org.farmcode.display.behaviour.LayoutViewBehaviour;
+	import org.farmcode.display.assets.IAsset;
+	import org.farmcode.display.assets.IDisplayAsset;
+	import org.farmcode.display.assets.nativeAssets.DisplayObjectAsset;
+	import org.farmcode.display.core.ILayoutView;
+	import org.farmcode.display.core.LayoutView;
 	
-	public class AbstractProgressDisplay extends LayoutViewBehaviour implements IProgressDisplay
+	public class AbstractProgressDisplay extends LayoutView implements IProgressDisplay
 	{
 		public function get measurable():Boolean{
 			return _measurable;
@@ -55,8 +59,11 @@ package org.farmcode.display.progress
 				invalidate();
 			}
 		}
-		public function get display():DisplayObject{
+		public function get display():IDisplayAsset{
 			return asset;
+		}
+		public function get layoutView():ILayoutView{
+			return this;
 		}
 		
 		private var _units:String;
@@ -65,7 +72,7 @@ package org.farmcode.display.progress
 		private var _message:String;
 		private var _measurable:Boolean;
 		
-		public function AbstractProgressDisplay(asset:DisplayObject=null)
+		public function AbstractProgressDisplay(asset:IDisplayAsset=null)
 		{
 			super(asset);
 		}

@@ -1,6 +1,6 @@
 package org.farmcode.actLibrary.display.visualSockets.plugs
 {
-	import flash.display.DisplayObject;
+	
 	import flash.geom.Rectangle;
 	
 	import org.farmcode.actLibrary.display.visualSockets.sockets.IDisplaySocket;
@@ -8,23 +8,24 @@ package org.farmcode.actLibrary.display.visualSockets.plugs
 	import org.farmcode.acting.actTypes.IUniversalAct;
 	import org.farmcode.acting.acts.Act;
 	import org.farmcode.acting.acts.UniversalAct;
+	import org.farmcode.display.assets.IDisplayAsset;
 	import org.farmcode.acting.universal.UniversalActExecution;
-	import org.farmcode.display.behaviour.ViewBehaviour;
+	import org.farmcode.display.core.DrawableView;
 	import org.farmcode.display.layout.ILayoutSubject;
 	import org.farmcode.display.layout.core.ILayoutInfo;
 	
 	public class AbstractPlugDisplayProxy implements ILayoutSubject, IPlugDisplay
 	{
-		public function get asset():DisplayObject{
+		public function get asset():IDisplayAsset{
 			return _asset;
 		}
-		public function set asset(value:DisplayObject):void{
+		public function set asset(value:IDisplayAsset):void{
 			if(_asset!=value){
 				_asset = value;
 				commitAsset();
 			}
 		}
-		public function get display():DisplayObject{
+		public function get display():IDisplayAsset{
 			return _asset;
 		}
 		
@@ -33,6 +34,14 @@ package org.farmcode.actLibrary.display.visualSockets.plugs
 		}
 		public function set displaySocket(value:IDisplaySocket):void{
 			_displaySocket = value;
+		}
+		
+		//TODO: these shouldn't be tied to _layoutTarget
+		public function get displayPosition():Rectangle{
+			return _layoutTarget.displayPosition;
+		}
+		public function get positionChanged():IAct{
+			return _layoutTarget.positionChanged;
 		}
 		
 		
@@ -61,11 +70,11 @@ package org.farmcode.actLibrary.display.visualSockets.plugs
 		
 		protected var _dataProvider:*;
 		protected var _displaySocket:IDisplaySocket;
-		protected var _target:ViewBehaviour;
-		protected var _asset:DisplayObject;
+		protected var _target:DrawableView;
+		protected var _asset:IDisplayAsset;
 		protected var _layoutTarget:ILayoutSubject;
 		
-		public function AbstractPlugDisplayProxy(target:ViewBehaviour=null){
+		public function AbstractPlugDisplayProxy(target:DrawableView=null){
 			setTarget(target);
 		}
 		public function setDataProvider(value:*, execution:UniversalActExecution=null):void{
@@ -78,7 +87,7 @@ package org.farmcode.actLibrary.display.visualSockets.plugs
 		public function getDataProvider():*{
 			return _dataProvider;
 		}
-		protected function setTarget(value:ViewBehaviour):void{
+		protected function setTarget(value:DrawableView):void{
 			if(_target!=value){
 				if(_target){
 					if(_asset)_target.asset = null;

@@ -5,8 +5,6 @@ package org.farmcode.actLibrary.display.transition
 	import au.com.thefarmdigital.utils.DisplayUtils;
 	
 	import flash.display.Bitmap;
-	import flash.display.DisplayObject;
-	import flash.display.DisplayObjectContainer;
 	import flash.display.Sprite;
 	import flash.utils.Dictionary;
 	
@@ -15,6 +13,8 @@ package org.farmcode.actLibrary.display.transition
 	import org.farmcode.actLibrary.display.transition.actTypes.IAdvancedTransitionAct;
 	import org.farmcode.actLibrary.display.transition.actTypes.ITransitionAct;
 	import org.farmcode.acting.universal.UniversalActExecution;
+	import org.farmcode.display.assets.IContainerAsset;
+	import org.farmcode.display.assets.IDisplayAsset;
 	import org.farmcode.display.transition.TransitionExecution;
 	import org.farmcode.display.transition.TransitionManager;
 	
@@ -49,30 +49,30 @@ package org.farmcode.actLibrary.display.transition
 		public function beforeTransition(cause:ITransitionAct):void{
 			if(cause.doTransition){
 				var adv:IAdvancedTransitionAct = (cause as IAdvancedTransitionAct);
-				var startDisplay:DisplayObject = (adv && adv.startDisplay?adv.startDisplay:(scopeDisplay as DisplayObjectContainer));
-				var endDisplay:DisplayObject = (adv && adv.endDisplay?adv.endDisplay:startDisplay);
-				var hiddenDisplay:DisplayObject;
+				var startDisplay:IDisplayAsset = (adv && adv.startDisplay?adv.startDisplay:(asset as IContainerAsset));
+				var endDisplay:IDisplayAsset = (adv && adv.endDisplay?adv.endDisplay:startDisplay);
+				var hiddenDisplay:IDisplayAsset;
 				if(startDisplay && !alreadyTransitioning(startDisplay)){
-					var castStart:DisplayObjectContainer = (startDisplay as DisplayObjectContainer);
+					var castStart:IContainerAsset = (startDisplay as IContainerAsset);
 					if(castStart && DisplayUtils.isDescendant(castStart,endDisplay)){
 						endDisplay = startDisplay;
 					}else{
-						var castEnd:DisplayObjectContainer = (endDisplay as DisplayObjectContainer);
+						var castEnd:IContainerAsset = (endDisplay as IContainerAsset);
 						if(castEnd && DisplayUtils.isDescendant(castEnd,startDisplay)){
 							startDisplay = endDisplay;
 						}
 					}
 					if(startDisplay==endDisplay){
 						var depth:Number = 0;
-						var parent: DisplayObjectContainer = null;
+						var parent: IContainerAsset = null;
 						var wasVisible:Boolean = startDisplay.visible && startDisplay.stage;
 						if (startDisplay == startDisplay.root){
-							parent = startDisplay as DisplayObjectContainer;
+							parent = startDisplay as IContainerAsset;
 							depth = parent.numChildren - 1;
 						}else{
 							parent = startDisplay.parent;
 							if(parent){
-								depth = parent.getChildIndex(startDisplay);
+								depth = parent.getAssetIndex(startDisplay);
 								startDisplay.visible = false;
 							}
 						}
@@ -80,11 +80,11 @@ package org.farmcode.actLibrary.display.transition
 							if(wasVisible){
 								startDisplay = DisplayObjectSnapshot.snapshot(startDisplay,parent);
 							}else{
-								startDisplay = new Sprite();
+								startDisplay = startDisplay.createAsset(IDisplayAsset);
 							}
-							parent.addChildAt(startDisplay,depth+1);
+							parent.addAssetAt(startDisplay,depth+1);
 						}else if(!wasVisible){
-							startDisplay = new Sprite();
+							startDisplay = startDisplay.createAsset(IDisplayAsset);
 						}
 						hiddenDisplay = endDisplay;
 					}
@@ -92,7 +92,7 @@ package org.farmcode.actLibrary.display.transition
 				}
 			}
 		}
-		protected function alreadyTransitioning(startDisplay:DisplayObject):Boolean{
+		protected function alreadyTransitioning(startDisplay:IDisplayAsset):Boolean{
 			for each(var transBundle:TransBundle in _snapshots){
 				if(transBundle.hiddenDisplay==startDisplay)return true;
 			}
@@ -117,8 +117,8 @@ package org.farmcode.actLibrary.display.transition
 						var isVisible:Boolean = bundle.endDisplay.visible && bundle.endDisplay.stage;
 						if(!isVisible && bundle.endDisplay==bundle.hiddenDisplay){
 							bundle.hiddenDisplay = null;
-							bundle.endDisplay = bundle.addedDisplay = new Sprite();
-							bundle.startDisplay.parent.addChild(bundle.endDisplay);
+							bundle.endDisplay = bundle.addedDisplay = bundle.startDisplay.createAsset(IDisplayAsset);
+							bundle.startDisplay.parent.addAsset(bundle.endDisplay);
 						}
 						var trans:TransitionExecution = TransitionManager.execute(bundle.startDisplay,bundle.endDisplay,transitions,easing);
 						trans.addEventListener(TransitionEvent.TRANSITION_END, bundle.onFinish);					
@@ -128,7 +128,7 @@ package org.farmcode.actLibrary.display.transition
 				var snapshot:Bitmap = bundle.startDisplay as Bitmap;
 				if(snapshot)snapshot.bitmapData.dispose();
 				bundle.hiddenDisplay.visible = true;
-				bundle.startDisplay.parent.removeChild(bundle.startDisplay);
+				bundle.startDisplay.parent.removeAsset(bundle.startDisplay);
 			}
 		}
 	}
@@ -136,18 +136,18 @@ package org.farmcode.actLibrary.display.transition
 import au.com.thefarmdigital.events.TransitionEvent;
 
 import flash.display.Bitmap;
-import flash.display.DisplayObject;
 
 import org.farmcode.acting.universal.UniversalActExecution;
+import org.farmcode.display.assets.IDisplayAsset;
 	
 class TransBundle{
-	public var startDisplay:DisplayObject;
-	public var endDisplay:DisplayObject;
-	public var hiddenDisplay:DisplayObject;
-	public var addedDisplay:DisplayObject;
+	public var startDisplay:IDisplayAsset;
+	public var endDisplay:IDisplayAsset;
+	public var hiddenDisplay:IDisplayAsset;
+	public var addedDisplay:IDisplayAsset;
 	public var execution:UniversalActExecution;
 	
-	public function TransBundle(startDisplay:DisplayObject, hiddenDisplay:DisplayObject, endDisplay:DisplayObject){
+	public function TransBundle(startDisplay:IDisplayAsset, hiddenDisplay:IDisplayAsset, endDisplay:IDisplayAsset){
 		this.startDisplay = startDisplay;
 		this.endDisplay = endDisplay;
 		this.hiddenDisplay = hiddenDisplay;
@@ -156,7 +156,7 @@ class TransBundle{
 		var snapshot:Bitmap = startDisplay as Bitmap;
 		if(snapshot)snapshot.bitmapData.dispose();
 		if(addedDisplay){
-			addedDisplay.parent.removeChild(addedDisplay);
+			addedDisplay.parent.removeAsset(addedDisplay);
 		}
 		execution.continueExecution();
 	}

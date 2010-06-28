@@ -4,11 +4,10 @@ package org.farmcode.acting.universal
 	import flash.utils.Dictionary;
 	
 	import org.farmcode.acting.ActingNamspace;
-	import org.farmcode.acting.actTypes.IAct;
-	import org.farmcode.acting.actTypes.IAsynchronousAct;
 	import org.farmcode.acting.actTypes.IUniversalAct;
-	import org.farmcode.acting.universal.ruleTypes.IUniversalRule;
 	import org.farmcode.acting.universal.reactions.IActReaction;
+	import org.farmcode.acting.universal.ruleTypes.IUniversalRule;
+	import org.farmcode.display.assets.IDisplayAsset;
 	
 	use namespace ActingNamspace;
 
@@ -22,7 +21,7 @@ package org.farmcode.acting.universal
 		private static var actMap:Dictionary = new Dictionary();
 		private static var reactionMap:Dictionary = new Dictionary();
 		
-		public static function addManager(scopeDisplay:DisplayObject=null):void{
+		public static function addManager(scopeDisplay:IDisplayAsset=null):void{
 			if(managers[scopeDisplay]){
 				throw new Error("Manager already added");
 			}else{
@@ -31,7 +30,7 @@ package org.farmcode.acting.universal
 				managers[scopeDisplay] = manager;
 				if(parent){
 					for each(var act:IUniversalAct in parent.acts){
-						if(findManagerFor(act.scopeDisplay,false)==manager){
+						if(findManagerFor(act.scope,false)==manager){
 							parent.removeAct(act);
 							manager.addAct(act);
 							actMap[act] = manager;
@@ -40,9 +39,9 @@ package org.farmcode.acting.universal
 				}
 			}
 		}
-		public static function removeManager(scopeDisplay:DisplayObject):void{
+		public static function removeManager(scopeDisplay:IDisplayAsset):void{
 			if(scopeDisplay){
-				var subject:DisplayObject = scopeDisplay;
+				var subject:IDisplayAsset = scopeDisplay;
 				while(subject){
 					var manager:UniversalActManager = managers[subject];
 					if(manager){
@@ -63,9 +62,9 @@ package org.farmcode.acting.universal
 		}
 		public static function addAct(act:IUniversalAct):void{
 			if(!actMap[act]){
-				var manager:UniversalActManager = findManagerFor(act.scopeDisplay,true);
+				var manager:UniversalActManager = findManagerFor(act.scope,true);
 				manager.addAct(act);
-				act.scopeDisplayChanged.addHandler(onActScopeDisplayChange);
+				act.scopeChanged.addHandler(onActScopeDisplayChange);
 				actMap[act] = manager;
 			}else{
 				throw new Error("act already added");
@@ -75,7 +74,7 @@ package org.farmcode.acting.universal
 			var manager:UniversalActManager = actMap[act];
 			if(manager){
 				manager.removeAct(act);
-				act.scopeDisplayChanged.removeHandler(onActScopeDisplayChange);
+				act.scopeChanged.removeHandler(onActScopeDisplayChange);
 				delete actMap[act];
 			}else{
 				throw new Error("act has not been added");
@@ -83,9 +82,9 @@ package org.farmcode.acting.universal
 		}
 		public static function addReaction(reaction:IActReaction):void{
 			if(!reactionMap[reaction]){
-				var manager:UniversalActManager = findManagerFor(reaction.scopeDisplay,true);
+				var manager:UniversalActManager = findManagerFor(reaction.asset,true);
 				manager.addReaction(reaction);
-				reaction.scopeDisplayChanged.addHandler(onReactionScopeDisplayChange);
+				reaction.assetChanged.addHandler(onReactionScopeDisplayChange);
 				reactionMap[reaction] = manager;
 			}else{
 				throw new Error("reaction already added");
@@ -95,16 +94,16 @@ package org.farmcode.acting.universal
 			var manager:UniversalActManager = reactionMap[reaction];
 			if(manager){
 				manager.removeReaction(reaction);
-				reaction.scopeDisplayChanged.removeHandler(onReactionScopeDisplayChange);
+				reaction.assetChanged.removeHandler(onReactionScopeDisplayChange);
 				delete reactionMap[reaction];
 			}else{
 				throw new Error("reaction has not been added");
 			}
 		}
-		private static function findManagerFor(scopeDisplay:DisplayObject, createRoot:Boolean):UniversalActManager{
+		private static function findManagerFor(scopeDisplay:IDisplayAsset, createRoot:Boolean):UniversalActManager{
 			var manager:UniversalActManager;
 			if(scopeDisplay){
-				var subject:DisplayObject = scopeDisplay;
+				var subject:IDisplayAsset = scopeDisplay;
 				while(subject){
 					manager = managers[subject];
 					if(manager)return manager;
@@ -120,7 +119,7 @@ package org.farmcode.acting.universal
 		}
 		private static function onActScopeDisplayChange(act:IUniversalAct):void{
 			var oldManager:UniversalActManager = actMap[act];
-			var newManager:UniversalActManager = findManagerFor(act.scopeDisplay, true);
+			var newManager:UniversalActManager = findManagerFor(act.scope, true);
 			if(oldManager!=newManager){
 				oldManager.removeAct(act);
 				newManager.addAct(act);
@@ -129,7 +128,7 @@ package org.farmcode.acting.universal
 		}
 		private static function onReactionScopeDisplayChange(reaction:IActReaction):void{
 			var oldManager:UniversalActManager = reactionMap[reaction];
-			var newManager:UniversalActManager = findManagerFor(reaction.scopeDisplay, true);
+			var newManager:UniversalActManager = findManagerFor(reaction.asset, true);
 			if(oldManager!=newManager){
 				oldManager.removeReaction(reaction);
 				newManager.addReaction(reaction);

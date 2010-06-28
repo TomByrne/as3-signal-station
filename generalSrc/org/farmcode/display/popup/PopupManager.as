@@ -2,16 +2,15 @@ package org.farmcode.display.popup
 {
 	import au.com.thefarmdigital.utils.DisplayUtils;
 	
-	import flash.display.DisplayObject;
-	import flash.display.DisplayObjectContainer;
 	import flash.events.Event;
-	import flash.events.EventDispatcher;
 	import flash.utils.Dictionary;
 	
 	import org.farmcode.actLibrary.display.popup.IModalDisablerView;
 	import org.farmcode.acting.actTypes.IAct;
 	import org.farmcode.acting.acts.Act;
 	import org.farmcode.core.DelayedCall;
+	import org.farmcode.display.assets.IContainerAsset;
+	import org.farmcode.display.assets.IDisplayAsset;
 	import org.farmcode.instanceFactory.IInstanceFactory;
 	
 	/** 
@@ -21,27 +20,21 @@ package org.farmcode.display.popup
 	 * TODO:
 	 *  -   Confirm that remove event is fired at the right time.
 	 */
-	public class PopupManager extends EventDispatcher
+	public class PopupManager
 	{
-		/**
-		 * Gets a globally shared instance of the popup manager
-		 * 
-		 * @return	A PopupManager instance. This istance is shared by all clients accessing the manager
-		 * 			via this method
-		 */
-		public static function get instance(): PopupManager
-		{
-			if (PopupManager._instance == null)
-			{
-				PopupManager._instance = new PopupManager();
-			}
-			return PopupManager._instance;
-		}
-		/**
-		 * Globally available instance of the manager
-		 */
-		private static var _instance: PopupManager = null;
+		protected static var instances:Array = [];
 		
+		protected static function addInstance(popupManager:PopupManager):void{
+			instances.push(popupManager);
+		}
+		
+		public static function closePopup(popupDisplay:IDisplayAsset):void{
+			for each(var manager:PopupManager in instances){
+				if(manager.removePopupByDisplay(popupDisplay)){
+					return;
+				}
+			}
+		}
 		
 		
 		
@@ -90,12 +83,6 @@ package org.farmcode.display.popup
 		private var _modalDisablerFactory:IInstanceFactory;
 		
 		/**
-		 * If a popups display dispatches a close event, this property determines
-		 * whether it should be responded to.
-		 */
-		public var respondToCloseEvents:Boolean = true;
-		
-		/**
 		 * If the keyboard focus is assigned to a display which is being removed
 		 * by the popup manager and reclaimFocus is set to true, the focus will be
 		 * assigned to null (allowing the stage to catch keyboard events).
@@ -131,32 +118,21 @@ package org.farmcode.display.popup
 		 * Creates a new popup manager
 		 */
 		public function PopupManager(){
+			addInstance(this);
 		}
 		
 		/**
-		 * The addPopup method adds a a Popup DisplayObject to the site, it will be above all other popups 
+		 * The addPopup method adds a Popup IDisplayAsset to the site, it will be above all other popups 
 		 * with the same parent.
 		 * If the parent parameter targets another already opened Popup, that Popups parent will be used.
-		 * If the Popup dispatches an <code>Event.CLOSE</code> event after it has been added, it will be 
-		 * removed. If the Popup is already being managed by this manager then it won't be added again. 
+		 * If the Popup is already being managed by this manager then it won't be added again. 
 		 * 
-		 * @param popupDisplay 			The DisplayObject that will be added (as a Popup to the site.
+		 * @param popupInfo 			An object containing details about the popup to be added.
 		 * @param parent 				The DisplayObjectContainer to which the Popup will be added.
-		 * @param modal 				Whether or not this Popup is modal (i.e. whether the user can 
-		 * 								interact with other parts	of the site before dismissing thiu Popup).
-		 * @param center 				Whether the Popups mosition should be changed to center it on the Stage.
-		 * @param keepInCentre			If set to true the manager will listen to the "resize" event of the 
-		 * 								parent and refresh the popup's position. If center is set to false then 
-		 * 								this has no effect
-		 * @param positioningOffsets	When positioning the popup, these values will be added to the 
-		 * 								calculated position
-		 * @param bgFillColour			The fill colour of the mouse blocking area if using modal
-		 * @param bgAlpha				The alpha of the fill of the mouse blocking area if using modal
-		 * @param bgTransitionTime		The time to transition in the modal popup background
 		 * 
 		 * @return Whether the popup was successfully added.
 		 */
-		public function addPopup(popupInfo:IPopupInfo, parent:DisplayObjectContainer):Boolean
+		public function addPopup(popupInfo:IPopupInfo, parent:IContainerAsset):Boolean
 		{
 			if (popupInfo == null){
 				throw new ArgumentError("Parameter popupInfo must be non-null");
@@ -167,7 +143,6 @@ package org.farmcode.display.popup
 			}else if (this.isManaging(popupInfo)){
 				// This popup is already being managed, don't re-initialise it
 			}else{
-				popupInfo.popupDisplay.addEventListener(Event.CLOSE, this.onDisplayCloseEvent);
 				
 				this._popups.push(popupInfo);
 				if(popupInfo.focusable){
@@ -181,9 +156,9 @@ package org.farmcode.display.popup
 				
 				// If popup is already in parent, move to top of order
 				if (parent.contains(popupInfo.popupDisplay)){
-					parent.setChildIndex(popupInfo.popupDisplay, parent.numChildren - 1);
+					parent.setAssetIndex(popupInfo.popupDisplay, parent.numChildren - 1);
 				}else{
-					parent.addChild(popupInfo.popupDisplay);
+					parent.addAsset(popupInfo.popupDisplay);
 				}
 				
 				if(_popupAdded)_popupAdded.perform(this,popupInfo);
@@ -194,67 +169,50 @@ package org.farmcode.display.popup
 			return false;
 		}
 		
-		
 		/**
-		 * Triggered when a popup that is being managed is closed
+		 * Removes a popup from the site
 		 * 
-		 * @param	e	Details about the close event
+		 * @param	popup	The DisplayObject that was a popup
 		 */
-		private function onDisplayCloseEvent(e: Event):void{
-			if(respondToCloseEvents){
-				var popupInfo:IPopupInfo = findInfoByDisplay(e.target as DisplayObject);
-				if(_popupRemoved)_popupRemoved.perform(this,popupInfo);
-				finaliseClose(popupInfo);
-			}
-		}
-		protected function findInfoByDisplay(display:DisplayObject):IPopupInfo{
-			for each(var popupInfo:IPopupInfo in _popups){
-				if(popupInfo.popupDisplay==display){
-					return popupInfo;
-				}
-			}
-			return null;
-		}
-		protected function finaliseClose(popupInfo: IPopupInfo):void{
+		public function removePopup(popupInfo: IPopupInfo):void{
+			if(_popupRemoved)_popupRemoved.perform(this,popupInfo);
 			var popupIndex: int = _popups.indexOf(popupInfo);
 			if (popupIndex >= 0){
 				_removePopup(popupInfo, popupIndex);
 				assessFocused();
 			}
 		}
-		
 		/**
-		 * Removes a popup from the site
-		 * 
-		 * @param	popup	The DisplayObject that was a popup
 		 * 
 		 * @return	true if the popup was removed successfully, or false if the popup isn't being managed
 		 * 			by the manager or it was unable to be removed
 		 */
-		public function removePopup(popupInfo: IPopupInfo):void
-		{
-			if(_popupRemoved)_popupRemoved.perform(this,popupInfo);
-			popupInfo.popupDisplay.dispatchEvent(new Event(Event.CLOSE));
-			if(!respondToCloseEvents){
-				finaliseClose(popupInfo);
+		public function removePopupByDisplay(popupDisplay: IDisplayAsset):Boolean{
+			var popupInfo:IPopupInfo = findInfoByDisplay(popupDisplay);
+			if(popupInfo){
+				removePopup(popupInfo);
+				return true;
+			}else{
+				return false;
 			}
 		}
-		protected function _removePopup(popupInfo:IPopupInfo, popupIndex:int):void{
+		protected function _removePopup(popupInfo:IPopupInfo, popupIndex:int=-1):void{
+			if(popupIndex==-1){
+				popupIndex = _popups.indexOf(popupInfo);
+			}
 			// The popup is being managed by the manager, remove it
-			//var popupInfo: Popup = this._popups[popupIndex] as Popup;
 			this._popups.splice(popupIndex, 1);
-			var parent: DisplayObjectContainer = popupInfo.popupDisplay.parent;
+			var parent: IContainerAsset = popupInfo.popupDisplay.parent;
 			if (parent != null)
 			{
-				var cast:DisplayObjectContainer = popupInfo.popupDisplay as DisplayObjectContainer;
-				var focus:DisplayObject = popupInfo.popupDisplay.stage.focus;
+				var cast:IContainerAsset = popupInfo.popupDisplay as IContainerAsset;
+				var focus:IDisplayAsset = popupInfo.popupDisplay.stage.focus;
 				if(focus && reclaimFocus && ((popupInfo.popupDisplay==focus) || (cast && DisplayUtils.isDescendant(cast,focus)))){
 					popupInfo.popupDisplay.stage.focus = null;
 				}
 				
-				parent.removeChild(popupInfo.popupDisplay);
+				parent.removeAsset(popupInfo.popupDisplay);
 			}
-			popupInfo.popupDisplay.removeEventListener(Event.CLOSE, this.onDisplayCloseEvent);
 			
 			// Check disablers and remove if present
 			if (popupInfo.isModal)
@@ -264,7 +222,7 @@ package org.farmcode.display.popup
 				if(dependantPopup){
 					// TODO: Check that this modalDisabler gets added at the correct depth?
 					setDisabler(parent,dependantPopup.modalDisabler,false);
-					parent.setChildIndex(dependantPopup.popupDisplay,parent.numChildren-1);
+					parent.setAssetIndex(dependantPopup.popupDisplay,parent.numChildren-1);
 				}else{
 					removeDisabler(parent);
 				}
@@ -296,8 +254,8 @@ package org.farmcode.display.popup
 			 		var compare:IPopupInfo = _focusablePopups[i];
 					
 					// finds common ancestor
-			 		var upperDisplay:DisplayObject = upperMostFocusable.popupDisplay;
-			 		var compareDisplay:DisplayObject = compare.popupDisplay;
+			 		var upperDisplay:IDisplayAsset = upperMostFocusable.popupDisplay;
+			 		var compareDisplay:IDisplayAsset = compare.popupDisplay;
 			 		while(compareDisplay.parent!=upperDisplay.parent && upperDisplay){
 			 			while(compareDisplay.parent!=upperDisplay.parent && compareDisplay){
 							compareDisplay = compareDisplay.parent;
@@ -309,7 +267,7 @@ package org.farmcode.display.popup
 			 		}
 					// compares depths
 			 		if(compareDisplay.parent==upperDisplay.parent && compareDisplay.parent != null){
-			 			if(compareDisplay.parent.getChildIndex(compareDisplay)>compareDisplay.parent.getChildIndex(upperDisplay)){
+			 			if(compareDisplay.parent.getAssetIndex(compareDisplay)>compareDisplay.parent.getAssetIndex(upperDisplay)){
 			 				upperMostFocusable = compare;
 			 			}
 			 		}
@@ -329,7 +287,7 @@ package org.farmcode.display.popup
 		 * 
 		 * @return	the requiring popup with the highest depth or null if not popups require it
 		 */
-		private function getHighestModal(parent: DisplayObjectContainer): IPopupInfo
+		private function getHighestModal(parent: IContainerAsset): IPopupInfo
 		{
 			var highestDependant: IPopupInfo = null;
 			
@@ -338,10 +296,10 @@ package org.farmcode.display.popup
 				for (var i: uint = 0; i < this._popups.length; ++i)
 				{
 					var popup: IPopupInfo = this._popups[i] as IPopupInfo;
-					var popupDisplay: DisplayObject = popup.popupDisplay;
-					var popupParent: DisplayObjectContainer = popup.popupDisplay.parent;
+					var popupDisplay: IDisplayAsset = popup.popupDisplay;
+					var popupParent: IContainerAsset = popup.popupDisplay.parent;
 					if (popup.isModal && parent == popupParent && (highestDependant == null || 
-						parent.getChildIndex(popup.popupDisplay) > parent.getChildIndex(highestDependant.popupDisplay))){
+						parent.getAssetIndex(popup.popupDisplay) > parent.getAssetIndex(highestDependant.popupDisplay))){
 
 						highestDependant = popup;
 					}
@@ -361,18 +319,29 @@ package org.farmcode.display.popup
 		public function isManaging(popupInfo: IPopupInfo): Boolean{
 			return _popups.indexOf(popupInfo)!=-1;
 		}
+		public function isManagingByDisplay(popupDisplay:IDisplayAsset):Boolean{
+			return (findInfoByDisplay(popupDisplay)!=null)
+		}
+		protected function findInfoByDisplay(display:IDisplayAsset):IPopupInfo{
+			for each(var popupInfo:IPopupInfo in _popups){
+				if(popupInfo.popupDisplay==display){
+					return popupInfo;
+				}
+			}
+			return null;
+		}
 		
 		
 		public function refreshDisablers():void{
 			for(var i:* in _disablers){
 				if(_defaultDisablers[i]){
-					var parent:DisplayObjectContainer = (i as DisplayObjectContainer);
+					var parent:IContainerAsset = (i as IContainerAsset);
 					var disabler:IModalDisablerView = _disablers[i];
 					setDisabler(parent, disabler, true);
 				}
 			}
 		}
-		protected function setDisabler(parent:DisplayObjectContainer, disabler:IModalDisablerView, forceRefresh:Boolean):void{
+		protected function setDisabler(parent:IContainerAsset, disabler:IModalDisablerView, forceRefresh:Boolean):void{
 			var existing:IModalDisablerView = _disablers[parent];
 			var fromDefault:Boolean;
 			if(!disabler && _defaultDisablers[parent]){
@@ -408,7 +377,7 @@ package org.farmcode.display.popup
 				delete _defaultDisablers[parent];
 			}
 		}
-		protected function removeDisabler(parent:DisplayObjectContainer):void{
+		protected function removeDisabler(parent:IContainerAsset):void{
 			var disabler:IModalDisablerView = _disablers[parent];
 			disabler.removeDisabler();
 			delete _disablers[parent];

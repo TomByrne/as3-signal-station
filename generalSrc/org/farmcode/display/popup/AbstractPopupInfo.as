@@ -4,14 +4,15 @@ package org.farmcode.display.popup
 	import flash.display.DisplayObjectContainer;
 	
 	import org.farmcode.actLibrary.display.popup.IModalDisablerView;
+	import org.farmcode.display.assets.IDisplayAsset;
 
 	public class AbstractPopupInfo implements IPopupInfo
 	{
 		
-		public function get popupDisplay():DisplayObject{
+		public function get popupDisplay():IDisplayAsset{
 			return _popupDisplay;
 		}
-		public function set popupDisplay(value:DisplayObject):void{
+		public function set popupDisplay(value:IDisplayAsset):void{
 			_popupDisplay = value;
 		}
 		
@@ -49,9 +50,9 @@ package org.farmcode.display.popup
 		private var _modalDisabler:IModalDisablerView;
 		private var _isModal:Boolean;
 		
-		protected var _popupDisplay:DisplayObject;
+		protected var _popupDisplay:IDisplayAsset;
 		
-		public function AbstractPopupInfo(popupDisplay:DisplayObject=null, isModal:Boolean=false){
+		public function AbstractPopupInfo(popupDisplay:IDisplayAsset=null, isModal:Boolean=false){
 			this.popupDisplay = popupDisplay;
 			this.isModal = isModal;
 		}

@@ -1,7 +1,6 @@
 package org.farmcode.actLibrary.external.config
 {
 	import flash.display.LoaderInfo;
-	import flash.display.Stage;
 	import flash.utils.Dictionary;
 	
 	import org.farmcode.actLibrary.core.UniversalActorHelper;
@@ -11,6 +10,7 @@ package org.farmcode.actLibrary.external.config
 	import org.farmcode.acting.ActingNamspace;
 	import org.farmcode.acting.universal.UniversalActExecution;
 	import org.farmcode.acting.universal.phases.ObjectPhases;
+	import org.farmcode.display.assets.IStageAsset;
 	import org.farmcode.utils.MethodCallQueue;
 	
 	use namespace ActingNamspace;
@@ -65,7 +65,7 @@ package org.farmcode.actLibrary.external.config
 		}
 		
 		
-		override protected function setStage(stage:Stage):void{
+		override protected function setStage(stage:IStageAsset):void{
 			super.setStage(stage);
 			loaderInfo = (stage?stage.loaderInfo:null);
 			if(loaderInfo){

@@ -4,7 +4,7 @@ package org.farmcode.media
 	
 	import org.farmcode.acting.actTypes.IAct;
 	import org.farmcode.acting.acts.Act;
-	import org.farmcode.display.behaviour.ILayoutViewBehaviour;
+	import org.farmcode.display.core.ILayoutView;
 	
 	public class MediaSource implements IMediaSource
 	{
@@ -41,7 +41,7 @@ package org.farmcode.media
 			if(_cacheMediaDisplays!=value){
 				_cacheMediaDisplays = value;
 				while(_cache.length>_cacheMediaDisplays){
-					var display:ILayoutViewBehaviour = _cache.pop();
+					var display:ILayoutView = _cache.pop();
 					delete _allMediaDisplays[display];
 					destroyMediaDisplay(display);
 				}
@@ -72,16 +72,16 @@ package org.farmcode.media
 		public function MediaSource(){
 		}
 		
-		public function takeMediaDisplay():ILayoutViewBehaviour{
+		public function takeMediaDisplay():ILayoutView{
 			if(_cache.length){
 				return _cache.pop();
 			}else{
-				var ret:ILayoutViewBehaviour = createMediaDisplay();
+				var ret:ILayoutView = createMediaDisplay();
 				_allMediaDisplays[ret] = true;
 				return ret;
 			}
 		}
-		public function returnMediaDisplay(value:ILayoutViewBehaviour):void{
+		public function returnMediaDisplay(value:ILayoutView):void{
 			if(_cache.length<_cacheMediaDisplays){
 				_cache.push(value);
 			}else{
@@ -108,11 +108,11 @@ package org.farmcode.media
 			}
 		}
 		
-		protected function createMediaDisplay():ILayoutViewBehaviour{
+		protected function createMediaDisplay():ILayoutView{
 			// override me
 			return null;
 		}
-		protected function destroyMediaDisplay(value:ILayoutViewBehaviour):void{
+		protected function destroyMediaDisplay(value:ILayoutView):void{
 			// override me
 		}
 	}

@@ -1,64 +1,60 @@
 package org.farmcode.acting.acts
 {
-	import flash.display.DisplayObject;
-	import flash.display.Stage;
-	import flash.events.Event;
-	
-	import org.farmcode.ScopeDisplayObject;
+	import org.farmcode.display.core.ScopedObject;
 	import org.farmcode.acting.actTypes.IAct;
 	import org.farmcode.acting.actTypes.IUniversalAct;
-	import org.farmcode.acting.universal.UniversalActExecution;
 	import org.farmcode.acting.universal.UniversalActManager;
+	import org.farmcode.display.assets.IDisplayAsset;
 	
 	public class UniversalAct extends AsynchronousAct implements IUniversalAct
 	{
 		
 		public function get active():Boolean{
-			return _scopeDisplayObject.active;
+			return _scopedObject.active;
 		}
 		public function set active(value:Boolean):void{
-			_scopeDisplayObject.active = value;
+			_scopedObject.active = value;
 		}
-		public function get scopeDisplay():DisplayObject{
-			return _scopeDisplayObject.scopeDisplay;
+		public function get scope():IDisplayAsset{
+			return _scopedObject.scope;
 		}
-		public function set scopeDisplay(value:DisplayObject):void{
-			_scopeDisplayObject.scopeDisplay = value;
+		public function set scope(value:IDisplayAsset):void{
+			_scopedObject.asset = value;
 		}
 		
 		/**
 		 * @inheritDoc
 		 */
-		public function get scopeDisplayChanged():IAct{
-			if(!_scopeDisplayChanged)_scopeDisplayChanged = new Act();
-			return _scopeDisplayChanged;
+		public function get scopeChanged():IAct{
+			if(!_scopeChanged)_scopeChanged = new Act();
+			return _scopeChanged;
 		}
 		
-		protected var _scopeDisplayChanged:Act;
-		private var _scopeDisplayObject:ScopeDisplayObject = new ScopeDisplayObject();
+		protected var _scopeChanged:Act;
+		private var _scopedObject:ScopedObject = new ScopedObject();
 		
 		public function UniversalAct(){
-			_scopeDisplayObject.addedChanged.addHandler(onAddedChanged);
-			_scopeDisplayObject.scopeDisplayChanged.addHandler(onScopeDisplayChanged);
+			_scopedObject.addedChanged.addHandler(onAddedChanged);
+			_scopedObject.assetChanged.addHandler(onScopeChanged);
 		}
-		private function onAddedChanged(from:ScopeDisplayObject):void{
-			if(_scopeDisplayObject.added){
+		private function onAddedChanged(from:ScopedObject):void{
+			if(_scopedObject.added){
 				UniversalActManager.addAct(this);
 			}else{
 				UniversalActManager.removeAct(this);
 			}
 		}
-		private function onScopeDisplayChanged(from:ScopeDisplayObject):void{
-			if(_scopeDisplayChanged)_scopeDisplayChanged.perform(this);
+		private function onScopeChanged(from:ScopedObject):void{
+			if(_scopeChanged)_scopeChanged.perform(this);
 		}
 		
-		public function temporaryPerform(scopeDisplay:DisplayObject, ... params):void{
-			this.scopeDisplay = scopeDisplay;
+		public function temporaryPerform(scope:IDisplayAsset, ... params):void{
+			this.scope = scope;
 			perform.apply(null,params);
-			this.scopeDisplay = null;
+			this.scope = null;
 		}
 		override public function perform(...params):void{
-			if(!_scopeDisplayObject.scopeDisplay){
+			if(!_scopedObject.asset){
 				trace("WARNING: UniversalAct being performed without scopeDisplay (it will not act universally)");
 			}
 			super.perform.apply(null,params);

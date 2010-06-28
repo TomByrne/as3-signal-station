@@ -2,15 +2,17 @@ package org.farmcode.display.tabFocus
 {
 	import flash.display.InteractiveObject;
 	import flash.events.Event;
-	import flash.events.EventDispatcher;
 	import flash.events.FocusEvent;
 	
-	public class InteractiveObjectFocusWrapper extends EventDispatcher implements ITabFocusable{
+	import org.farmcode.acting.actTypes.IAct;
+	import org.farmcode.acting.acts.Act;
+	
+	public class InteractiveObjectFocusWrapper extends AbstractTabFocusable implements ITabFocusable{
 		
-		public function get focused():Boolean{
+		override public function get focused():Boolean{
 			return _focused;
 		}
-		public function set focused(value:Boolean):void{
+		override public function set focused(value:Boolean):void{
 			if(_focused!=value){
 				_focused = value;
 				if(_interactiveObject.stage){
@@ -19,15 +21,16 @@ package org.farmcode.display.tabFocus
 				}
 			}
 		}
-		public function set tabIndex(value:int):void{
+		override public function set tabIndex(value:int):void{
 			_interactiveObject.tabIndex = value;
 		}
-		public function set tabEnabled(value:Boolean):void{
+		override public function set tabEnabled(value:Boolean):void{
 			_interactiveObject.tabEnabled = value;
 		}
-		public function get tabIndicesRequired():uint{
+		override public function get tabIndicesRequired():uint{
 			return 1;
 		}
+		
 		
 		private var _interactiveObject:InteractiveObject;
 		private var _focused:Boolean;
@@ -41,11 +44,11 @@ package org.farmcode.display.tabFocus
 		}
 		public function onFocusIn(e:FocusEvent):void{
 			_focused = true;
-			dispatchEvent(e);
+			if(_focusIn)_focusIn.perform(this);
 		}
 		public function onFocusOut(e:FocusEvent):void{
 			_focused = false;
-			dispatchEvent(e);
+			if(_focusOut)_focusOut.perform(this);
 		}
 		public function onAddedToStage(e:Event):void{
 			if(_focused)_interactiveObject.stage.focus = _interactiveObject;

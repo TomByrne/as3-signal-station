@@ -4,6 +4,7 @@ package org.farmcode.data.actions
 	
 	import org.farmcode.acting.actTypes.IAct;
 	import org.farmcode.data.dataTypes.ITriggerableAction;
+	import org.farmcode.display.assets.IDisplayAsset;
 	
 	public class TriggerableAction implements ITriggerableAction
 	{
@@ -11,7 +12,7 @@ package org.farmcode.data.actions
 		{
 		}
 		
-		public function triggerAction(scopeDisplay:DisplayObject):void{
+		public function triggerAction(scopeDisplay:IDisplayAsset):void{
 			var act:IAct = getAct();
 			if(act){
 				var params:Array = getParams();

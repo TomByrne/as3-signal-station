@@ -3,6 +3,11 @@ package au.com.thefarmdigital.utils
 	import flash.display.*;
 	import flash.geom.*;
 	
+	import org.farmcode.display.assets.IBitmapAsset;
+	import org.farmcode.display.assets.IContainerAsset;
+	import org.farmcode.display.assets.IDisplayAsset;
+	import org.farmcode.display.assets.IStageAsset;
+	
 	public class DisplayObjectSnapshot
 	{
 		/**
@@ -14,8 +19,8 @@ package au.com.thefarmdigital.utils
 		 * to the supplied DisplayObject's parent.
 		 * @param ignoreColorTrans Set to true to avoid taking a snapshot with the DisplayObject's colorTransform applied.
 		 */
-		public static function snapshot(displayObject:DisplayObject, nextParent:DisplayObjectContainer=null, ignoreColorTrans:Boolean=false, cropToStage:Boolean=true):Bitmap{
-			var stage:Stage = displayObject.stage;
+		public static function snapshot(displayObject:IDisplayAsset, nextParent:IContainerAsset=null, ignoreColorTrans:Boolean=false, cropToStage:Boolean=true):IBitmapAsset{
+			var stage:IStageAsset = displayObject.stage;
 			var stageBounds:Rectangle = displayObject.getBounds(stage);
 			
 			if(cropToStage){
@@ -31,9 +36,10 @@ package au.com.thefarmdigital.utils
 			var matrix:Matrix = displayObject.transform.matrix.clone();
 			matrix.tx = -selfTopLeft.x;
 			matrix.ty = -selfTopLeft.y;
-			bitmapData.draw(displayObject,matrix,displayObject.transform.colorTransform,displayObject.blendMode);
+			bitmapData.draw(displayObject.bitmapDrawable,matrix,displayObject.transform.colorTransform,displayObject.blendMode);
 			
-			var ret:Bitmap = new Bitmap(bitmapData);
+			var ret:IBitmapAsset = displayObject.createAsset(IBitmapAsset);
+			ret.bitmapData = bitmapData;
 			var point:Point = new Point(stageBounds.x,stageBounds.y);
 			
 			if(!nextParent)nextParent = displayObject.parent;

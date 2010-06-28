@@ -1,7 +1,7 @@
 package org.farmcode.display.transition
 {
-	import flash.display.Bitmap;
-	import flash.display.DisplayObject;
+	import org.farmcode.display.assets.IBitmapAsset;
+	import org.farmcode.display.assets.IDisplayAsset;
 	
 	public interface ITransition
 	{
@@ -11,8 +11,8 @@ package org.farmcode.display.transition
 		function set duration(value:Number):void;
 		function get duration():Number;
 		
-		function beginTransition(start:DisplayObject, finish:DisplayObject, bitmap:Bitmap, duration:Number):void;
-		function doTransition(start:DisplayObject, finish:DisplayObject, bitmap:Bitmap, duration:Number, currentTime:Number):void;
-		function endTransition(start:DisplayObject, finish:DisplayObject, bitmap:Bitmap, duration:Number):void;
+		function beginTransition(start:IDisplayAsset, finish:IDisplayAsset, bitmap:IBitmapAsset, duration:Number):void;
+		function doTransition(start:IDisplayAsset, finish:IDisplayAsset, bitmap:IBitmapAsset, duration:Number, currentTime:Number):void;
+		function endTransition(start:IDisplayAsset, finish:IDisplayAsset, bitmap:IBitmapAsset, duration:Number):void;
 	}
 }

@@ -1,6 +1,5 @@
 package org.farmcode.actLibrary.application
 {
-	import flash.display.DisplayObject;
 	import flash.display.DisplayObjectContainer;
 	import flash.events.KeyboardEvent;
 	import flash.geom.Rectangle;
@@ -15,6 +14,9 @@ package org.farmcode.actLibrary.application
 	import org.farmcode.acting.actTypes.IAct;
 	import org.farmcode.acting.acts.Act;
 	import org.farmcode.acting.universal.UniversalActExecution;
+	import org.farmcode.display.assets.IDisplayAsset;
+	import org.farmcode.display.assets.IInteractiveObjectAsset;
+	import org.farmcode.display.assets.nativeAssets.NativeAssetFactory;
 	
 	use namespace VisualSocketNamespace;
 	
@@ -34,7 +36,7 @@ package org.farmcode.actLibrary.application
 		
 		override public function set container(value:DisplayObjectContainer) : void{
 			super.container = value;
-			_proxiedDisplaySocket.container = value;
+			_proxiedDisplaySocket.container = NativeAssetFactory.getNew(value);
 		}
 		public function get socketId(): String{
 			return _proxiedDisplaySocket.socketId;
@@ -69,14 +71,23 @@ package org.farmcode.actLibrary.application
 		protected var _proxiedDisplaySocket:DisplaySocket;
 		protected var _plugDisplayChanged:Act;
 		
-		public function VisualSocketApplication(asset:DisplayObject=null){
+		public function VisualSocketApplication(asset:IDisplayAsset=null){
 			super(asset);
 			_proxiedDisplaySocket = new DisplaySocket("");
 			_proxiedDisplaySocket.displayDepth = 0;// forces app to lowest level, allowing debug bar to sit at top.
 			_proxiedDisplaySocket.plugDisplayChanged.addHandler(onPlugDisplayChanged);
+			_proxiedDisplaySocket.measurementsChanged
 		}
 		protected function onPlugDisplayChanged(from:DisplaySocket):void{
 			_plugDisplayChanged.perform(this);
+		}
+		override public function removeMainDisplay():void{
+			super.removeMainDisplay();
+			_proxiedDisplaySocket.container = null;
+		}
+		override public function addMainDisplay():void{
+			super.addMainDisplay();
+			_proxiedDisplaySocket.container = _asset.parent;
 		}
 		override public function setDisplayPosition(x:Number, y:Number, width:Number, height:Number) : void{
 			super.setDisplayPosition(x, y, width, height);
@@ -94,12 +105,12 @@ package org.farmcode.actLibrary.application
 			
 			Config::DEBUG
 			{
-				var onKeyDown:Function = function(e:KeyboardEvent):void{
+				var onKeyDown:Function = function(e:KeyboardEvent, from:IInteractiveObjectAsset):void{
 					if(e.ctrlKey && e.altKey){
 						if(e.keyCode==79)VisualSocketOutliner.outlineSocket(_debugArea.graphics,_visSocketActor.rootSocketBundle);		// o
 					}
 				}
-				_lastStage.addEventListener(KeyboardEvent.KEY_DOWN, onKeyDown);
+				_lastStage.keyDown.addHandler(onKeyDown);
 			}
 		}
 		override protected function setRootObject(execution:UniversalActExecution, object:Object):void{

@@ -1,10 +1,11 @@
 package org.farmcode.display.transition
 {
-	import flash.display.Bitmap;
-	import flash.display.DisplayObject;
 	import flash.geom.ColorTransform;
 	import flash.geom.Matrix;
 	import flash.geom.Rectangle;
+	
+	import org.farmcode.display.assets.IBitmapAsset;
+	import org.farmcode.display.assets.IDisplayAsset;
 	
 	public class ExposureTransition extends Transition
 	{
@@ -14,9 +15,9 @@ package org.farmcode.display.transition
 			this.overExpose = overExpose;
 		}
 		
-		override public function doTransition(start:DisplayObject, finish:DisplayObject, bitmap:Bitmap, duration:Number, currentTime:Number):void{
+		override public function doTransition(start:IDisplayAsset, finish:IDisplayAsset, bitmap:IBitmapAsset, duration:Number, currentTime:Number):void{
 			var fract:Number = currentTime/duration;
-			var subject:DisplayObject;
+			var subject:IDisplayAsset;
 			if(fract<=0.5){
 				fract = fract/0.5;
 				subject = start;
@@ -24,8 +25,8 @@ package org.farmcode.display.transition
 				fract = (fract-1)/-0.5;
 				subject = finish;
 			}
-			var selfBounds:Rectangle = subject.getRect(subject);
-			var bounds:Rectangle = subject.getRect(bitmap);
+			var selfBounds:Rectangle = subject.getBounds(subject);
+			var bounds:Rectangle = subject.getBounds(bitmap);
 			var matrix:Matrix = subject.transform.matrix;
 			matrix.tx = bounds.x-selfBounds.x;
 			matrix.ty = bounds.y-selfBounds.y;
@@ -36,7 +37,7 @@ package org.farmcode.display.transition
 			color.redOffset = 
 			color.greenOffset = 
 			color.blueOffset = 0xff*(overExpose?fract:-fract);
-			bitmap.bitmapData.draw(subject,matrix,color);
+			bitmap.bitmapData.draw(subject.bitmapDrawable,matrix,color);
 		}
 	}
 }

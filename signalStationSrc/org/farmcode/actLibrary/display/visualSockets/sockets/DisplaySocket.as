@@ -1,24 +1,25 @@
 package org.farmcode.actLibrary.display.visualSockets.sockets
 {
 	import flash.display.DisplayObject;
-	import flash.display.DisplayObjectContainer;
-	import flash.events.EventDispatcher;
 	import flash.geom.Point;
 	import flash.geom.Rectangle;
 	import flash.utils.getTimer;
 	
 	import org.farmcode.actLibrary.display.visualSockets.mappers.IPlugMapper;
 	import org.farmcode.actLibrary.display.visualSockets.plugs.IPlugDisplay;
-	import org.farmcode.acting.IScopeDisplayObject;
 	import org.farmcode.acting.actTypes.IAct;
 	import org.farmcode.acting.acts.Act;
 	import org.farmcode.core.DelayedCall;
-	import org.farmcode.display.ISelfAnimatingView;
-	import org.farmcode.display.behaviour.IViewBehaviour;
+	import org.farmcode.display.assets.IAsset;
+	import org.farmcode.display.assets.IContainerAsset;
+	import org.farmcode.display.assets.IDisplayAsset;
+	import org.farmcode.display.core.IOutroView;
+	import org.farmcode.display.core.IScopedObject;
+	import org.farmcode.display.core.IView;
 	import org.farmcode.display.layout.ILayoutSubject;
 	import org.farmcode.display.layout.core.ILayoutInfo;
 
-	public class DisplaySocket extends EventDispatcher implements IDisplaySocket, ILayoutSubject, IViewBehaviour
+	public class DisplaySocket implements IDisplaySocket, ILayoutSubject, IView
 	{
 		
 		/**
@@ -43,10 +44,18 @@ package org.farmcode.actLibrary.display.visualSockets.sockets
 			if(!_plugDisplayChanged)_plugDisplayChanged = new Act();
 			return _plugDisplayChanged;
 		}
+		/**
+		 * @inheritDoc
+		 */
+		public function get positionChanged():IAct{
+			if(!_positionChanged)_positionChanged = new Act();
+			return _positionChanged;
+		}
 		
 		protected var _plugDisplayChanged:Act;
 		protected var _assetChanged:Act;
 		protected var _measurementsChanged:Act;
+		protected var _positionChanged:Act;
 		
 		protected var _oldMeasX:Number;
 		protected var _oldMeasY:Number;
@@ -59,23 +68,26 @@ package org.farmcode.actLibrary.display.visualSockets.sockets
 		private var _plugMappers: Array;
 		private var _scopeDisplayMappers: Array;
 		private var _plugDisplay: IPlugDisplay;
-		private var _container:DisplayObjectContainer;
+		private var _container:IContainerAsset;
 		private var _displayPosition:Rectangle = new Rectangle();
 		private var _introOutroOverlap:Number = 0;
 		private var _outroBegunAt:Number;
 		private var _outroLength:Number;
 		private var _layoutInfo:ILayoutInfo;
 		
-		private var _lastDisplayObject:DisplayObject;
-		private var _lastParent:DisplayObjectContainer;
+		private var _lastDisplayObject:IDisplayAsset;
+		private var _lastParent:IContainerAsset;
 		private var _lastDepth:int;
 
-		public function DisplaySocket(socketId: String = null, container:DisplayObjectContainer=null, plugMappers:Array=null){
+		public function DisplaySocket(socketId: String = null, container:IContainerAsset=null, plugMappers:Array=null){
 			this.socketId = socketId;
 			this.container = container;
 			this.plugMappers = plugMappers;
 		}
-		public function get asset():DisplayObject{
+		public function get displayPosition():Rectangle{
+			return _displayPosition;
+		}
+		public function get asset():IDisplayAsset{
 			return _container;
 		}
 		/*
@@ -116,7 +128,7 @@ package org.farmcode.actLibrary.display.visualSockets.sockets
 			if(_displayDepth != value){
 				this._displayDepth = value;
 				if(value!=-1 && _container && _plugDisplay){
-					_container.setChildIndex(_plugDisplay.display,value);
+					_container.setAssetIndex(_plugDisplay.display,value);
 				}
 			}
 		}
@@ -135,25 +147,25 @@ package org.farmcode.actLibrary.display.visualSockets.sockets
 		}
 		//TODO:should all plugMappers be IScopeDisplayObjects
 		public function set plugMappers(value: Array): void{
-			for each(var scopeDisp:IScopeDisplayObject in _scopeDisplayMappers){
-				if(scopeDisp.scopeDisplay==container)scopeDisp.scopeDisplay = null;
+			for each(var scopeDisp:IScopedObject in _scopeDisplayMappers){
+				if(scopeDisp.scope==container)scopeDisp.scope = null;
 			}
 			this._plugMappers = value;
 			_scopeDisplayMappers = [];
 			for each(var mapper:IPlugMapper in _plugMappers){
-				var cast:IScopeDisplayObject = (mapper as IScopeDisplayObject);
-				if(cast && !cast.scopeDisplay){
-					cast.scopeDisplay = container;
+				var cast:IScopedObject = (mapper as IScopedObject);
+				if(cast && !cast.scope){
+					cast.scope = container;
 					_scopeDisplayMappers.push(cast);
 				}
 			}
 			
 		}
 		[Property(toString="true", clonable="true")]
-		public function get container(): DisplayObjectContainer{
+		public function get container(): IContainerAsset{
 			return _container;
 		}
-		public function set container(value: DisplayObjectContainer): void{
+		public function set container(value: IContainerAsset): void{
 			var depth:int = _displayDepth;
 			if (_plugDisplay && _container){
 				var remDepth:int = removeDisplay(_plugDisplay);
@@ -161,13 +173,13 @@ package org.farmcode.actLibrary.display.visualSockets.sockets
 					depth = remDepth;
 				}
 			}
-			var oldAsset:DisplayObject = _container;
+			var oldAsset:IAsset = _container;
 			_container = value;
 			if (_plugDisplay && _container){
 				addDisplay(_plugDisplay.display, depth);
 			}
-			for each(var scopeDisp:IScopeDisplayObject in _scopeDisplayMappers){
-				scopeDisp.scopeDisplay = value;
+			for each(var scopeDisp:IScopedObject in _scopeDisplayMappers){
+				scopeDisp.scope = value;
 			}
 			if(_assetChanged)_assetChanged.perform(this,oldAsset);
 		}
@@ -188,7 +200,7 @@ package org.farmcode.actLibrary.display.visualSockets.sockets
 							depth = remDepth;
 						}
 					}else if(_lastParent){
-						_lastParent.addChildAt(_plugDisplay.display,_lastDepth);
+						_lastParent.addAssetAt(_plugDisplay.display,_lastDepth);
 					}
 					
 					_plugDisplay.displayChanged.removeHandler(onDisplayChanged);
@@ -199,7 +211,7 @@ package org.farmcode.actLibrary.display.visualSockets.sockets
 					_plugDisplay.displaySocket = this; // this must be done before adding to stage
 					_lastParent = _plugDisplay.display.parent;
 					if(_lastParent){
-						_lastDepth = _lastParent.getChildIndex(_plugDisplay.display);
+						_lastDepth = _lastParent.getAssetIndex(_plugDisplay.display);
 					}
 					// call setDisplayPosition before adding the plugDisplay to stage so that it has the correct position for transitioning.
 					_plugDisplay.setDisplayPosition(_displayPosition.x,_displayPosition.y,_displayPosition.width,_displayPosition.height);
@@ -213,7 +225,7 @@ package org.farmcode.actLibrary.display.visualSockets.sockets
 				dispatchMeasurementChange();
 			}
 		}
-		public function get layoutDisplay():DisplayObject{
+		public function get layoutDisplay():IDisplayAsset{
 			return _plugDisplay?_plugDisplay.display:null;
 		}
 		public function get displayMeasurements():Rectangle{
@@ -233,11 +245,33 @@ package org.farmcode.actLibrary.display.visualSockets.sockets
 			}
 		}
 		public function setDisplayPosition(x:Number, y:Number, width:Number, height:Number):void{
-			_displayPosition.x = x;
-			_displayPosition.y = y;
-			_displayPosition.width = width;
-			_displayPosition.height = height;
-			if(_plugDisplay)_plugDisplay.setDisplayPosition(x,y,width,height);
+			if(_positionChanged){
+				var oldX:Number = _displayPosition.x;
+				var oldY:Number = _displayPosition.y;
+				var oldWidth:Number = _displayPosition.width;
+				var oldHeight:Number = _displayPosition.height;
+			}
+			var change:Boolean = false;
+			if(_displayPosition.x!=x){
+				_displayPosition.x = x;
+				change = true;
+			}
+			if(_displayPosition.y!=y){
+				_displayPosition.y = y;
+				change = true;
+			}
+			if(_displayPosition.width!=width){
+				_displayPosition.width = width;
+				change = true;
+			}
+			if(_displayPosition.height!=height){
+				_displayPosition.height = height;
+				change = true;
+			}
+			if(change){
+				if(_plugDisplay)_plugDisplay.setDisplayPosition(x,y,width,height);
+				if(_positionChanged)_positionChanged.perform(this,oldX,oldY,oldWidth,oldHeight);
+			}
 		}
 		protected function onPlugMeasChanged(from:ILayoutSubject, oldX:Number, oldY:Number, oldWidth:Number, oldHeight:Number):void{
 			dispatchMeasurementChange();
@@ -245,13 +279,13 @@ package org.farmcode.actLibrary.display.visualSockets.sockets
 		protected function onDisplayChanged(from:IPlugDisplay, oldDisplay:DisplayObject, newDisplay:DisplayObject):void{
 			completeRemoveDisplay(_lastDisplayObject, _container, _lastParent, _lastDepth);
 			_lastParent = _plugDisplay.display.parent;
-			if(_lastParent)_lastDepth = _lastParent.getChildIndex(_plugDisplay.display);
+			if(_lastParent)_lastDepth = _lastParent.getAssetIndex(_plugDisplay.display);
 			else _lastDepth = -1;
 			addDisplay(_plugDisplay.display, _displayDepth);
 		}
 		protected function removeDisplay(plugDisplay:IPlugDisplay):int{
-			var depth:int = _container.getChildIndex(plugDisplay.display);
-			var cast:ISelfAnimatingView = plugDisplay as ISelfAnimatingView;
+			var depth:int = _container.getAssetIndex(plugDisplay.display);
+			var cast:IOutroView = plugDisplay as IOutroView;
 			if(cast){
 				_outroLength = cast.showOutro();
 				if(_outroLength){
@@ -266,12 +300,12 @@ package org.farmcode.actLibrary.display.visualSockets.sockets
 			}
 			return depth;
 		}
-		protected function completeRemoveDisplay(displayObject:DisplayObject, container:DisplayObjectContainer, originalParent:DisplayObjectContainer, originalDepth:int):void{
+		protected function completeRemoveDisplay(displayObject:IDisplayAsset, container:IContainerAsset, originalParent:IContainerAsset, originalDepth:int):void{
 			_outroBegunAt = NaN;
 			if(originalParent){
-				originalParent.addChildAt(displayObject,originalDepth); 
+				originalParent.addAssetAt(displayObject,originalDepth); 
 			}else{
-				container.removeChild(displayObject);
+				container.removeAsset(displayObject);
 			}
 		}
 		private var addDelay:DelayedCall;
@@ -292,20 +326,15 @@ package org.farmcode.actLibrary.display.visualSockets.sockets
 			}
 			addDisplay(plugDisplay.display, depth);
 		}
-		protected function addDisplay(displayObject:DisplayObject, depth:int):void{
+		protected function addDisplay(displayObject:IDisplayAsset, depth:int):void{
 			addDelay = null;
 			_outroBegunAt = NaN;
 			_lastDisplayObject = displayObject;
 			if(_lastDisplayObject.parent!=_container){
-				if(depth==-1)_container.addChild(_lastDisplayObject);
-				else _container.addChildAt(_lastDisplayObject,depth);
-			}else if(_container.getChildIndex(_lastDisplayObject)!=depth && depth!=-1){
-				_container.setChildIndex(_lastDisplayObject,depth);
-			}
-		}
-		protected function dispatchEventIf(eventType:String, eventClass:Class):void{
-			if(hasEventListener(eventType)){
-				dispatchEvent(new eventClass(eventType));
+				if(depth==-1)_container.addAsset(_lastDisplayObject);
+				else _container.addAssetAt(_lastDisplayObject,depth);
+			}else if(_container.getAssetIndex(_lastDisplayObject)!=depth && depth!=-1){
+				_container.setAssetIndex(_lastDisplayObject,depth);
 			}
 		}
 		protected function dispatchMeasurementChange():void{

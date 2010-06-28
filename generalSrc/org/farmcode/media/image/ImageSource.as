@@ -8,7 +8,10 @@ package org.farmcode.media.image
 	import flash.net.URLLoaderDataFormat;
 	import flash.net.URLRequest;
 	
-	import org.farmcode.display.behaviour.ILayoutViewBehaviour;
+	import org.farmcode.display.assets.IDisplayAsset;
+	import org.farmcode.display.assets.ILoaderAsset;
+	import org.farmcode.display.assets.nativeAssets.NativeAssetFactory;
+	import org.farmcode.display.core.ILayoutView;
 	import org.farmcode.display.layout.frame.FrameLayoutInfo;
 	import org.farmcode.math.UnitConversion;
 	import org.farmcode.media.MediaSource;
@@ -86,7 +89,7 @@ package org.farmcode.media.image
 		protected function onLoadProgress(e:Event):void{
 			setLoadProps(_urlLoader.bytesLoaded,_urlLoader.bytesTotal);
 		}
-		override public function takeMediaDisplay():ILayoutViewBehaviour{
+		override public function takeMediaDisplay():ILayoutView{
 			_displaysTaken++;
 			if(!_loadStarted && _url){
 				_loadStarted = true;
@@ -94,11 +97,11 @@ package org.farmcode.media.image
 			}
 			return super.takeMediaDisplay();
 		}
-		override public function returnMediaDisplay(value:ILayoutViewBehaviour):void{
+		override public function returnMediaDisplay(value:ILayoutView):void{
 			_displaysTaken--;
 			super.returnMediaDisplay(value);
 		}
-		override protected function createMediaDisplay():ILayoutViewBehaviour{
+		override protected function createMediaDisplay():ILayoutView{
 			var loader:Loader = new Loader();
 			if(_loaded){
 				loader.loadBytes(_urlLoader.data);
@@ -107,14 +110,15 @@ package org.farmcode.media.image
 				_protoLoader = loader;
 				_protoLoader.contentLoaderInfo.addEventListener(Event.COMPLETE, onProtoLoaded);
 			}
-			var view:ImageViewBehaviour = new ImageViewBehaviour(loader,_displayMeasurements,smoothing);
+			var loaderAsset:ILoaderAsset = NativeAssetFactory.getNew(loader);
+			var view:ImageViewBehaviour = new ImageViewBehaviour(loaderAsset,_displayMeasurements,smoothing);
 			view.layoutInfo = new FrameLayoutInfo();
 			return view;
 		}
 		protected function onProtoLoaded(e:Event):void{
 			updateDisplayMeasurements(0,0,_protoLoader.content.width,_protoLoader.content.height);
 		}
-		override protected function destroyMediaDisplay(value:ILayoutViewBehaviour):void{
+		override protected function destroyMediaDisplay(value:ILayoutView):void{
 			var loader:Loader = value.asset as Loader;
 			if(_protoLoader==loader){
 				_protoLoader.contentLoaderInfo.removeEventListener(Event.COMPLETE, onProtoLoaded);

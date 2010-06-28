@@ -7,6 +7,8 @@ package au.com.thefarmdigital.effects{
 	import flash.geom.Rectangle;
 	
 	import org.farmcode.core.DelayedCall;
+	import org.farmcode.display.assets.IBitmapAsset;
+	import org.farmcode.display.assets.IDisplayAsset;
 	
 
 	
@@ -14,21 +16,29 @@ package au.com.thefarmdigital.effects{
 	{
 		
 		// subject can be any DisplayObject (so we can effect TextFields, Bitmaps, MovieClips, etc)
-		override public function set subject(value:DisplayObject):void {
+		override public function set subject(value:IDisplayAsset):void {
 			if(super.subject != value && value != null){
 				if(subject){
-					subject.removeEventListener(Event.ADDED_TO_STAGE,onSubjectAdded);
-					subject.removeEventListener(Event.REMOVED_FROM_STAGE,onSubjectRemoved);
+					subject.addedToStage.removeHandler(onSubjectAdded);
+					subject.removedFromStage.removeHandler(onSubjectRemoved);
 					onSubjectRemoved();
 				}
 				super.subject = value;
-				if(subject.stage)onSubjectAdded();
-				subject.addEventListener(Event.ADDED_TO_STAGE,onSubjectAdded);
-				subject.addEventListener(Event.REMOVED_FROM_STAGE,onSubjectRemoved);
+				if(value){
+					_renderArea = subject.createAsset(IBitmapAsset);
+					_renderArea.pixelSnapping = PixelSnapping.AUTO;
+					_renderArea.smoothing = true;
+					
+					if(subject.stage)onSubjectAdded();
+					subject.addedToStage.addHandler(onSubjectAdded);
+					subject.removedFromStage.addHandler(onSubjectRemoved);
+				}else{
+					_renderArea = null;
+				}
 				invalidate();
 			}
 		}
-		override public function get subject():DisplayObject {
+		override public function get subject():IDisplayAsset {
 			return super.subject;
 		}
 		// animated (when set to true) will redraw/reposition the entire bitmap on every frame
@@ -85,7 +95,8 @@ package au.com.thefarmdigital.effects{
 		public function get alpha():Number{
 			return _renderArea.alpha;
 		}
-		public function get renderArea():Bitmap{
+		public function get renderArea():IBitmapAsset{
+			if(!_subject)throw new Error("renderArea can only be accessed after subject has been set");
 			return _renderArea;
 		}
 		protected function set subjectBounds(value:Rectangle):void {
@@ -102,29 +113,29 @@ package au.com.thefarmdigital.effects{
 		private var _subject				: DisplayObject;
 		private var _animateCall			: DelayedCall;
 		private var _positionCall			: DelayedCall;
-		private var _renderArea				: Bitmap = new Bitmap(null,PixelSnapping.AUTO,true);
+		private var _renderArea				: IBitmapAsset
 		private var _animated				: Boolean = false;
 		private var _autoPosition			: Boolean;
 		protected var _bitmapChanged		: Boolean = false;
 		private var _subjectBounds			: Rectangle;
 		protected var _renderOffset			: Point = new Point();
 		
-		public function AnimatedEffect( subject:DisplayObject=null ){
+		public function AnimatedEffect( subject:IDisplayAsset=null ){
 			this.subject = subject;
 			autoPosition = true;
 		}
-		protected function onSubjectAdded(e:Event=null):void{
+		protected function onSubjectAdded(e:Event=null, from:IDisplayAsset=null):void{
 			if(_renderArea.parent!=subject.parent){
-				if(_renderArea.parent)_renderArea.parent.removeChild(_renderArea);
-				subject.parent.addChild(_renderArea);
+				if(_renderArea.parent)_renderArea.parent.removeAsset(_renderArea);
+				subject.parent.addAsset(_renderArea);
 			}
 			invalidate();
 		}
-		protected function onSubjectRemoved(e:Event=null):void{
+		protected function onSubjectRemoved(e:Event=null, from:IDisplayAsset=null):void{
 			remove();
 		}
 		override public function remove():void{
-			if(_renderArea.parent)_renderArea.parent.removeChild(_renderArea);
+			if(_renderArea.parent)_renderArea.parent.removeAsset(_renderArea);
 			if(_animateCall){
 				_animateCall.clear();
 				_animateCall = null;

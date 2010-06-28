@@ -1,14 +1,14 @@
 package org.farmcode.display.transition
 {
-	import flash.display.Bitmap;
-	import flash.display.DisplayObject;
 	import flash.geom.ColorTransform;
 	import flash.geom.Matrix;
-	import flash.geom.Rectangle;
+	
+	import org.farmcode.display.assets.IBitmapAsset;
+	import org.farmcode.display.assets.IDisplayAsset;
 	
 	public class CrossFadeTransition extends Transition
 	{
-		override public function doTransition(start:DisplayObject, finish:DisplayObject, bitmap:Bitmap, duration:Number, currentTime:Number):void{
+		override public function doTransition(start:IDisplayAsset, finish:IDisplayAsset, bitmap:IBitmapAsset, duration:Number, currentTime:Number):void{
 			var bitmapMatrix:Matrix = bitmap.transform.concatenatedMatrix;
 			bitmapMatrix.invert();
 			
@@ -20,14 +20,14 @@ package org.farmcode.display.transition
 			
 			var color:ColorTransform = start.transform.colorTransform;
 			color.alphaMultiplier = (1+Math.cos(fract*fract*Math.PI))/2;
-			bitmap.bitmapData.draw(start,matrix,color);
+			bitmap.bitmapData.draw(start.bitmapDrawable,matrix,color);
 			
 			matrix = finish.transform.concatenatedMatrix;
 			matrix.concat(bitmapMatrix);
 			
 			color = finish.transform.colorTransform;
 			color.alphaMultiplier = (1+Math.cos(invFract*invFract*Math.PI))/2;
-			bitmap.bitmapData.draw(finish,matrix,color);
+			bitmap.bitmapData.draw(finish.bitmapDrawable,matrix,color);
 		}
 	}
 }

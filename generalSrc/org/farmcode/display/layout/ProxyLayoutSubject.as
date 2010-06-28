@@ -35,6 +35,10 @@ package org.farmcode.display.layout
 			}
 		}
 		
+		public function get displayPosition():Rectangle{
+			return _displayPosition;
+		}
+		
 		public function get layoutInfo():ILayoutInfo{
 			if(_layoutInfo){
 				return _layoutInfo;
@@ -76,8 +80,17 @@ package org.farmcode.display.layout
 			if(!_measurementsChanged)_measurementsChanged = new Act();
 			return _measurementsChanged;
 		}
+		/**
+		 * @inheritDoc
+		 */
+		public function get positionChanged():IAct{
+			if(!_positionChanged)_positionChanged = new Act();
+			return _positionChanged;
+		}
 		
+		protected var _positionChanged:Act;
 		protected var _measurementsChanged:Act;
+		
 		protected var _oldMeasX:Number;
 		protected var _oldMeasY:Number;
 		protected var _oldMeasWidth:Number;
@@ -94,12 +107,32 @@ package org.farmcode.display.layout
 		}
 		
 		public function setDisplayPosition(x:Number, y:Number, width:Number, height:Number):void{
-			_displayPosition.x = x;
-			_displayPosition.y = y;
-			_displayPosition.width = width;
-			_displayPosition.height = height;
-			if(_target){
+			if(_positionChanged){
+				var oldX:Number = _displayPosition.x;
+				var oldY:Number = _displayPosition.y;
+				var oldWidth:Number = _displayPosition.width;
+				var oldHeight:Number = _displayPosition.height;
+			}
+			var change:Boolean = false;
+			if(_displayPosition.x!=x){
+				_displayPosition.x = x;
+				change = true;
+			}
+			if(_displayPosition.y!=y){
+				_displayPosition.y = y;
+				change = true;
+			}
+			if(_displayPosition.width!=width){
+				_displayPosition.width = width;
+				change = true;
+			}
+			if(_displayPosition.height!=height){
+				_displayPosition.height = height;
+				change = true;
+			}
+			if(change){
 				_target.setDisplayPosition(x,y,width,height);
+				if(_positionChanged)_positionChanged.perform(this,oldX,oldY,oldWidth,oldHeight);
 			}
 		}
 		protected function onMeasurementsChanged(from:ILayoutSubject, oldX:Number, oldY:Number, oldWidth:Number, oldHeight:Number):void{

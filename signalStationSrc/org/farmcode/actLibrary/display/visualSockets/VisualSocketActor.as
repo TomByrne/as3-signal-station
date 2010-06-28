@@ -18,7 +18,7 @@ package org.farmcode.actLibrary.display.visualSockets
 		private static const DEFAULT_PATH_SEP: String = "/";
 		
 		private var _pathSeparator: String;
-		private var _rootSocketBundle: SocketBundle;
+		private var _rootSocketBundle: SocketManager;
 		private var _rootSocket:IDisplaySocket;
 		private var _rootDataMappers: Array;
 		private var _pendingFillSockets:MethodCallQueue;
@@ -54,14 +54,14 @@ package org.farmcode.actLibrary.display.visualSockets
 			if (value != _rootSocket){
 				this._rootSocket = value;
 				if(value){
-					_rootSocketBundle = new SocketBundle(null,null,_rootSocket);
+					_rootSocketBundle = new SocketManager(null,null,_rootSocket);
 					_pendingFillSockets.executePending();
 				}else{
 					_rootSocketBundle = null;
 				}
 			}
 		}
-		VisualSocketNamespace function get rootSocketBundle():SocketBundle{
+		VisualSocketNamespace function get rootSocketBundle():SocketManager{
 			return _rootSocketBundle;
 		}
 		
@@ -72,7 +72,7 @@ package org.farmcode.actLibrary.display.visualSockets
 			if(!_rootSocketBundle){
 				_pendingFillSockets.addMethodCall([execution,cause]);
 			}else if (cause.displayPath == null && cause.displaySocket){
-				var bundle:SocketBundle = _rootSocketBundle.findBundle(cause.displaySocket);
+				var bundle:SocketManager = _rootSocketBundle.findBundle(cause.displaySocket);
 				if(bundle){
 					cause.displayPath = bundle.path;
 					cause.displaySocket = populateNode(bundle, [], 0, cause.dataProvider, execution);
@@ -95,7 +95,7 @@ package org.farmcode.actLibrary.display.visualSockets
 			}
 		}
 		
-		private function populateNode(socketBundle: SocketBundle, displayPath: Array, currentIndex: uint, data: *, execution:UniversalActExecution):IDisplaySocket
+		private function populateNode(socketBundle: SocketManager, displayPath: Array, currentIndex: uint, data: *, execution:UniversalActExecution):IDisplaySocket
 		{
 			if (currentIndex == displayPath.length){
 				var currentDisplay:IPlugDisplay = socketBundle.fillingSocket.plugDisplay;
@@ -103,7 +103,7 @@ package org.farmcode.actLibrary.display.visualSockets
 					currentDisplay.setDataProvider(null,cause); // clear the dp in case this instance gets reused (sometime childSockets get filled with the wrong data otherwise)
 				}*/
 				var displayResult:DisplayCreationResult = null;
-				var currentSocket: SocketBundle = socketBundle;
+				var currentSocket: SocketManager = socketBundle;
 				while (displayResult == null){
 					var testMappers: Array = null;
 					if (!currentSocket || !currentSocket.fillingSocket){
@@ -132,7 +132,7 @@ package org.farmcode.actLibrary.display.visualSockets
 				return socketBundle.fillingSocket;
 			}else{
 				var pathComp: String = displayPath[currentIndex];
-				var targetSocket: SocketBundle = socketBundle.getChildSocket(pathComp);
+				var targetSocket: SocketManager = socketBundle.getChildSocket(pathComp);
 				if (targetSocket == null){
 					throw new Error("Cannot find displayPath: "+displayPath);
 				}else{
@@ -143,14 +143,14 @@ package org.farmcode.actLibrary.display.visualSockets
 			}
 			return null;
 		}
-		protected function createCompleteHander(socketBundle:SocketBundle,execution:UniversalActExecution):Function{
+		protected function createCompleteHander(socketBundle:SocketManager,execution:UniversalActExecution):Function{
 			var handler:Function = function(e:Event):void{
 				var displayResult:DisplayCreationResult = e.target as DisplayCreationResult;
 				completeDisplayRequest(socketBundle,displayResult,execution);
 			}
 			return handler;
 		}
-		protected function completeDisplayRequest(socketBundle:SocketBundle, displayResult:DisplayCreationResult, execution:UniversalActExecution):void{
+		protected function completeDisplayRequest(socketBundle:SocketManager, displayResult:DisplayCreationResult, execution:UniversalActExecution):void{
 			if(displayResult){
 				socketBundle.setPlugDisplay(displayResult.result,execution,displayResult.data);
 			}else{

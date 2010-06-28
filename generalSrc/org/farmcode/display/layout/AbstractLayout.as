@@ -9,18 +9,31 @@ package org.farmcode.display.layout
 	
 	import org.farmcode.acting.actTypes.IAct;
 	import org.farmcode.acting.acts.Act;
-	import org.farmcode.flags.ValidationFlag;
+	import org.farmcode.display.assets.IDisplayAsset;
 	import org.farmcode.display.layout.core.ILayoutInfo;
+	import org.farmcode.display.validation.ValidationFlag;
 	
 	public class AbstractLayout implements ILayout, IDrawable, ILayoutSubject
 	{
+		/**
+		 * @inheritDoc
+		 */
+		public function get scopeChanged():IAct{
+			if(!_scopeChanged)_scopeChanged = new Act();
+			return _scopeChanged;
+		}
 		
 		/**
 		 * @inheritDoc
 		 */
-		public function get drawDisplay():DisplayObject{
+		public function set scope(value:IDisplayAsset):void{
+			// ignore
+		}
+		public function get scope():IDisplayAsset{
 			return null;
 		}
+		
+		
 		public function get readyForDraw():Boolean{
 			return true;
 		}
@@ -32,6 +45,9 @@ package org.farmcode.display.layout
 			_layoutInfo = value;
 		}
 		
+		public function get displayPosition():Rectangle{
+			return _displayPosition;
+		}
 		
 		/**
 		 * @inheritDoc
@@ -40,7 +56,16 @@ package org.farmcode.display.layout
 			if(!_measurementsChanged)_measurementsChanged = new Act();
 			return _measurementsChanged;
 		}
+		/**
+		 * @inheritDoc
+		 */
+		public function get positionChanged():IAct{
+			if(!_positionChanged)_positionChanged = new Act();
+			return _positionChanged;
+		}
 		
+		protected var _scopeChanged:Act;
+		protected var _positionChanged:Act;
 		protected var _measurementsChanged:Act;
 		protected var _measureFlag:ValidationFlag; 
 		
@@ -81,6 +106,12 @@ package org.farmcode.display.layout
 			setDisplayPosition(x, y, width, height);
 		}
 		public function setDisplayPosition(x:Number, y:Number, width:Number, height:Number):void{
+			if(_positionChanged){
+				var oldX:Number = _displayPosition.x;
+				var oldY:Number = _displayPosition.y;
+				var oldWidth:Number = _displayPosition.width;
+				var oldHeight:Number = _displayPosition.height;
+			}
 			var change:Boolean = false;
 			if(_displayPosition.x!=x){
 				_displayPosition.x = x;
@@ -98,7 +129,10 @@ package org.farmcode.display.layout
 				_displayPosition.height = height;
 				change = true;
 			}
-			if(change)invalidateAll();
+			if(change){
+				invalidateAll();
+				if(_positionChanged)_positionChanged.perform(this,oldX,oldY,oldWidth,oldHeight);
+			}
 		}
 		
 		protected function invalidateSingle(subject:ILayoutSubject): void{

@@ -15,6 +15,11 @@ package org.farmcode.display.transition
 	import flash.geom.Rectangle;
 	import flash.utils.getTimer;
 	
+	import org.farmcode.display.assets.IBitmapAsset;
+	import org.farmcode.display.assets.IContainerAsset;
+	import org.farmcode.display.assets.IDisplayAsset;
+	import org.farmcode.display.assets.nativeAssets.Asset;
+	
 	[Event(name="transitionBegin",type="au.com.thefarmdigital.events.TransitionEvent")]
 	[Event(name="transitionChange",type="au.com.thefarmdigital.events.TransitionEvent")]
 	[Event(name="transitionEnd",type="au.com.thefarmdigital.events.TransitionEvent")]
@@ -41,23 +46,19 @@ package org.farmcode.display.transition
 		/**
 		 * The existing DisplayObject that the transition will transition from.
 		 */
-		public function set startDisplay(value:DisplayObject):void{
-			if(_startDisplay!=value){
-				_startDisplay = value;
-			}
+		public function set startDisplay(value:IDisplayAsset):void{
+			_startDisplay = value;
 		}
-		public function get startDisplay():DisplayObject{
+		public function get startDisplay():IDisplayAsset{
 			return _startDisplay;
 		}
 		/**
 		 * The new DisplayObject that the transition will transition to.
 		 */
-		public function set finishDisplay(value:DisplayObject):void{
-			if(_finishDisplay!=value){
-				_finishDisplay = value;
-			}
+		public function set finishDisplay(value:IDisplayAsset):void{
+			_finishDisplay = value;
 		}
-		public function get finishDisplay():DisplayObject{
+		public function get finishDisplay():IDisplayAsset{
 			return _finishDisplay;
 		}
 		/**
@@ -84,12 +85,12 @@ package org.farmcode.display.transition
 		private var _transitions:Array;
 		private var _timedTransitions:Array;
 		private var _easing:Function;
-		private var _startDisplay:DisplayObject;
-		private var _finishDisplay:DisplayObject;
-		private var _renderArea:Bitmap;
+		private var _startDisplay:IDisplayAsset;
+		private var _finishDisplay:IDisplayAsset;
+		private var _renderArea:IBitmapAsset;
 		
 		// these are caches for transition itself
-		private var parent:DisplayObjectContainer;
+		private var parent:IContainerAsset;
 		private var startTime:Number;
 		private var bounds:Rectangle;
 		
@@ -101,10 +102,10 @@ package org.farmcode.display.transition
 			var depth:Number;
 			if(_finishDisplay.parent){
 				parent = _finishDisplay.parent;
-				depth = parent.getChildIndex(_finishDisplay)+1;
+				depth = parent.getAssetIndex(_finishDisplay)+1;
 			}else{
 				parent = _startDisplay.parent;
-				depth = parent.getChildIndex(_startDisplay)+1;
+				depth = parent.getAssetIndex(_startDisplay)+1;
 			}
 			
 			if(parent && parent.stage){
@@ -116,17 +117,20 @@ package org.farmcode.display.transition
 				
 				var startBounds:Rectangle = getBounds(_startDisplay,parent);
 				startTime = getTimer();
-				parent.addEventListener(Event.ENTER_FRAME,doFrame);
+				parent.enterFrame.addHandler(doFrame);
 				bounds = startBounds.union(getBounds(_finishDisplay,parent));
 				bounds.x = int(Math.max(bounds.x,topLeft.x));
 				bounds.y = int(Math.max(bounds.y,topLeft.y));
 				bounds.width = Math.ceil(Math.min(MAX_WIDTH,bounds.width,bottomRight.x));
 				bounds.height = Math.ceil(Math.min(MAX_HEIGHT,bounds.height,bottomRight.y));
 				var bitmapData:BitmapData = new BitmapData(Math.max(bounds.width,1),Math.max(bounds.height,1),true,0);
-				_renderArea = new Bitmap(bitmapData,PixelSnapping.NEVER,smoothing);
+				//_renderArea = new Bitmap(bitmapData,PixelSnapping.NEVER,smoothing);
+				_renderArea = _startDisplay.createAsset(IBitmapAsset);
+				_renderArea.pixelSnapping = PixelSnapping.NEVER;
+				_renderArea.smoothing = smoothing;
 				_renderArea.x = bounds.x;
 				_renderArea.y = bounds.y;
-				parent.addChildAt(_renderArea,depth);
+				parent.addAssetAt(_renderArea,depth);
 				var timingGroup:TimingGroup;
 				_timedTransitions = [];
 				for each(var trans:ITransition in _transitions){
@@ -146,13 +150,13 @@ package org.farmcode.display.transition
 				var matrix:Matrix = _startDisplay.transform.matrix.clone();
 				matrix.tx = startBounds.x-_renderArea.x;
 				matrix.ty = startBounds.y-_renderArea.y;
-				bitmapData.draw(_startDisplay,matrix,_startDisplay.transform.colorTransform,_startDisplay.blendMode);
+				bitmapData.draw(_startDisplay.bitmapDrawable,matrix,_startDisplay.transform.colorTransform,_startDisplay.blendMode);
 				
 				
 				dispatchEvent(new TransitionEvent(TransitionEvent.TRANSITION_BEGIN));
 			}
 		}
-		protected function getBounds(subject:DisplayObject, parent:DisplayObject):Rectangle{
+		protected function getBounds(subject:IDisplayAsset, parent:IDisplayAsset):Rectangle{
 			if(!subject.parent){
 				parent = subject;
 			}
@@ -171,20 +175,20 @@ package org.farmcode.display.transition
 			}
 			return ret;
 		}
-		private function hiddenAdd(child:DisplayObject, parent:DisplayObjectContainer, depth:int):void{
+		private function hiddenAdd(child:IDisplayAsset, parent:IContainerAsset, depth:int):void{
 			child.visible = false;
 			if(parent!=child.parent){
 				if(child.parent){
 					if(DisplayUtils.isDescendant(child.parent,parent))return;
 					var point:Point = parent.globalToLocal(child.localToGlobal(new Point()));
-					child.parent.removeChild(child);
+					child.parent.removeAsset(child);
 					child.x = point.x;
 					child.y = point.y;
 				}
-				parent.addChildAt(child,depth);
+				parent.addAssetAt(child,depth);
 			}
 		}
-		private function doFrame(e:Event):void{
+		private function doFrame(e:Event, from:Asset):void{
 			_renderArea.bitmapData.lock()
 			if(parent.stage==parent){
 				_renderArea.visible = false;
@@ -220,23 +224,23 @@ package org.farmcode.display.transition
 				_renderArea.bitmapData.fillRect(new Rectangle(0,0,1000,1000),0xffff0000);
 			}
 		}
-		internal function endEarly():Bitmap{
+		internal function endEarly():IBitmapAsset{
 			onEnd(false);
 			dispatchEvent(new TransitionEvent(TransitionEvent.TRANSITION_END));
 			return _renderArea;
 		}
 		private function onEnd(removeRender:Boolean):void{
 			if(parent){
-				parent.removeEventListener(Event.ENTER_FRAME,doFrame);
+				parent.enterFrame.removeHandler(doFrame);
 				parent = null;
 			}
 			if(removeRender && _renderArea){
-				_renderArea.parent.removeChild(_renderArea);
+				_renderArea.parent.removeAsset(_renderArea);
 				_renderArea.bitmapData.dispose();
 				_renderArea = null;
 			}
 			if(_finishDisplay!=_startDisplay){
-				_startDisplay.parent.removeChild(_startDisplay);
+				_startDisplay.parent.removeAsset(_startDisplay);
 			}
 			_time = 0;
 			startTime = NaN;

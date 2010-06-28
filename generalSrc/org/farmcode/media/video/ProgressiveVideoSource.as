@@ -14,8 +14,10 @@ package org.farmcode.media.video
 	import org.farmcode.acting.actTypes.IAct;
 	import org.farmcode.acting.acts.Act;
 	import org.farmcode.core.DelayedCall;
-	import org.farmcode.display.behaviour.ILayoutViewBehaviour;
-	import org.farmcode.display.behaviour.LayoutViewBehaviour;
+	import org.farmcode.display.assets.IVideoAsset;
+	import org.farmcode.display.assets.nativeAssets.NativeAssetFactory;
+	import org.farmcode.display.core.ILayoutView;
+	import org.farmcode.display.core.LayoutView;
 	import org.farmcode.display.layout.frame.FrameLayoutInfo;
 	import org.farmcode.media.MediaSource;
 	import org.farmcode.media.MediaViewBehaviour;
@@ -320,25 +322,27 @@ package org.farmcode.media.video
 				assessBufferSize();
 			}
 		}
-		override public function takeMediaDisplay():ILayoutViewBehaviour{
+		override public function takeMediaDisplay():ILayoutView{
 			_displaysTaken++;
 			assessVolume();
 			return super.takeMediaDisplay();
 		}
-		override public function returnMediaDisplay(value:ILayoutViewBehaviour):void{
+		override public function returnMediaDisplay(value:ILayoutView):void{
 			_displaysTaken--;
 			assessVolume();
 			super.returnMediaDisplay(value);
 		}
-		override protected function createMediaDisplay():ILayoutViewBehaviour{
+		// TODO: factory should be variable
+		override protected function createMediaDisplay():ILayoutView{
 			var video:Video = new Video(_displayMeasurements.width,_displayMeasurements.height);
 			video.attachNetStream(_netStream);
-			var display:MediaViewBehaviour = new MediaViewBehaviour(video,_displayMeasurements);
+			var videoAsset:IVideoAsset = NativeAssetFactory.getNew(video);
+			var display:MediaViewBehaviour = new MediaViewBehaviour(videoAsset,_displayMeasurements);
 			display.layoutInfo = new FrameLayoutInfo();
 			return display;
 		}
-		override protected function destroyMediaDisplay(value:ILayoutViewBehaviour):void{
-			var video:Video = (value as LayoutViewBehaviour).asset as Video;
+		override protected function destroyMediaDisplay(value:ILayoutView):void{
+			var video:Video = (value as LayoutView).asset as Video;
 			video.attachNetStream(null);
 		}
 		protected function updateDisplayMeasurements(x:Number, y:Number, width:Number, height:Number):void{

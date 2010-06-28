@@ -1,15 +1,15 @@
 package org.farmcode.actLibrary.display.visualSockets.plugs.controls
 {
 	import org.farmcode.actLibrary.display.visualSockets.plugs.AbstractPlugDisplayProxy;
-	import org.farmcode.acting.IScopeDisplayObject;
 	import org.farmcode.acting.universal.UniversalActExecution;
 	import org.farmcode.data.dataTypes.ITriggerableAction;
-	import org.farmcode.display.behaviour.controls.TextLabelButton;
+	import org.farmcode.display.controls.TextLabelButton;
+	import org.farmcode.display.core.IScopedObject;
 	
 	public class TextLabelButtonPlug extends AbstractPlugDisplayProxy
 	{
 		
-		private var _scopeDisplayData:IScopeDisplayObject;
+		private var _scopeDisplayData:IScopedObject;
 		private var _actionData:ITriggerableAction;
 		private var _textLabelButton:TextLabelButton;
 		
@@ -19,16 +19,16 @@ package org.farmcode.actLibrary.display.visualSockets.plugs.controls
 			super(_textLabelButton);
 		}
 		override protected function commitData(execution:UniversalActExecution=null):void{
-			_scopeDisplayData = (_dataProvider as IScopeDisplayObject);
-			if(_scopeDisplayData && !_scopeDisplayData.scopeDisplay){
-				_scopeDisplayData.scopeDisplay = _asset;
+			_scopeDisplayData = (_dataProvider as IScopedObject);
+			if(_scopeDisplayData && !_scopeDisplayData.scope){
+				_scopeDisplayData.scope = _asset;
 			}
 			_actionData = (_dataProvider as ITriggerableAction);
 			_textLabelButton.data = _dataProvider;
 		}
 		override protected function uncommitData(execution:UniversalActExecution=null):void{
-			if(_scopeDisplayData && _scopeDisplayData.scopeDisplay==_asset){
-				_scopeDisplayData.scopeDisplay = null;
+			if(_scopeDisplayData && _scopeDisplayData.scope==_asset){
+				_scopeDisplayData.scope = null;
 				_scopeDisplayData = null;
 			}
 			_actionData = null;
@@ -36,8 +36,8 @@ package org.farmcode.actLibrary.display.visualSockets.plugs.controls
 		}
 		override protected function commitAsset():void{
 			super.commitAsset();
-			if(_scopeDisplayData && !_scopeDisplayData.scopeDisplay){
-				_scopeDisplayData.scopeDisplay = _asset;
+			if(_scopeDisplayData && !_scopeDisplayData.scope){
+				_scopeDisplayData.scope = _asset;
 			}
 		}
 		protected function onButtonClick(from:TextLabelButton):void{

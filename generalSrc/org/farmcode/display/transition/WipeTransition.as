@@ -1,9 +1,10 @@
 package org.farmcode.display.transition
 {
-	import flash.display.Bitmap;
-	import flash.display.DisplayObject;
 	import flash.geom.Matrix;
 	import flash.geom.Rectangle;
+	
+	import org.farmcode.display.assets.IBitmapAsset;
+	import org.farmcode.display.assets.IDisplayAsset;
 	
 	public class WipeTransition extends Transition
 	{
@@ -32,7 +33,7 @@ package org.farmcode.display.transition
 		public var direction:String = LEFT;
 		
 		
-		override public function doTransition(start:DisplayObject, finish:DisplayObject, bitmap:Bitmap, duration:Number, currentTime:Number):void{
+		override public function doTransition(start:IDisplayAsset, finish:IDisplayAsset, bitmap:IBitmapAsset, duration:Number, currentTime:Number):void{
 			var dir:Number = (direction==UP || direction==LEFT?-1:1);
 			var vert:Boolean = (direction==UP || direction==DOWN);
 			
@@ -57,7 +58,7 @@ package org.farmcode.display.transition
 					clipRect = new Rectangle(dir>0?bitmap.width*fraction:0,0,bitmap.width*(1-fraction),bitmap.height);
 				}
 			}
-			bitmap.bitmapData.draw(start,matrix,start.transform.colorTransform,start.blendMode,clipRect);
+			bitmap.bitmapData.draw(start.bitmapDrawable,matrix,start.transform.colorTransform,start.blendMode,clipRect);
 			
 			matrix = finish.transform.concatenatedMatrix;
 			matrix.concat(bitmapMatrix);
@@ -75,7 +76,7 @@ package org.farmcode.display.transition
 					clipRect = new Rectangle(dir<0?bitmap.width*(1-fraction):0,0,bitmap.width*fraction,bitmap.height);
 				}
 			}
-			bitmap.bitmapData.draw(finish,matrix,finish.transform.colorTransform,finish.blendMode,clipRect);
+			bitmap.bitmapData.draw(finish.bitmapDrawable,matrix,finish.transform.colorTransform,finish.blendMode,clipRect);
 			
 		}
 	}

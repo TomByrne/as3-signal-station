@@ -12,7 +12,7 @@ package org.farmcode.data.core
 			return _numericalValue;
 		}
 		public function set numericalValue(value:Number):void{
-			if(_numericalValue!=value){
+			if(_numericalValue!=value && !(isNaN(value) && isNaN(_numericalValue))){
 				_numericalValue = value;
 				if(_numericalValueChanged)_numericalValueChanged.perform(this);
 				if(isNaN(value)){
@@ -47,6 +47,9 @@ package org.farmcode.data.core
 		public function NumberData(numericalValue:Number=NaN)
 		{
 			this.numericalValue = numericalValue;
+		}
+		override public function toString():String{
+			return _numericalValue.toString()+" (0x"+_numericalValue.toString(16)+")";
 		}
 	}
 }

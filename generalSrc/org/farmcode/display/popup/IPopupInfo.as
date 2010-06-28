@@ -1,16 +1,16 @@
 package org.farmcode.display.popup
 {
-	import flash.display.DisplayObject;
-	import flash.display.DisplayObjectContainer;
-	import flash.geom.Point;
-	
 	import org.farmcode.actLibrary.display.popup.IModalDisablerView;
-	import org.farmcode.display.ISelfAnimatingView;
+	import org.farmcode.display.assets.IDisplayAsset;
 
 	public interface IPopupInfo
 	{
-		function get popupDisplay():DisplayObject;
+		function get popupDisplay():IDisplayAsset;
 		
+		/**
+		 * Whether or not this Popup is modal (i.e. whether the user can 
+		 * interact with other parts of the site before dismissing this Popup).
+		 */
 		function get isModal():Boolean;
 		function get modalDisabler():IModalDisablerView;
 		

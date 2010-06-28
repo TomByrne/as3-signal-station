@@ -4,6 +4,8 @@ package org.farmcode.display.transition
 	
 	import flash.display.DisplayObject;
 	
+	import org.farmcode.display.assets.IDisplayAsset;
+	
 	/**
 	 * The TransitionManager manages TransitionExecution objects, making sure that they're not trying to
 	 * transition the same display. When the <code>execute()</code> method is called, any existing transitions
@@ -22,7 +24,7 @@ package org.farmcode.display.transition
 	{
 		private static var _executions:Array = [];
 		
-		public static function execute(start:DisplayObject, finish:DisplayObject, transitions:Array, easing:Function=null):TransitionExecution{
+		public static function execute(start:IDisplayAsset, finish:IDisplayAsset, transitions:Array, easing:Function=null):TransitionExecution{
 			var trans:TransitionExecution = findExecution(finish);
 			if(trans){
 				start = trans.endEarly();
@@ -50,7 +52,7 @@ package org.farmcode.display.transition
 				_executions.splice(index,1);
 			}
 		}
-		private static function findExecution(visual:DisplayObject):TransitionExecution{
+		private static function findExecution(visual:IDisplayAsset):TransitionExecution{
 			for each(var trans:TransitionExecution in _executions){
 				if(trans.startDisplay==visual || trans.finishDisplay==visual){
 					return trans;

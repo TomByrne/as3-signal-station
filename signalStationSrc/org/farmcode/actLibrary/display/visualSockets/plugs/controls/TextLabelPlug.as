@@ -2,7 +2,7 @@ package org.farmcode.actLibrary.display.visualSockets.plugs.controls
 {
 	import org.farmcode.actLibrary.display.visualSockets.plugs.AbstractPlugDisplayProxy;
 	import org.farmcode.acting.universal.UniversalActExecution;
-	import org.farmcode.display.behaviour.controls.TextLabel;
+	import org.farmcode.display.controls.TextLabel;
 	
 	public class TextLabelPlug extends AbstractPlugDisplayProxy
 	{

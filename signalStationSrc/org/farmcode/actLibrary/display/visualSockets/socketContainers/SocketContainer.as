@@ -2,15 +2,16 @@ package org.farmcode.actLibrary.display.visualSockets.socketContainers
 {
 	import au.com.thefarmdigital.delayedDraw.IDrawable;
 	
-	import flash.display.DisplayObject;
-	import flash.display.Sprite;
 	import flash.utils.Dictionary;
 	
-	import org.farmcode.actLibrary.display.visualSockets.actTypes.IFillSocketAct;
 	import org.farmcode.actLibrary.display.visualSockets.plugs.PlugDisplay;
 	import org.farmcode.actLibrary.display.visualSockets.sockets.IDisplaySocket;
+	import org.farmcode.acting.actTypes.IAct;
+	import org.farmcode.acting.acts.Act;
 	import org.farmcode.acting.universal.UniversalActExecution;
-	import org.farmcode.display.ISelfAnimatingView;
+	import org.farmcode.display.assets.IContainerAsset;
+	import org.farmcode.display.assets.IDisplayAsset;
+	import org.farmcode.display.core.IOutroView;
 	import org.farmcode.display.layout.ILayout;
 	import org.farmcode.display.layout.ILayoutSubject;
 	
@@ -20,15 +21,9 @@ package org.farmcode.actLibrary.display.visualSockets.socketContainers
 			super.displaySocket = value;
 			checkHelper();
 		}
-		override public function set asset(value:DisplayObject):void{
-			if(containerAsset){
-				containerAsset.removeChild(childContainer);
-			}
+		override public function set asset(value:IDisplayAsset):void{
 			super.asset = value;
 			checkHelper();
-			if(containerAsset){
-				containerAsset.addChild(childContainer);
-			}
 		}
 		
 		public function get layout():ILayout{
@@ -55,25 +50,45 @@ package org.farmcode.actLibrary.display.visualSockets.socketContainers
 				}
 			}
 		}
-		override public function get display():DisplayObject{
-			var ret:DisplayObject = super.display;
+		override public function get display():IDisplayAsset{
+			var ret:IDisplayAsset = super.display;
 			if(!ret){
-				ret = asset = new Sprite();
+				// TODO: fix this
+				//ret = asset = new Sprite();
+				throw new Error();
 			}
 			return ret;
 		}
 		
+		/**
+		 * @inheritDoc
+		 */
+		public function get childSocketsChanged():IAct{
+			return _childSocketsChanged;
+		}
+		
+		protected var _childSocketsChanged:Act = new Act();
 		private var _layout:ILayout;
 		private var _layoutView:IDrawable;
 		protected var _socketContHelper:SocketContainerHelper;
-		protected var childContainer:Sprite = new Sprite();
+		protected var _childContainer:IContainerAsset;
 		
-		public function SocketContainer(asset:DisplayObject=null){
+		public function SocketContainer(asset:IDisplayAsset=null){
 			super(asset);
 		}
 		override public function setDataProvider(value:*, execution:UniversalActExecution=null):void{
 			super.setDataProvider(value,execution);
 			socketContHelper.setDataProvider(value,execution);
+		}
+		override protected function bindToAsset() : void{
+			super.bindToAsset();
+			_childContainer = _asset.createAsset(IContainerAsset);
+			_containerAsset.addAsset(_childContainer);
+		}
+		override protected function unbindFromAsset() : void{
+			_containerAsset.removeAsset(_childContainer);
+			_asset.destroyAsset(_childContainer);
+			super.unbindFromAsset();
 		}
 		public function get childSockets(): Array{
 			return socketContHelper.childSockets;
@@ -112,8 +127,8 @@ package org.farmcode.actLibrary.display.visualSockets.socketContainers
 		}
 		protected function get socketContHelper(): SocketContainerHelper{
 			if(!_socketContHelper){
-				_socketContHelper = new SocketContainerHelper(this);
-				_socketContHelper.defaultContainer = childContainer;
+				_socketContHelper = new SocketContainerHelper(this,_childSocketsChanged);
+				_socketContHelper.defaultContainer = _childContainer;
 				_socketContHelper.childDataAssessed.addHandler(onChildDataAssessed);
 			}
 			return _socketContHelper;
@@ -133,7 +148,7 @@ package org.farmcode.actLibrary.display.visualSockets.socketContainers
 			var ret:Number = super.doShowOutro();
 			for each(var socket:IDisplaySocket in childSockets){
 				if(socket.plugDisplay){
-					var cast:ISelfAnimatingView = (socket.plugDisplay as ISelfAnimatingView);
+					var cast:IOutroView = (socket.plugDisplay as IOutroView);
 					ret = Math.max(ret,cast.showOutro());
 				}
 			}
@@ -141,26 +156,26 @@ package org.farmcode.actLibrary.display.visualSockets.socketContainers
 		}
 		protected function checkHelper():void{
 			if(!_outroShown && displaySocket){
-				socketContHelper.scopeDisplay = asset;
+				socketContHelper.asset = asset;
 			}else{
-				socketContHelper.scopeDisplay = null;
+				socketContHelper.asset = null;
 			}
 		}
 		override protected function draw():void{
 			super.draw();
 			drawLayout();
-			if(containerAsset){
-				if(containerAsset.scaleX!=0 && containerAsset.scaleX!=Infinity){
-					childContainer.scaleX = 1/containerAsset.scaleX;
+			if(_containerAsset){
+				if(_containerAsset.scaleX!=0 && _containerAsset.scaleX!=Infinity){
+					_containerAsset.scaleX = 1/_containerAsset.scaleX;
 				}
-				if(containerAsset.scaleY!=0 && containerAsset.scaleY!=Infinity){
-					childContainer.scaleY = 1/containerAsset.scaleY;
+				if(_containerAsset.scaleY!=0 && _containerAsset.scaleY!=Infinity){
+					_containerAsset.scaleY = 1/_containerAsset.scaleY;
 				}
 			}
 		}
 		protected function drawLayout():void{
 			if(_layout){
-				_layout.setLayoutSize(displayPosition.x-containerAsset.x,displayPosition.y-containerAsset.y,displayPosition.width,displayPosition.height);
+				_layout.setLayoutSize(displayPosition.x-_containerAsset.x,displayPosition.y-_containerAsset.y,displayPosition.width,displayPosition.height);
 			}
 		}
 	}

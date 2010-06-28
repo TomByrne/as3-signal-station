@@ -124,10 +124,10 @@ package org.farmcode.actLibrary.application.states
 			if(act){
 				var uniAct:IUniversalAct = (act as IUniversalAct);
 				if(uniAct){
-					if(!uniAct.scopeDisplay){
-						uniAct.scopeDisplay = scopeDisplay;
+					if(!uniAct.scope){
+						uniAct.scope = asset;
 						uniAct.perform(execution);
-						uniAct.scopeDisplay = null;
+						uniAct.scope = null;
 					}else{
 						uniAct.perform(execution);
 					}

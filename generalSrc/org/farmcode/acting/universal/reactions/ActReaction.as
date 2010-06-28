@@ -1,13 +1,13 @@
 package org.farmcode.acting.universal.reactions
 {
-	import org.farmcode.ScopeDisplayObject;
+	import org.farmcode.display.core.ScopedObject;
 	import org.farmcode.acting.actTypes.IAct;
 	import org.farmcode.acting.acts.Act;
 	import org.farmcode.acting.universal.UniversalActExecution;
 	import org.farmcode.acting.universal.UniversalActManager;
 	import org.farmcode.acting.universal.ruleTypes.IUniversalRule;
 
-	public class ActReaction extends ScopeDisplayObject implements IActReaction
+	public class ActReaction extends ScopedObject implements IActReaction
 	{
 		
 		public function get phases():Array{
@@ -25,9 +25,9 @@ package org.farmcode.acting.universal.reactions
 		
 		public function ActReaction(){
 			addedChanged.addHandler(onAddedChanged);
-			scopeDisplayChanged.addHandler(onDisplayChanged);
+			assetChanged.addHandler(onDisplayChanged);
 		}
-		private function onAddedChanged(from:ScopeDisplayObject):void{
+		private function onAddedChanged(from:ScopedObject):void{
 			if(added){
 				_univAdded = true;
 				UniversalActManager.addReaction(this);
@@ -36,7 +36,7 @@ package org.farmcode.acting.universal.reactions
 				UniversalActManager.removeReaction(this);
 			}
 		}
-		private function onDisplayChanged(from:ScopeDisplayObject):void{
+		private function onDisplayChanged(from:ScopedObject):void{
 			if(_univAdded){
 				UniversalActManager.removeReaction(this);
 				UniversalActManager.addReaction(this);

@@ -2,14 +2,12 @@ package org.farmcode.actLibrary.external.swfAddress
 {
 	import com.asual.swfaddress.*;
 	
-	import flash.events.Event;
 	import flash.utils.Dictionary;
 	
 	import org.farmcode.actLibrary.core.UniversalActorHelper;
 	import org.farmcode.actLibrary.external.swfAddress.actTypes.*;
 	import org.farmcode.actLibrary.external.swfAddress.acts.*;
 	import org.farmcode.acting.ActingNamspace;
-	import org.farmcode.acting.IScopeDisplayObject;
 	import org.farmcode.acting.universal.UniversalActExecution;
 	
 	

@@ -1,10 +1,6 @@
 package org.farmcode.actLibrary.application
 {
-	import au.com.thefarmdigital.debug.toolbar.SimpleDebugToolbar;
-	
-	import flash.display.DisplayObject;
 	import flash.display.Sprite;
-	import flash.events.KeyboardEvent;
 	
 	import org.farmcode.actLibrary.core.UniversalActorHelper;
 	import org.farmcode.actLibrary.errors.ErrorActor;
@@ -15,11 +11,12 @@ package org.farmcode.actLibrary.application
 	import org.farmcode.actLibrary.external.siteStream.acts.ResolvePathsAct;
 	import org.farmcode.actLibrary.external.swfAddress.SWFAddressActor;
 	import org.farmcode.acting.ActingNamspace;
-	import org.farmcode.acting.IScopeDisplayObject;
 	import org.farmcode.acting.actTypes.IUniversalAct;
 	import org.farmcode.acting.universal.UniversalActExecution;
 	import org.farmcode.acting.universal.UniversalActManager;
 	import org.farmcode.core.Application;
+	import org.farmcode.display.assets.IDisplayAsset;
+	import org.farmcode.display.core.IScopedObject;
 	import org.farmcode.threading.AbstractThread;
 	
 	use namespace ActingNamspace;
@@ -62,7 +59,7 @@ package org.farmcode.actLibrary.application
 			protected var _debugArea:Sprite;
 		}
 		
-		public function ConfiguredApplication(asset:DisplayObject=null){
+		public function ConfiguredApplication(asset:IDisplayAsset=null){
 			super(asset);
 			_universalActorHelper.metadataTarget = this;
 			_universalActorHelper.addChild(retrieveConfigUrlAct);
@@ -90,7 +87,7 @@ package org.farmcode.actLibrary.application
 			Config::DEBUG
 			{
 				// testing
-				var executionChecker:ExecutionChecker = new ExecutionChecker(container);
+				/*var executionChecker:ExecutionChecker = new ExecutionChecker(container);
 				//var siteStreamDebugger:SiteStreamDebugger = new SiteStreamDebugger(_siteStreamAdvisor.siteStream);
 				
 				_debugArea = new Sprite();
@@ -105,23 +102,18 @@ package org.farmcode.actLibrary.application
 				_lastStage.addEventListener(KeyboardEvent.KEY_DOWN, onKeyDown);
 				
 				var toolbar:SimpleDebugToolbar = new SimpleDebugToolbar(_siteStreamActor.siteStream,_president);
-				_debugArea.addChild(toolbar);
+				_debugArea.addChild(toolbar);*/
 			}
 		}
-		protected function addActor(actor:IScopeDisplayObject) : void{
-			_actors.push(actor);
-			actor.scopeDisplay = asset;
+		protected function addActor(actor:IScopedObject) : void{
+			_universalActorHelper.addChild(actor);
 		}
 		override protected function bindToAsset() : void{
 			UniversalActManager.addManager(asset);
 			
 			super.bindToAsset();
 			
-			_universalActorHelper.scopeDisplay = asset;
-			
-			for each(var actor:IScopeDisplayObject in _actors){
-				actor.scopeDisplay = asset;
-			}
+			_universalActorHelper.asset = asset;
 			
 			var act:SetPropertyConfigParamAct = new SetPropertyConfigParamAct(_siteStreamActor,"baseDataURL","baseDataURL");
 			act.temporaryPerform(asset);
@@ -138,11 +130,7 @@ package org.farmcode.actLibrary.application
 		override protected function unbindFromAsset() : void{
 			super.unbindFromAsset();
 			
-			_universalActorHelper.scopeDisplay = null;
-			
-			for each(var actor:IScopeDisplayObject in _actors){
-				actor.scopeDisplay = asset;
-			}
+			_universalActorHelper.asset = null;
 			
 			UniversalActManager.removeManager(asset);
 		}
@@ -169,9 +157,9 @@ package org.farmcode.actLibrary.application
 			}
 		}
 		protected function temporaryPerformAct(act:IUniversalAct, execution:UniversalActExecution):void{
-			act.scopeDisplay = asset;
+			act.scope = asset;
 			act.perform(execution);
-			act.scopeDisplay = null;
+			act.scope = null;
 		}
 	}
 }

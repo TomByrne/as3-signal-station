@@ -28,16 +28,20 @@ package org.farmcode.formatters.stringFormatters
 		private var _prependString:String;
 		private var _appendString:String;
 		
-		public function StringWrapFormatter(stringProvider:IStringProvider=null)
+		public function StringWrapFormatter(stringProvider:IStringProvider=null, prependString:String=null, appendString:String=null)
 		{
 			super(stringProvider);
+			this.prependString = prependString;
+			this.appendString = appendString;
 		}
 		override protected function formatString(input:String):String{
-			if(_prependString){
-				input = _prependString+input;
-			}
-			if(_appendString){
-				input += _appendString;
+			if(input){
+				if(_prependString){
+					input = _prependString+input;
+				}
+				if(_appendString){
+					input += _appendString;
+				}
 			}
 			return input;
 		}

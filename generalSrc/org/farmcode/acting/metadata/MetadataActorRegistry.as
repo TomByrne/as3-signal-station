@@ -4,13 +4,12 @@ package org.farmcode.acting.metadata
 	import flash.utils.Dictionary;
 	
 	import org.farmcode.acting.ActingNamspace;
-	import org.farmcode.acting.actTypes.IAct;
-	import org.farmcode.acting.acts.AsynchronousAct;
 	import org.farmcode.acting.metadata.ruleTypes.IUniversalClassRule;
 	import org.farmcode.acting.universal.UniversalActExecution;
 	import org.farmcode.acting.universal.reactions.MethodReaction;
 	import org.farmcode.acting.universal.ruleTypes.IUniversalRule;
 	import org.farmcode.compiler.MetadataConfirmer;
+	import org.farmcode.display.assets.IDisplayAsset;
 	import org.farmcode.reflection.Deliterator;
 	import org.farmcode.reflection.ReflectionUtils;
 	import org.farmcode.utils.ObjectUtils;
@@ -25,7 +24,7 @@ package org.farmcode.acting.metadata
 		
 		private static var actMap:Dictionary = new Dictionary();
 		
-		public static function addActor(actor:Object, scopeDisplay:DisplayObject):void{
+		public static function addActor(actor:Object, scopeDisplay:IDisplayAsset):void{
 			if(!actMap[actor]){
 				var classDesc: XML = ReflectionUtils.describeType(actor);
 				var memberList: XMLList = classDesc.descendants().(name()=="method"||name()=="variable"||name()=="accessor");
@@ -67,14 +66,14 @@ package org.farmcode.acting.metadata
 						}
 					}
 					// add to manager AFTER adding all reactions/rules
-					if(reaction)reaction.scopeDisplay = scopeDisplay;
+					if(reaction)reaction.asset = scopeDisplay;
 				}
 				actMap[actor] = acts;
 			}else{
 				throw new Error("Actor already registered");
 			}
 		}
-		public static function createImplicitReaction(actor:Object, memberNode:XML, scopeDisplay:DisplayObject):MethodReaction{
+		public static function createImplicitReaction(actor:Object, memberNode:XML, scopeDisplay:IDisplayAsset):MethodReaction{
 			var methodName:String = memberNode.@name;
 			var method:Function = actor[methodName];
 			if(method==null){
@@ -113,7 +112,7 @@ package org.farmcode.acting.metadata
 				var tot:int = acts.length;
 				for(var i:int=0; i<tot; ++i){
 					var act:MethodReaction = acts[i];
-					act.scopeDisplay = null;
+					act.asset = null;
 					act.removeAllUniversalRules();
 				}
 				delete actMap[actor];

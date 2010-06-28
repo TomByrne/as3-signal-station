@@ -1,10 +1,10 @@
 package org.farmcode.acting.universal.reactions
 {
-	import org.farmcode.acting.IScopeDisplayObject;
 	import org.farmcode.acting.actTypes.IAct;
 	import org.farmcode.acting.universal.UniversalActExecution;
+	import org.farmcode.display.core.IView;
 
-	public interface IActReaction extends IScopeDisplayObject
+	public interface IActReaction extends IView
 	{
 		/**
 		 * an array of increasingly general phase names.<br>

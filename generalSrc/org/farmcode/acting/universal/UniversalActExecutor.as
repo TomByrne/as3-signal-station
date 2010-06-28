@@ -4,14 +4,13 @@ package org.farmcode.acting.universal
 	
 	import org.farmcode.acting.ActingNamspace;
 	import org.farmcode.acting.actTypes.IAct;
-	import org.farmcode.acting.actTypes.IAsynchronousAct;
 	import org.farmcode.acting.actTypes.IUniversalAct;
 	import org.farmcode.acting.acts.Act;
 	import org.farmcode.acting.universal.reactions.IActReaction;
 	import org.farmcode.acting.universal.reactions.NestedExecutionReaction;
 	import org.farmcode.acting.universal.ruleTypes.IUniversalRule;
 	import org.farmcode.acting.universal.rules.ImmediateActRule;
-	import org.farmcode.flags.ValidationFlag;
+	import org.farmcode.display.validation.ValidationFlag;
 	
 	use namespace ActingNamspace;
 

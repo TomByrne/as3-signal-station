@@ -1,15 +1,15 @@
 package org.farmcode.actLibrary.display.visualSockets.plugs
 {
 	import org.farmcode.acting.universal.UniversalActExecution;
-	import org.farmcode.display.behaviour.ViewBehaviour;
+	import org.farmcode.display.core.DrawableView;
 	
 	public class PlugDisplayProxy extends AbstractPlugDisplayProxy
 	{
 		
-		public function get target():ViewBehaviour{
+		public function get target():DrawableView{
 			return _target;
 		}
-		public function set target(value:ViewBehaviour):void{
+		public function set target(value:DrawableView):void{
 			setTarget(value);
 		}
 		
@@ -26,7 +26,7 @@ package org.farmcode.actLibrary.display.visualSockets.plugs
 		
 		private var _dataField:String;
 		
-		public function PlugDisplayProxy(target:ViewBehaviour=null){
+		public function PlugDisplayProxy(target:DrawableView=null){
 			super(target);
 		}
 		override public function setDataProvider(value:*, execution:UniversalActExecution=null):void{

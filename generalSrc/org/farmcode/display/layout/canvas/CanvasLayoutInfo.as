@@ -77,5 +77,12 @@ package org.farmcode.display.layout.canvas
 		private var _percentWidth:Number;
 		private var _percentHeight:Number;
 		
+		
+		public function CanvasLayoutInfo(top:Number=NaN, left:Number=NaN, bottom:Number=NaN, right:Number=NaN){
+			this.top = top;
+			this.left = left;
+			this.bottom = bottom;
+			this.right = right;
+		}
 	}
 }

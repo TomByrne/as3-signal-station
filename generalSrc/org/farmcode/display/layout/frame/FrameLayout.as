@@ -2,10 +2,10 @@ package org.farmcode.display.layout.frame
 {
 	import flash.geom.Rectangle;
 	
-	import org.farmcode.display.DisplayFramer;
 	import org.farmcode.display.layout.AbstractLayout;
 	import org.farmcode.display.layout.ILayoutSubject;
 	import org.farmcode.display.layout.getMarginAffectedArea;
+	import org.farmcode.display.utils.DisplayFramer;
 
 	public class FrameLayout extends AbstractLayout
 	{

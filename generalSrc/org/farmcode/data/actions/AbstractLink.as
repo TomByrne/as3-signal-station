@@ -2,7 +2,7 @@ package org.farmcode.data.actions
 {
 	import org.farmcode.acting.actTypes.IAct;
 	import org.farmcode.acting.acts.Act;
-	import org.farmcode.data.dataTypes.IStringProvider;	
+	import org.farmcode.data.dataTypes.IStringProvider;
 	
 	public class AbstractLink extends TriggerableAction implements IStringProvider
 	{
@@ -15,6 +15,9 @@ package org.farmcode.data.actions
 				if(_stringValueChanged)_stringValueChanged.perform(this)
 			}
 		}
+		public function get value():*{
+			return stringValue;
+		}
 
 		/**
 		 * @inheritDoc
@@ -23,10 +26,18 @@ package org.farmcode.data.actions
 			if(!_stringValueChanged)_stringValueChanged = new Act();
 			return _stringValueChanged;
 		}
-				
+		/**
+		 * @inheritDoc
+		 */			
+		public function get valueChanged():IAct {
+			return stringValueChanged;
+		}
+		
 		protected var _stringValueChanged:Act;
 		private var _stringValue:String;
 				
-		public function AbstractLink() { }				
+		public function AbstractLink(stringValue:String=null) {
+			this.stringValue = stringValue;
+		}				
 	}
 }

@@ -8,10 +8,13 @@ package org.farmcode.formatters.numberFormatters
 	import org.farmcode.data.dataTypes.IStringConsumer;
 	import org.farmcode.data.dataTypes.IStringProvider;
 	import org.farmcode.data.dataTypes.IValueProvider;
+	import org.farmcode.formatters.IFormatter;
 	
-	public class AbstractNumberFormatter implements IStringConsumer, IStringProvider, IValueProvider, INumberProvider, INumberConsumer
+	public class AbstractNumberFormatter implements IFormatter, IValueProvider, INumberProvider, INumberConsumer
 	{
-		
+		public function set valueProvider(value:IValueProvider):void{
+			numberProvider = value as INumberProvider;
+		}
 		public function get numberProvider():INumberProvider{
 			return _numberProvider;
 		}
@@ -52,36 +55,17 @@ package org.farmcode.formatters.numberFormatters
 		}
 		public function set numericalValue(value:Number):void{
 			if(_numericalValue!=value){
-				_numericalValue = value;
 				if(_numberConsumer){
 					_ignoreProviderChanges = true;
 					_numberConsumer.numericalValue = value;
+					value = _numberProvider.numericalValue;
 					_ignoreProviderChanges = false;
 				}
+				_numericalValue = value;
 				if(_numericalValueChanged)_numericalValueChanged.perform(this);
 				invalidateString();
 			}
 		}
-		/*public function set numericalValue(value:Number):void{
-			if(_numericalValue!=value){
-				var newStr:String = formatString(value);
-				if(_stringValue!=newStr){
-					_stringValue = newStr;
-					var newNum:Number = parseString(_stringValue);
-					if(_numberConsumer){
-						_ignoreProviderChanges = true;
-						_numberConsumer.numericalValue = newNum;
-						_ignoreProviderChanges = false;
-					}
-					if(_numericalValue!=newNum){
-						_numericalValue = newNum;
-						if(_numericalValueChanged)_numericalValueChanged.perform(this);
-					}
-					_stringInvalid = false;
-					if(_stringValueChanged)_stringValueChanged.perform(this);
-				}
-			}
-		}*/
 		public function get numericalValue():Number{
 			return _numericalValue;
 		}

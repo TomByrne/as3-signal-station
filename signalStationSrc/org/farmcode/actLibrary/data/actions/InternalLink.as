@@ -17,6 +17,7 @@ package org.farmcode.actLibrary.data.actions
 	import org.farmcode.data.actions.AbstractLink;
 	import org.farmcode.data.dataTypes.IBooleanConsumer;
 	import org.farmcode.data.dataTypes.IBooleanProvider;
+	import org.farmcode.display.assets.IDisplayAsset;
 	
 	public class InternalLink extends AbstractLink implements IBooleanConsumer, IBooleanProvider
 	{
@@ -53,11 +54,11 @@ package org.farmcode.actLibrary.data.actions
 				checkSelected();
 			}
 		}
-		public function get scopeDisplay():DisplayObject{
-			return _uniActorHelper.scopeDisplay;
+		public function get scopeDisplay():IDisplayAsset{
+			return _uniActorHelper.asset;
 		}
-		public function set scopeDisplay(value:DisplayObject):void{
-			_uniActorHelper.scopeDisplay = value;
+		public function set scopeDisplay(value:IDisplayAsset):void{
+			_uniActorHelper.asset = value;
 		}
 		
 		

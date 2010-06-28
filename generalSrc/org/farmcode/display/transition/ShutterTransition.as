@@ -4,8 +4,10 @@ package org.farmcode.display.transition
 	import flash.display.DisplayObject;
 	import flash.geom.ColorTransform;
 	import flash.geom.Matrix;
-	import flash.geom.Point;
 	import flash.geom.Rectangle;
+	
+	import org.farmcode.display.assets.IBitmapAsset;
+	import org.farmcode.display.assets.IDisplayAsset;
 	
 	/**
 	 * The ShutterTransition mimics the rotating shutters of some billboards.
@@ -40,7 +42,7 @@ package org.farmcode.display.transition
 			if(shutterDirection)this.shutterDirection = shutterDirection;
 		}
 		
-		override public function beginTransition(start:DisplayObject, finish:DisplayObject, bitmap:Bitmap, duration:Number):void{
+		override public function beginTransition(start:IDisplayAsset, finish:IDisplayAsset, bitmap:IBitmapAsset, duration:Number):void{
 			shutters = [];
 			var ver:Boolean = direction==VERTICAL;
 			var totalSize:Number = (ver?bitmap.width:bitmap.height);
@@ -58,7 +60,7 @@ package org.farmcode.display.transition
 				shutters.push(shutter);
 			}
 		}
-		override public function doTransition(start:DisplayObject, finish:DisplayObject, bitmap:Bitmap, duration:Number, currentTime:Number):void{
+		override public function doTransition(start:IDisplayAsset, finish:IDisplayAsset, bitmap:IBitmapAsset, duration:Number, currentTime:Number):void{
 			var bitmapMatrix:Matrix = bitmap.transform.concatenatedMatrix;
 			bitmapMatrix.invert();
 			
@@ -87,7 +89,7 @@ package org.farmcode.display.transition
 				var pos:Number = (((fract-order)/fractPerShutter)*shutterDelay)+(fract*(1-shutterDelay));
 				pos = shutter.direction?1-pos:pos;
 				pos = Math.max(Math.min(pos,1),0);
-				var subject:DisplayObject = shutter.direction?finish:start;
+				var subject:IDisplayAsset = shutter.direction?finish:start;
 				var rect:Rectangle = shutter.rect.clone();
 				var matrix:Matrix = subject.transform.concatenatedMatrix;
 				matrix.concat(bitmapMatrix);
@@ -109,7 +111,7 @@ package org.farmcode.display.transition
 				}
 				var color:ColorTransform = subject.transform.colorTransform;
 				transformColor(color,backwardFacingColor,backwardFacingAlpha,pos);
-				bitmap.bitmapData.draw(subject,matrix,color,null,rect,true);
+				bitmap.bitmapData.draw(subject.bitmapDrawable,matrix,color,null,rect,true);
 				
 				// aft object
 				subject = shutter.direction?start:finish;
@@ -136,10 +138,10 @@ package org.farmcode.display.transition
 				}
 				color = subject.transform.colorTransform;
 				transformColor(color,forwardFacingColor,forwardFacingAlpha,1-pos);
-				bitmap.bitmapData.draw(subject,matrix,color,null,rect,true);
+				bitmap.bitmapData.draw(subject.bitmapDrawable,matrix,color,null,rect,true);
 			}
 		}
-		override public function endTransition(start:DisplayObject, finish:DisplayObject, bitmap:Bitmap, duration:Number):void{
+		override public function endTransition(start:IDisplayAsset, finish:IDisplayAsset, bitmap:IBitmapAsset, duration:Number):void{
 		}
 		
 		private function transformColor(colorTrans:ColorTransform, color:Number, alpha:Number, pos:Number):void{
@@ -152,7 +154,6 @@ package org.farmcode.display.transition
 		}
 	}
 }
-import flash.geom.Point;
 import flash.geom.Rectangle;
 	
 class Shutter{

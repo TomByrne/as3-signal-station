@@ -15,8 +15,11 @@ package org.farmcode.media.video
 	import org.farmcode.acting.actTypes.IAct;
 	import org.farmcode.acting.acts.Act;
 	import org.farmcode.core.DelayedCall;
-	import org.farmcode.display.behaviour.ILayoutViewBehaviour;
-	import org.farmcode.display.behaviour.LayoutViewBehaviour;
+	import org.farmcode.display.assets.IDisplayAsset;
+	import org.farmcode.display.assets.IVideoAsset;
+	import org.farmcode.display.assets.nativeAssets.NativeAssetFactory;
+	import org.farmcode.display.assets.nativeAssets.VideoAsset;
+	import org.farmcode.display.core.ILayoutView;
 	import org.farmcode.display.layout.frame.FrameLayoutInfo;
 	import org.farmcode.media.MediaSource;
 	import org.farmcode.media.MediaViewBehaviour;
@@ -325,28 +328,31 @@ package org.farmcode.media.video
 				assessBufferSize();
 			}
 		}
-		override public function takeMediaDisplay():ILayoutViewBehaviour{
+		override public function takeMediaDisplay():ILayoutView{
 			_displaysTaken++;
 			assessStream();
 			return super.takeMediaDisplay();
 		}
-		override public function returnMediaDisplay(value:ILayoutViewBehaviour):void{
+		override public function returnMediaDisplay(value:ILayoutView):void{
 			_displaysTaken--;
 			assessStream();
 			super.returnMediaDisplay(value);
 		}
-		override protected function createMediaDisplay():ILayoutViewBehaviour{
+		override protected function createMediaDisplay():ILayoutView{
 			var video:Video = new Video(_displayMeasurements.width,_displayMeasurements.height);
 			if(_streamStarted){
 				video.attachNetStream(_netStream);
 			}
-			var display:MediaViewBehaviour = new MediaViewBehaviour(video,_displayMeasurements);
+			var videoAsset:IVideoAsset = NativeAssetFactory.getNew(video);
+			var display:MediaViewBehaviour = new MediaViewBehaviour(videoAsset,_displayMeasurements);
 			display.layoutInfo = new FrameLayoutInfo();
 			return display;
 		}
-		override protected function destroyMediaDisplay(value:ILayoutViewBehaviour):void{
-			var video:Video = (value as LayoutViewBehaviour).asset as Video;
-			video.attachNetStream(null);
+		override protected function destroyMediaDisplay(value:ILayoutView):void{
+			var display:MediaViewBehaviour = (value as MediaViewBehaviour);
+			var video:VideoAsset = display.asset as VideoAsset;
+			video.video.attachNetStream(null);
+			display.asset = null;
 		}
 		protected function assessVolume():void{
 			if(_streamStarted){

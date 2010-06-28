@@ -5,6 +5,7 @@ package org.farmcode.media.image
 	import flash.events.Event;
 	import flash.geom.Rectangle;
 	
+	import org.farmcode.display.assets.ILoaderAsset;
 	import org.farmcode.media.MediaViewBehaviour;
 	
 	public class ImageViewBehaviour extends MediaViewBehaviour
@@ -22,7 +23,7 @@ package org.farmcode.media.image
 		
 		private var _smoothing:Boolean;
 		
-		public function ImageViewBehaviour(asset:Loader, displayMeasurements:Rectangle, smoothing:Boolean){
+		public function ImageViewBehaviour(asset:ILoaderAsset, displayMeasurements:Rectangle, smoothing:Boolean){
 			super(asset, displayMeasurements);
 			asset.contentLoaderInfo.addEventListener(Event.COMPLETE, onLoaderComplete);
 			this.smoothing = smoothing;

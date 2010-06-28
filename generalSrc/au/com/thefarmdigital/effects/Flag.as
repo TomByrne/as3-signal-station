@@ -9,6 +9,8 @@ package au.com.thefarmdigital.effects{
 	import flash.geom.Matrix;
 	import flash.geom.Point;
 	
+	import org.farmcode.display.assets.IDisplayAsset;
+	
 	public class Flag extends AnimatedEffect
 	{
 		static private const SHADOW_MULTIPLIER:Number = 4;
@@ -73,14 +75,6 @@ package au.com.thefarmdigital.effects{
 			_highlightContrast = new ColorTransform( cont, cont, cont, 1, offs, offs, offs, 0 );
 			invalidate();
 		}
-		override public function set subject(value:DisplayObject):void {
-			if(super.subject != value && value != null){
-				super.subject = value;
-			}
-		}
-		override public function get subject():DisplayObject {
-			return super.subject;
-		}
 		
 		private var _tether:String = TETHER_LEFT;
 		private var _perlinNoiseOffset: Array;
@@ -98,7 +92,7 @@ package au.com.thefarmdigital.effects{
 		private var _perlinNoiseSeed: Number;
 		private var _displacement: DisplacementMapFilter;
 		
-		public function Flag( subject:DisplayObject=null ){
+		public function Flag( subject:IDisplayAsset=null ){
 			super(subject);
 			_perlinNoiseSeed = Math.floor( Math.random() * 256 );
 			_perlinNoiseOffset = [ new Point(), new Point() ];
@@ -171,7 +165,7 @@ package au.com.thefarmdigital.effects{
 				var matrix:Matrix = subject.transform.matrix;
 				matrix.tx = -_renderOffset.x;
 				matrix.ty = -_renderOffset.y;
-				_subjectBitmapData.draw(subject,matrix);
+				_subjectBitmapData.draw(subject.bitmapDrawable,matrix);
 				_bitmapChanged = false;
 				subject.visible = false;
 			}

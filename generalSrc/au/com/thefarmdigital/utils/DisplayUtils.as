@@ -6,6 +6,9 @@ package au.com.thefarmdigital.utils
 	import flash.geom.Matrix;
 	import flash.geom.Rectangle;
 	
+	import org.farmcode.display.assets.IContainerAsset;
+	import org.farmcode.display.assets.IDisplayAsset;
+	
 	/**
 	 * Collection of utility functions for display elements
 	 */
@@ -74,8 +77,8 @@ package au.com.thefarmdigital.utils
 		 * 
 		 * @return	true if the descendant was found in the parent's tree, false if not
 		 */
-		public static function isDescendant(parent:DisplayObjectContainer, decendant:DisplayObject):Boolean{
-			var subject:DisplayObject = decendant;
+		public static function isDescendant(parent:IContainerAsset, decendant:IDisplayAsset):Boolean{
+			var subject:IDisplayAsset = decendant;
 			while(subject!=decendant.stage){
 				subject = subject.parent;
 				if(subject==parent)return true;
@@ -92,14 +95,14 @@ package au.com.thefarmdigital.utils
 		 * @param	topDown		Whether to execute from the top down (true), or the bottom up (false).
 		 * 
 		 */
-		public static function executeForDescendants(parent:DisplayObject, func:Function, ofType:Class=null, topDown:Boolean=false):void{
+		public static function executeForDescendants(parent:IDisplayAsset, func:Function, ofType:Class=null, topDown:Boolean=false):void{
 			var typeMatch:Boolean = ofType!=null?(parent is ofType):true;
 			if(topDown && typeMatch)func(parent);
-			var container:DisplayObjectContainer = (parent as DisplayObjectContainer);
+			var container:IContainerAsset = (parent as IContainerAsset);
 			if(container){
 				var length:int = container.numChildren;
 				for(var i:int=0; i<length; ++i){
-					executeForDescendants(container.getChildAt(i),func,ofType,topDown);
+					executeForDescendants(container.getAssetAt(i),func,ofType,topDown);
 				}
 			}
 			if(!topDown && typeMatch)func(parent);

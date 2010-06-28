@@ -1,9 +1,7 @@
 package org.farmcode.actLibrary.display.popup
 {
 	import flash.display.DisplayObject;
-	import flash.display.DisplayObjectContainer;
 	import flash.events.Event;
-	import flash.geom.Point;
 	import flash.utils.Dictionary;
 	
 	import org.farmcode.actLibrary.core.UniversalActorHelper;
@@ -12,15 +10,15 @@ package org.farmcode.actLibrary.display.popup
 	import org.farmcode.actLibrary.display.popup.actTypes.IRemoveAllPopupsAct;
 	import org.farmcode.actLibrary.display.popup.actTypes.IRemovePopupAct;
 	import org.farmcode.actLibrary.display.popup.acts.RemovePopupAct;
+	import org.farmcode.display.assets.IContainerAsset;
+	import org.farmcode.display.assets.IDisplayAsset;
 	import org.farmcode.display.popup.IPopupInfo;
-	import org.farmcode.display.popup.PopupManager;
 	import org.farmcode.instanceFactory.IInstanceFactory;
-	import org.farmcode.utils.MethodCallQueue;
 
 	public class PopupActor extends UniversalActorHelper
 	{
-		override public function set scopeDisplay(value:DisplayObject):void{
-			super.scopeDisplay = value;
+		override public function set asset(value:IDisplayAsset):void{
+			super.asset = value;
 			if(value){
 				for each(var cause:IAddPopupAct in _pendingPopUps){
 					addPopup(cause);
@@ -47,15 +45,14 @@ package org.farmcode.actLibrary.display.popup
 		}
 		
 		
-		protected var popupManager:PopupManager;
+		protected var popupManager:PassivePopupManager;
 		private var _pendingPopUps:Dictionary = new Dictionary(true);
-		private var _openPopUps:Dictionary = new Dictionary(true);
 		private var _removePopup:RemovePopupAct = new RemovePopupAct();
 		
 		public function PopupActor(modalDisablerFactory:IInstanceFactory=null){
 			super();
-			popupManager = new PopupManager();
-			popupManager.respondToCloseEvents = false;
+			popupManager = new PassivePopupManager();
+			popupManager.removeAttempted.addHandler(onRemoveAttempted);
 			popupManager.modalDisablerFactory = modalDisablerFactory;
 			
 			addChild(_removePopup);
@@ -69,12 +66,10 @@ package org.farmcode.actLibrary.display.popup
 		public function addPopup(cause:IAddPopupAct):void{
 			var popupInfo:IPopupInfo = cause.popupInfo;
 			
-			var parent:DisplayObjectContainer = (cause.parent || (_scopeDisplay as DisplayObjectContainer));
+			var parent:IContainerAsset = (cause.parent || (_asset as IContainerAsset));
 				
 			if(popupInfo.popupDisplay){
 				if(parent){
-					popupInfo.popupDisplay.addEventListener(Event.CLOSE, onCloseRequest, false, int.MAX_VALUE);
-					_openPopUps[popupInfo.popupDisplay] = popupInfo;
 					popupManager.addPopup(popupInfo,parent);
 				}else{
 					_pendingPopUps[popupInfo] = true;
@@ -93,24 +88,17 @@ package org.farmcode.actLibrary.display.popup
 			if(_pendingPopUps[popupInfo]){
 				delete _pendingPopUps[popupInfo];
 			}else{
-				popupInfo.popupDisplay.removeEventListener(Event.CLOSE, onCloseRequest);
-				delete _openPopUps[popupInfo.popupDisplay];
 				popupManager.removePopup(popupInfo);
 			}
 		}
-		protected function onCloseRequest(e:Event):void{
-			var popupDisplay:DisplayObject = e.target as DisplayObject;
-			_removePopup.popupInfo = _openPopUps[popupDisplay];
+		protected function onRemoveAttempted(from:PassivePopupManager, popupInfo:IPopupInfo):void{
+			_removePopup.popupInfo = popupInfo
 			_removePopup.perform();
 		}
 		
 		[ActRule(ActClassRule)]
 		[ActReaction(phases="{removePopupPhases}")]
 		public function removeAllPopups(cause:IRemoveAllPopupsAct):void{
-			for each(var popupInfo:IPopupInfo in _openPopUps){
-				popupInfo.popupDisplay.removeEventListener(Event.CLOSE, onCloseRequest);
-			}
-			_openPopUps = new Dictionary();
 			popupManager.removeAllPopups();
 		}
 	}

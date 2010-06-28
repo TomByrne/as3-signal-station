@@ -1,12 +1,10 @@
 package org.farmcode.actLibrary.core
 {
-	import flash.display.DisplayObject;
-	
-	import org.farmcode.ScopeDisplayObject;
 	import org.farmcode.acting.ActingNamspace;
-	import org.farmcode.acting.IScopeDisplayObject;
-	import org.farmcode.acting.acts.UniversalAct;
 	import org.farmcode.acting.metadata.MetadataActorRegistry;
+	import org.farmcode.display.assets.IDisplayAsset;
+	import org.farmcode.display.core.IScopedObject;
+	import org.farmcode.display.core.ScopedObject;
 	
 	use namespace ActingNamspace;
 
@@ -14,15 +12,15 @@ package org.farmcode.actLibrary.core
 	 * This is a helper class to simplify setting the scopeDisplay property of
 	 * many UniversalAct objects
 	 */
-	public class UniversalActorHelper extends ScopeDisplayObject
+	public class UniversalActorHelper extends ScopedObject
 	{
 		
-		override public function set scopeDisplay(value:DisplayObject):void{
-			if(super.scopeDisplay!=value){
-				for each(var scopeDisplayObject:IScopeDisplayObject in _children){
-					scopeDisplayObject.scopeDisplay = value;
+		override public function set asset(value:IDisplayAsset):void{
+			if(super.asset!=value){
+				for each(var view:IScopedObject in _children){
+					view.scope = value;
 				}
-				super.scopeDisplay = value;
+				super.asset = value;
 				assessMetadata();
 			}
 		}
@@ -43,18 +41,18 @@ package org.farmcode.actLibrary.core
 		
 		public function UniversalActorHelper(){
 		}
-		public function addChild(scopeDisplayObject:IScopeDisplayObject):void{
-			if(_children.indexOf(scopeDisplayObject)==-1){
-				_children.push(scopeDisplayObject);
-				scopeDisplayObject.scopeDisplay = _scopeDisplay;
+		public function addChild(view:IScopedObject):void{
+			if(_children.indexOf(view)==-1){
+				_children.push(view);
+				view.scope = _asset;
 			}else{
 				throw new Error("act already added");
 			}
 		}
-		public function removeChild(scopeDisplayObject:IScopeDisplayObject):void{
-			var index:int = _children.indexOf(scopeDisplayObject);
+		public function removeChild(view:IScopedObject):void{
+			var index:int = _children.indexOf(view);
 			if(index!=-1){
-				scopeDisplayObject.scopeDisplay = null;
+				view.scope = null;
 				_children.splice(index,1);
 			}else{
 				throw new Error("act hasn't been added");
@@ -62,13 +60,13 @@ package org.farmcode.actLibrary.core
 		}
 		public function assessMetadata():void{
 			if(_registered){
-				if(!_metadataTarget || !_scopeDisplay){
+				if(!_metadataTarget || !_asset){
 					_registered = false;
 					MetadataActorRegistry.removeActor(_metadataTarget);
 				}
-			}else if(_metadataTarget && _scopeDisplay){
+			}else if(_metadataTarget && _asset){
 				_registered = true;
-				MetadataActorRegistry.addActor(_metadataTarget,_scopeDisplay);
+				MetadataActorRegistry.addActor(_metadataTarget,_asset);
 			}
 		}
 	}

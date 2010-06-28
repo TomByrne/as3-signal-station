@@ -6,10 +6,13 @@ package org.farmcode.formatters.stringFormatters
 	import org.farmcode.data.dataTypes.IStringConsumer;
 	import org.farmcode.data.dataTypes.IStringProvider;
 	import org.farmcode.data.dataTypes.IValueProvider;
+	import org.farmcode.formatters.IFormatter;
 	
-	public class AbstractStringFormatter implements IStringConsumer, IStringProvider, IValueProvider
+	public class AbstractStringFormatter implements IFormatter, IValueProvider
 	{
-		
+		public function set valueProvider(value:IValueProvider):void{
+			stringProvider = value as IStringProvider;
+		}
 		public function get stringProvider():IStringProvider{
 			return _stringProvider;
 		}
@@ -22,8 +25,10 @@ package org.farmcode.formatters.stringFormatters
 				_stringConsumer = (value as IStringConsumer);
 				if(_stringProvider){
 					_stringProvider.stringValueChanged.addHandler(onProviderChanged);
+					rawStringValue = _stringProvider.stringValue;
+				}else{
+					rawStringValue = null;
 				}
-				rawStringValue = _stringProvider.stringValue;
 			}
 		}
 		public function get value():*{

@@ -1,22 +1,21 @@
 package org.farmcode.actLibrary.display.transition.acts
 {
-	import flash.display.DisplayObject;
-	
 	import org.farmcode.actLibrary.display.transition.actTypes.IAdvancedTransitionAct;
 	import org.farmcode.acting.acts.UniversalAct;
+	import org.farmcode.display.assets.IDisplayAsset;
 
 	public class TransitionAct extends UniversalAct implements IAdvancedTransitionAct
 	{
-		public function get startDisplay():DisplayObject{
+		public function get startDisplay():IDisplayAsset{
 			return _startDisplay;
 		}
-		public function set startDisplay(value:DisplayObject):void{
+		public function set startDisplay(value:IDisplayAsset):void{
 			_startDisplay = value;
 		}
-		public function get endDisplay():DisplayObject{
+		public function get endDisplay():IDisplayAsset{
 			return _endDisplay;
 		}
-		public function set endDisplay(value:DisplayObject):void{
+		public function set endDisplay(value:IDisplayAsset):void{
 			_endDisplay = value;
 		}
 		public function get transitions():Array{
@@ -35,8 +34,8 @@ package org.farmcode.actLibrary.display.transition.acts
 			return this._doTransition;
 		}
 		
-		private var _startDisplay:DisplayObject;
-		private var _endDisplay:DisplayObject;
+		private var _startDisplay:IDisplayAsset;
+		private var _endDisplay:IDisplayAsset;
 		private var _transitions:Array;
 		private var _doTransition: Boolean = true;
 		

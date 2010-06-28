@@ -9,9 +9,13 @@ package org.farmcode.instanceFactory
 	{
 		public var useChildFactories:Boolean = false;
 		
-		protected var _itemCreatedAct:Act = new Act();
+		protected var _itemCreatedAct:Act;
 		
+		/**
+		 * @inheritDoc
+		 */
 		public function get itemCreatedAct():IAct{
+			if(!_itemCreatedAct)_itemCreatedAct = new Act();
 			return _itemCreatedAct;
 		}
 		

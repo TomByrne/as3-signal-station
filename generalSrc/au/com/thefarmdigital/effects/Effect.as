@@ -1,43 +1,33 @@
 package au.com.thefarmdigital.effects
 {
+	import org.farmcode.display.assets.IBitmapAsset;
+	import org.farmcode.display.assets.IDisplayAsset;
 	import org.farmcode.display.transition.ITransition;
 	import org.farmcode.display.transition.TransitionTiming;
-	
-	import flash.display.Bitmap;
-	import flash.display.DisplayObject;
-	import flash.geom.Rectangle;
 
 	public class Effect implements ITransition, IEffect
 	{
 		
 		public function set amount(value:Number):void{
-			if(_amount!=value){
-				_amount = value;
-			}
+			_amount = value;
 		}
 		public function get amount():Number{
 			return _amount;
 		}
-		public function set subject(value:DisplayObject):void{
-			if(_subject!=value){
-				_subject = value;
-			}
+		public function set subject(value:IDisplayAsset):void{
+			_subject = value;
 		}
-		public function get subject():DisplayObject{
+		public function get subject():IDisplayAsset{
 			return _subject;
 		}
 		public function set timing(value:String):void{
-			if(_timing!=value){
-				_timing = value;
-			}
+			_timing = value;
 		}
 		public function get timing():String{
 			return _timing;
 		}
 		public function set duration(value:Number):void{
-			if(_duration!=value){
-				_duration = value;
-			}
+			_duration = value;
 		}
 		public function get duration():Number{
 			return _duration;
@@ -45,7 +35,7 @@ package au.com.thefarmdigital.effects
 		
 		private var _duration:Number = 1000;
 		private var _amount:Number = 0;
-		private var _subject:DisplayObject;
+		private var _subject:IDisplayAsset;
 		private var _timing:String = TransitionTiming.CONCURRENT;
 		
 		public function render():void{
@@ -56,16 +46,16 @@ package au.com.thefarmdigital.effects
 		}
 		
 		// ITransition implementation
-		public function beginTransition(start:DisplayObject, finish:DisplayObject, bitmap:Bitmap, duration:Number):void{
+		public function beginTransition(start:IDisplayAsset, finish:IDisplayAsset, bitmap:IBitmapAsset, duration:Number):void{
 		}
 		
-		public function doTransition(start:DisplayObject, finish:DisplayObject, bitmap:Bitmap, duration:Number, currentTime:Number):void{
+		public function doTransition(start:IDisplayAsset, finish:IDisplayAsset, bitmap:IBitmapAsset, duration:Number, currentTime:Number):void{
 			if(subject != bitmap)subject = bitmap;
 			amount = Math.min(currentTime,duration-currentTime)/(duration/2);
 			render();
 		}
 		
-		public function endTransition(start:DisplayObject, finish:DisplayObject, bitmap:Bitmap, duration:Number):void{
+		public function endTransition(start:IDisplayAsset, finish:IDisplayAsset, bitmap:IBitmapAsset, duration:Number):void{
 			subject = bitmap;
 			remove();
 		}

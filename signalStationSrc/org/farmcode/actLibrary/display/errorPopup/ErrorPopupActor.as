@@ -1,6 +1,5 @@
 package org.farmcode.actLibrary.display.errorPopup
 {
-	import flash.display.DisplayObjectContainer;
 	import flash.utils.Dictionary;
 	
 	import org.farmcode.actLibrary.core.UniversalActorHelper;
@@ -12,6 +11,7 @@ package org.farmcode.actLibrary.display.errorPopup
 	import org.farmcode.actLibrary.errors.actTypes.IErrorAct;
 	import org.farmcode.acting.actTypes.IAct;
 	import org.farmcode.acting.universal.UniversalActExecution;
+	import org.farmcode.display.assets.IContainerAsset;
 	import org.farmcode.display.popup.PopupInfo;
 	
 	public class ErrorPopupActor extends UniversalActorHelper
@@ -19,10 +19,10 @@ package org.farmcode.actLibrary.display.errorPopup
 		public var defaultErrorDisplay:IErrorDisplay;
 		
 		
-		public function get popUpParent():DisplayObjectContainer{
+		public function get popUpParent():IContainerAsset{
 			return _popupAct.parent;
 		}
-		public function set popUpParent(value:DisplayObjectContainer):void{
+		public function set popUpParent(value:IContainerAsset):void{
 			_popupAct.parent = value;
 		}
 		

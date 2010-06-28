@@ -5,6 +5,7 @@ package org.farmcode.display.utils
 	import org.farmcode.diff.Common;
 	import org.farmcode.diff.Diff;
 	import org.farmcode.diff.Difference;
+	import org.farmcode.display.assets.ITextFieldAsset;
 
 	/**
 	 * TextSelectionCorrecter corrects user selection indices when a block
@@ -15,41 +16,67 @@ package org.farmcode.display.utils
 		public function TextSelectionCorrecter(){
 		}
 		
-		public function setText(textField:TextField, text:String) : void{
-			if(textField.text!=text){
-				var diff:Array = Diff.executeByCharacter(textField.text,text);
-				var oldBegin:int = textField.selectionBeginIndex;
-				var oldEnd:int = textField.selectionEndIndex;
+		public function setText(textField:ITextFieldAsset, toText:String, fromText:String=null, currSelBeginIndex:int=-1, currSelEndIndex:int=-1) : void{
+			if(textField.text!=toText){
+				var oldText:String = fromText?fromText:textField.text;
+				var oldBegin:int = currSelBeginIndex==-1?textField.selectionBeginIndex:currSelBeginIndex;
+				var oldEnd:int = currSelEndIndex==-1?textField.selectionEndIndex:currSelEndIndex;
+				
 				var newBegin:int;
 				var newEnd:int;
-				var oldCount:int = 0;
-				var newCount:int = 0;
-				for each(var match:* in diff){
-					var common:Common = (match as Common);
-					var matchSize:int;
-					var newSize:int;
-					if(common){
-						matchSize = newSize = common.common.length;
-					}else{
-						var difference:Difference = (match as Difference);
-						matchSize = difference.file1.length
-						newSize = difference.file2.length;
+				if(oldBegin==oldEnd && oldBegin==oldText.length){
+					newBegin = newEnd = toText.length;
+				}else{
+					var diff:Array = Diff.executeByCharacter(oldText,toText);
+					newBegin = -1;
+					newEnd = -1;
+					var oldCount:int = 0;
+					var newCount:int = 0;
+					for each(var match:* in diff){
+						var common:Common = (match as Common);
+						var matchSize:int;
+						var newSize:int;
+						var fract:Number;
+						if(common){
+							matchSize = newSize = common.common.length;
+						}else{
+							var difference:Difference = (match as Difference);
+							matchSize = difference.file1.length
+							newSize = difference.file2.length;
+						}
+						if(newBegin==-1){
+							if(common){
+								if(oldBegin<=oldCount+matchSize){
+									newBegin = newCount+(oldBegin-oldCount);
+								}
+							}else if(oldBegin<=oldCount+newSize){
+								if(matchSize){
+									fract = ((oldBegin-oldCount)/matchSize);
+								}else{
+									fract = 0.5;
+								}
+								newBegin = newCount+Math.round(fract*newSize);
+							}
+						}
+						if(newEnd==-1){
+							if(common){
+								if(oldEnd<=oldCount+matchSize){
+									newEnd = newCount+(oldEnd-oldCount);
+								}
+							}else if(oldEnd<=oldCount+newSize){
+								if(matchSize){
+									fract = ((oldEnd-oldCount)/matchSize);
+								}else{
+									fract = 0.5;
+								}
+								newEnd = newCount+Math.round(fract*newSize);
+							}
+						}
+						oldCount += matchSize;
+						newCount += newSize;
 					}
-					if(oldBegin==oldCount+matchSize){
-						newBegin = newCount+matchSize;
-					}else if(oldBegin<oldCount+matchSize){
-						newBegin = newCount+Math.round(((oldBegin-oldCount)/matchSize)*newSize);
-					}
-					if(oldEnd==oldCount+matchSize){
-						newEnd = newCount+matchSize;
-					}else if(oldEnd<oldCount+matchSize){
-						newEnd = newCount+Math.round(((oldEnd-oldCount)/matchSize)*newSize);
-						break;
-					}
-					oldCount += matchSize;
-					newCount += newSize;
 				}
-				textField.text = text;
+				textField.text = toText;
 				textField.setSelection(newBegin,newEnd);
 			}
 		}

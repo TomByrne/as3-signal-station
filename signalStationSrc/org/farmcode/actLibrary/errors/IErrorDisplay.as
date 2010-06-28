@@ -1,11 +1,12 @@
 package org.farmcode.actLibrary.errors
 {
-	import flash.display.DisplayObject;
 	import flash.events.IEventDispatcher;
+	
+	import org.farmcode.display.assets.IDisplayAsset;
 	
 	public interface IErrorDisplay extends IEventDispatcher
 	{
 		function set errorDetails(value:ErrorDetails):void;
-		function get display():DisplayObject;
+		function get display():IDisplayAsset;
 	}
 }
