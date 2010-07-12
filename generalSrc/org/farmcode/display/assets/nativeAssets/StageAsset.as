@@ -2,6 +2,7 @@ package org.farmcode.display.assets.nativeAssets
 {
 	import flash.display.DisplayObject;
 	import flash.display.InteractiveObject;
+	import flash.display.LoaderInfo;
 	import flash.display.Stage;
 	import flash.events.Event;
 	import flash.events.FullScreenEvent;
@@ -71,6 +72,9 @@ package org.farmcode.display.assets.nativeAssets
 		}
 		public function set displayState(value:String):void{
 			_stage.displayState = value;
+		}
+		public function get loaderInfo():LoaderInfo{
+			return _stage.loaderInfo;
 		}
 		
 		private var _stage:Stage;

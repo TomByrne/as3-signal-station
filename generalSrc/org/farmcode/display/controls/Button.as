@@ -2,23 +2,16 @@ package org.farmcode.display.controls
 {
 	
 	import flash.display.DisplayObject;
-	import flash.display.Sprite;
-	import flash.events.Event;
-	import flash.geom.Rectangle;
 	
 	import org.farmcode.acting.actTypes.IAct;
 	import org.farmcode.acting.acts.Act;
 	import org.farmcode.data.dataTypes.ITriggerableAction;
 	import org.farmcode.display.DisplayNamespace;
 	import org.farmcode.display.actInfo.IMouseActInfo;
-	import org.farmcode.display.assets.IAsset;
 	import org.farmcode.display.assets.IDisplayAsset;
 	import org.farmcode.display.assets.IInteractiveObjectAsset;
 	import org.farmcode.display.assets.ISpriteAsset;
-	import org.farmcode.display.assets.states.IStateDef;
 	import org.farmcode.display.assets.states.StateDef;
-	import org.farmcode.display.utils.MovieClipUtils;
-	import org.farmcode.sodality.advice.IAdvice;
 	
 	use namespace DisplayNamespace;
 	
@@ -229,7 +222,7 @@ package org.farmcode.display.controls
 				}
 				if(assetMatch){
 					if(_clickAct)_clickAct.perform(this);
-					if(_triggerableData)_triggerableData.triggerAction(asset.drawDisplay as DisplayObject);
+					if(_triggerableData)_triggerableData.triggerAction(asset);
 				}
 			}
 		}

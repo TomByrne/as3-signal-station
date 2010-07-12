@@ -1,8 +1,10 @@
 package org.farmcode.display.assets
 {
 	import flash.display.DisplayObject;
+	import flash.display.IBitmapDrawable;
 	import flash.geom.Point;
 	import flash.geom.Rectangle;
+	import flash.geom.Transform;
 	
 	import org.farmcode.acting.actTypes.IAct;
 	import org.farmcode.instanceFactory.IInstanceFactory;
@@ -13,7 +15,7 @@ package org.farmcode.display.assets
 		 * This allows the DelayedDrawer stuff to work. When it gets refactored we can change
 		 * this logic to something more like isDescendant(asset:IAsset).
 		 */
-		function get drawDisplay():DisplayObject;
+		//function get drawDisplay():DisplayObject;
 		
 		function set x(value:Number):void;
 		function get x():Number;
@@ -60,8 +62,13 @@ package org.farmcode.display.assets
 		function set forceTopLeft(value:Boolean):void;
 		function get forceTopLeft():Boolean;
 		
+		function get root():IContainerAsset;
 		function get stage():IStageAsset;
 		function get parent():IContainerAsset;
+		
+		function get transform():Transform;
+		
+		function get bitmapDrawable():IBitmapDrawable;
 		
 		/**
 		 * handler(e:Event, from:IAsset)

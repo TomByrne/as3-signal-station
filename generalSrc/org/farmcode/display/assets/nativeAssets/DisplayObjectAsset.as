@@ -1,13 +1,13 @@
 package org.farmcode.display.assets.nativeAssets {
 	import flash.display.DisplayObject;
-	import flash.display.Stage;
+	import flash.display.IBitmapDrawable;
 	import flash.events.Event;
 	import flash.geom.Point;
 	import flash.geom.Rectangle;
+	import flash.geom.Transform;
 	
 	import org.farmcode.acting.actTypes.IAct;
 	import org.farmcode.acting.acts.NativeAct;
-	import org.farmcode.display.assets.IAsset;
 	import org.farmcode.display.assets.IContainerAsset;
 	import org.farmcode.display.assets.IDisplayAsset;
 	import org.farmcode.display.assets.IStageAsset;
@@ -214,6 +214,12 @@ package org.farmcode.display.assets.nativeAssets {
 		public function get rotation():Number {
 			return _displayObject.rotation;
 		}
+		public function get transform():Transform {
+			return _displayObject.transform;
+		}
+		public function get bitmapDrawable():IBitmapDrawable {
+			return _displayObject;
+		}
 		
 		
 		public function set height(value:Number):void {
@@ -233,6 +239,11 @@ package org.farmcode.display.assets.nativeAssets {
 		
 		public function get stage():IStageAsset {
 			return _displayObject && _displayObject.stage?NativeAssetFactory.getNew(_displayObject.stage):null;
+		}
+		
+		
+		public function get root():IContainerAsset {
+			return _displayObject && _displayObject.root?NativeAssetFactory.getNew(_displayObject.root):null;
 		}
 		
 		

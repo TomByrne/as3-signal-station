@@ -1,18 +1,13 @@
 package au.com.thefarmdigital.delayedDraw
 {
-	import flash.display.DisplayObject;
+	import org.farmcode.display.core.IScopedObject;
 	
-	public interface IDrawable
+	public interface IDrawable extends IScopedObject
 	{
 		/**
 		 * Perform all the pending drawing for the object
 		 */
 		function commitDraw():void;
-		
-		/**
-		 * Get the display being drawn in to
-		 */
-		function get drawDisplay():DisplayObject;
 		
 		/**
 		 * Is ready to be drawn (e.g. is on stage)

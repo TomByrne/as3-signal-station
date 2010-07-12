@@ -85,6 +85,14 @@ package org.farmcode.display.assets.nativeAssets
 				throw new Error("This method cannot be called before a displayObject is set");
 			}
 		}
+		public function contains(child:IDisplayAsset):Boolean{
+			if(_displayObjectContainer){
+				var cast:DisplayObjectAsset = (child as DisplayObjectAsset);
+				return _displayObjectContainer.contains(cast.displayObject);
+			}else{
+				throw new Error("This method cannot be called before a displayObject is set");
+			}
+		}
 		
 		public function takeAssetByName(name:String, type:Class, optional:Boolean=false):*{
 			if(_displayObjectContainer){

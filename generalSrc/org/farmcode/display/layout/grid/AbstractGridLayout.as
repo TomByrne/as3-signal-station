@@ -1,8 +1,5 @@
 package org.farmcode.display.layout.grid
 {
-	import au.com.thefarmdigital.display.scrolling.IScrollable;
-	import au.com.thefarmdigital.structs.ScrollMetrics;
-	
 	import flash.geom.Rectangle;
 	import flash.utils.Dictionary;
 	
@@ -13,6 +10,8 @@ package org.farmcode.display.layout.grid
 	import org.farmcode.display.layout.ILayoutSubject;
 	import org.farmcode.display.layout.core.ILayoutInfo;
 	import org.farmcode.display.layout.list.IListLayoutInfo;
+	import org.farmcode.display.scrolling.IScrollable;
+	import org.farmcode.display.scrolling.ScrollMetrics;
 	import org.farmcode.display.validation.ValidationFlag;
 	
 	/**

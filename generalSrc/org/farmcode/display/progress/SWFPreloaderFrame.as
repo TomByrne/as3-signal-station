@@ -13,8 +13,10 @@ package org.farmcode.display.progress
 	import flash.utils.getTimer;
 	
 	import org.farmcode.core.IApplication;
-	import org.farmcode.display.core.IOutroView;
+	import org.farmcode.display.assets.IContainerAsset;
+	import org.farmcode.display.assets.nativeAssets.NativeAssetFactory;
 	import org.farmcode.display.core.ILayoutView;
+	import org.farmcode.display.core.IOutroView;
 	import org.farmcode.display.core.IView;
 	
 	public class SWFPreloaderFrame extends Sprite
@@ -28,12 +30,12 @@ package org.farmcode.display.progress
 		public function set progressDisplay(value:IProgressDisplay):void{
 			if(_progressDisplay!=value){
 				if(_progressDisplay){
-					removeChild(_progressDisplay.display);
+					_nativeAsset.removeAsset(_progressDisplay.display);
 				}
 				_progressDisplay = value;
 				if(_progressDisplay){
 					if(_progressDisplay.layoutView){
-						addChild(_progressDisplay.display);
+						_nativeAsset.addAsset(_progressDisplay.display);
 						applySizeToProgressDisplay();
 					}
 					_progressDisplayAnim = (_progressDisplay.layoutView as IOutroView);
@@ -48,11 +50,13 @@ package org.farmcode.display.progress
 		private var _measureFactor:Number;
 		private var _application:IApplication;
 		private var _total:Number;
+		private var _nativeAsset:IContainerAsset;
 		
 		public function SWFPreloaderFrame(mainClasspath: String=null, progressDisplay:IProgressDisplay=null, runTest:Boolean=false){
 			super();
 			this.mainClasspath = mainClasspath;
 			this.progressDisplay = progressDisplay;
+			_nativeAsset = NativeAssetFactory.getNew(this);
 			init(runTest);
 		}
 		protected function init(runTest:Boolean): void{
@@ -157,7 +161,7 @@ package org.farmcode.display.progress
 			addAppToStage();
 		}
 		protected function addAppToStage():void{
-			removeChild(_progressDisplay.display);
+			_nativeAsset.removeAsset(_progressDisplay.display);
 			_application.container = stage;
 			applySizeToApplication();
 		}

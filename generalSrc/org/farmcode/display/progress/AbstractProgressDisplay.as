@@ -59,8 +59,8 @@ package org.farmcode.display.progress
 				invalidate();
 			}
 		}
-		public function get display():DisplayObject{
-			return asset?asset.drawDisplay:null;
+		public function get display():IDisplayAsset{
+			return asset;
 		}
 		public function get layoutView():ILayoutView{
 			return this;

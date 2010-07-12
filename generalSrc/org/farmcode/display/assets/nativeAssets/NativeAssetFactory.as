@@ -18,7 +18,8 @@ package org.farmcode.display.assets.nativeAssets
 		
 		private static function init():void{
 			// this must never list a superclass before a subclass (i.e. SpriteAsset mustn't be above MovieClipAsset)
-			bundles = [	new TypeBundle(TextFieldAsset, [ITextFieldAsset], TextField),
+			bundles = [	new TypeBundle(BitmapAsset, [IBitmapAsset], Bitmap),
+						new TypeBundle(TextFieldAsset, [ITextFieldAsset], TextField),
 						new TypeBundle(ShapeAsset, [IShapeAsset], Shape),
 						new TypeBundle(MovieClipAsset, [IMovieClipAsset], MovieClip),
 						new TypeBundle(StageAsset, [IStageAsset], Stage),

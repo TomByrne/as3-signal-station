@@ -12,7 +12,7 @@ package org.farmcode.display.assets.nativeAssets
 		
 		public function Asset(){
 		}
-		public function createAsset(name:String, type:Class):*{
+		public function createAsset(type:Class):*{
 			return NativeAssetFactory.getNewByType(type);
 		}
 		public function destroyAsset(asset:IAsset):void{

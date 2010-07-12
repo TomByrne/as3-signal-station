@@ -14,7 +14,7 @@ package org.farmcode.display.utils
 	import org.farmcode.display.assets.IInteractiveObjectAsset;
 	import org.farmcode.display.assets.ITextFieldAsset;
 	import org.farmcode.display.controls.TextInput;
-	import org.farmcode.display.core.View;
+	import org.farmcode.display.core.DrawableView;
 	
 	use namespace DisplayNamespace;
 	
@@ -22,7 +22,7 @@ package org.farmcode.display.utils
 	 * Adds 'Insert' behaviour to TextInputs (i.e. where there is always one
 	 * character selected when typing).
 	 */
-	public class TextFieldSelectionBehaviour extends View
+	public class TextFieldSelectionBehaviour extends DrawableView
 	{
 		public function get skipCharSelection():String{
 			return _skipCharSelection;

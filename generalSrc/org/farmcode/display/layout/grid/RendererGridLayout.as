@@ -1,6 +1,6 @@
 package org.farmcode.display.layout.grid
 {
-	import au.com.thefarmdigital.structs.ScrollMetrics;
+	import org.farmcode.display.scrolling.ScrollMetrics;
 	
 	import flash.geom.Point;
 	import flash.geom.Rectangle;

@@ -10,6 +10,8 @@
 	import flash.geom.Point;
 	import flash.geom.Rectangle;
 	
+	import org.farmcode.display.assets.IDisplayAsset;
+	
 	/**
 	 * The Reflection class can be used to create a reflection under a DisplayObject.
 	 */
@@ -50,7 +52,7 @@
 		private var _reflectionBitmapData	: BitmapData;
 		
 		// added default parameter values (so an empty constructor can be used)
-		public function Reflection (subject:DisplayObject=null, height:Number=NaN) {
+		public function Reflection (subject:IDisplayAsset=null, height:Number=NaN) {
 			super(subject);
 			this.height = height;
 			reflectionScale = 1;
@@ -83,7 +85,7 @@
 					drawMatrix.b *= -1;
 					var wasVisible:Boolean = renderArea.visible;
 					renderArea.visible = false;
-					_reflectionBitmapData.draw(subject,drawMatrix/*,subject.transform.colorTransform,subject.blendMode*/);
+					_reflectionBitmapData.draw(subject.bitmapDrawable,drawMatrix/*,subject.transform.colorTransform,subject.blendMode*/);
 					renderArea.visible = wasVisible;
 					
 					// create a shape and fill it with the gradient that we want to use for our reflection

@@ -2,11 +2,11 @@ package au.com.thefarmdigital.delayedDraw
 {
 	import au.com.thefarmdigital.utils.DisplayUtils;
 	
-	import flash.display.DisplayObjectContainer;
 	import flash.utils.Dictionary;
 	
 	import org.farmcode.collections.DictionaryUtils;
 	import org.farmcode.core.DelayedCall;
+	import org.farmcode.display.assets.IContainerAsset;
 	
 	public class DelayedDrawer
 	{
@@ -173,8 +173,8 @@ package au.com.thefarmdigital.delayedDraw
 		protected static function isDescendant(roots:Dictionary, drawable:IDrawable):Boolean{
 			if(!roots)return true; // if this is a frame based execution
 			for(var root:* in roots){
-				var castDisplay:DisplayObjectContainer = (root as IDrawable).drawDisplay as DisplayObjectContainer;
-				if(castDisplay && drawable.drawDisplay && DisplayUtils.isDescendant(castDisplay, drawable.drawDisplay)){
+				var castDisplay:IContainerAsset = (root as IDrawable).scope as IContainerAsset;
+				if(castDisplay && drawable.scope && DisplayUtils.isDescendant(castDisplay, drawable.scope)){
 					return true;
 				}
 			}
@@ -186,9 +186,9 @@ package au.com.thefarmdigital.delayedDraw
 		 */
 		protected static function findDescendants(root:IDrawable, collection:Dictionary, onlyReady:Boolean, remove:Boolean):Dictionary{
 			var ret:Dictionary = new Dictionary(true);
-			var castDisplay:DisplayObjectContainer;
+			var castDisplay:IContainerAsset;
 			if(root){
-				castDisplay = root.drawDisplay as DisplayObjectContainer;
+				castDisplay = root.scope as IContainerAsset;
 				if(!castDisplay){
 					return ret;
 				}
@@ -198,7 +198,7 @@ package au.com.thefarmdigital.delayedDraw
 					var view:IDrawable = (obj as IDrawable);
 					var stage:Boolean = ((view.readyForDraw) || !onlyReady);
 					if(view!=root || stage){
-						if(stage && (!root || (view.drawDisplay && (castDisplay==view.drawDisplay || DisplayUtils.isDescendant(castDisplay,view.drawDisplay))))){
+						if(stage && (!root || (view.scope && (castDisplay==view.scope || DisplayUtils.isDescendant(castDisplay,view.scope))))){
 							ret[view] = true;
 							if(remove){
 								delete collection[obj];

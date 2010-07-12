@@ -116,37 +116,37 @@ package org.farmcode.display.progress
 			_container.enterFrame.removeHandler(outroTick);
 		}
 		override protected function bindToAsset() : void{
-			_container = _containerAsset.createAsset("container",IContainerAsset);
+			_container = _containerAsset.createAsset(IContainerAsset);
 			_container.alpha = 0;
 			_container.blendMode = BlendMode.INVERT;
 			
-			_background = _container.createAsset("background",IShapeAsset);
+			_background = _container.createAsset(IShapeAsset);
 			_background.graphics.beginFill(0,1);
 			_background.graphics.drawRect(0,0,10,10);
 			_background.alpha = _backgroundAlpha;
 			_container.addAsset(_background);
 			
-			_centerContainer = _container.createAsset("centerContainer",IContainerAsset);
+			_centerContainer = _container.createAsset(IContainerAsset);
 			_container.addAsset(_centerContainer);
 			
-			_detailsField = _containerAsset.createAsset("detailsField",ITextFieldAsset);
+			_detailsField = _containerAsset.createAsset(ITextFieldAsset);
 			_detailsField.defaultTextFormat = _textFormat;
 			_detailsField.selectable = false;
 			_detailsField.type = TextFieldType.DYNAMIC;
 			_centerContainer.addAsset(_detailsField);
 			
-			_messageField = _containerAsset.createAsset("messageField",ITextFieldAsset);
+			_messageField = _containerAsset.createAsset(ITextFieldAsset);
 			_messageField.defaultTextFormat = _textFormat;
 			_messageField.selectable = false;
 			_messageField.type = TextFieldType.DYNAMIC;
 			_centerContainer.addAsset(_messageField);
 			
-			_border = _containerAsset.createAsset("border",IShapeAsset);
+			_border = _containerAsset.createAsset(IShapeAsset);
 			_border.graphics.lineStyle(0,0,1,true,LineScaleMode.NONE,CapsStyle.SQUARE,JointStyle.MITER);
 			_border.graphics.drawRect(0,0,BAR_WIDTH,BAR_HEIGHT);
 			_centerContainer.addAsset(_border);
 			
-			_bar = _containerAsset.createAsset("bar",IShapeAsset);
+			_bar = _containerAsset.createAsset(IShapeAsset);
 			_bar.graphics.beginFill(0,1);
 			_bar.graphics.drawRect(0,0,BAR_WIDTH,BAR_HEIGHT);
 			_centerContainer.addAsset(_bar);

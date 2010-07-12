@@ -46,7 +46,7 @@ package org.farmcode.display.containers.accordionGrid
 		
 		override protected function bindToAsset() : void{
 			super.bindToAsset();
-			_headerContainer = _containerAsset.createAsset("headerContainer",IContainerAsset);
+			_headerContainer = _containerAsset.createAsset(IContainerAsset);
 			_containerAsset.addAsset(_headerContainer);
 			
 			var i:*;
@@ -56,7 +56,7 @@ package org.farmcode.display.containers.accordionGrid
 				_headerContainer.addAsset(renderer.asset);
 			}
 			
-			_cellContainer = _containerAsset.createAsset("cellContainer",IContainerAsset);
+			_cellContainer = _containerAsset.createAsset(IContainerAsset);
 			_containerAsset.addAsset(_cellContainer);
 			
 			for(i in _cellRenderers){

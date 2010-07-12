@@ -9,6 +9,7 @@ package org.farmcode.display.assets
 		function removeAsset(asset:IDisplayAsset):void;
 		
 		function containsAssetByName(name:String):Boolean;
+		function contains(child:IDisplayAsset):Boolean;
 		
 		function getAssetIndex(asset:IDisplayAsset):int;
 		function setAssetIndex(asset:IDisplayAsset, index:int):void;

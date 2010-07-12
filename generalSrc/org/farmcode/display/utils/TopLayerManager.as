@@ -7,7 +7,7 @@ package org.farmcode.display.utils
 	import org.farmcode.display.assets.IAsset;
 	import org.farmcode.display.assets.IDisplayAsset;
 	import org.farmcode.display.assets.IStageAsset;
-
+	
 	public class TopLayerManager
 	{
 		protected static var stageLookup:Dictionary = new Dictionary();
@@ -53,7 +53,7 @@ class TopLayerBundle{
 	
 	public function TopLayerBundle(stage:IStageAsset){
 		this.stage = stage;
-		container = stage.createAsset("topLayer",IContainerAsset);
+		container = stage.createAsset(IContainerAsset);
 		container.mouseEnabled = false;
 		stage.addAsset(container);
 		stage.added.addHandler(onAdded);

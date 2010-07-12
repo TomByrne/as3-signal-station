@@ -1,8 +1,5 @@
 package org.farmcode.display.containers
 {
-	import au.com.thefarmdigital.display.scrolling.IScrollable;
-	import au.com.thefarmdigital.structs.ScrollMetrics;
-	
 	import flash.display.DisplayObject;
 	import flash.display.DisplayObjectContainer;
 	import flash.display.Sprite;
@@ -19,11 +16,13 @@ package org.farmcode.display.containers
 	import org.farmcode.display.constants.Direction;
 	import org.farmcode.display.controls.ScrollBar;
 	import org.farmcode.display.controls.TextLabelButton;
+	import org.farmcode.display.core.DrawableView;
 	import org.farmcode.display.core.ILayoutView;
 	import org.farmcode.display.core.IView;
-	import org.farmcode.display.core.View;
 	import org.farmcode.display.layout.ILayoutSubject;
 	import org.farmcode.display.layout.grid.RendererGridLayout;
+	import org.farmcode.display.scrolling.IScrollable;
+	import org.farmcode.display.scrolling.ScrollMetrics;
 	import org.farmcode.instanceFactory.IInstanceFactory;
 	import org.farmcode.instanceFactory.SimpleInstanceFactory;
 	
@@ -131,7 +130,7 @@ package org.farmcode.display.containers
 				_containerAsset.removeAsset(_assumedRendererAsset);
 				assessFactory();
 			}
-			_container = _containerAsset.createAsset("listContainer",IContainerAsset);
+			_container = _containerAsset.createAsset(IContainerAsset);
 			_containerAsset.addAsset(_container);
 		}
 		protected function assumedRendererAssetName() : String{
@@ -175,7 +174,7 @@ package org.farmcode.display.containers
 				_container.removeAsset(renderer.asset);
 			}
 			// TODO: this functionality should really be part of some factory.destory() method or something
-			var view:View = (renderer as View);
+			var view:DrawableView = (renderer as DrawableView);
 			if(view)view.asset = null;
 		}
 		override protected function measure() : void{

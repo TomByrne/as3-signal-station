@@ -11,7 +11,7 @@ package org.farmcode.display.core
 	import org.farmcode.display.layout.core.ILayoutInfo;
 	import org.farmcode.display.validation.ValidationFlag;
 	
-	public class LayoutView extends View implements ILayoutView
+	public class LayoutView extends DrawableView implements ILayoutView
 	{
 		
 		/**
@@ -133,10 +133,7 @@ package org.farmcode.display.core
 			_measureFlag.invalidate();
 		}
 		protected function onMeasInvalidate(validationFlag:ValidationFlag):void{
-			if(_measurementsChanged){
-				if(_displayMeasurements)_measurementsChanged.perform(this, _displayMeasurements.x, _displayMeasurements.y, _displayMeasurements.width, _displayMeasurements.height);
-				else _measurementsChanged.perform(this, NaN, NaN, NaN, NaN);
-			}
+			if(_measurementsChanged)_measurementsChanged.perform(this, _displayMeasurements.x, _displayMeasurements.y, _displayMeasurements.width, _displayMeasurements.height);
 		}
 		/*protected function dispatchEventIf(eventType:String, eventClass:Class):void{
 			if(willTrigger(eventType)){

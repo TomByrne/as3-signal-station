@@ -1,6 +1,5 @@
 package org.farmcode.media.video
 {
-	import au.com.thefarmdigital.display.MediaView;
 	import au.com.thefarmdigital.utils.VideoBufferCalculator;
 	
 	import flash.events.Event;
@@ -9,10 +8,8 @@ package org.farmcode.media.video
 	import flash.geom.Rectangle;
 	import flash.media.SoundTransform;
 	import flash.media.Video;
-	import flash.net.NetConnection;
-	import flash.net.NetConnectionStatus;
 	import flash.net.NetStream;
-	import flash.net.NetStreamStatus;
+	import flash.net.NetStreamCodes;
 	import flash.utils.getTimer;
 	
 	import org.farmcode.acting.actTypes.IAct;
@@ -268,24 +265,24 @@ package org.farmcode.media.video
 		}
 		protected function onStreamStatus(e:NetStatusEvent):void{
 			switch(e.info.code){
-				case NetStreamStatus.PLAY_START:
+				case NetStreamCodes.PLAY_START:
 					assessBufferSize();
 					if(!_playing && _videoStreamProxy.metadataReceived){
 						_streamPlaying = false;
 						_netStream.pause();
 					}
 					break;
-				case NetStreamStatus.SEEK_FAILED:
-				case NetStreamStatus.SEEK_NOTIFY:
-				case NetStreamStatus.SEEK_INVALID_TIME:
+				case NetStreamCodes.SEEK_FAILED:
+				case NetStreamCodes.SEEK_NOTIFY:
+				case NetStreamCodes.SEEK_INVALID_TIME:
 					_pendingSeek = false;
 					assessBufferSize();
 					break;
-				case NetStreamStatus.BUFFER_FULL:
+				case NetStreamCodes.BUFFER_FULL:
 					setBuffered(true);
 					assessBufferSize();
 					break;
-				case NetStreamStatus.BUFFER_EMPTY:
+				case NetStreamCodes.BUFFER_EMPTY:
 					setBuffered(false);
 					assessBufferSize();
 					break;

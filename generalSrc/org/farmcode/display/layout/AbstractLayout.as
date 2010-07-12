@@ -9,18 +9,31 @@ package org.farmcode.display.layout
 	
 	import org.farmcode.acting.actTypes.IAct;
 	import org.farmcode.acting.acts.Act;
+	import org.farmcode.display.assets.IDisplayAsset;
 	import org.farmcode.display.layout.core.ILayoutInfo;
 	import org.farmcode.display.validation.ValidationFlag;
 	
 	public class AbstractLayout implements ILayout, IDrawable, ILayoutSubject
 	{
+		/**
+		 * @inheritDoc
+		 */
+		public function get scopeChanged():IAct{
+			if(!_scopeChanged)_scopeChanged = new Act();
+			return _scopeChanged;
+		}
 		
 		/**
 		 * @inheritDoc
 		 */
-		public function get drawDisplay():DisplayObject{
+		public function set scope(value:IDisplayAsset):void{
+			// ignore
+		}
+		public function get scope():IDisplayAsset{
 			return null;
 		}
+		
+		
 		public function get readyForDraw():Boolean{
 			return true;
 		}
@@ -51,6 +64,7 @@ package org.farmcode.display.layout
 			return _positionChanged;
 		}
 		
+		protected var _scopeChanged:Act;
 		protected var _positionChanged:Act;
 		protected var _measurementsChanged:Act;
 		protected var _measureFlag:ValidationFlag; 

@@ -1,5 +1,7 @@
 package org.farmcode.display.assets
 {
+	import flash.display.LoaderInfo;
+	
 	import org.farmcode.acting.actTypes.IAct;
 
 	public interface IStageAsset extends IContainerAsset
@@ -24,5 +26,7 @@ package org.farmcode.display.assets
 		
 		function set displayState(value:String):void;
 		function get displayState():String;
+		
+		function get loaderInfo():LoaderInfo
 	}
 }

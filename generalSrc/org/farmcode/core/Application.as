@@ -2,9 +2,12 @@ package org.farmcode.core
 {
 	import flash.display.DisplayObject;
 	import flash.display.DisplayObjectContainer;
+	import flash.display.Stage;
+	import flash.events.Event;
 	
 	import org.farmcode.display.assets.IAsset;
 	import org.farmcode.display.assets.IDisplayAsset;
+	import org.farmcode.display.assets.IStageAsset;
 	import org.farmcode.display.core.LayoutView;
 	
 	/**
@@ -36,6 +39,8 @@ package org.farmcode.core
 		
 		private var _mainDisplay:DisplayObject;
 		private var _container:DisplayObjectContainer;
+		protected var _lastStage:IStageAsset;
+		protected var _inited:Boolean;
 		
 		public function Application(asset:IDisplayAsset=null){
 			super(asset);
@@ -49,6 +54,21 @@ package org.farmcode.core
 			if(_mainDisplay && _container){
 				_container.addChild(_mainDisplay);
 			}
+		}
+		override protected function bindToAsset() : void{
+			_lastStage = asset.stage;
+			if(!_inited){
+				_inited = true;
+				init();
+			}
+			super.bindToAsset();
+		}
+		override protected function unbindFromAsset() : void{
+			super.unbindFromAsset();
+			_lastStage = null;
+		}
+		protected function init() : void{
+			// override me
 		}
 	}
 }

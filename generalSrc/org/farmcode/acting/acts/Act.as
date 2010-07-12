@@ -4,6 +4,7 @@ package org.farmcode.acting.acts
 	
 	import org.farmcode.acting.actTypes.IAct;
 	
+	//TODO: pool Act class
 	public class Act implements IAct
 	{
 		
@@ -112,33 +113,5 @@ package org.farmcode.acting.acts
 		protected function setHandlerCount(value:int):void{
 			_handlerCount = value;
 		}
-	}
-}
-
-class ActHandler{
-	private static const pool:Array = new Array();
-	public static function getNew(handler:Function, additionalArguments:Array):ActHandler{
-		if(pool.length){
-			var ret:ActHandler = pool.shift();
-			ret.handler = handler;
-			ret.additionalArguments = additionalArguments;
-			return ret;
-		}else{
-			return new ActHandler(handler, additionalArguments);
-		}
-	}
-	
-	public var handler:Function;
-	public var additionalArguments:Array;
-	public var executions:int = 0;
-	
-	public function ActHandler(handler:Function, additionalArguments:Array){
-		this.handler = handler;
-		this.additionalArguments = additionalArguments;
-	}
-	public function release():void{
-		handler = null;
-		additionalArguments = null;
-		pool.unshift(this);
 	}
 }

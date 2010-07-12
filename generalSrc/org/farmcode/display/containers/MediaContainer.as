@@ -75,7 +75,7 @@ package org.farmcode.display.containers
 		}
 		override protected function bindToAsset() : void{
 			super.bindToAsset()
-			_mediaContainer = _asset.createAsset("mediaContainer",IContainerAsset);
+			_mediaContainer = _asset.createAsset(IContainerAsset);
 			if(_mediaSourceDisplay)_mediaContainer.addAsset(_mediaSourceDisplay.asset);
 			_mediaBounds = _containerAsset.takeAssetByName("mediaBounds",IDisplayAsset);
 			if(_mediaBounds){

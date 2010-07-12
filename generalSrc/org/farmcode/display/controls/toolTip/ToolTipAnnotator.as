@@ -3,9 +3,9 @@ package org.farmcode.display.controls.toolTip
 	import flash.geom.Point;
 	
 	import org.farmcode.display.assets.ITextFieldAsset;
-	import org.farmcode.display.core.View;
+	import org.farmcode.display.core.DrawableView;
 
-	public class ToolTipAnnotator extends View implements IToolTipManager
+	public class ToolTipAnnotator extends DrawableView implements IToolTipManager
 	{
 		public static const SYMBOLIC_TYPE:String = "symbolic";
 		public static const NUMERIC_TYPE:String = "numeric";

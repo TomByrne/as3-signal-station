@@ -1,8 +1,5 @@
 package org.farmcode.display.controls
 {
-	import au.com.thefarmdigital.display.scrolling.IScrollable;
-	import au.com.thefarmdigital.structs.ScrollMetrics;
-	
 	import flash.display.DisplayObject;
 	import flash.display.Sprite;
 	import flash.events.Event;
@@ -20,6 +17,8 @@ package org.farmcode.display.controls
 	import org.farmcode.display.assets.ISpriteAsset;
 	import org.farmcode.display.constants.Direction;
 	import org.farmcode.display.core.LayoutView;
+	import org.farmcode.display.scrolling.IScrollable;
+	import org.farmcode.display.scrolling.ScrollMetrics;
 	
 	use namespace DisplayNamespace;
 	

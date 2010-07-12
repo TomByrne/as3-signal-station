@@ -2,7 +2,7 @@ package org.farmcode.display.assets
 {
 	public interface IAsset
 	{
-		function createAsset(name:String, type:Class):*;
+		function createAsset(type:Class):*;
 		function destroyAsset(asset:IAsset):void;
 		
 		//function get state():String;

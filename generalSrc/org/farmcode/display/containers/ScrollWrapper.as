@@ -1,7 +1,5 @@
 package org.farmcode.display.containers
 {
-	import au.com.thefarmdigital.display.scrolling.IScrollable;
-	import au.com.thefarmdigital.structs.ScrollMetrics;
 	
 	import flash.events.MouseEvent;
 	import flash.geom.Rectangle;
@@ -13,6 +11,8 @@ package org.farmcode.display.containers
 	import org.farmcode.display.core.IView;
 	import org.farmcode.display.layout.ILayoutSubject;
 	import org.farmcode.display.layout.ProxyLayoutSubject;
+	import org.farmcode.display.scrolling.IScrollable;
+	import org.farmcode.display.scrolling.ScrollMetrics;
 	
 	public class ScrollWrapper extends ProxyLayoutSubject implements IScrollable
 	{

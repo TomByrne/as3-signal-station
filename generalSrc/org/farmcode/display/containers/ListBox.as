@@ -1,6 +1,6 @@
 package org.farmcode.display.containers
 {
-	import au.com.thefarmdigital.structs.ScrollMetrics;
+	import org.farmcode.display.scrolling.ScrollMetrics;
 	
 	import flash.display.DisplayObject;
 	import flash.geom.Point;
