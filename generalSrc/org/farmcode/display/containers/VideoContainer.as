@@ -72,7 +72,7 @@ package org.farmcode.display.containers
 			_rewindButton = bindButton(_rewindButton, Button,REWIND_BUTTON,onRewindClick);
 			_muteButton = bindButton(_muteButton, ToggleButton,MUTE_BUTTON,onMuteClick) as ToggleButton;
 			
-			var asset:IInteractiveObjectAsset = _containerAsset.takeAssetByName(CENTERED_PAUSE_BUTTON,IInteractiveObjectAsset);
+			var asset:IInteractiveObjectAsset = _containerAsset.takeAssetByName(CENTERED_PAUSE_BUTTON,IInteractiveObjectAsset,true);
 			if(asset){
 				if(!_centredPauseButton){
 					_centredPauseButton = new ToggleButton();
@@ -122,7 +122,7 @@ package org.farmcode.display.containers
 			return ret;
 		}
 		protected function bindControl(control:Control, controlClass:Class, name:String, bindBothSides:Boolean):Control{
-			var asset:IInteractiveObjectAsset = _containerAsset.takeAssetByName(name,IInteractiveObjectAsset);
+			var asset:IInteractiveObjectAsset = _containerAsset.takeAssetByName(name,IInteractiveObjectAsset,true);
 			if(asset){
 				if(!control){
 					control = new controlClass();
@@ -131,7 +131,7 @@ package org.farmcode.display.containers
 				control.setAssetAndPosition(asset);
 				var layout:CanvasLayoutInfo;
 				if(_backing){
-					var bounds:Rectangle = asset.getBounds(_backing);
+					var bounds:Rectangle = asset.getBounds(this.asset);
 					layout = _uiLayout.layoutInfo as CanvasLayoutInfo;
 					if(!layout){
 						layout = new CanvasLayoutInfo();

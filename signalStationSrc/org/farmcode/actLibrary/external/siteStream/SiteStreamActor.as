@@ -5,6 +5,8 @@ package org.farmcode.actLibrary.external.siteStream
 	
 	import org.farmcode.actLibrary.core.UniversalActorHelper;
 	import org.farmcode.actLibrary.errors.ErrorDetails;
+	import org.farmcode.actLibrary.errors.actTypes.IDetailedErrorAct;
+	import org.farmcode.actLibrary.errors.acts.DetailedErrorAct;
 	import org.farmcode.actLibrary.errors.acts.ErrorAct;
 	import org.farmcode.actLibrary.external.siteStream.actTypes.*;
 	import org.farmcode.actLibrary.external.siteStream.errors.SiteStreamErrors;
@@ -59,14 +61,10 @@ package org.farmcode.actLibrary.external.siteStream
 			return _siteStream;
 		}
 		
-		protected function get errorAct():ErrorAct{
-			if(!_errorAct){
-				_errorAct = new ErrorAct();
-				addChild(_errorAct);
-			}
+		protected function get errorAct():IDetailedErrorAct{
 			return _errorAct;
 		}
-		private var _errorAct:ErrorAct;
+		private var _errorAct:DetailedErrorAct;
 		
 		protected var _baseUrl:String = "";
 		protected var _siteStream:SiteStream;
@@ -75,16 +73,25 @@ package org.farmcode.actLibrary.external.siteStream
 		public function SiteStreamActor(){
 			metadataTarget = this;
 			
+			_errorAct = new DetailedErrorAct();
+			addChild(_errorAct);
+			
 			this.loadRequests = new Dictionary();
 			_siteStream = this.createSiteStream();
 			_siteStream.addEventListener(SiteStreamErrorEvent.CLASS_FAILURE, onClassFailure);
 			_siteStream.addEventListener(SiteStreamErrorEvent.DATA_FAILURE, onDataFailure);
 		}
 		protected function onClassFailure(e:SiteStreamErrorEvent):void{
-			errorAct.perform(null,this,SiteStreamErrors.CLASS_ERROR,new ErrorDetails(e.text));
+			_errorAct.errorTarget = this;
+			_errorAct.errorType = SiteStreamErrors.CLASS_ERROR;
+			_errorAct.errorDetails = new ErrorDetails(e.text);
+			_errorAct.perform();
 		}
 		protected function onDataFailure(e:SiteStreamErrorEvent):void{
-			errorAct.perform(null,this,SiteStreamErrors.DATA_ERROR,new ErrorDetails(e.text));
+			_errorAct.errorTarget = this;
+			_errorAct.errorType = SiteStreamErrors.DATA_ERROR;
+			_errorAct.errorDetails = new ErrorDetails(e.text);
+			_errorAct.perform();
 		}
 		protected function createSiteStream():SiteStream{
 			var ret:SiteStream = new SiteStream();

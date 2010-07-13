@@ -1,11 +1,12 @@
 package org.farmcode.acting.universal.reactions
 {
-	import org.farmcode.display.core.ScopedObject;
 	import org.farmcode.acting.actTypes.IAct;
 	import org.farmcode.acting.acts.Act;
 	import org.farmcode.acting.universal.UniversalActExecution;
 	import org.farmcode.acting.universal.UniversalActManager;
 	import org.farmcode.acting.universal.ruleTypes.IUniversalRule;
+	import org.farmcode.display.assets.IDisplayAsset;
+	import org.farmcode.display.core.ScopedObject;
 
 	public class ActReaction extends ScopedObject implements IActReaction
 	{
@@ -36,7 +37,7 @@ package org.farmcode.acting.universal.reactions
 				UniversalActManager.removeReaction(this);
 			}
 		}
-		private function onDisplayChanged(from:ScopedObject):void{
+		private function onDisplayChanged(from:ScopedObject, oldAsset:IDisplayAsset):void{
 			if(_univAdded){
 				UniversalActManager.removeReaction(this);
 				UniversalActManager.addReaction(this);

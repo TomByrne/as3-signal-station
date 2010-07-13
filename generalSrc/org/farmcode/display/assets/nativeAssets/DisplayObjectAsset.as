@@ -66,10 +66,14 @@ package org.farmcode.display.assets.nativeAssets {
 			if(_displayObject!=value) {
 				if(_displayObject) {
 					_innerBounds = null;
+					_displayObject.scaleX = _origScaleX;
+					_displayObject.scaleY = _origScaleY;
 				}
 				_displayObject = value;
 				if(_displayObject) {
 					_innerBounds = value.getBounds(value);
+					_origScaleX = value.scaleX;
+					_origScaleY = value.scaleY;
 					takePosition();
 				}
 				if(_addedToStage)
@@ -99,6 +103,8 @@ package org.farmcode.display.assets.nativeAssets {
 		private var _displayObject:DisplayObject;
 		
 		protected var _innerBounds:Rectangle;
+		protected var _origScaleX:Number;
+		protected var _origScaleY:Number;
 		private var _x:Number;
 		private var _y:Number;
 		private var _forceTopLeft:Boolean = true;
@@ -124,10 +130,10 @@ package org.farmcode.display.assets.nativeAssets {
 			}
 		}
 		public function get naturalWidth():Number {
-			return _innerBounds.width;
+			return _innerBounds.width*_origScaleX;
 		}
 		public function get naturalHeight():Number {
-			return _innerBounds.height;
+			return _innerBounds.height*_origScaleY;
 		}
 		public function get mouseX():Number {
 			return(_displayObject.mouseX-_innerBounds.x)/_displayObject.scaleX;

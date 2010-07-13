@@ -17,6 +17,8 @@ package org.farmcode.display.containers
 	
 	public class MediaContainer extends ContainerView
 	{
+		// asset children
+		private static const MEDIA_BOUNDS:String = "mediaBounds";
 		
 		public function get mediaSource():IMediaSource{
 			return _mediaSource;
@@ -77,7 +79,7 @@ package org.farmcode.display.containers
 			super.bindToAsset()
 			_mediaContainer = _asset.createAsset(IContainerAsset);
 			if(_mediaSourceDisplay)_mediaContainer.addAsset(_mediaSourceDisplay.asset);
-			_mediaBounds = _containerAsset.takeAssetByName("mediaBounds",IDisplayAsset);
+			_mediaBounds = _containerAsset.takeAssetByName(MEDIA_BOUNDS,IDisplayAsset,true);
 			if(_mediaBounds){
 				if(!_assumedLayoutInfo){
 					_assumedLayoutInfo = new FrameLayoutInfo();

@@ -81,11 +81,11 @@ package org.farmcode.actLibrary.application
 		protected function onPlugDisplayChanged(from:DisplaySocket):void{
 			_plugDisplayChanged.perform(this);
 		}
-		override public function removeMainDisplay():void{
+		override protected function removeMainDisplay():void{
 			super.removeMainDisplay();
 			_proxiedDisplaySocket.container = null;
 		}
-		override public function addMainDisplay():void{
+		override protected function addMainDisplay():void{
 			super.addMainDisplay();
 			_proxiedDisplaySocket.container = _asset.parent;
 		}

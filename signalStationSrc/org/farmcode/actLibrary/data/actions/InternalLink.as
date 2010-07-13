@@ -77,7 +77,7 @@ package org.farmcode.actLibrary.data.actions
 		private var _swfAddress:String;
 		private var _currentSwfAddress:String;
 		private var _triggerAct:SetSWFAddressAct = new SetSWFAddressAct();
-		private var _getSwfAdvice:GetSWFAddressAct = new GetSWFAddressAct();
+		private var _getSwfAct:GetSWFAddressAct = new GetSWFAddressAct();
 		private var _uniActorHelper:UniversalActorHelper = new UniversalActorHelper();
 		
 		public function InternalLink(){
@@ -86,17 +86,17 @@ package org.farmcode.actLibrary.data.actions
 			_uniActorHelper.addedChanged.addHandler(onAddedChanged);
 			
 			_uniActorHelper.addChild(_triggerAct);
-			_uniActorHelper.addChild(_getSwfAdvice);
+			_uniActorHelper.addChild(_getSwfAct);
 			
 			var methodReaction:MethodReaction = new MethodReaction(onRetrieved,false);
-			methodReaction.addUniversalRule(new ActInstanceRule(_getSwfAdvice,null,[SWFAddressPhases.GET_SWF_ADDRESS]));
+			methodReaction.addUniversalRule(new ActInstanceRule(_getSwfAct,null,[SWFAddressPhases.GET_SWF_ADDRESS]));
 			_uniActorHelper.addChild(methodReaction);
 			
 			_uniActorHelper.metadataTarget = this;
 		}
 		protected function onAddedChanged(from:UniversalActorHelper):void{
 			if(_uniActorHelper.added){
-				_getSwfAdvice.perform();
+				_getSwfAct.perform();
 			}
 		}
 		override protected function getAct():IAct{

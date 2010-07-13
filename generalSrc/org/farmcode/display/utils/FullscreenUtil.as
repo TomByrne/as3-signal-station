@@ -91,7 +91,7 @@ package org.farmcode.display.utils
 		public function onResize(e:Event, from:IStageAsset):void{
 			_view.setDisplayPosition(0,0,_lastStage.stageWidth,_lastStage.stageHeight);
 		}
-		public function onFullScreen(from:IStageAsset):void{
+		public function onFullScreen(e:Event, from:IStageAsset):void{
 			active = false;
 		}
 	}

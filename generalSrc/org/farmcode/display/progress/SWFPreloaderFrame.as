@@ -54,9 +54,9 @@ package org.farmcode.display.progress
 		
 		public function SWFPreloaderFrame(mainClasspath: String=null, progressDisplay:IProgressDisplay=null, runTest:Boolean=false){
 			super();
+			_nativeAsset = NativeAssetFactory.getNew(this);
 			this.mainClasspath = mainClasspath;
 			this.progressDisplay = progressDisplay;
-			_nativeAsset = NativeAssetFactory.getNew(this);
 			init(runTest);
 		}
 		protected function init(runTest:Boolean): void{

@@ -1,10 +1,10 @@
 package org.farmcode.acting.acts
 {
-	import org.farmcode.display.core.ScopedObject;
 	import org.farmcode.acting.actTypes.IAct;
 	import org.farmcode.acting.actTypes.IUniversalAct;
 	import org.farmcode.acting.universal.UniversalActManager;
 	import org.farmcode.display.assets.IDisplayAsset;
+	import org.farmcode.display.core.ScopedObject;
 	
 	public class UniversalAct extends AsynchronousAct implements IUniversalAct
 	{
@@ -44,7 +44,7 @@ package org.farmcode.acting.acts
 				UniversalActManager.removeAct(this);
 			}
 		}
-		private function onScopeChanged(from:ScopedObject):void{
+		private function onScopeChanged(from:ScopedObject, oldAsset:IDisplayAsset):void{
 			if(_scopeChanged)_scopeChanged.perform(this);
 		}
 		
