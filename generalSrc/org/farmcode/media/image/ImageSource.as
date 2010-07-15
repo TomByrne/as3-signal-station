@@ -10,35 +10,36 @@ package org.farmcode.media.image
 	
 	import org.farmcode.display.assets.IDisplayAsset;
 	import org.farmcode.display.assets.ILoaderAsset;
+	import org.farmcode.display.assets.nativeAssets.LoaderAsset;
 	import org.farmcode.display.assets.nativeAssets.NativeAssetFactory;
 	import org.farmcode.display.core.ILayoutView;
 	import org.farmcode.display.layout.frame.FrameLayoutInfo;
 	import org.farmcode.math.UnitConversion;
 	import org.farmcode.media.MediaSource;
-	import org.farmcode.media.MediaViewBehaviour;
+	import org.farmcode.media.MediaView;
 	
 	public class ImageSource extends MediaSource
 	{
 		private static const LOAD_UNITS:String = "Kb";
 		
-		public function get url():String{
-			return _url;
+		public function get imageUrl():String{
+			return _imageUrl;
 		}
-		public function set url(value:String):void{
-			if(_url!=value){
-				if(_url && _loadStarted){
+		public function set imageUrl(value:String):void{
+			if(_imageUrl!=value){
+				if(_imageUrl && _loadStarted){
 					_urlLoader.close();
 					for(var i:* in _allMediaDisplays){
-						var view:MediaViewBehaviour = (i as MediaViewBehaviour);
+						var view:MediaView = (i as MediaView);
 						var loader:Loader = (view.asset as Loader);
 						loader.unload();
 					}
 				}
-				_url = value;
+				_imageUrl = value;
 				_loadStarted = false;
-				if(_url && _displaysTaken>0){
+				if(_imageUrl && _displaysTaken>0){
 					_loadStarted = true;
-					_urlLoader.load(new URLRequest(url));
+					_urlLoader.load(new URLRequest(imageUrl));
 				}
 			}
 		}
@@ -49,7 +50,7 @@ package org.farmcode.media.image
 			if(_smoothing!=value){
 				_smoothing = value;
 				for(var i:* in _allMediaDisplays){
-					var view:ImageViewBehaviour = (i as ImageViewBehaviour);
+					var view:ImageView = (i as ImageView);
 					view.smoothing = value;
 				}
 			}
@@ -60,7 +61,7 @@ package org.farmcode.media.image
 		}
 		
 		private var _smoothing:Boolean;
-		private var _url:String;
+		private var _imageUrl:String;
 		private var _urlLoader:URLLoader;
 		private var _protoLoader:Loader;
 		private var _loadStarted:Boolean;
@@ -74,13 +75,13 @@ package org.farmcode.media.image
 			_urlLoader.dataFormat = URLLoaderDataFormat.BINARY;
 			_urlLoader.addEventListener(Event.COMPLETE, onLoadComplete);
 			_urlLoader.addEventListener(ProgressEvent.PROGRESS, onLoadProgress);
-			this.url = url;
+			this.imageUrl = url;
 		}
 		protected function onLoadComplete(e:Event):void{
 			_loaded = true;
 			for(var i:* in _allMediaDisplays){
-				var view:MediaViewBehaviour = (i as MediaViewBehaviour);
-				var loader:Loader = (view.asset as Loader);
+				var view:MediaView = (i as MediaView);
+				var loader:ILoaderAsset = (view.asset as ILoaderAsset);
 				loader.loadBytes(_urlLoader.data);
 			}
 			setLoadProps(int(UnitConversion.convert(_urlLoader.bytesLoaded,UnitConversion.MEMORY_BYTES,UnitConversion.MEMORY_KILOBYTES)+0.5),
@@ -91,9 +92,9 @@ package org.farmcode.media.image
 		}
 		override public function takeMediaDisplay():ILayoutView{
 			_displaysTaken++;
-			if(!_loadStarted && _url){
+			if(!_loadStarted && _imageUrl){
 				_loadStarted = true;
-				_urlLoader.load(new URLRequest(url));
+				_urlLoader.load(new URLRequest(imageUrl));
 			}
 			return super.takeMediaDisplay();
 		}
@@ -111,7 +112,7 @@ package org.farmcode.media.image
 				_protoLoader.contentLoaderInfo.addEventListener(Event.COMPLETE, onProtoLoaded);
 			}
 			var loaderAsset:ILoaderAsset = NativeAssetFactory.getNew(loader);
-			var view:ImageViewBehaviour = new ImageViewBehaviour(loaderAsset,_displayMeasurements,smoothing);
+			var view:ImageView = new ImageView(loaderAsset,_displayMeasurements,smoothing);
 			view.layoutInfo = new FrameLayoutInfo();
 			return view;
 		}
@@ -132,7 +133,7 @@ package org.farmcode.media.image
 			_displayMeasurements.width = width;
 			_displayMeasurements.height = height;
 			for(var i:* in _allMediaDisplays){
-				var view:MediaViewBehaviour = (i as MediaViewBehaviour);
+				var view:MediaView = (i as MediaView);
 				view.displayMeasurementsChanged();
 			}
 		}

@@ -3,6 +3,7 @@ package org.farmcode.display.containers
 	import flash.display.DisplayObject;
 	import flash.geom.Rectangle;
 	
+	import org.farmcode.display.DisplayNamespace;
 	import org.farmcode.display.assets.IDisplayAsset;
 	import org.farmcode.display.assets.IInteractiveObjectAsset;
 	import org.farmcode.display.controls.BufferBar;
@@ -15,6 +16,8 @@ package org.farmcode.display.containers
 	import org.farmcode.display.utils.FullscreenUtil;
 	import org.farmcode.media.IMediaSource;
 	import org.farmcode.media.video.IVideoSource;
+	
+	use namespace DisplayNamespace
 	
 	public class VideoContainer extends MediaContainer
 	{
@@ -76,6 +79,7 @@ package org.farmcode.display.containers
 			if(asset){
 				if(!_centredPauseButton){
 					_centredPauseButton = new ToggleButton();
+					_centredPauseButton.scaleAsset = true;
 					_centredPauseButton.rollOutAct.addHandler(onVideoMouse);
 					_centredPauseButton.rollOverAct.addHandler(onVideoMouse);
 					_centredPauseButton.clickAct.addHandler(onPlayPauseClick);

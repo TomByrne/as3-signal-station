@@ -5,10 +5,11 @@ package org.farmcode.display.controls
 	import org.farmcode.display.assets.IAsset;
 	import org.farmcode.display.assets.IDisplayAsset;
 	import org.farmcode.display.assets.states.StateDef;
+	import org.farmcode.display.containers.ContainerView;
 	import org.farmcode.display.core.LayoutView;
 	import org.farmcode.validation.validators.IValidator;
 	
-	public class Control extends LayoutView
+	public class Control extends ContainerView
 	{
 		private static var VALID_FRAME_LABEL:String = "valid";
 		private static var INVALID_FRAME_LABEL:String = "invalid";

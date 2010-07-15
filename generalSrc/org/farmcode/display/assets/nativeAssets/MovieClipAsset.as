@@ -60,6 +60,9 @@ package org.farmcode.display.assets.nativeAssets {
 			}
 		}
 		
+		override protected function isStateAvailable(state:IStateDef, otherAvailable:Array):Boolean {
+			return true;
+		}
 		override protected function isStateNameAvailable(stateName:String):Boolean{
 			return (_mainAnalysis.getFrameLabelDuration(stateName)!=-1);
 		}

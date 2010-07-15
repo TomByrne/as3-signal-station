@@ -234,7 +234,7 @@ package org.farmcode.display.controls.toolTip
 			fill.push(_tipTypeState);
 			return fill;
 		}
-		override protected function commitText():void{
+		override protected function syncFieldToData():void{
 			if(data is Array){
 				var errorText:String = "";
 				for(var i:int=0; i<data.length; ++i){
@@ -253,7 +253,7 @@ package org.farmcode.display.controls.toolTip
 				}
 			}
 			
-			super.commitText();
+			super.syncFieldToData();
 		}
 	}
 }

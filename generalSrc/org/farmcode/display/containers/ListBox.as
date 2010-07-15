@@ -22,6 +22,12 @@ package org.farmcode.display.containers
 	
 	public class ListBox extends AbstractList
 	{
+		public function get direction():String{
+			return _layout.flowDirection;
+		}
+		public function set direction(value:String):void{
+			_layout.flowDirection = value;
+		}
 		
 		public function get dataProvider():*{
 			return _layout.dataProvider;
@@ -266,6 +272,8 @@ package org.farmcode.display.containers
 							var otherData:IBooleanConsumer = _selectedData[otherDataIndex] as IBooleanConsumer;
 							if(otherData){
 								otherData.booleanValue = false;
+							}else{
+								trace("WARNING: Data cannot be deselected as it does not implement IBooleanConsumer");
 							}
 							delete _selectedData[otherDataIndex];
 							--_selectedCount;

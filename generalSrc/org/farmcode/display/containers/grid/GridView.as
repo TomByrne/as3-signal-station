@@ -86,8 +86,8 @@ package org.farmcode.display.containers.grid
 			_layout.equaliseCellHeights = true;
 			_layout.equaliseCellWidths = true;
 		}
-		override protected function setLayoutWidth(layoutWidth:Number):void{
-			
+		override protected function setLayoutDimensions(width:Number, height:Number):void{
+			_layout.setDisplayPosition(0,0,width,height);
 		}
 		
 		override protected function assumedRendererAssetName() : String{

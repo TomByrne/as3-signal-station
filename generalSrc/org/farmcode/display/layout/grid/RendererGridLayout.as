@@ -1,7 +1,5 @@
 package org.farmcode.display.layout.grid
 {
-	import org.farmcode.display.scrolling.ScrollMetrics;
-	
 	import flash.geom.Point;
 	import flash.geom.Rectangle;
 	import flash.utils.Dictionary;
@@ -17,6 +15,7 @@ package org.farmcode.display.layout.grid
 	import org.farmcode.display.layout.ILayoutSubject;
 	import org.farmcode.display.layout.core.ILayoutInfo;
 	import org.farmcode.display.layout.list.ListLayoutInfo;
+	import org.farmcode.display.scrolling.ScrollMetrics;
 	import org.farmcode.display.validation.ValidationFlag;
 	import org.farmcode.instanceFactory.IInstanceFactory;
 
@@ -225,14 +224,30 @@ package org.farmcode.display.layout.grid
 		private var _cellLayouts:Dictionary;
 		private var _cellKeyCount:int;
 		
-		private var widthIndex:int;
-		private var heightIndex:int;
-		private var widthIndexMax:int;
-		private var heightIndexMax:int;
 		private var _fitRenderers:int;
+		
+		protected var _verticalRendAxis:RendererGridAxis;
+		protected var _horizontalRendAxis:RendererGridAxis;
+		
+		protected var _breadthRendAxis:RendererGridAxis;
+		protected var _lengthRendAxis:RendererGridAxis;
 		
 		public function RendererGridLayout(){
 			super();
+		}
+		override protected function createAxes():void{
+			_verticalAxis = _verticalRendAxis = new RendererGridAxis("height","rowIndex");
+			_horizontalAxis = _horizontalRendAxis = new RendererGridAxis("width","columnIndex");
+		}
+		override protected function validateProps():void{
+			super.validateProps();
+			if(_isVertical){
+				_breadthRendAxis = _verticalRendAxis;
+				_lengthRendAxis = _horizontalRendAxis;
+			}else{
+				_breadthRendAxis = _horizontalRendAxis;
+				_lengthRendAxis = _verticalRendAxis;
+			}
 		}
 		public function onCollection2DChanged(from:ICollection2D, fromX:Number, toX:Number, fromY:Number, toY:Number):void{
 			clearDataChecks();
@@ -371,10 +386,10 @@ package org.farmcode.display.layout.grid
 			return _dataLayouts[key] || _cellLayouts[key];
 		}
 		override protected function getChildRenderer(key:*,length:int,breadth:int):ILayoutSubject{
-			var minLength:int = this[_lengthDimRef+"Index"];
-			var maxLength:int = this[_lengthDimRef+"IndexMax"];
-			var minBreadth:int = this[_breadthDimRef+"Index"];
-			var maxBreadth:int = this[_breadthDimRef+"IndexMax"];
+			var minLength:int = _lengthRendAxis.dimIndex;
+			var maxLength:int = _lengthRendAxis.dimIndexMax;
+			var minBreadth:int = _breadthRendAxis.dimIndex;
+			var maxBreadth:int = _breadthRendAxis.dimIndexMax;
 			var renderIndex:int = ((maxBreadth-minBreadth)*(length-minLength))+(breadth-minBreadth);
 			var renderer:ILayoutSubject = _renderers[renderIndex];
 			if(length>=minLength && length<maxLength && breadth>=minBreadth && breadth<maxBreadth && (key<_dataCount || _renderEmptyCells)){
@@ -425,10 +440,10 @@ package org.farmcode.display.layout.grid
 			to any data any more.
 			*/
 			
-			var minLength:int = this[_lengthDimRef+"Index"];
-			var maxLength:int = this[_lengthDimRef+"IndexMax"];
-			var minBreadth:int = this[_breadthDimRef+"Index"];
-			var maxBreadth:int = this[_breadthDimRef+"IndexMax"];
+			var minLength:int = _lengthRendAxis.dimIndex;
+			var maxLength:int = _lengthRendAxis.dimIndexMax;
+			var minBreadth:int = _breadthRendAxis.dimIndex;
+			var maxBreadth:int = _breadthRendAxis.dimIndexMax;
 			var breadthRange:int = (maxBreadth-minBreadth);
 			
 			var totRend:int = _renderers.length;
@@ -460,22 +475,24 @@ package org.farmcode.display.layout.grid
 		}
 		override protected function validateAllScrolling():void{
 			if(!_breadthScrollFlag.valid || !_lengthScrollFlag.valid){
-				var oldBreadthIndex:int = this[_breadthDimRef+"Index"];
-				var oldLengthIndex:int = this[_lengthDimRef+"Index"];
 				
-				var oldBreadthIndexMax:int = this[_breadthDimRef+"IndexMax"];
-				var oldLengthIndexMax:int = this[_lengthDimRef+"IndexMax"];
+				var oldBreadthIndex:int = _breadthRendAxis.dimIndex;
+				var oldLengthIndex:int = _lengthRendAxis.dimIndex;
+				
+				var oldBreadthIndexMax:int = _breadthRendAxis.dimIndexMax;
+				var oldLengthIndexMax:int = _lengthRendAxis.dimIndexMax;
 				
 				var oldBreadthRange:int = calcRange(oldBreadthIndex,oldBreadthIndexMax);
 				var oldLengthRange:int = calcRange(oldLengthIndex,oldLengthIndexMax);
 				
 				super.validateAllScrolling();
 				
-				var breadthIndex:int = this[_breadthDimRef+"Index"];
-				var lengthIndex:int = this[_lengthDimRef+"Index"];
 				
-				var breadthIndexMax:int = this[_breadthDimRef+"IndexMax"];
-				var lengthIndexMax:int = this[_lengthDimRef+"IndexMax"];
+				var breadthIndex:int = _breadthRendAxis.dimIndex;
+				var lengthIndex:int = _lengthRendAxis.dimIndex;
+				
+				var breadthIndexMax:int = _breadthRendAxis.dimIndexMax;
+				var lengthIndexMax:int = _lengthRendAxis.dimIndexMax;
 				
 				var breadthRange:int = calcRange(breadthIndex,breadthIndexMax);
 				var lengthRange:int = calcRange(lengthIndex,lengthIndexMax);
@@ -541,26 +558,25 @@ package org.farmcode.display.layout.grid
 				}
 			}
 		}
-		override protected function validateScroll(scrollMetrics:ScrollMetrics, pixScrollMetrics:ScrollMetrics, realDimDef:String, measurements:Array,
-												   margin:Number, scrollByLine:Boolean, forePadding:Number, gap:Number) : void{
+		override protected function validateScroll(scrollMetrics:ScrollMetrics, axis:GridAxis) : void{
 			if(scrollMetrics.value<0 || isNaN(scrollMetrics.value))scrollMetrics.value = 0;
 			var pixScroll:Number;
 			var pixScrollMax:Number;
-			var realDim:Number = _displayPosition[realDimDef];
-			var realMeas:Number = displayMeasurements[realDimDef];
+			var realDim:Number = _displayPosition[axis.dimRef];
+			var realMeas:Number = displayMeasurements[axis.dimRef];
 			var newIndex:int;
 			var newIndexMax:int;
 			
 			if(realMeas>realDim){
 				pixScrollMax = realMeas-realDim;
 				newIndexMax = -1;
-				var stack:Number = forePadding;
+				var stack:Number = axis.foreMargin;
 				var total:Number = 0;
 				var foundPixMax:Boolean;
 				var scrollValue:int = Math.round(scrollMetrics.value);
-				for(var i:int=0; i<measurements.length; i++){
-					var measurement:Number = measurements[i];
-					if(scrollByLine){
+				for(var i:int=0; i<axis.maxCellSizes.length; i++){
+					var measurement:Number = axis.maxCellSizes[i];
+					if(axis.scrollByLine){
 						if(i==scrollValue){
 							pixScroll = stack;
 							newIndex = i;
@@ -574,11 +590,11 @@ package org.farmcode.display.layout.grid
 						newIndexMax = i+1;
 						if(foundPixMax)break;
 					}
-					if(!foundPixMax && (stack>pixScrollMax || i==measurements.length-1)){
+					if(!foundPixMax && (stack>pixScrollMax || i==axis.maxCellSizes.length-1)){
 						foundPixMax = true;
-						if(scrollByLine){
-							scrollMetrics.pageSize = measurements.length-i;
-							scrollMetrics.maximum = measurements.length;
+						if(axis.scrollByLine){
+							scrollMetrics.pageSize = axis.maxCellSizes.length-i;
+							scrollMetrics.maximum = axis.maxCellSizes.length;
 						}else{
 							scrollMetrics.maximum = realMeas;
 							scrollMetrics.pageSize = realDim;
@@ -588,29 +604,29 @@ package org.farmcode.display.layout.grid
 						}
 						if(newIndexMax!=-1)break;
 					}
-					if(i<measurements.length-1)stack += gap;
+					if(i<axis.maxCellSizes.length-1)stack += axis.gap;
 				}
 				if(newIndexMax==-1){
-					newIndexMax = measurements.length;
+					newIndexMax = axis.maxCellSizes.length;
 				}
 			}else{
-				var max:int = measurements.length;
+				var max:int = axis.maxCellSizes.length;
 				newIndex = 0;
 				pixScroll = 0;
 				pixScrollMax = 0;
-				for(i=0; i<measurements.length; i++){
-					measurement = measurements[i];
+				for(i=0; i<axis.maxCellSizes.length; i++){
+					measurement = axis.maxCellSizes[i];
 					pixScrollMax += measurement;
-					if(i<measurements.length-1)pixScrollMax += gap;
+					if(i<axis.maxCellSizes.length-1)pixScrollMax += axis.gap;
 				}
 				if(_protoRenderer){
-					var defaultDim:Number = _protoRenderer.displayMeasurements[realDimDef];
-					var leftOver:Number = (realDim-forePadding+gap-pixScrollMax);
+					var defaultDim:Number = _protoRenderer.displayMeasurements[axis.dimRef];
+					var leftOver:Number = (realDim-axis.foreMargin+axis.gap-pixScrollMax);
 					if(leftOver>0){
-						var defMax:int = max+int(leftOver/(defaultDim+gap));
+						var defMax:int = max+int(leftOver/(defaultDim+axis.gap));
 						if(max<defMax){
 							max = defMax;
-							pixScrollMax += ((max-measurements.length)*(defaultDim+gap))-gap;
+							pixScrollMax += ((max-axis.maxCellSizes.length)*(defaultDim+axis.gap))-axis.gap;
 						}
 					}
 				}
@@ -619,15 +635,16 @@ package org.farmcode.display.layout.grid
 				scrollMetrics.pageSize = realDim;
 				scrollMetrics.maximum = realDim;
 			}
-			this[realDimDef+"Index"] = newIndex;
-			this[realDimDef+"IndexMax"] = newIndexMax;
+			var castAxis:RendererGridAxis = (axis as RendererGridAxis);
+			castAxis.dimIndex = newIndex;
+			castAxis.dimIndexMax = newIndexMax;
 			
-			if(pixScrollMetrics.maximum != realMeas || pixScrollMetrics.pageSize != realDim || pixScrollMetrics.value != pixScroll){
-				pixScrollMetrics.maximum = realMeas;
-				pixScrollMetrics.pageSize = realDim;
-				pixScrollMetrics.value = pixScroll;
-				var dir:String = (scrollMetrics==_horizontalScrollMetrics)?Direction.HORIZONTAL:Direction.VERTICAL;
-				if(_scrollMetricsChanged)_scrollMetricsChanged.perform(this, dir, pixScrollMetrics);
+			if(axis.pixScrollMetrics.maximum != realMeas || axis.pixScrollMetrics.pageSize != realDim || axis.pixScrollMetrics.value != pixScroll){
+				axis.pixScrollMetrics.maximum = realMeas;
+				axis.pixScrollMetrics.pageSize = realDim;
+				axis.pixScrollMetrics.value = pixScroll;
+				var dir:String = (scrollMetrics==_horizontalAxis.scrollMetrics)?Direction.HORIZONTAL:Direction.VERTICAL;
+				if(_scrollMetricsChanged)_scrollMetricsChanged.perform(this, dir, axis.pixScrollMetrics);
 			}
 		}
 		protected function removeAllRenderers():void{

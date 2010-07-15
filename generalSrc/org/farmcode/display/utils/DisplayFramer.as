@@ -59,8 +59,10 @@ package org.farmcode.display.utils
 			else if(anchor.indexOf(Anchor.BOTTOM)!=-1)ret.y = fitArea.y+fitArea.height-ret.height;
 			else ret.y = fitArea.y+(fitArea.height-ret.height)/2;
 			
-			ret.x -= displaySize.x*scaleX;
-			ret.y -= displaySize.y*scaleY;
+			if(displaySize){
+				ret.x -= displaySize.x*scaleX;
+				ret.y -= displaySize.y*scaleY;
+			}
 			
 			return ret;
 		}
