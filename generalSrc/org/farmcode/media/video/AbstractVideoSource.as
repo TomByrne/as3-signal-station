@@ -22,7 +22,7 @@ package org.farmcode.media.video
 	import org.farmcode.display.core.ILayoutView;
 	import org.farmcode.display.layout.frame.FrameLayoutInfo;
 	import org.farmcode.media.MediaSource;
-	import org.farmcode.media.MediaViewBehaviour;
+	import org.farmcode.media.MediaView;
 	
 	public class AbstractVideoSource extends MediaSource implements IVideoSource
 	{
@@ -226,7 +226,7 @@ package org.farmcode.media.video
 				updateDisplayMeasurements(0,0,320,240);
 				
 				for(var i:* in _allMediaDisplays){
-					var mediaView:MediaViewBehaviour = (i as MediaViewBehaviour);
+					var mediaView:MediaView = (i as MediaView);
 					(mediaView.asset as Video).attachNetStream(null);
 				}
 			}
@@ -253,7 +253,7 @@ package org.farmcode.media.video
 					assessVolume();
 					assessBufferSize();
 					for(var i:* in _allMediaDisplays){
-						var mediaView:MediaViewBehaviour = (i as MediaViewBehaviour);
+						var mediaView:MediaView = (i as MediaView);
 						(mediaView.asset as Video).attachNetStream(_netStream);
 					}
 				}
@@ -344,12 +344,12 @@ package org.farmcode.media.video
 				video.attachNetStream(_netStream);
 			}
 			var videoAsset:IVideoAsset = NativeAssetFactory.getNew(video);
-			var display:MediaViewBehaviour = new MediaViewBehaviour(videoAsset,_displayMeasurements);
+			var display:MediaView = new MediaView(videoAsset,_displayMeasurements);
 			display.layoutInfo = new FrameLayoutInfo();
 			return display;
 		}
 		override protected function destroyMediaDisplay(value:ILayoutView):void{
-			var display:MediaViewBehaviour = (value as MediaViewBehaviour);
+			var display:MediaView = (value as MediaView);
 			var video:VideoAsset = display.asset as VideoAsset;
 			video.video.attachNetStream(null);
 			display.asset = null;
@@ -400,7 +400,7 @@ package org.farmcode.media.video
 			_displayMeasurements.width = width;
 			_displayMeasurements.height = height;
 			for(var i:* in _allMediaDisplays){
-				var view:MediaViewBehaviour = (i as MediaViewBehaviour);
+				var view:MediaView = (i as MediaView);
 				view.displayMeasurementsChanged();
 			}
 		}

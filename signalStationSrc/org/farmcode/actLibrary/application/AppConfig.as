@@ -1,5 +1,10 @@
 package org.farmcode.actLibrary.application
 {
+	import flash.display.DisplayObject;
+	
+	import org.farmcode.display.assets.IDisplayAsset;
+	import org.farmcode.display.assets.nativeAssets.NativeAssetFactory;
+
 	public class AppConfig implements IAppConfig
 	{
 		[Property(toString="true",clonable="true")]
@@ -17,6 +22,18 @@ package org.farmcode.actLibrary.application
 		public function set data(value:Array):void{
 		}
 		
+		public function get mainAsset():IDisplayAsset{
+			return _mainAsset;
+		}
+		public function set mainAsset(value:IDisplayAsset):void{
+			_mainAsset = value;
+		}
+		
+		public function set mainDisplay(value:DisplayObject):void{
+			_mainAsset = value?NativeAssetFactory.getNew(value):null;
+		}
+		
+		private var _mainAsset:IDisplayAsset;
 		private var _initActs:Array;
 	}
 }

@@ -6,9 +6,9 @@ package org.farmcode.media
 	import org.farmcode.display.assets.IDisplayAsset;
 	import org.farmcode.display.core.LayoutView;
 	
-	public class MediaViewBehaviour extends LayoutView
+	public class MediaView extends LayoutView
 	{
-		public function MediaViewBehaviour(asset:IDisplayAsset, displayMeasurements:Rectangle){
+		public function MediaView(asset:IDisplayAsset, displayMeasurements:Rectangle){
 			super(asset);
 			_displayMeasurements = displayMeasurements;
 		}

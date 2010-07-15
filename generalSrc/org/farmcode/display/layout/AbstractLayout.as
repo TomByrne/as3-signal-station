@@ -173,18 +173,26 @@ package org.farmcode.display.layout
 			if(_allInvalid){
 				_allInvalid = false;
 				drawList = _subjects;
+				if(_displayMeasurements){
+					_displayMeasurements.x = NaN;
+					_displayMeasurements.y = NaN;
+					_displayMeasurements.width = NaN;
+					_displayMeasurements.height = NaN;
+				}
 			}else{
 				drawList = _invalidSubjects;
 				_invalidSubjects = new Dictionary();
-			}
-			if(_displayMeasurements){
-				_displayMeasurements.x = NaN;
-				_displayMeasurements.y = NaN;
-				_displayMeasurements.width = NaN;
-				_displayMeasurements.height = NaN;
+				// TODO: in this case a bug could arise where the old measurements of an invalid subject are
+				// bigger than the new ones, but are not removed from the total measurements
 			}
 			for(var i:* in drawList){
 				drawSubject(i as ILayoutSubject);
+			}
+			if(!isNaN(_displayMeasurements.x) ||
+				!isNaN(_displayMeasurements.y) ||
+				!isNaN(_displayMeasurements.width) ||
+				!isNaN(_displayMeasurements.height)){
+				dispatchMeasurementChange();
 			}
 		}
 		protected function drawSubject(subject:ILayoutSubject) : void{

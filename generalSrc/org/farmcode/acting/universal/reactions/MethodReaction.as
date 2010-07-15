@@ -10,7 +10,7 @@ package org.farmcode.acting.universal.reactions
 		public var handler:Function;
 		public var doAsynchronous:Boolean;
 		public var passParameters:Boolean;
-		public var passAct:Boolean;
+		public var passAct:Boolean = true;
 		
 		public function MethodReaction(handler:Function, doAsynchronous:Boolean=true){
 			this.handler = handler;

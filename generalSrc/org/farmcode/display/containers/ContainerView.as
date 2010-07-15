@@ -17,6 +17,7 @@ package org.farmcode.display.containers
 			super(asset);
 		}
 		override protected function bindToAsset() : void{
+			super.bindToAsset();
 			if(_containerAsset){
 				_backing = _containerAsset.takeAssetByName(BACKING_ASSET,IAsset,true);
 			}
@@ -26,6 +27,7 @@ package org.farmcode.display.containers
 				_containerAsset.returnAsset(_backing);
 				_backing = null;
 			}
+			super.unbindFromAsset();
 		}
 		override protected function draw() : void{
 			positionAsset();

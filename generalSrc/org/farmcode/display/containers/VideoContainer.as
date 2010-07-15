@@ -3,6 +3,7 @@ package org.farmcode.display.containers
 	import flash.display.DisplayObject;
 	import flash.geom.Rectangle;
 	
+	import org.farmcode.display.DisplayNamespace;
 	import org.farmcode.display.assets.IDisplayAsset;
 	import org.farmcode.display.assets.IInteractiveObjectAsset;
 	import org.farmcode.display.controls.BufferBar;
@@ -15,6 +16,8 @@ package org.farmcode.display.containers
 	import org.farmcode.display.utils.FullscreenUtil;
 	import org.farmcode.media.IMediaSource;
 	import org.farmcode.media.video.IVideoSource;
+	
+	use namespace DisplayNamespace
 	
 	public class VideoContainer extends MediaContainer
 	{
@@ -72,10 +75,11 @@ package org.farmcode.display.containers
 			_rewindButton = bindButton(_rewindButton, Button,REWIND_BUTTON,onRewindClick);
 			_muteButton = bindButton(_muteButton, ToggleButton,MUTE_BUTTON,onMuteClick) as ToggleButton;
 			
-			var asset:IInteractiveObjectAsset = _containerAsset.takeAssetByName(CENTERED_PAUSE_BUTTON,IInteractiveObjectAsset);
+			var asset:IInteractiveObjectAsset = _containerAsset.takeAssetByName(CENTERED_PAUSE_BUTTON,IInteractiveObjectAsset,true);
 			if(asset){
 				if(!_centredPauseButton){
 					_centredPauseButton = new ToggleButton();
+					_centredPauseButton.scaleAsset = true;
 					_centredPauseButton.rollOutAct.addHandler(onVideoMouse);
 					_centredPauseButton.rollOverAct.addHandler(onVideoMouse);
 					_centredPauseButton.clickAct.addHandler(onPlayPauseClick);
@@ -122,7 +126,7 @@ package org.farmcode.display.containers
 			return ret;
 		}
 		protected function bindControl(control:Control, controlClass:Class, name:String, bindBothSides:Boolean):Control{
-			var asset:IInteractiveObjectAsset = _containerAsset.takeAssetByName(name,IInteractiveObjectAsset);
+			var asset:IInteractiveObjectAsset = _containerAsset.takeAssetByName(name,IInteractiveObjectAsset,true);
 			if(asset){
 				if(!control){
 					control = new controlClass();
@@ -131,7 +135,7 @@ package org.farmcode.display.containers
 				control.setAssetAndPosition(asset);
 				var layout:CanvasLayoutInfo;
 				if(_backing){
-					var bounds:Rectangle = asset.getBounds(_backing);
+					var bounds:Rectangle = asset.getBounds(this.asset);
 					layout = _uiLayout.layoutInfo as CanvasLayoutInfo;
 					if(!layout){
 						layout = new CanvasLayoutInfo();

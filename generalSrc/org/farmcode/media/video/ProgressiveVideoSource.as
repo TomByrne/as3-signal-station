@@ -20,7 +20,7 @@ package org.farmcode.media.video
 	import org.farmcode.display.core.LayoutView;
 	import org.farmcode.display.layout.frame.FrameLayoutInfo;
 	import org.farmcode.media.MediaSource;
-	import org.farmcode.media.MediaViewBehaviour;
+	import org.farmcode.media.MediaView;
 	
 	
 	/**
@@ -337,7 +337,7 @@ package org.farmcode.media.video
 			var video:Video = new Video(_displayMeasurements.width,_displayMeasurements.height);
 			video.attachNetStream(_netStream);
 			var videoAsset:IVideoAsset = NativeAssetFactory.getNew(video);
-			var display:MediaViewBehaviour = new MediaViewBehaviour(videoAsset,_displayMeasurements);
+			var display:MediaView = new MediaView(videoAsset,_displayMeasurements);
 			display.layoutInfo = new FrameLayoutInfo();
 			return display;
 		}
@@ -351,7 +351,7 @@ package org.farmcode.media.video
 			_displayMeasurements.width = width;
 			_displayMeasurements.height = height;
 			for(var i:* in _allMediaDisplays){
-				var view:MediaViewBehaviour = (i as MediaViewBehaviour);
+				var view:MediaView = (i as MediaView);
 				view.displayMeasurementsChanged();
 			}
 		}

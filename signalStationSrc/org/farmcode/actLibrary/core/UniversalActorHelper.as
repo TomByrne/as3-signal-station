@@ -1,7 +1,10 @@
 package org.farmcode.actLibrary.core
 {
 	import org.farmcode.acting.ActingNamspace;
+	import org.farmcode.acting.actTypes.IUniversalAct;
 	import org.farmcode.acting.metadata.MetadataActorRegistry;
+	import org.farmcode.acting.universal.reactions.MethodReaction;
+	import org.farmcode.acting.universal.rules.ActInstanceRule;
 	import org.farmcode.display.assets.IDisplayAsset;
 	import org.farmcode.display.core.IScopedObject;
 	import org.farmcode.display.core.ScopedObject;
@@ -40,6 +43,13 @@ package org.farmcode.actLibrary.core
 		private var _registered:Boolean;
 		
 		public function UniversalActorHelper(){
+		}
+		public function addMethodReaction(method:Function, act:IUniversalAct, beforePhases:Array, afterPhases:Array, doAsynchronous:Boolean=true, passParameters:Boolean=false):MethodReaction{
+			var methodReaction:MethodReaction = new MethodReaction(method,doAsynchronous);
+			methodReaction.passParameters = passParameters;
+			methodReaction.addUniversalRule(new ActInstanceRule(act,beforePhases,afterPhases));
+			addChild(methodReaction);
+			return methodReaction;
 		}
 		public function addChild(view:IScopedObject):void{
 			if(_children.indexOf(view)==-1){

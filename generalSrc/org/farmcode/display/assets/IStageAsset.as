@@ -12,7 +12,7 @@ package org.farmcode.display.assets
 		 */
 		function get resize():IAct;
 		/**
-		 * handler(from:IStageAsset)
+		 * handler(e:Event, from:IStageAsset)
 		 */
 		function get fullScreen():IAct;
 		

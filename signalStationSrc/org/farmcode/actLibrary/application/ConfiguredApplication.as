@@ -1,5 +1,6 @@
 package org.farmcode.actLibrary.application
 {
+	import flash.display.DisplayObject;
 	import flash.display.Sprite;
 	
 	import org.farmcode.actLibrary.core.UniversalActorHelper;
@@ -16,6 +17,7 @@ package org.farmcode.actLibrary.application
 	import org.farmcode.acting.universal.UniversalActManager;
 	import org.farmcode.core.Application;
 	import org.farmcode.display.assets.IDisplayAsset;
+	import org.farmcode.display.assets.nativeAssets.NativeAssetFactory;
 	import org.farmcode.display.core.IScopedObject;
 	import org.farmcode.threading.AbstractThread;
 	
@@ -30,7 +32,7 @@ package org.farmcode.actLibrary.application
 	[Frame(factoryClass="org.farmcode.display.progress.SimpleSWFPreloaderFrame")] */ // this must be on subclass
 	public class ConfiguredApplication extends Application
 	{
-		protected static const CONFIG_URL_PARAM:String = "configURL";
+		protected static const CONFIG_URL_PARAM:String = "configUrl";
 		
 		public function get configURL():String{
 			return _siteStreamActor.rootUrl;
@@ -44,6 +46,18 @@ package org.farmcode.actLibrary.application
 			}
 		}
 		
+		/**
+		 * This is used so that apps can get SignalStation running
+		 * before they get an asset.
+		 */
+		protected function get scopeDisplay():IDisplayAsset{
+			if(!_scopeDisplay){
+				_scopeDisplay = (asset || _assetContainer);
+			}
+			return _scopeDisplay;
+		}
+		
+		protected var _scopeDisplay:IDisplayAsset;
 		protected var _siteStreamActor:SiteStreamActor;
 		protected var _configActor:ConfigActor;
 		protected var _swfAddressActor:SWFAddressActor;
@@ -64,10 +78,6 @@ package org.farmcode.actLibrary.application
 			_universalActorHelper.metadataTarget = this;
 			_universalActorHelper.addChild(retrieveConfigUrlAct);
 			_universalActorHelper.addChild(retrieveConfigAct);
-		}
-		override protected function init():void{
-			super.init();
-			AbstractThread.intendedFPS = _lastStage.frameRate;
 			
 			_siteStreamActor = new SiteStreamActor();
 			addActor(_siteStreamActor);
@@ -76,18 +86,27 @@ package org.farmcode.actLibrary.application
 			addActor(_swfAddressActor);
 			
 			_configActor = new ConfigActor();
-			_configActor.defaultConfigs["configURL"] = "xml/config.xml";
-			_configActor.defaultConfigs["baseDataURL"] = "";
-			_configActor.defaultConfigs["baseClassURL"] = "";
+			setDefaultConfig("configURL","xml/config.xml");
+			setDefaultConfig("baseDataURL","");
+			setDefaultConfig("baseClassURL","");
 			addActor(_configActor);
 			
 			var errorActor:ErrorActor = new ErrorActor();
 			addActor(errorActor);
+		}
+		override protected function commitStage() : void{
+			super.commitStage();
+			if(isNaN(AbstractThread.intendedFPS)){
+				AbstractThread.intendedFPS = _lastStage.frameRate;
+			}
+		}
+		override protected function init():void{
+			super.init();
 			
-			Config::DEBUG
+			/*Config::DEBUG
 			{
 				// testing
-				/*var executionChecker:ExecutionChecker = new ExecutionChecker(container);
+				var executionChecker:ExecutionChecker = new ExecutionChecker(container);
 				//var siteStreamDebugger:SiteStreamDebugger = new SiteStreamDebugger(_siteStreamAdvisor.siteStream);
 				
 				_debugArea = new Sprite();
@@ -102,24 +121,19 @@ package org.farmcode.actLibrary.application
 				_lastStage.addEventListener(KeyboardEvent.KEY_DOWN, onKeyDown);
 				
 				var toolbar:SimpleDebugToolbar = new SimpleDebugToolbar(_siteStreamActor.siteStream,_president);
-				_debugArea.addChild(toolbar);*/
-			}
-		}
-		protected function addActor(actor:IScopedObject) : void{
-			_universalActorHelper.addChild(actor);
-		}
-		override protected function bindToAsset() : void{
-			UniversalActManager.addManager(asset);
+				_debugArea.addChild(toolbar);
+			}*/
 			
-			super.bindToAsset();
 			
-			_universalActorHelper.asset = asset;
+			UniversalActManager.addManager(scopeDisplay);
+			
+			_universalActorHelper.asset = scopeDisplay;
 			
 			var act:SetPropertyConfigParamAct = new SetPropertyConfigParamAct(_siteStreamActor,"baseDataURL","baseDataURL");
-			act.temporaryPerform(asset);
+			act.temporaryPerform(scopeDisplay);
 			
 			act = new SetPropertyConfigParamAct(_siteStreamActor,"baseClassURL","baseClassURL");
-			act.temporaryPerform(asset);
+			act.temporaryPerform(scopeDisplay);
 			
 			if(configURL){
 				configUrlRetrieved();
@@ -127,12 +141,26 @@ package org.farmcode.actLibrary.application
 				retrieveConfigUrlAct.perform();
 			}
 		}
+		protected function setDefaultConfig(name:String, value:String) : void{
+			if(_configActor)_configActor.defaultConfigs[name] = value;
+			else if(_lastStage){
+				if(!_lastStage.loaderInfo.parameters[name])
+					_lastStage.loaderInfo.parameters[name] = value;
+			}else{
+				throw new Error("Can't set default config values yet");
+			}
+		}
+		protected function addActor(actor:IScopedObject) : void{
+			_universalActorHelper.addChild(actor);
+		}
 		override protected function unbindFromAsset() : void{
 			super.unbindFromAsset();
 			
-			_universalActorHelper.asset = null;
-			
-			UniversalActManager.removeManager(asset);
+			if(!_scopeDisplay!=container){
+				_universalActorHelper.asset = null;
+				UniversalActManager.removeManager(_scopeDisplay);
+				_scopeDisplay = null;
+			}
 		}
 		
 		public var retrieveConfigUrlAct:SetPropertyConfigParamAct = new SetPropertyConfigParamAct(this,"configURL",CONFIG_URL_PARAM);
@@ -149,6 +177,12 @@ package org.farmcode.actLibrary.application
 		}
 		protected function setRootObject(execution:UniversalActExecution, object:Object):void{
 			_appConfig = (object as IAppConfig);
+			
+			var newDisplay:IDisplayAsset = _appConfig.mainAsset;
+			if(newDisplay && !asset){
+				asset = newDisplay;
+			}
+			
 			var act:IUniversalAct;
 			if(_appConfig.initActs){
 				for(var i:int=0; i<_appConfig.initActs.length; i++){
@@ -161,5 +195,15 @@ package org.farmcode.actLibrary.application
 			act.perform(execution);
 			act.scope = null;
 		}
+	}
+}
+import org.farmcode.acting.universal.rules.ActClassRule;
+import org.farmcode.acting.universal.rules.ActInstanceRule;
+
+class ClassIncluder{
+	public function ClassIncluder(){
+		var includeClass:Class;
+		includeClass = ActClassRule;
+		includeClass = ActInstanceRule;
 	}
 }

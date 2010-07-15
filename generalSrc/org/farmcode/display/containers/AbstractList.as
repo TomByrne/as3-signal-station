@@ -29,6 +29,7 @@ package org.farmcode.display.containers
 	public class AbstractList extends ContainerView implements IScrollable
 	{
 		private static var SCROLL_BAR_CHILD:String = "scrollBar";
+		private static var ASSUMED_RENDERER_NAME:String = "listItem";
 		
 		public function get rendererFactory():IInstanceFactory{
 			return _rendererFactory;
@@ -134,7 +135,7 @@ package org.farmcode.display.containers
 			_containerAsset.addAsset(_container);
 		}
 		protected function assumedRendererAssetName() : String{
-			return "listItem";
+			return ASSUMED_RENDERER_NAME;
 		}
 		override protected function unbindFromAsset() : void{
 			super.unbindFromAsset();
@@ -217,11 +218,8 @@ package org.farmcode.display.containers
 						layoutHeight = position.height-meas.height;
 					}
 				}
-			}else{
-				layoutWidth = position.width;
 			}
-			setLayoutWidth(layoutWidth);
-			_layout.setDisplayPosition(0,0,layoutWidth,layoutHeight);
+			setLayoutDimensions(layoutWidth,layoutHeight);
 			_scrollRect.x = _layout.marginLeft;
 			_scrollRect.y = _layout.marginTop;
 			_scrollRect.width = layoutWidth-_layout.marginLeft-_layout.marginRight;
@@ -230,8 +228,15 @@ package org.farmcode.display.containers
 			_container.x = _layout.marginLeft;
 			_container.y = _layout.marginTop;
 		}
-		protected function setLayoutWidth(layoutWidth:Number):void{
-			_layout.columnWidths = [layoutWidth];
+		protected function setLayoutDimensions(width:Number, height:Number):void{
+			_layout.setDisplayPosition(0,0,width,height);
+			if(_layout.flowDirection==Direction.VERTICAL){
+				_layout.columnWidths = [width];
+				_layout.rowHeights = null;
+			}else{
+				_layout.columnWidths = null;
+				_layout.rowHeights = [height];
+			}
 		}
 		protected function assessFactory():void{
 			var factory:IInstanceFactory;

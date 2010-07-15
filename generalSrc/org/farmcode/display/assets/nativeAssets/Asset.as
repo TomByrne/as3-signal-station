@@ -34,7 +34,7 @@ package org.farmcode.display.assets.nativeAssets
 					change = true;
 				}
 			}
-			if(change)applyAvailableStates();
+			if(change)findAvailableStates();
 		}
 		public function removeStateList(stateList:Array):void{
 			var index:int = _stateLists.indexOf(stateList);
@@ -48,7 +48,7 @@ package org.farmcode.display.assets.nativeAssets
 					change = true;
 				}
 			}
-			if(change)applyAvailableStates();
+			if(change)findAvailableStates();
 		}
 		
 		

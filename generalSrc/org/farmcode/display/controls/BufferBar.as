@@ -66,13 +66,10 @@ package org.farmcode.display.controls
 			_bufferedBar = null;
 		}
 		override protected function draw() : void{
-			
-			
-			var playedFract:Number = (_videoSource.totalTime>0?_videoSource.currentTime/_videoSource.totalTime:0);
-			var loadFract:Number = _videoSource.loadProgress/_videoSource.loadTotal;
+			var playedFract:Number = (_videoSource && _videoSource.totalTime>0?_videoSource.currentTime/_videoSource.totalTime:0);
+			var loadFract:Number = (_videoSource?_videoSource.loadProgress/_videoSource.loadTotal:0);
 			
 			if(_slider.direction==Direction.VERTICAL){
-				
 				if(_playedBar){
 					var natWidth:Number = _playedBar.width/_playedBar.scaleX;
 					if(natWidth<displayPosition.width){

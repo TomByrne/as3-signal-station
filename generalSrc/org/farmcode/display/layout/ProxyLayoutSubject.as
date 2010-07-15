@@ -1,5 +1,6 @@
 package org.farmcode.display.layout
 {
+	import flash.errors.InvalidSWFError;
 	import flash.geom.Rectangle;
 	
 	import org.farmcode.acting.actTypes.IAct;
@@ -57,13 +58,15 @@ package org.farmcode.display.layout
 		}
 		public function set target(value:ILayoutSubject):void{
 			if(_target!=value){
+				var oldMeas:Rectangle;
 				if(_target){
 					_target.measurementsChanged.removeHandler(onMeasurementsChanged);
+					oldMeas = _target.displayMeasurements;
 				}
 				_target = value;
 				if(_target){
 					_target.measurementsChanged.addHandler(onMeasurementsChanged);
-					if(!_displayMeasurements){
+					if(!_displayMeasurements && (!oldMeas || !_target.displayMeasurements.equals(oldMeas))){
 						dispatchMeasurementsChanged();
 					}else{
 						_target.setDisplayPosition(_displayPosition.x,_displayPosition.y,_displayPosition.width,_displayPosition.height);
@@ -131,7 +134,7 @@ package org.farmcode.display.layout
 				change = true;
 			}
 			if(change){
-				_target.setDisplayPosition(x,y,width,height);
+				if(_target)_target.setDisplayPosition(x,y,width,height);
 				if(_positionChanged)_positionChanged.perform(this,oldX,oldY,oldWidth,oldHeight);
 			}
 		}

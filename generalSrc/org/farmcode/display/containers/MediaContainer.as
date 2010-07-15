@@ -17,6 +17,8 @@ package org.farmcode.display.containers
 	
 	public class MediaContainer extends ContainerView
 	{
+		// asset children
+		private static const MEDIA_BOUNDS:String = "mediaBounds";
 		
 		public function get mediaSource():IMediaSource{
 			return _mediaSource;
@@ -25,18 +27,17 @@ package org.farmcode.display.containers
 			if(_mediaSource!=value){
 				if(_mediaSource){
 					_mediaSource.returnMediaDisplay(_mediaSourceDisplay);
-					_mediaSourceDisplay.measurementsChanged.removeHandler(onMediaMeasChange);
 					if(_mediaContainer)_mediaContainer.removeAsset(_mediaSourceDisplay.asset);
 					_mediaSourceDisplay = null;
-					_layoutProxy.target = null;
 				}
 				_mediaSource = value;
 				if(_mediaSource){
 					_mediaSourceDisplay = _mediaSource.takeMediaDisplay();
-					_mediaSourceDisplay.measurementsChanged.addHandler(onMediaMeasChange);
 					if(_mediaContainer)_mediaContainer.addAsset(_mediaSourceDisplay.asset);
 					_layoutProxy.target = _mediaSourceDisplay;
 					invalidate();
+				}else{
+					_layoutProxy.target = null;
 				}
 			}
 		}
@@ -49,9 +50,6 @@ package org.farmcode.display.containers
 				_mediaLayoutInfo = value;
 				_layoutProxy.layoutInfo = (_mediaLayoutInfo?_mediaLayoutInfo:_assumedLayoutInfo);
 			}
-		}
-		override public function get displayMeasurements() : Rectangle{
-			return _mediaSourceDisplay?_mediaSourceDisplay.displayMeasurements:null;
 		}
 		
 		private var _mediaSource:IMediaSource;
@@ -69,15 +67,17 @@ package org.farmcode.display.containers
 		public function MediaContainer(asset:IDisplayAsset=null){
 			super(asset);
 			_layout.addSubject(_layoutProxy);
+			_displayMeasurements = new Rectangle();
+			_layout.measurementsChanged.addHandler(onLayoutMeasChange);
 		}
-		protected function onMediaMeasChange(from:ILayoutSubject, oldX:Number, oldY:Number, oldWidth:Number, oldHeight:Number):void{
+		protected function onLayoutMeasChange(from:ILayoutSubject, oldX:Number, oldY:Number, oldWidth:Number, oldHeight:Number):void{
 			dispatchMeasurementChange();
 		}
 		override protected function bindToAsset() : void{
 			super.bindToAsset()
 			_mediaContainer = _asset.createAsset(IContainerAsset);
 			if(_mediaSourceDisplay)_mediaContainer.addAsset(_mediaSourceDisplay.asset);
-			_mediaBounds = _containerAsset.takeAssetByName("mediaBounds",IDisplayAsset);
+			_mediaBounds = _containerAsset.takeAssetByName(MEDIA_BOUNDS,IDisplayAsset,true);
 			if(_mediaBounds){
 				if(!_assumedLayoutInfo){
 					_assumedLayoutInfo = new FrameLayoutInfo();
@@ -104,6 +104,10 @@ package org.farmcode.display.containers
 			
 			if(_mediaSourceDisplay)_mediaContainer.removeAsset(_mediaSourceDisplay.asset);
 			_asset.destroyAsset(_mediaContainer);
+		}
+		override protected function measure() : void{
+			_displayMeasurements.width = _layout.displayMeasurements.width;
+			_displayMeasurements.height = _layout.displayMeasurements.height;
 		}
 		override protected function draw() : void{
 			super.draw();

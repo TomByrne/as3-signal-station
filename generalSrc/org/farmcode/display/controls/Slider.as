@@ -1,9 +1,6 @@
 package org.farmcode.display.controls
 {
 	
-	import flash.display.DisplayObject;
-	import flash.display.InteractiveObject;
-	
 	import org.farmcode.acting.actTypes.IAct;
 	import org.farmcode.acting.acts.Act;
 	import org.farmcode.core.DelayedCall;
@@ -100,7 +97,7 @@ package org.farmcode.display.controls
 		
 		private var _button:Button = new Button();
 		private var _thumb:Button = new Button();
-		private var _track:DisplayObject;
+		private var _track:IDisplayAsset;
 		
 		private var _assumedDirection:String;
 		private var _assumedThumbX:Number;
@@ -142,6 +139,8 @@ package org.farmcode.display.controls
 			_track = null;
 		}
 		override protected function draw() : void{
+			_asset.scaleX = 1;
+			_asset.scaleY = 1;
 			
 			var fract:Number = (value-_minimum)/(_maximum-_minimum);
 			_track.rotation = _thumb.asset.rotation = (_direction!=_assumedDirection?90:0);
