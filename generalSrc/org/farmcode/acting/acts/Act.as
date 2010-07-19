@@ -20,38 +20,47 @@ package org.farmcode.acting.acts
 		protected var _performing:Boolean;
 		protected var _removeAll:Boolean;
 		protected var _toRemove:Array = new Array();
+		protected var _checkRemove:Boolean;
 		
 		public function Act(){
 		}
 		
 		public function perform(... params):void{
+			_checkRemove = false;
 			_performing = true;
+			var hasParams:Boolean = (params.length>0);
 			for each(var actHandler:ActHandler in _handlers){
-				var thisParams:Array;
 				if(actHandler.additionalArguments && actHandler.additionalArguments.length){
-					thisParams = params.concat(actHandler.additionalArguments);
+					if(hasParams){
+						actHandler.handler.apply(null,params.concat(actHandler.additionalArguments));
+					}else{
+						actHandler.handler.apply(null,actHandler.additionalArguments);
+					}
+				}else if(hasParams){
+					actHandler.handler.apply(null,params);
 				}else{
-					thisParams = params;
+					actHandler.handler();
 				}
-				actHandler.handler.apply(null,thisParams);
-				if(actHandler.executions>0){
+				if(actHandler.checkExecutions){
 					--actHandler.executions;
 					if(actHandler.executions==0){
 						_toRemove.push(actHandler.handler);
+						_checkRemove = true;
 					}
 				}
 			}
 			_performing = false;
-			var removeLength:int = (_toRemove.length);
-			if(_removeAll || (removeLength && _toRemove.length==_handlers.length)){
-				removeAllHandlers();
-				_removeAll = false;
-				if(removeLength)_toRemove = new Array();
-			}else if(removeLength){
-				for each(var handler:Function in _toRemove){
-					removeHandler(handler);
+			if(_checkRemove){
+				var toRemoveCount:int = _toRemove.length;
+				if(_removeAll || toRemoveCount==_handlers.length){
+					removeAllHandlers();
+					_removeAll = false;
+				}else if(toRemoveCount){
+					for each(var handler:Function in _toRemove){
+						removeHandler(handler);
+					}
+					_toRemove = new Array();
 				}
-				_toRemove = new Array();
 			}
 		}
 		

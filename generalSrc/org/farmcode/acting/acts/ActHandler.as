@@ -16,10 +16,19 @@ package org.farmcode.acting.acts
 				return new ActHandler(handler, additionalArguments);
 			}
 		}
+		public function get executions():int{
+			return _executions;
+		}
+		public function set executions(value:int):void{
+			_executions = value;
+			checkExecutions = (value>0);
+		}
+		
+		private var _executions:int;
 		
 		public var handler:Function;
 		public var additionalArguments:Array;
-		public var executions:int = 0;
+		public var checkExecutions:Boolean;
 		
 		public function ActHandler(handler:Function, additionalArguments:Array){
 			this.handler = handler;
