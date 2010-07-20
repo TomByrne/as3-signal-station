@@ -149,10 +149,10 @@ package org.farmcode.display.controls
 		}
 		override protected function bindToAsset() : void{
 			super.bindToAsset();
-			_interactiveObjectAsset.mouseDown.addHandler(onMouseDown);
-			_interactiveObjectAsset.rollOver.addHandler(onRollOver);
-			_interactiveObjectAsset.rollOut.addHandler(onRollOut);
-			_interactiveObjectAsset.click.addHandler(onClick);
+			_interactiveObjectAsset.mouseReleased.addHandler(onMouseDown);
+			_interactiveObjectAsset.rolledOver.addHandler(onRollOver);
+			_interactiveObjectAsset.rolledOut.addHandler(onRollOut);
+			_interactiveObjectAsset.clicked.addHandler(onClick);
 			
 			_containerAsset.mouseChildren = false;
 			
@@ -162,10 +162,10 @@ package org.farmcode.display.controls
 			}
 		}
 		override protected function unbindFromAsset() : void{
-			_interactiveObjectAsset.mouseDown.removeHandler(onMouseDown);
-			_interactiveObjectAsset.rollOver.removeHandler(onRollOver);
-			_interactiveObjectAsset.rollOut.removeHandler(onRollOut);
-			_interactiveObjectAsset.click.removeHandler(onClick);
+			_interactiveObjectAsset.mouseReleased.removeHandler(onMouseDown);
+			_interactiveObjectAsset.rolledOver.removeHandler(onRollOver);
+			_interactiveObjectAsset.rolledOut.removeHandler(onRollOut);
+			_interactiveObjectAsset.clicked.removeHandler(onClick);
 			
 			_containerAsset.mouseChildren = true;
 			super.unbindFromAsset();
@@ -197,7 +197,7 @@ package org.farmcode.display.controls
 		}
 		private function onMouseDown(from:IInteractiveObjectAsset, info:IMouseActInfo):void{
 			if(_active){
-				asset.stage.mouseUp.addHandler(onMouseUp);
+				asset.stage.mousePressed.addHandler(onMouseUp);
 				_downState.selection = 0;
 				_down = true;
 				if(_mouseDownAct)_mouseDownAct.perform(this);
@@ -205,7 +205,7 @@ package org.farmcode.display.controls
 		}
 		private function onMouseUp(from:IInteractiveObjectAsset, info:IMouseActInfo):void{
 			if(_active){
-				asset.stage.mouseUp.removeHandler(onMouseUp);
+				asset.stage.mousePressed.removeHandler(onMouseUp);
 				_downState.selection = 1;
 				_down = false;
 				if(_mouseUpAct)_mouseUpAct.perform(this);

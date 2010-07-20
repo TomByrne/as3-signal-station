@@ -27,8 +27,11 @@ package org.farmcode.display.containers
 		}
 		public function set direction(value:String):void{
 			_layout.flowDirection = value;
+			if(_scrollBar)_scrollBar.direction = value;
 		}
-		
+		public function get dataCount():int{
+			return _layout.getDataCount();
+		}
 		public function get dataProvider():*{
 			return _layout.dataProvider;
 		}
@@ -225,6 +228,10 @@ package org.farmcode.display.containers
 			super(asset);
 			_layout.equaliseCellWidths = true;
 		}
+		override protected function bindToAsset() : void{
+			super.bindToAsset();
+			if(_scrollBar)_scrollBar.direction = direction;
+		}
 		override protected function onAddRenderer(layout:RendererGridLayout, renderer:ILayoutView) : void{
 			super.onAddRenderer(layout, renderer);
 			var selRenderer:ISelectableRenderer = (renderer as ISelectableRenderer);
@@ -351,6 +358,9 @@ package org.farmcode.display.containers
 			}
 			return change;
 		}
+		/**
+		 * checkAutoScroll scrolls the list to bring an item into view when it is selected.
+		 */
 		protected function checkAutoScroll():void{
 			if(_autoScrollToSelection && _selectedIndices.length){
 				_selectedIndices.sort();

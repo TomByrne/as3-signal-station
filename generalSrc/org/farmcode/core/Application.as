@@ -2,6 +2,7 @@ package org.farmcode.core
 {
 	import flash.display.DisplayObject;
 	import flash.display.DisplayObjectContainer;
+	import flash.geom.Rectangle;
 	
 	import org.farmcode.display.assets.IContainerAsset;
 	import org.farmcode.display.assets.IDisplayAsset;
@@ -55,11 +56,22 @@ package org.farmcode.core
 				_mainView = value;
 				if(_mainView){
 					if(!_mainView.asset)_mainView.asset = asset;
-					_mainView.setDisplayPosition(displayPosition.x,displayPosition.y,displayPosition.width,displayPosition.height);
+					invalidate()
 				}
 			}
 		}
 		
+		public function get applicationScale():Number{
+			return _applicationScale;
+		}
+		public function set applicationScale(value:Number):void{
+			if(_applicationScale!=value){
+				_applicationScale = value;
+				invalidate();
+			}
+		}
+		
+		private var _applicationScale:Number = 1;
 		private var _mainView:LayoutView;
 		protected var _container:DisplayObjectContainer;
 		protected var _assetContainer:IContainerAsset;
@@ -112,12 +124,15 @@ package org.farmcode.core
 		protected function commitStage() : void{
 			// override me
 		}
-		override public function setDisplayPosition(x:Number, y:Number, width:Number, height:Number):void{
-			if(_mainView)_mainView.setDisplayPosition(x,y,width,height);
-			super.setDisplayPosition(x,y,width,height);
-		}
 		override protected function draw() : void{
-			// ignore
+			// If FullscreenUtil is being used then this will be skipped
+			if(_mainView && _mainView.asset.parent==_assetContainer){
+				var scale:Number = (isNaN(_applicationScale) || _applicationScale<=0?1:_applicationScale);
+				var pos:Rectangle = displayPosition;
+				_mainView.setDisplayPosition(pos.x,pos.y,pos.width*(1/scale),pos.height*(1/scale));
+				asset.scaleX = scale;
+				asset.scaleY = scale;
+			}
 		}
 	}
 }

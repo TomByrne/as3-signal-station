@@ -457,7 +457,7 @@ package org.farmcode.display.layout.grid
 					breadth += minBreadth;
 					if(length<minLength || 
 						length>maxLength ||
-						(!_renderEmptyCells && _cellPosCache[length][breadth]==null)){
+						(!_renderEmptyCells && (_cellPosCache[length]==null || _cellPosCache[length][breadth]==null))){
 						
 						delete _renderers[i];
 						renderer[_dataField] = null;

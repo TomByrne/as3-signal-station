@@ -98,7 +98,7 @@ package org.farmcode.media.video
 						if(_buffered){
 							_streamPlaying = true;
 							_netStream.resume();
-							if(_netStream.time==totalTime){
+							if(_netStream.time>=totalTime){
 								currentTime = 0;
 							}
 						}
@@ -269,6 +269,10 @@ package org.farmcode.media.video
 						_netStream.pause();
 					}
 					break;
+				case NetStreamCodes.PLAY_STOP:
+					_streamPlaying = false;
+					playing = false;
+					break;
 				case NetStreamCodes.SEEK_FAILED:
 				case NetStreamCodes.SEEK_NOTIFY:
 				case NetStreamCodes.SEEK_INVALID_TIME:
@@ -276,12 +280,16 @@ package org.farmcode.media.video
 					assessBufferSize();
 					break;
 				case NetStreamCodes.BUFFER_FULL:
+				case NetStreamCodes.BUFFER_FLUSH:
 					setBuffered(true);
 					assessBufferSize();
 					break;
 				case NetStreamCodes.BUFFER_EMPTY:
-					setBuffered(false);
-					assessBufferSize();
+					// BUFFER_EMPTY gets fired at the end of the video sometimes (erroneously)
+					if(_netStream.time<totalTime){
+						setBuffered(false);
+						assessBufferSize();
+					}
 					break;
 			}
 		}
@@ -383,11 +391,14 @@ package org.farmcode.media.video
 					bufTime = this.smallBuffer;
 				}
 			}
+			bufTime = (bufLength>bufTime?bufLength:bufTime);
 			if(!isNaN(bufTime) && _netStream.bufferTime != bufTime){
-				if(bufLength<bufTime){
+				// it's crazy to use _buffered to determine the buffer size and then
+				// use the buffer size to determine _buffered
+				/*if(bufLength<bufTime){
 					setBuffered(false);
-				}
-				_netStream.bufferTime = (bufLength>bufTime?bufLength:bufTime);
+				}*/
+				_netStream.bufferTime = bufTime;
 			}
 		}
 		protected function get largeBuffer(): Number{

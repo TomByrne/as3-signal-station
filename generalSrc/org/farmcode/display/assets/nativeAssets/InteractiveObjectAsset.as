@@ -21,7 +21,7 @@ package org.farmcode.display.assets.nativeAssets
 		/**
 		 * @inheritDoc
 		 */
-		public function get mouseDown():IAct{
+		public function get mouseReleased():IAct{
 			if(!_mouseDown)_mouseDown = new Act();
 			confirmListening(MouseEvent.MOUSE_DOWN);
 			return _mouseDown;
@@ -30,7 +30,7 @@ package org.farmcode.display.assets.nativeAssets
 		/**
 		 * @inheritDoc
 		 */
-		public function get mouseUp():IAct{
+		public function get mousePressed():IAct{
 			if(!_mouseUp)_mouseUp = new Act();
 			confirmListening(MouseEvent.MOUSE_UP);
 			return _mouseUp;
@@ -39,7 +39,7 @@ package org.farmcode.display.assets.nativeAssets
 		/**
 		 * @inheritDoc
 		 */
-		public function get mouseOver():IAct{
+		public function get mousedOver():IAct{
 			if(!_mouseOver)_mouseOver = new Act();
 			confirmListening(MouseEvent.MOUSE_OVER);
 			return _mouseOver;
@@ -48,7 +48,7 @@ package org.farmcode.display.assets.nativeAssets
 		/**
 		 * @inheritDoc
 		 */
-		public function get mouseOut():IAct{
+		public function get mousedOut():IAct{
 			if(!_mouseOut)_mouseOut = new Act();
 			confirmListening(MouseEvent.MOUSE_OUT);
 			return _mouseOut;
@@ -56,7 +56,7 @@ package org.farmcode.display.assets.nativeAssets
 		/**
 		 * @inheritDoc
 		 */
-		public function get rollOver():IAct{
+		public function get rolledOver():IAct{
 			if(!_rollOver)_rollOver = new Act();
 			confirmListening(MouseEvent.ROLL_OVER);
 			return _rollOver;
@@ -64,7 +64,7 @@ package org.farmcode.display.assets.nativeAssets
 		/**
 		 * @inheritDoc
 		 */
-		public function get rollOut():IAct{
+		public function get rolledOut():IAct{
 			if(!_rollOut)_rollOut = new Act();
 			confirmListening(MouseEvent.ROLL_OUT);
 			return _rollOut;
@@ -72,7 +72,7 @@ package org.farmcode.display.assets.nativeAssets
 		/**
 		 * @inheritDoc
 		 */
-		public function get mouseMove():IAct{
+		public function get mouseMoved():IAct{
 			if(!_mouseMove)_mouseMove = new Act();
 			confirmListening(MouseEvent.MOUSE_MOVE);
 			return _mouseMove;
@@ -80,10 +80,18 @@ package org.farmcode.display.assets.nativeAssets
 		/**
 		 * @inheritDoc
 		 */
-		public function get click():IAct{
+		public function get clicked():IAct{
 			if(!_click)_click = new Act();
 			confirmListening(MouseEvent.CLICK);
 			return _click;
+		}
+		/**
+		 * @inheritDoc
+		 */
+		public function get doubleClicked():IAct{
+			if(!_doubleClick)_doubleClick = new Act();
+			confirmListening(MouseEvent.DOUBLE_CLICK);
+			return _doubleClick;
 		}
 		/**
 		 * @inheritDoc
@@ -161,6 +169,13 @@ package org.farmcode.display.assets.nativeAssets
 			_interactiveObject.tabEnabled = value;
 		}
 		
+		public function get doubleClickEnabled():Boolean{
+			return _interactiveObject.doubleClickEnabled;
+		}
+		public function set doubleClickEnabled(value:Boolean):void{
+			_interactiveObject.doubleClickEnabled = value;
+		}
+		
 		public function get mouseEnabled():Boolean{
 			return _interactiveObject.mouseEnabled;
 		}
@@ -182,6 +197,7 @@ package org.farmcode.display.assets.nativeAssets
 		
 		protected var _mouseWheel:Act;
 		protected var _click:Act;
+		protected var _doubleClick:Act;
 		protected var _mouseMove:Act;
 		protected var _rollOut:Act;
 		protected var _rollOver:Act;
@@ -191,7 +207,6 @@ package org.farmcode.display.assets.nativeAssets
 		protected var _mouseDown:Act;
 		
 		private var _interactiveObject:InteractiveObject;
-		private var _buttonEnabled:Boolean;
 		
 		private var eventBundles:Array;
 		
@@ -199,6 +214,7 @@ package org.farmcode.display.assets.nativeAssets
 			super();
 			eventBundles = [new EventBundle(MouseEvent.MOUSE_WHEEL, "_mouseWheel", onMouseWheel),
 							new EventBundle(MouseEvent.CLICK, "_click", onMouseEvent),
+							new EventBundle(MouseEvent.DOUBLE_CLICK, "_doubleClick", onMouseEvent),
 							new EventBundle(MouseEvent.MOUSE_MOVE, "_mouseMove", onMouseEvent),
 							new EventBundle(MouseEvent.ROLL_OUT, "_rollOut", onMouseEvent),
 							new EventBundle(MouseEvent.ROLL_OVER, "_rollOver", onMouseEvent),

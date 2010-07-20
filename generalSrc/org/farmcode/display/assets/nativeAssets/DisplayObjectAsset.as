@@ -70,12 +70,6 @@ package org.farmcode.display.assets.nativeAssets {
 					_displayObject.scaleY = _origScaleY;
 				}
 				_displayObject = value;
-				if(_displayObject) {
-					_innerBounds = value.getBounds(value);
-					_origScaleX = value.scaleX;
-					_origScaleY = value.scaleY;
-					takePosition();
-				}
 				if(_addedToStage)
 					_addedToStage.eventDispatcher = value;
 				
@@ -130,15 +124,19 @@ package org.farmcode.display.assets.nativeAssets {
 			}
 		}
 		public function get naturalWidth():Number {
+			checkInnerBounds();
 			return _innerBounds.width*_origScaleX;
 		}
 		public function get naturalHeight():Number {
+			checkInnerBounds();
 			return _innerBounds.height*_origScaleY;
 		}
 		public function get mouseX():Number {
+			checkInnerBounds();
 			return(_displayObject.mouseX-_innerBounds.x)/_displayObject.scaleX;
 		}
 		public function get mouseY():Number {
+			checkInnerBounds();
 			return(_displayObject.mouseY-_innerBounds.y)/_displayObject.scaleY;
 		}
 		public function set visible(value:Boolean):void {
@@ -190,7 +188,7 @@ package org.farmcode.display.assets.nativeAssets {
 			return _displayObject.scrollRect;
 		}
 		public function set width(value:Number):void {
-			if(value && _innerBounds.width) {
+			if(checkInnerBounds()) {
 				_displayObject.width = value;
 			} else {
 				_displayObject.scaleX = 1;
@@ -229,7 +227,7 @@ package org.farmcode.display.assets.nativeAssets {
 		
 		
 		public function set height(value:Number):void {
-			if(value && _innerBounds.height) {
+			if(checkInnerBounds()) {
 				_displayObject.height = value;
 			} else {
 				_displayObject.scaleY = 1;
@@ -257,7 +255,20 @@ package org.farmcode.display.assets.nativeAssets {
 			return _displayObject && _displayObject.parent?NativeAssetFactory.getNew(_displayObject.parent):null;
 		}
 		
-		
+		protected function checkInnerBounds():Boolean {
+			if(_innerBounds){
+				return true;
+			}
+			if(_displayObject && _displayObject.width && _displayObject.height) {
+				_innerBounds = _displayObject.getBounds(_displayObject);
+				_origScaleX = _displayObject.scaleX;
+				_origScaleY = _displayObject.scaleY;
+				takePosition();
+				return true;
+			}else{
+				return false;
+			}
+		}
 		protected function takePosition():void {
 			takeX();
 			takeY();
@@ -265,12 +276,20 @@ package org.farmcode.display.assets.nativeAssets {
 		
 		
 		protected function takeX():void {
-			_x = _displayObject.x+_innerBounds.x*_displayObject.scaleX;
+			if(checkInnerBounds()){
+				_x = _displayObject.x+_innerBounds.x*_displayObject.scaleX;
+			}else{
+				_x = _displayObject.x;
+			}
 		}
 		
 		
 		protected function takeY():void {
-			_y = _displayObject.y+_innerBounds.y*_displayObject.scaleY;
+			if(checkInnerBounds()){
+				_y = _displayObject.y+_innerBounds.y*_displayObject.scaleY;
+			}else{
+				_y = _displayObject.y;
+			}
 		}
 		
 		
@@ -283,8 +302,10 @@ package org.farmcode.display.assets.nativeAssets {
 		protected function applyX():void {
 			if(_displayObject.scrollRect || !_forceTopLeft){
 				_displayObject.x = _x;
-			}else{
+			}else if(checkInnerBounds()){
 				_displayObject.x = _x-_innerBounds.x*_displayObject.scaleX;
+			}else{
+				_displayObject.x = _x;
 			}
 		}
 		
@@ -292,8 +313,10 @@ package org.farmcode.display.assets.nativeAssets {
 		protected function applyY():void {
 			if(_displayObject.scrollRect || !_forceTopLeft){
 				_displayObject.y = _y;
-			}else{
+			}else if(checkInnerBounds()){
 				_displayObject.y = _y-_innerBounds.y*_displayObject.scaleY;
+			}else{
+				_displayObject.y = _y;
 			}
 		}
 		

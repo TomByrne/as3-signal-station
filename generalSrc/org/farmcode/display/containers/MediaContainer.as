@@ -52,17 +52,17 @@ package org.farmcode.display.containers
 			}
 		}
 		
-		private var _mediaSource:IMediaSource;
-		private var _mediaLayoutInfo:ILayoutInfo;
-		private var _mediaSourceDisplay:ILayoutView;
-		private var _layoutProxy:ProxyLayoutSubject = new ProxyLayoutSubject();
-		private var _layout:FrameLayout = new FrameLayout();
+		protected var _mediaSource:IMediaSource;
+		protected var _mediaLayoutInfo:ILayoutInfo;
+		protected var _mediaSourceDisplay:ILayoutView;
+		protected var _layoutProxy:ProxyLayoutSubject = new ProxyLayoutSubject();
+		protected var _layout:FrameLayout = new FrameLayout();
 		protected var _mediaContainer:IContainerAsset;
 		
-		private var _scrollRect:Rectangle = new Rectangle();
+		protected var _scrollRect:Rectangle = new Rectangle();
 		
-		private var _mediaBounds:IDisplayAsset;
-		private var _assumedLayoutInfo:FrameLayoutInfo;
+		protected var _mediaBounds:IDisplayAsset;
+		protected var _assumedLayoutInfo:FrameLayoutInfo;
 		
 		public function MediaContainer(asset:IDisplayAsset=null){
 			super(asset);

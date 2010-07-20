@@ -33,6 +33,14 @@ package org.farmcode.actLibrary.application
 			_mainAsset = value?NativeAssetFactory.getNew(value):null;
 		}
 		
+		public function get applicationScale():Number{
+			return _applicationScale;
+		}
+		public function set applicationScale(value:Number):void{
+			_applicationScale = value;
+		}
+		
+		private var _applicationScale:Number;
 		private var _mainAsset:IDisplayAsset;
 		private var _initActs:Array;
 	}

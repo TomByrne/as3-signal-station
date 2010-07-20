@@ -41,6 +41,17 @@ package org.farmcode.display.utils
 				if(_activeChange)_activeChange.perform(this,_active);
 			}
 		}
+		public function get fullScreenScale():Number{
+			return _fullScreenScale;
+		}
+		public function set fullScreenScale(value:Number):void{
+			if(_fullScreenScale != value){
+				_fullScreenScale = value;
+				if(active){
+					checkSize();
+				}
+			}
+		}
 		
 		/**
 		 * handler(from:FullscreenUtil, active:Boolean)
@@ -54,6 +65,7 @@ package org.farmcode.display.utils
 		
 		public var stage:IStageAsset;
 		
+		private var _fullScreenScale:Number = 1;
 		private var _active:Boolean;
 		private var _view:ILayoutView;
 		
@@ -64,19 +76,19 @@ package org.farmcode.display.utils
 		public function FullscreenUtil(view:ILayoutView=null){
 			this.view = view;
 		}
-		public function addFullscreen():void{
+		protected function addFullscreen():void{
 			_oldParent = _view.asset.parent;
 			if(_oldParent){
 				_oldDepth = _oldParent.getAssetIndex(_view.asset);
 			}
 			_lastStage = (stage?stage:_view.asset.stage);
 			TopLayerManager.add(_view.asset,_lastStage);
-			_view.setDisplayPosition(0,0,_lastStage.stageWidth,_lastStage.stageHeight);
-			_lastStage.displayState = StageDisplayState.FULL_SCREEN;
+			checkSize();
 			_lastStage.resize.addHandler(onResize);
+			_lastStage.displayState = StageDisplayState.FULL_SCREEN;
 			_lastStage.fullScreen.addHandler(onFullScreen);
 		}
-		public function removeFullscreen():void{
+		protected function removeFullscreen():void{
 			_lastStage.resize.removeHandler(onResize);
 			_lastStage.fullScreen.removeHandler(onFullScreen);
 			
@@ -88,10 +100,15 @@ package org.farmcode.display.utils
 			}
 			_oldParent = null;
 		}
-		public function onResize(e:Event, from:IStageAsset):void{
-			_view.setDisplayPosition(0,0,_lastStage.stageWidth,_lastStage.stageHeight);
+		protected function onResize(e:Event, from:IStageAsset):void{
+			checkSize();
 		}
-		public function onFullScreen(e:Event, from:IStageAsset):void{
+		protected function checkSize():void{
+			_view.setDisplayPosition(0,0,_lastStage.stageWidth/_fullScreenScale,_lastStage.stageHeight/_fullScreenScale);
+			_view.asset.scaleX = _fullScreenScale;
+			_view.asset.scaleY = _fullScreenScale;
+		}
+		protected function onFullScreen(e:Event, from:IStageAsset):void{
 			active = false;
 		}
 	}

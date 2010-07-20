@@ -1,6 +1,6 @@
 package org.farmcode.sound
 {
-	import au.com.thefarmdigital.tweening.LooseTween;
+	import org.farmcode.tweening.LooseTween;
 	
 	import flash.events.EventDispatcher;
 	import flash.net.SharedObject;

@@ -189,6 +189,7 @@ package org.farmcode.actLibrary.application
 					temporaryPerformAct(_appConfig.initActs[i],execution);
 				}
 			}
+			if(!isNaN(_appConfig.applicationScale))applicationScale = _appConfig.applicationScale;
 		}
 		protected function temporaryPerformAct(act:IUniversalAct, execution:UniversalActExecution):void{
 			act.scope = asset;

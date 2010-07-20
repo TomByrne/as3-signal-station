@@ -41,9 +41,6 @@ package org.farmcode.display.assets.nativeAssets
 				if(value){
 					_textField = value as TextField;
 					_defaultState = _textField.defaultTextFormat;
-					// strange gutter/bounds bug with TextFields
-					_innerBounds.x += TextFieldGutter.TEXT_FIELD_GUTTER;
-					_innerBounds.y += TextFieldGutter.TEXT_FIELD_GUTTER;
 					Config::DEBUG{
 						if(!_textField.embedFonts){
 							trace("WARNING: TextField with embedFonts set to false");
@@ -57,6 +54,17 @@ package org.farmcode.display.assets.nativeAssets
 				}
 				if(_change)_change.eventDispatcher = value;
 				
+			}
+		}
+		override protected function checkInnerBounds():Boolean {
+			if(_innerBounds)return true;
+			if(super.checkInnerBounds()){
+				// strange gutter/bounds bug with TextFields
+				_innerBounds.x += TextFieldGutter.TEXT_FIELD_GUTTER;
+				_innerBounds.y += TextFieldGutter.TEXT_FIELD_GUTTER;
+				return true;
+			}else{
+				return false;
 			}
 		}
 		

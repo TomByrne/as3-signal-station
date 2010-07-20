@@ -1,6 +1,6 @@
 package org.farmcode.sound.soundControls
 {
-	import au.com.thefarmdigital.tweening.LooseTween;
+	import org.farmcode.tweening.LooseTween;
 	
 	import flash.events.Event;
 	import flash.media.Sound;

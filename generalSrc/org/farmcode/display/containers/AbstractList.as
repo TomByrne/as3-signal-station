@@ -8,6 +8,7 @@ package org.farmcode.display.containers
 	
 	import org.farmcode.acting.actTypes.IAct;
 	import org.farmcode.acting.acts.Act;
+	import org.farmcode.display.DisplayNamespace;
 	import org.farmcode.display.actInfo.IMouseActInfo;
 	import org.farmcode.display.assets.IAsset;
 	import org.farmcode.display.assets.IContainerAsset;
@@ -26,11 +27,16 @@ package org.farmcode.display.containers
 	import org.farmcode.instanceFactory.IInstanceFactory;
 	import org.farmcode.instanceFactory.SimpleInstanceFactory;
 	
+	use namespace DisplayNamespace;
+	
 	public class AbstractList extends ContainerView implements IScrollable
 	{
-		private static var SCROLL_BAR_CHILD:String = "scrollBar";
-		private static var ASSUMED_RENDERER_NAME:String = "listItem";
+		DisplayNamespace static var SCROLL_BAR_CHILD:String = "scrollBar";
+		DisplayNamespace static var ASSUMED_RENDERER_NAME:String = "listItem";
 		
+		DisplayNamespace function get assumedRendererFactory():SimpleInstanceFactory{
+			return _assumedRendererFactory;
+		}
 		public function get rendererFactory():IInstanceFactory{
 			return _rendererFactory;
 		}
@@ -183,14 +189,17 @@ package org.farmcode.display.containers
 			_displayMeasurements.x = _layout.displayMeasurements.x;
 			_displayMeasurements.y = _layout.displayMeasurements.y;
 			_displayMeasurements.height = _layout.displayMeasurements.height;
+			_displayMeasurements.width = _layout.displayMeasurements.width;
 			if(_scrollBar){
 				var metrics:ScrollMetrics = _scrollBar.scrollSubject.getScrollMetrics(_scrollBar.direction);
 				var scrollBar:Boolean = (metrics.maximum>metrics.pageSize && metrics.pageSize) || (!_scrollBar.hideWhenUnusable);
 				if(scrollBar){
 					var meas:Rectangle = _scrollBar.displayMeasurements;
-					_displayMeasurements.width = _layout.displayMeasurements.width+meas.width;
-				}else{
-					_displayMeasurements.width = _layout.displayMeasurements.width;
+					if(_scrollBar.direction==Direction.VERTICAL){
+						_displayMeasurements.width += meas.width;
+					}else{
+						_displayMeasurements.height += meas.height;
+					}
 				}
 			}else{
 				_displayMeasurements.width = _layout.displayMeasurements.width;
@@ -206,15 +215,15 @@ package org.farmcode.display.containers
 			if(_scrollBar){
 				var meas:Rectangle = _scrollBar.displayMeasurements;
 				var metrics:ScrollMetrics = _scrollBar.scrollSubject.getScrollMetrics(_scrollBar.direction);
-				_scrollBarShown = (metrics.maximum>metrics.pageSize);
-				if(_scrollBar.direction==Direction.VERTICAL || !_scrollBar.hideWhenUnusable){
+				_scrollBarShown = (metrics.maximum>metrics.pageSize || !_scrollBar.hideWhenUnusable);
+				if(_scrollBar.direction==Direction.VERTICAL){
 					_scrollBar.setDisplayPosition(position.width-meas.width-_layout.marginRight,_layout.marginTop,meas.width,position.height-_layout.marginTop-_layout.marginBottom);
-					if(metrics.maximum>metrics.pageSize){
+					if(_scrollBarShown){
 						layoutWidth = position.width-meas.width;
 					}
 				}else{
 					_scrollBar.setDisplayPosition(_layout.marginLeft,position.height-meas.height-_layout.marginBottom,position.width-_layout.marginLeft-_layout.marginRight,meas.height);
-					if(metrics.maximum>metrics.pageSize || !_scrollBar.hideWhenUnusable){
+					if(_scrollBarShown){
 						layoutHeight = position.height-meas.height;
 					}
 				}

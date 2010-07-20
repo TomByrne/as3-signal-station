@@ -1,4 +1,4 @@
-package au.com.thefarmdigital.tweening
+package org.farmcode.tweening
 {
 	import flash.display.DisplayObject;
 	import flash.filters.BlurFilter;

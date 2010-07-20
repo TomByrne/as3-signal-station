@@ -85,6 +85,7 @@ package org.farmcode.display.controls
 			if(_direction != to){
 				_direction = to;
 				if(_scrollSubject)_scrollMetrics = _scrollSubject.getScrollMetrics(_direction);
+				dispatchMeasurementChange();
 				invalidate();
 			}
 		}
@@ -230,6 +231,9 @@ package org.farmcode.display.controls
 			if(_direction==Direction.VERTICAL){
 				_displayMeasurements.width = Math.max(thumbMeas.width,trackMeas.width, foreMeas.width, aftMeas.width);
 				_displayMeasurements.height = foreMeas.height+aftMeas.height;
+			}else if(_rotateForHorizontal){
+				_displayMeasurements.height = Math.max(thumbMeas.width,trackMeas.width, foreMeas.width, aftMeas.width);
+				_displayMeasurements.width = foreMeas.height+aftMeas.height;
 			}else{
 				_displayMeasurements.height = Math.max(thumbMeas.height, trackMeas.height, foreMeas.height, aftMeas.height);
 				_displayMeasurements.width = foreMeas.width+aftMeas.width;
@@ -240,6 +244,16 @@ package org.farmcode.display.controls
 			if (this._scrollMetrics != null) {
 				this._scrollMetrics.value = this._scrollMetrics.minimum;
 				this.commitScrollMetrics(true);
+			}
+		}
+		override protected function positionAsset():void{
+			if(_direction==Direction.VERTICAL || !_rotateForHorizontal){
+				super.positionAsset();
+				asset.rotation = 0;
+			}else{
+				asset.rotation = -90;
+				asset.x = displayPosition.x;
+				asset.y = displayPosition.y+displayPosition.height;
 			}
 		}
 		override protected function draw():void{
@@ -294,18 +308,30 @@ package org.farmcode.display.controls
 			var aftY:Number;
 			var aftWidth:Number;
 			var aftHeight:Number;
+			
+			var isVert:Boolean = _direction==Direction.VERTICAL;
 				
-			if(_direction==Direction.VERTICAL){
+			if(isVert || _rotateForHorizontal){
+				var height:Number;
+				var width:Number;
+				if(isVert){
+					height = displayPosition.height;
+					width = displayPosition.width;
+				}else{
+					height = displayPosition.width;
+					width = displayPosition.height;
+				}
+				
 				foreY = 0;
 				var buttonHeight:Number = foreMeas.height+aftMeas.height;
-				if(displayPosition.height<buttonHeight){
-					aftHeight = displayPosition.height*(aftMeas.height/buttonHeight);
-					foreHeight = displayPosition.height*(foreMeas.height/buttonHeight);
+				if(height<buttonHeight){
+					aftHeight = height*(aftMeas.height/buttonHeight);
+					foreHeight = height*(foreMeas.height/buttonHeight);
 				}else{
 					aftHeight = aftMeas.height;
 					foreHeight = foreMeas.height;
 				}
-				trackHeight = displayPosition.height-foreHeight-aftHeight;
+				trackHeight = height-foreHeight-aftHeight;
 				trackY = foreHeight;
 				aftY = trackY+trackHeight;
 				
@@ -318,32 +344,32 @@ package org.farmcode.display.controls
 					thumbY = ((trackHeight-thumbHeight)*ratio)+foreMeas.height;
 				}
 				
-				if(trackMeas.width<displayPosition.width){
+				if(trackMeas.width<width){
 					trackWidth = trackMeas.width;
-					trackX = (displayPosition.width-trackWidth)/2;
+					trackX = (width-trackWidth)/2;
 				}else{
-					trackWidth = displayPosition.width;
+					trackWidth = width;
 					trackX = 0;
 				}
-				if(thumbMeas.width<displayPosition.width){
+				if(thumbMeas.width<width){
 					thumbWidth = thumbMeas.width;
-					thumbX = (displayPosition.width-thumbWidth)/2;
+					thumbX = (width-thumbWidth)/2;
 				}else{
-					thumbWidth = displayPosition.width;
+					thumbWidth = width;
 					thumbX = 0;
 				}
-				if(foreMeas.width<displayPosition.width){
+				if(foreMeas.width<width){
 					foreWidth = foreMeas.width;
-					foreX = (displayPosition.width-foreWidth)/2;
+					foreX = (width-foreWidth)/2;
 				}else{
-					foreWidth = displayPosition.width;
+					foreWidth = width;
 					foreX = 0;
 				}
-				if(aftMeas.width<displayPosition.width){
+				if(aftMeas.width<width){
 					aftWidth = aftMeas.width;
-					aftX = (displayPosition.width-aftWidth)/2;
+					aftX = (width-aftWidth)/2;
 				}else{
-					aftWidth = displayPosition.width;
+					aftWidth = width;
 					aftX = 0;
 				}
 			}else{
@@ -414,7 +440,7 @@ package org.farmcode.display.controls
 		protected function scrollToMouse(... params):void{
 			var offset:Number;
 			var ratio:Number;
-			if(_direction==Direction.VERTICAL){
+			if(_direction==Direction.VERTICAL || _rotateForHorizontal){
 				offset = (!isNaN(_dragOffset)?_dragOffset:(_scrollThumb?_scrollThumb.displayPosition.height/2:0));
 				ratio = Math.max(Math.min((asset.mouseY-offset-_track.displayPosition.y)/(_track.displayPosition.height-_scrollThumb.displayPosition.height),1),0);
 			}else{
@@ -427,7 +453,7 @@ package org.farmcode.display.controls
 		
 		protected function beginDrag(... params):void{
 			if(_scrollThumb){
-				if(_direction==Direction.VERTICAL){
+				if(_direction==Direction.VERTICAL || _rotateForHorizontal){
 					_dragOffset = asset.mouseY-_scrollThumb.displayPosition.y;
 				}else{
 					_dragOffset = asset.mouseX-_scrollThumb.displayPosition.x;
@@ -436,13 +462,13 @@ package org.farmcode.display.controls
 				_dragOffset = NaN;
 			}
 			scrollToMouse();
-			asset.stage.mouseMove.addHandler(scrollToMouse);
-			asset.stage.mouseUp.addHandler(endDrag);
+			asset.stage.mouseMoved.addHandler(scrollToMouse);
+			asset.stage.mousePressed.addHandler(endDrag);
 		}
 		protected function endDrag(... params):void{
 			scrollToMouse();
-			asset.stage.mouseMove.removeHandler(scrollToMouse);
-			asset.stage.mouseUp.removeHandler(endDrag);
+			asset.stage.mouseMoved.removeHandler(scrollToMouse);
+			asset.stage.mousePressed.removeHandler(endDrag);
 			_dragOffset = NaN;
 		}
 		
@@ -458,7 +484,7 @@ package org.farmcode.display.controls
 				_scrollTimer.addEventListener(TimerEvent.TIMER_COMPLETE,beginFrameScroll);
 				_scrollTimer.start();
 				
-				asset.stage.mouseUp.addHandler(endScroll);
+				asset.stage.mousePressed.addHandler(endScroll);
 			}
 		}
 		protected function beginFrameScroll(e:Event):void{
@@ -489,7 +515,7 @@ package org.farmcode.display.controls
 				_scrollTimer.stop();
 				_scrollTimer = null;
 			}
-			asset.stage.mouseUp.removeHandler(endScroll);
+			asset.stage.mousePressed.removeHandler(endScroll);
 		}
 		protected function onSubjectMouseWheel(from:IScrollable, delta:int):void{
 			doMouseWheel(delta);

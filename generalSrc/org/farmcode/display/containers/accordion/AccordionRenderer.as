@@ -1,6 +1,6 @@
 package org.farmcode.display.containers.accordion
 {
-	import au.com.thefarmdigital.tweening.LooseTween;
+	import org.farmcode.tweening.LooseTween;
 	
 	import fl.transitions.easing.Regular;
 	
@@ -206,7 +206,7 @@ package org.farmcode.display.containers.accordion
 			if(_containerAsset.containsAssetByName(TextLabel.LABEL_FIELD_CHILD)){
 				_label.asset = _asset;
 			}
-			_interactiveObjectAsset.click.addHandler(onAssetClick);
+			_interactiveObjectAsset.clicked.addHandler(onAssetClick);
 			
 			var scrollBarAsset:IDisplayAsset = _containerAsset.takeAssetByName(SCROLL_BAR,IDisplayAsset,true);
 			if(scrollBarAsset){
@@ -218,7 +218,7 @@ package org.farmcode.display.containers.accordion
 		}
 		override protected function unbindFromAsset() : void{
 			_label.asset = null;
-			_interactiveObjectAsset.click.removeHandler(onAssetClick);
+			_interactiveObjectAsset.clicked.removeHandler(onAssetClick);
 			
 			if(_scrollBar){
 				_scrollBar.asset = null;

@@ -70,12 +70,12 @@ package org.farmcode.display.controls.popout {
 		}
 		protected function onPopoutOpen(popoutDisplay:PopoutDisplay, popout:ListBox):void {
 			if(closeOnClickOutside()){
-				asset.stage.mouseDown.addHandler(onMouseDown);
+				asset.stage.mouseReleased.addHandler(onMouseDown);
 			}
 		}
 		protected function onPopoutClose(popoutDisplay:PopoutDisplay, popout:ListBox):void {
 			if(closeOnClickOutside()){
-				asset.stage.mouseDown.removeHandler(onMouseDown);
+				asset.stage.mouseReleased.removeHandler(onMouseDown);
 			}
 		}
 		protected function onMouseDown(from:IInteractiveObjectAsset, info:IMouseActInfo):void {

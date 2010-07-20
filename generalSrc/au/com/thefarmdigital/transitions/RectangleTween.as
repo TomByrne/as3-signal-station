@@ -1,6 +1,6 @@
 package au.com.thefarmdigital.transitions
 {
-	import au.com.thefarmdigital.tweening.AbstractTween;
+	import org.farmcode.tweening.AbstractTween;
 	
 	import flash.geom.Rectangle;
 

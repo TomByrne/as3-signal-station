@@ -1,4 +1,4 @@
-package au.com.thefarmdigital.tweening
+package org.farmcode.tweening
 {
 	import org.farmcode.hoborg.IPoolable;
 	import org.goasap.GoEngine;

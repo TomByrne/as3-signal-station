@@ -6,5 +6,6 @@ package org.farmcode.actLibrary.application
 	{
 		function get mainAsset():IDisplayAsset;
 		function get initActs():Array;
+		function get applicationScale():Number;
 	}
 }

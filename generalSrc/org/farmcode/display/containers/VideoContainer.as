@@ -1,11 +1,18 @@
 package org.farmcode.display.containers
 {
 	import flash.display.DisplayObject;
+	import flash.display.StageDisplayState;
+	import flash.events.Event;
+	import flash.events.TimerEvent;
 	import flash.geom.Rectangle;
+	import flash.ui.Mouse;
+	import flash.utils.Timer;
 	
 	import org.farmcode.display.DisplayNamespace;
+	import org.farmcode.display.actInfo.IMouseActInfo;
 	import org.farmcode.display.assets.IDisplayAsset;
 	import org.farmcode.display.assets.IInteractiveObjectAsset;
+	import org.farmcode.display.assets.ISpriteAsset;
 	import org.farmcode.display.controls.BufferBar;
 	import org.farmcode.display.controls.Button;
 	import org.farmcode.display.controls.Control;
@@ -22,15 +29,16 @@ package org.farmcode.display.containers
 	public class VideoContainer extends MediaContainer
 	{
 		// asset children
-		private static const PLAY_PAUSE_BUTTON:String = "playPauseButton";
-		private static const STOP_BUTTON:String = "stopButton";
-		private static const FULLSCREEN_BUTTON:String = "fullscreenButton";
-		private static const REWIND_BUTTON:String = "rewindButton";
-		private static const VOLUME_SLIDER:String = "volumeSlider";
-		private static const BUFFER_BAR:String = "bufferBar";
-		private static const MUTE_BUTTON:String = "muteButton";
-		private static const CENTERED_PAUSE_BUTTON:String = "centredPauseButton";
+		DisplayNamespace static const PLAY_PAUSE_BUTTON:String = "playPauseButton";
+		DisplayNamespace static const STOP_BUTTON:String = "stopButton";
+		DisplayNamespace static const FULLSCREEN_BUTTON:String = "fullscreenButton";
+		DisplayNamespace static const REWIND_BUTTON:String = "rewindButton";
+		DisplayNamespace static const VOLUME_SLIDER:String = "volumeSlider";
+		DisplayNamespace static const BUFFER_BAR:String = "bufferBar";
+		DisplayNamespace static const MUTE_BUTTON:String = "muteButton";
+		DisplayNamespace static const CENTERED_PAUSE_BUTTON:String = "centredPauseButton";
 		
+		DisplayNamespace static const DEFAULT_HIDE_MOUSE_TIME:Number = 3;
 		
 		override public function set mediaSource(value:IMediaSource):void{
 			if(super.mediaSource != value){
@@ -45,6 +53,34 @@ package org.farmcode.display.containers
 				}
 			}
 		}
+		/**
+		 * If the mouse is inactive and sits over the playing video, it will be hidden
+		 * after this amount of time (in seconds). Setting this to NaN will deactivate this feature.
+		 */
+		public function get hideMouseTime():Number{
+			return _hideMouseTime;
+		}
+		public function set hideMouseTime(value:Number):void{
+			if(_hideMouseTime!=value){
+				_hideMouseTime = value;
+				if(_mouseActive){
+					activateMouse();
+				}
+			}
+		}
+		public function get fullScreenScale():Number{
+			return _fullscreenUtil.fullScreenScale;
+		}
+		public function set fullScreenScale(value:Number):void{
+			_fullscreenUtil.fullScreenScale = value;
+		}
+		DisplayNamespace function get fullscreenUtil():FullscreenUtil{
+			checkFullScreenUtil();
+			return _fullscreenUtil;
+		}
+		
+		private var _hideMouseTime:Number = DEFAULT_HIDE_MOUSE_TIME;
+		private var _hideMouseTimer:Timer;
 		
 		private var _playPauseButton:ToggleButton;
 		private var _stopButton:Button;
@@ -52,15 +88,17 @@ package org.farmcode.display.containers
 		private var _rewindButton:Button;
 		private var _centredPauseButton:ToggleButton;
 		private var _muteButton:ToggleButton;
-		private var _centredPauseButtonPos:Control;
 		private var _volumeSlider:Slider;
 		private var _bufferBar:BufferBar;
 		
-		private var _videoMouseOver:Boolean;
+		private var _mouseActive:Boolean = true;
+		private var _mouseOver:Boolean = true;
 		
 		private var _fullscreenUtil:FullscreenUtil;
 		
 		private var _uiLayout:CanvasLayout = new CanvasLayout();
+		
+		private var _videoCover:ISpriteAsset;
 		
 		private var _videoSource:IVideoSource;
 		
@@ -75,20 +113,17 @@ package org.farmcode.display.containers
 			_rewindButton = bindButton(_rewindButton, Button,REWIND_BUTTON,onRewindClick);
 			_muteButton = bindButton(_muteButton, ToggleButton,MUTE_BUTTON,onMuteClick) as ToggleButton;
 			
-			var asset:IInteractiveObjectAsset = _containerAsset.takeAssetByName(CENTERED_PAUSE_BUTTON,IInteractiveObjectAsset,true);
-			if(asset){
+			var pauseAsset:IInteractiveObjectAsset = _containerAsset.takeAssetByName(CENTERED_PAUSE_BUTTON,IInteractiveObjectAsset,true);
+			if(pauseAsset){
 				if(!_centredPauseButton){
 					_centredPauseButton = new ToggleButton();
-					_centredPauseButton.scaleAsset = true;
-					_centredPauseButton.rollOutAct.addHandler(onVideoMouse);
-					_centredPauseButton.rollOverAct.addHandler(onVideoMouse);
 					_centredPauseButton.clickAct.addHandler(onPlayPauseClick);
-					_centredPauseButtonPos = new Control();
 				}
-				_centredPauseButton.setAssetAndPosition(asset);
-				_centredPauseButtonPos.asset = asset;
+				_centredPauseButton.setAssetAndPosition(pauseAsset);
 			}
-			
+			_interactiveObjectAsset.mouseMoved.addHandler(onVideoMouse);
+			_interactiveObjectAsset.rolledOut.addHandler(onVideoMouseOut);
+			_interactiveObjectAsset.rolledOver.addHandler(onVideoMouse);
 			
 			var hadVolumeSlider:Boolean = (_volumeSlider!=null);
 			_volumeSlider = bindControl(_volumeSlider,Slider,VOLUME_SLIDER,false) as Slider;
@@ -101,7 +136,16 @@ package org.farmcode.display.containers
 			var hadBufferBar:Boolean = (_bufferBar!=null);
 			_bufferBar = bindControl(_bufferBar,BufferBar,BUFFER_BAR,true) as BufferBar;
 			
+			_videoCover = asset.createAsset(ISpriteAsset);
+			_videoCover.doubleClicked.addHandler(onFullscreenClick);
+			_videoCover.doubleClickEnabled = true;
+			_videoCover.graphics.beginFill(0,0);
+			_videoCover.graphics.drawRect(0,0,10,10);
+			_containerAsset.addAssetAt(_videoCover,_containerAsset.getAssetIndex(_mediaBounds || _mediaContainer)+1);
+			
+			_mouseOver = true;
 			syncToData();
+			activateMouse();
 		}
 		protected function syncToData():void{
 			if(_videoSource){
@@ -153,15 +197,23 @@ package org.farmcode.display.containers
 			}
 			return control;
 		}
+		// TODO: confirm that event handlers are being removed properly
 		override protected function unbindFromAsset() : void{
 			super.unbindFromAsset();
-			unbindControl(_playPauseButton);
+			
+			_videoCover.doubleClicked.removeHandler(onFullscreenClick);
+			_containerAsset.removeAsset(_videoCover);
+			asset.destroyAsset(_videoCover);
+			
+			if(_playPauseButton){
+				(_playPauseButton.asset as IInteractiveObjectAsset).mouseMoved.removeHandler(onVideoMouse);
+				unbindControl(_playPauseButton);
+			}
 			unbindControl(_stopButton);
 			unbindControl(_fullscreenButton);
 			unbindControl(_centredPauseButton);
 			unbindControl(_volumeSlider);
 			unbindControl(_bufferBar);
-			unbindControl(_centredPauseButtonPos);
 		}
 		protected function unbindControl(control:Control):void{
 			if(control){
@@ -173,9 +225,14 @@ package org.farmcode.display.containers
 			super.draw();
 			_uiLayout.setDisplayPosition(0,0,displayPosition.width,displayPosition.height);
 			if(_centredPauseButton){
-				_centredPauseButton.setDisplayPosition(_mediaContainer.scrollRect.x,_mediaContainer.scrollRect.y,_mediaContainer.scrollRect.width,_mediaContainer.scrollRect.height);
-				_centredPauseButtonPos.setDisplayPosition(_mediaContainer.scrollRect.x,_mediaContainer.scrollRect.y,_mediaContainer.scrollRect.width,_mediaContainer.scrollRect.height);
+				var meas:Rectangle = _centredPauseButton.displayMeasurements;
+				var align:Rectangle =_mediaContainer.scrollRect;
+				_centredPauseButton.setDisplayPosition(align.x+(align.width-meas.width)/2,align.y+(align.height-meas.height)/2,meas.width,meas.height);
 			}
+			_videoCover.x = _scrollRect.x;
+			_videoCover.y = _scrollRect.y;
+			_videoCover.width = _scrollRect.width;
+			_videoCover.height = _scrollRect.height;
 		}
 		
 		protected function onPlayPauseClick(from:Button):void{
@@ -189,14 +246,17 @@ package org.farmcode.display.containers
 				_videoSource.playing = false;
 			}
 		}
-		protected function onFullscreenClick(from:Button):void{
+		protected function onFullscreenClick(... params):void{
 			if(_videoSource){
-				if(!_fullscreenUtil){
-					_fullscreenUtil = new FullscreenUtil(this);
-					_fullscreenUtil.activeChange.addHandler(onFullscreenChange);
-				}
+				checkFullScreenUtil();
 				_fullscreenUtil.active = !_fullscreenUtil.active;
 				_fullscreenButton.selected = _fullscreenUtil.active;
+			}
+		}
+		protected function checkFullScreenUtil():void{
+			if(!_fullscreenUtil){
+				_fullscreenUtil = new FullscreenUtil(this);
+				_fullscreenUtil.activeChange.addHandler(onFullscreenChange);
 			}
 		}
 		protected function onFullscreenChange(from:FullscreenUtil, active:Boolean):void{
@@ -215,7 +275,14 @@ package org.farmcode.display.containers
 				if(_playPauseButton)_playPauseButton.selected = _videoSource.playing;
 				if(_centredPauseButton){
 					_centredPauseButton.selected = _videoSource.playing;
-					_centredPauseButton.asset.alpha = (!_videoSource.playing || _centredPauseButton.over)?1:0;
+					_centredPauseButton.asset.alpha = (!_videoSource.playing || (_mouseOver && _mouseActive))?1:0;
+					if(_mouseOver){
+						if(_videoSource.playing && !_mouseActive){
+							Mouse.hide();
+						}else{
+							Mouse.show();
+						}
+					}
 				}
 			}
 		}
@@ -235,7 +302,36 @@ package org.farmcode.display.containers
 				_muteButton.selected = _videoSource.muted;
 			}
 		}
-		protected function onVideoMouse(from:Button):void{
+		protected function onVideoMouseOut(from:IInteractiveObjectAsset, mouseInfo:IMouseActInfo):void{
+			_mouseOver = false;
+			Mouse.show();
+			activateMouse();
+			assessPlaying();
+		}
+		protected function onVideoMouse(from:IInteractiveObjectAsset, mouseInfo:IMouseActInfo):void{
+			_mouseOver = true;
+			activateMouse();
+			assessPlaying();
+		}
+		protected function activateMouse():void{
+			_mouseActive = true;
+			if(!isNaN(_hideMouseTime)){
+				if(_hideMouseTimer){
+					_hideMouseTimer.stop();
+					_hideMouseTimer.reset();
+					_hideMouseTimer.delay = _hideMouseTime*1000;
+				}else{
+					_hideMouseTimer = new Timer(_hideMouseTime*1000,1);
+					_hideMouseTimer.addEventListener(TimerEvent.TIMER_COMPLETE, onHideTimerComplete);
+				}
+				_hideMouseTimer.start();
+			}else if(_hideMouseTimer){
+				_hideMouseTimer.stop();
+				_hideMouseTimer.reset();
+			}
+		}
+		protected function onHideTimerComplete(e:Event):void{
+			_mouseActive = false;
 			assessPlaying();
 		}
 	}

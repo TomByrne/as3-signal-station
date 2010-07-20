@@ -63,13 +63,13 @@ package org.farmcode.display.utils
 		}
 		override protected function bindToAsset() : void{
 			_textField = _containerAsset.takeAssetByName(TextLabel.LABEL_FIELD_CHILD, ITextFieldAsset);
-			_textField.click.addHandler(onClick);
+			_textField.clicked.addHandler(onClick);
 			_textField.keyUp.addHandler(onKeyUp);
 			_textField.focusIn.addHandler(onFocusIn);
 			assessSelection();
 		}
 		override protected function unbindFromAsset() : void{
-			_textField.click.removeHandler(onClick);
+			_textField.clicked.removeHandler(onClick);
 			_textField.keyUp.removeHandler(onKeyUp);
 			_textField.focusIn.removeHandler(onFocusIn);
 			_containerAsset.returnAsset(_textField);

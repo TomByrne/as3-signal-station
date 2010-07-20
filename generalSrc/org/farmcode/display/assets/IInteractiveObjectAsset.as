@@ -11,6 +11,9 @@ package org.farmcode.display.assets
 		function get mouseEnabled():Boolean;
 		function set mouseEnabled(value:Boolean):void;
 		
+		function get doubleClickEnabled():Boolean;
+		function set doubleClickEnabled(value:Boolean):void;
+		
 		function get tabIndex():int;
 		function set tabIndex(value:int):void;
 		
@@ -18,35 +21,39 @@ package org.farmcode.display.assets
 		/**
 		 * handler(from:IInteractiveObjectAsset, mouseActInfo:IMouseActInfo)
 		 */
-		function get mouseDown():IAct;
+		function get mouseReleased():IAct;
 		/**
 		 * handler(from:IInteractiveObjectAsset, mouseActInfo:IMouseActInfo)
 		 */
-		function get mouseUp():IAct;
+		function get mousePressed():IAct;
 		/**
 		 * handler(from:IInteractiveObjectAsset, mouseActInfo:IMouseActInfo)
 		 */
-		function get mouseOver():IAct;
+		function get mousedOver():IAct;
 		/**
 		 * handler(from:IInteractiveObjectAsset, mouseActInfo:IMouseActInfo)
 		 */
-		function get mouseOut():IAct;
+		function get mousedOut():IAct;
 		/**
 		 * handler(from:IInteractiveObjectAsset, mouseActInfo:IMouseActInfo)
 		 */
-		function get rollOver():IAct;
+		function get rolledOver():IAct;
 		/**
 		 * handler(from:IInteractiveObjectAsset, mouseActInfo:IMouseActInfo)
 		 */
-		function get rollOut():IAct;
+		function get rolledOut():IAct;
 		/**
 		 * handler(from:IInteractiveObjectAsset, mouseActInfo:IMouseActInfo)
 		 */
-		function get mouseMove():IAct;
+		function get mouseMoved():IAct;
 		/**
 		 * handler(from:IInteractiveObjectAsset, mouseActInfo:IMouseActInfo)
 		 */
-		function get click():IAct;
+		function get clicked():IAct;
+		/**
+		 * handler(from:IInteractiveObjectAsset, mouseActInfo:IMouseActInfo)
+		 */
+		function get doubleClicked():IAct;
 		/**
 		 * handler(from:IInteractiveObjectAsset, mouseActInfo:IMouseActInfo, delta:int)
 		 */

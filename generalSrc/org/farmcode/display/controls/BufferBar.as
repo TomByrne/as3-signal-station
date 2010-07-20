@@ -36,6 +36,7 @@ package org.farmcode.display.controls
 					_slider.maximum = _videoSource.totalTime;
 					_slider.value = _videoSource.currentTime;
 				}
+				invalidate();
 			}
 		}
 		override public function get displayMeasurements() : Rectangle{
@@ -66,7 +67,12 @@ package org.farmcode.display.controls
 			_bufferedBar = null;
 		}
 		override protected function draw() : void{
-			var playedFract:Number = (_videoSource && _videoSource.totalTime>0?_videoSource.currentTime/_videoSource.totalTime:0);
+			var playedFract:Number;
+			if(_videoSource && _videoSource.totalTime>0){
+				playedFract = (_videoSource.currentTime<_videoSource.totalTime)?_videoSource.currentTime/_videoSource.totalTime:1;
+			}else{
+				playedFract = 0;
+			}
 			var loadFract:Number = (_videoSource?_videoSource.loadProgress/_videoSource.loadTotal:0);
 			
 			if(_slider.direction==Direction.VERTICAL){

@@ -117,7 +117,7 @@ package org.farmcode.display.controls
 			super(asset);
 		}
 		override protected function bindToAsset() : void{
-			_interactiveObjectAsset.click.addHandler(onClick);
+			_interactiveObjectAsset.clicked.addHandler(onClick);
 			var interact:InteractiveObject = (asset as InteractiveObject);
 			if(interact){
 				interact.mouseEnabled = true;
@@ -133,7 +133,7 @@ package org.farmcode.display.controls
 		override protected function unbindFromAsset() : void{
 			super.unbindFromAsset();
 			_tabFocusable = null;
-			_interactiveObjectAsset.click.removeHandler(onClick);
+			_interactiveObjectAsset.clicked.removeHandler(onClick);
 		}
 		private function onProviderChanged(from:IBooleanProvider):void{
 			if(useDataForSelected)this.selected = from.booleanValue;
