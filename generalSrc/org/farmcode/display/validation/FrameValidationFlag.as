@@ -1,23 +1,100 @@
 package org.farmcode.display.validation
 {
-	/**
-	 * - Tag something as invalid, associated with a display object.
-	 * - on frame enter, traverse down heirarchy, drawing DOs
-	 * - When Flag gets manually validated, it should also validate children in heirarchy
-	 * - If invalidating during draw (and included in current draw):
-	 * 		- If already validated this draw, add to next frames list
-	 * 		- If not, ignore.
-	 * - If manually validate during draw:
-	 * 		- immediately validate I guess
-	 * 
+	import org.farmcode.acting.actTypes.IAct;
+	import org.farmcode.acting.acts.Act;
+	import org.farmcode.display.assets.IAsset;
+	import org.farmcode.display.assets.IDisplayAsset;
+	import org.farmcode.display.core.IView;
+
+
+	/** FrameValidationFlag builds on ValidationFlag by making it
+	 * validate onEnterFrame. FrameValidationFlags are placed into
+	 * a heirarchy based on their scope property. When a 
+	 * FrameValidationFlag gets validated (or forced to validate)
+	 * it's children too get validated (if they're invalid).
 	 */
 	
-	
-	public class FrameValidationFlag extends ValidationFlag
+	public class FrameValidationFlag extends ValidationFlag implements IFrameValidationFlag
 	{
-		public function FrameValidationFlag(validator:Function, valid:Boolean)
-		{
+		/**
+		 * @inheritDoc
+		 */
+		public function get assetChanged():IAct{
+			if(!_assetChanged)_assetChanged = new Act();
+			return _assetChanged;
+		}
+		
+		public function get asset():IDisplayAsset{
+			return _asset;
+		}
+		public function get view():IView{
+			return _view;
+		}
+		public function set view(value:IView):void{
+			if(_view!=value){
+				var oldView:IView = _view;
+				if(_view){
+					_view.assetChanged.removeHandler(onAssetChanged);
+				}
+				_view = value;
+				if(_view){
+					setAsset(_view.asset);
+					_view.assetChanged.addHandler(onAssetChanged);
+				}else{
+					setAsset(null);
+				}
+			}
+		}
+		public function get readyForExecution():Boolean{
+			return true;
+		}
+		
+		private var _view:IView;
+		private var _asset:IDisplayAsset;
+		protected var _assetChanged:Act;
+		protected var _added:Boolean;
+		protected var _manager:FrameValidationManager;
+		
+		public function FrameValidationFlag(view:IView, validator:Function, valid:Boolean){
 			super(validator, valid);
+			_manager = FrameValidationManager.instance;
+			this.view = view;
+			
+		}
+		protected function onAssetChanged(from:IView, oldAsset:IAsset):void{
+			setAsset(_view.asset);
+		}
+		protected function setAsset(asset:IDisplayAsset):void{
+			if(_asset!=asset){
+				var oldAsset:IDisplayAsset = _asset;
+				_asset = asset;
+				if(_assetChanged)_assetChanged.perform(this,oldAsset);
+				if(_asset){
+					setAdded(true);
+				}else{
+					setAdded(false);
+				}
+			}
+		}
+		protected function setAdded(value:Boolean):void{
+			if(_added!=value){
+				_added = value;
+				if(value){
+					_manager.addFrameValFlag(this);
+				}else{
+					_manager.removeFrameValFlag(this);
+				}
+			}
+		}
+		override public function validate(force:Boolean=false):void{
+			if(force || !_valid){
+				if(_valid)invalidate();
+				_manager.validate(this);
+			}
+		}
+		public function execute():void{
+			_valid = true;
+			_validator();
 		}
 	}
 }

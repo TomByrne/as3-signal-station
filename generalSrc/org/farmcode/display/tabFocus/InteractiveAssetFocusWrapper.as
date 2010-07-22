@@ -46,10 +46,10 @@ package org.farmcode.display.tabFocus
 			_focused = false;
 			if(_focusOut)_focusOut.perform(this);
 		}
-		public function onAddedToStage(e:Event, from:IInteractiveObjectAsset):void{
+		public function onAddedToStage(from:IInteractiveObjectAsset):void{
 			if(_focused)_interactiveAsset.stage.focus = _interactiveAsset;
 		}
-		public function onRemovedFromStage(e:Event, from:IInteractiveObjectAsset):void{
+		public function onRemovedFromStage(from:IInteractiveObjectAsset):void{
 			if(_interactiveAsset.stage.focus == _interactiveAsset)_interactiveAsset.stage.focus = null;
 		}
 	}

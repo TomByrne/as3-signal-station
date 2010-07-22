@@ -56,7 +56,7 @@ package org.farmcode.display.containers
 		protected var _mediaLayoutInfo:ILayoutInfo;
 		protected var _mediaSourceDisplay:ILayoutView;
 		protected var _layoutProxy:ProxyLayoutSubject = new ProxyLayoutSubject();
-		protected var _layout:FrameLayout = new FrameLayout();
+		protected var _layout:FrameLayout;
 		protected var _mediaContainer:IContainerAsset;
 		
 		protected var _scrollRect:Rectangle = new Rectangle();
@@ -66,6 +66,7 @@ package org.farmcode.display.containers
 		
 		public function MediaContainer(asset:IDisplayAsset=null){
 			super(asset);
+			_layout = new FrameLayout(this)
 			_layout.addSubject(_layoutProxy);
 			_displayMeasurements = new Rectangle();
 			_layout.measurementsChanged.addHandler(onLayoutMeasChange);

@@ -72,10 +72,10 @@ package org.farmcode.display.core
 			_assetStage = stage;
 			checkAdded();
 		}
-		protected function onAdded(e:Event, from:IDisplayAsset):void{
+		protected function onAdded(from:IDisplayAsset):void{
 			setStage(_asset.stage);
 		}
-		protected function onRemoved(e:Event, from:IDisplayAsset):void{
+		protected function onRemoved(from:IDisplayAsset):void{
 			setStage(null);
 		}
 		protected function checkAdded():void{

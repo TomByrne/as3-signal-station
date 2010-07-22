@@ -6,6 +6,7 @@ package org.farmcode.display.layout.accordion
 	
 	import org.farmcode.display.constants.Direction;
 	import org.farmcode.display.core.ILayoutView;
+	import org.farmcode.display.core.IView;
 	import org.farmcode.display.layout.AbstractLayout;
 	import org.farmcode.display.layout.ILayoutSubject;
 	import org.farmcode.display.layout.IMinimisableLayoutSubject;
@@ -32,7 +33,8 @@ package org.farmcode.display.layout.accordion
 		private var _minSubjectsMeas:Dictionary = new Dictionary();
 		private var _realMeas:Dictionary = new Dictionary();
 		
-		public function AccordionLayout(){
+		public function AccordionLayout(scopeView:IView){
+			super(scopeView);
 			flowDirection = Direction.VERTICAL;
 			addRendererAct.addHandler(onRendererAdded);
 			removeRendererAct.addHandler(onRendererRemoved);

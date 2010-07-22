@@ -12,6 +12,7 @@ package org.farmcode.display.layout.grid
 	import org.farmcode.collections.IIterator2D;
 	import org.farmcode.collections.linkedList.LinkedListConverter;
 	import org.farmcode.display.constants.Direction;
+	import org.farmcode.display.core.IView;
 	import org.farmcode.display.layout.ILayoutSubject;
 	import org.farmcode.display.layout.core.ILayoutInfo;
 	import org.farmcode.display.layout.list.ListLayoutInfo;
@@ -232,8 +233,8 @@ package org.farmcode.display.layout.grid
 		protected var _breadthRendAxis:RendererGridAxis;
 		protected var _lengthRendAxis:RendererGridAxis;
 		
-		public function RendererGridLayout(){
-			super();
+		public function RendererGridLayout(scopeView:IView){
+			super(scopeView);
 		}
 		override protected function createAxes():void{
 			_verticalAxis = _verticalRendAxis = new RendererGridAxis("height","rowIndex");

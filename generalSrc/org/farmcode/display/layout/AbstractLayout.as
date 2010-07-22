@@ -1,7 +1,5 @@
 package org.farmcode.display.layout
 {
-	import au.com.thefarmdigital.delayedDraw.DelayedDrawer;
-	import au.com.thefarmdigital.delayedDraw.IDrawable;
 	
 	import flash.display.DisplayObject;
 	import flash.geom.Rectangle;
@@ -10,27 +8,20 @@ package org.farmcode.display.layout
 	import org.farmcode.acting.actTypes.IAct;
 	import org.farmcode.acting.acts.Act;
 	import org.farmcode.display.assets.IDisplayAsset;
+	import org.farmcode.display.core.IView;
+	import org.farmcode.display.core.View;
 	import org.farmcode.display.layout.core.ILayoutInfo;
+	import org.farmcode.display.validation.FrameValidationFlag;
 	import org.farmcode.display.validation.ValidationFlag;
 	
-	public class AbstractLayout implements ILayout, IDrawable, ILayoutSubject
+	public class AbstractLayout implements ILayout, ILayoutSubject
 	{
-		/**
-		 * @inheritDoc
-		 */
-		public function get scopeChanged():IAct{
-			if(!_scopeChanged)_scopeChanged = new Act();
-			return _scopeChanged;
-		}
 		
-		/**
-		 * @inheritDoc
-		 */
-		public function set scope(value:IDisplayAsset):void{
-			// ignore
+		public function get scopeView():IView{
+			return _drawFlag.view;
 		}
-		public function get scope():IDisplayAsset{
-			return null;
+		public function set scopeView(value:IView):void{
+			_drawFlag.view = value;
 		}
 		
 		
@@ -64,7 +55,6 @@ package org.farmcode.display.layout
 			return _positionChanged;
 		}
 		
-		protected var _scopeChanged:Act;
 		protected var _positionChanged:Act;
 		protected var _measurementsChanged:Act;
 		protected var _measureFlag:ValidationFlag; 
@@ -79,7 +69,11 @@ package org.farmcode.display.layout
 		private var _marginAffectedArea:Rectangle = new Rectangle();
 		private var _marginRect:Rectangle = new Rectangle();
 		
-		public function AbstractLayout(){
+		private var _drawFlag:FrameValidationFlag;
+		
+		public function AbstractLayout(scopeView:IView){
+			_drawFlag = new FrameValidationFlag(null,commitDraw,false);
+			this.scopeView = scopeView;
 			_measureFlag = new ValidationFlag(measure, false);
 			_measureFlag.invalidateAct.addHandler(onMeasInvalidate);
 		}
@@ -138,7 +132,7 @@ package org.farmcode.display.layout
 		protected function invalidateSingle(subject:ILayoutSubject): void{
 			if(!_allInvalid){
 				_invalidSubjects[subject] = true;
-				DelayedDrawer.changeValidity(this, false);
+				invalidate();
 			}
 		}
 		protected function invalidateAll(): void{
@@ -148,15 +142,15 @@ package org.farmcode.display.layout
 					_invalidSubjects = new Dictionary();
 					break;
 				}
-				DelayedDrawer.changeValidity(this, false);
+				invalidate();
 			}
 		}
 		public function invalidate(): void{
-			DelayedDrawer.changeValidity(this, false);
+			_drawFlag.invalidate();
 		}
 		public function validate(forceDraw: Boolean = false): void{
 			if(forceDraw)invalidate();
-			DelayedDrawer.doDraw(this);
+			_drawFlag.validate(forceDraw);
 		}
 		
 		protected function onMeasumentsChange(from:ILayoutSubject, oldX:Number, oldY:Number, oldWidth:Number, oldHeight:Number): void{

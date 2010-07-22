@@ -2,11 +2,16 @@ package org.farmcode.display.layout.canvas
 {
 	import flash.geom.Rectangle;
 	
+	import org.farmcode.display.core.IView;
 	import org.farmcode.display.layout.AbstractLayout;
 	import org.farmcode.display.layout.ILayoutSubject;
 	
 	public class CanvasLayout extends AbstractLayout
 	{
+		
+		public function CanvasLayout(scopeView:IView){
+			super(scopeView);
+		}
 		override protected function drawSubject(subject:ILayoutSubject) : void{
 			var cast:ICanvasLayoutInfo = (subject.layoutInfo as ICanvasLayoutInfo);
 			if(cast){

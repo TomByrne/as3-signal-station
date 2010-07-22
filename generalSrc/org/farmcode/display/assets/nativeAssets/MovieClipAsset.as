@@ -78,7 +78,7 @@ package org.farmcode.display.assets.nativeAssets {
 			}
 			return ret;
 		}
-		protected function onAddedToStage(e:Event, from:IAsset):void{
+		protected function onAddedToStage(from:IAsset):void{
 			applyAvailableStates();
 		}
 		protected function onAdded(e:Event, from:IAsset):void{

@@ -55,6 +55,7 @@ package org.farmcode.display.containers.accordion
 		}
 		override protected function createLayout():void{
 			_accordionLayout = new AccordionLayout();
+			_accordionLayout.scopeView = this;
 			_layout = _accordionLayout;
 			_layout.equaliseCellHeights = true;
 			_layout.equaliseCellWidths = true;

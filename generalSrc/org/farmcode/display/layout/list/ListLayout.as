@@ -1,9 +1,13 @@
 package org.farmcode.display.layout.list
 {
+	import org.farmcode.display.core.IView;
 	import org.farmcode.display.layout.grid.AbstractGridLayout;
 	
 	public class ListLayout extends AbstractGridLayout
 	{
+		public function ListLayout(scopeView:IView){
+			super(scopeView);
+		}
 		public function get gap():Number{
 			return _verticalGap;
 		}

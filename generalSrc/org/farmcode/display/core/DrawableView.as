@@ -1,8 +1,5 @@
 package org.farmcode.display.core
 {
-	import au.com.thefarmdigital.delayedDraw.DelayedDrawer;
-	import au.com.thefarmdigital.delayedDraw.IDrawable;
-	
 	import flash.display.DisplayObject;
 	import flash.events.Event;
 	
@@ -15,8 +12,9 @@ package org.farmcode.display.core
 	import org.farmcode.display.assets.IInteractiveObjectAsset;
 	import org.farmcode.display.assets.ISpriteAsset;
 	import org.farmcode.display.assets.states.StateDef;
+	import org.farmcode.display.validation.FrameValidationFlag;
 	
-	public class DrawableView extends View implements IDrawable, IOutroView, IScopedObject
+	public class DrawableView extends View implements IOutroView, IScopedObject
 	{
 		static private const OUTRO_FRAME_LABEL:String = "outro";
 		static private const INTRO_FRAME_LABEL:String = "intro";
@@ -73,12 +71,13 @@ package org.farmcode.display.core
 		protected var _playAssetLabelDelay:DelayedCall;
 		private var _resetAnimationsDelay:DelayedCall;
 		protected var _stateList:Array;
+		protected var _drawFlag:FrameValidationFlag;
 		
 		private var _transState:StateDef = new StateDef([INTRO_FRAME_LABEL,OUTRO_FRAME_LABEL]);
 		
 		public function DrawableView(asset:IDisplayAsset=null){
-			super();
-			this.asset = asset;
+			_drawFlag = new FrameValidationFlag(this,commitDraw,false);
+			super(asset);
 			_stateList = fillStateList([]);
 		}
 		protected function autoIntro():Boolean{
@@ -126,15 +125,14 @@ package org.farmcode.display.core
 		 * @see validate
 		 */
 		protected function invalidate(): void{
-			if(_asset)DelayedDrawer.changeValidity(this, false);
+			_drawFlag.invalidate();
 		}
 		
 		/**
 		 * @inheritDoc
 		 */
 		public function validate(forceDraw: Boolean = false): void{
-			if(forceDraw)invalidate();
-			DelayedDrawer.doDraw(this);
+			_drawFlag.validate(forceDraw);
 		}
 		
 		/**
@@ -177,11 +175,11 @@ package org.farmcode.display.core
 				invalidate();
 			}
 		}
-		protected function onAddedToStage(e:Event, from:IAsset):void{
+		protected function onAddedToStage(from:IAsset):void{
 			validate();
 			if(autoIntro())showIntro();
 		}
-		protected function onRemovedFromStage(e:Event, from:IAsset):void{
+		protected function onRemovedFromStage(from:IAsset):void{
 			_introShown = false;
 			_outroShown = false;
 		}

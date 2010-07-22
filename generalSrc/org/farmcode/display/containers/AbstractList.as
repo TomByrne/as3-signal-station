@@ -104,7 +104,7 @@ package org.farmcode.display.containers
 			_displayMeasurements = new Rectangle();
 		}
 		protected function createLayout() : void{
-			_layout = new RendererGridLayout();
+			_layout = new RendererGridLayout(this);
 		}
 		protected function onLayoutScroll(from:RendererGridLayout, direction:String, metrics:ScrollMetrics) : void{
 			if(_scrollBar && _scrollBar.direction==direction){

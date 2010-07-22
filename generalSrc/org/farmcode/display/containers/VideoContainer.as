@@ -96,13 +96,14 @@ package org.farmcode.display.containers
 		
 		private var _fullscreenUtil:FullscreenUtil;
 		
-		private var _uiLayout:CanvasLayout = new CanvasLayout();
+		private var _uiLayout:CanvasLayout;
 		
 		private var _videoCover:ISpriteAsset;
 		
 		private var _videoSource:IVideoSource;
 		
 		public function VideoContainer(asset:IDisplayAsset=null){
+			_uiLayout = new CanvasLayout(this);
 			super(asset);
 		}
 		override protected function bindToAsset() : void{

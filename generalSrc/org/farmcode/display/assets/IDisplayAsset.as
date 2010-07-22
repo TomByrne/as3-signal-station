@@ -71,11 +71,11 @@ package org.farmcode.display.assets
 		function get bitmapDrawable():IBitmapDrawable;
 		
 		/**
-		 * handler(e:Event, from:IAsset)
+		 * handler(from:IAsset)
 		 */
 		function get addedToStage():IAct;
 		/**
-		 * handler(e:Event, from:IAsset)
+		 * handler(from:IAsset)
 		 */
 		function get removedFromStage():IAct;
 		/**

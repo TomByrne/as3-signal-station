@@ -114,11 +114,11 @@ package org.farmcode.display.popup
 				}
 			}
 		}
-		private function onAdded(e:Event, from:IDisplayAsset):void{
+		private function onAdded(from:IDisplayAsset):void{
 			setStage(_popupDisplay.stage);
 			assessFocused();
 		}
-		private function onRemoved(e:Event, from:IDisplayAsset):void{
+		private function onRemoved(from:IDisplayAsset):void{
 			setStage(null);
 			assessFocused();
 		}

@@ -6,6 +6,7 @@ package org.farmcode.display.layout.grid
 	import org.farmcode.acting.actTypes.IAct;
 	import org.farmcode.acting.acts.Act;
 	import org.farmcode.display.constants.Direction;
+	import org.farmcode.display.core.IView;
 	import org.farmcode.display.layout.AbstractLayout;
 	import org.farmcode.display.layout.ILayoutSubject;
 	import org.farmcode.display.layout.core.ILayoutInfo;
@@ -286,7 +287,8 @@ package org.farmcode.display.layout.grid
 		protected var _breadthAxis:GridAxis;
 		protected var _lengthAxis:GridAxis;
 		
-		public function AbstractGridLayout(){
+		public function AbstractGridLayout(scopeView:IView){
+			super(scopeView);
 			createAxes();
 		}
 		protected function createAxes():void{

@@ -5,6 +5,7 @@ package org.farmcode.display.layout.stage
 	import flash.geom.Rectangle;
 	
 	import org.farmcode.display.assets.IStageAsset;
+	import org.farmcode.display.core.IView;
 	import org.farmcode.display.layout.AbstractLayout;
 
 	public class StageFillLayout extends AbstractLayout
@@ -29,8 +30,8 @@ package org.farmcode.display.layout.stage
 		private var _stage:IStageAsset;
 		private var _stageSize:Rectangle = new Rectangle();
 		
-		public function StageFillLayout(stage:IStageAsset=null){
-			super();
+		public function StageFillLayout(scopeView:IView, stage:IStageAsset=null){
+			super(scopeView);
 			this.stage = stage;
 		}
 		protected function onStageResize(e:Event=null, from:IStageAsset=null) : void{

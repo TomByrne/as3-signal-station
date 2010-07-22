@@ -2,6 +2,7 @@ package org.farmcode.display.layout.frame
 {
 	import flash.geom.Rectangle;
 	
+	import org.farmcode.display.core.IView;
 	import org.farmcode.display.layout.AbstractLayout;
 	import org.farmcode.display.layout.ILayoutSubject;
 	import org.farmcode.display.layout.getMarginAffectedArea;
@@ -12,6 +13,9 @@ package org.farmcode.display.layout.frame
 		protected var marginAffectedPosition:Rectangle = new Rectangle();
 		protected var marginRect:Rectangle = new Rectangle();
 		
+		public function FrameLayout(scopeView:IView){
+			super(scopeView);
+		}
 		override protected function drawSubject(subject:ILayoutSubject) : void{
 			var cast:IFrameLayoutInfo = (subject.layoutInfo as IFrameLayoutInfo);
 			if(cast){

@@ -10,6 +10,7 @@ package org.farmcode.display.core
 		 * @inheritDoc
 		 */
 		public function get assetChanged():IAct{
+			if(!_assetChanged)_assetChanged = new Act();
 			return _assetChanged;
 		}
 		public function get asset():IDisplayAsset{
@@ -19,14 +20,15 @@ package org.farmcode.display.core
 			if(_asset!=value){
 				var oldAsset:IDisplayAsset = _asset;
 				_asset = value;
-				_assetChanged.perform(this,oldAsset);
+				if(_assetChanged)_assetChanged.perform(this,oldAsset);
 			}
 		}
 		
 		protected var _asset:IDisplayAsset;
-		protected var _assetChanged:Act = new Act();
+		protected var _assetChanged:Act;
 		
-		public function View(){
+		public function View(asset:IDisplayAsset=null){
+			this.asset = asset;
 		}
 	}
 }

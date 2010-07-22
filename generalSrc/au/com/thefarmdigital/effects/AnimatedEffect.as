@@ -124,14 +124,14 @@ package au.com.thefarmdigital.effects{
 			this.subject = subject;
 			autoPosition = true;
 		}
-		protected function onSubjectAdded(e:Event=null, from:IDisplayAsset=null):void{
+		protected function onSubjectAdded(from:IDisplayAsset=null):void{
 			if(_renderArea.parent!=subject.parent){
 				if(_renderArea.parent)_renderArea.parent.removeAsset(_renderArea);
 				subject.parent.addAsset(_renderArea);
 			}
 			invalidate();
 		}
-		protected function onSubjectRemoved(e:Event=null, from:IDisplayAsset=null):void{
+		protected function onSubjectRemoved(from:IDisplayAsset=null):void{
 			remove();
 		}
 		override public function remove():void{

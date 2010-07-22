@@ -20,7 +20,7 @@ package org.farmcode.display.assets.nativeAssets {
 		 */
 		public function get addedToStage():IAct {
 			if(!_addedToStage)
-				_addedToStage = new NativeAct(_displayObject, Event.ADDED_TO_STAGE, [this]);
+				_addedToStage = new NativeAct(_displayObject, Event.ADDED_TO_STAGE, [this],false);
 			return _addedToStage;
 		}
 		/**
@@ -28,7 +28,7 @@ package org.farmcode.display.assets.nativeAssets {
 		 */
 		public function get removedFromStage():IAct {
 			if(!_removedFromStage)
-				_removedFromStage = new NativeAct(_displayObject, Event.REMOVED_FROM_STAGE, [this]);
+				_removedFromStage = new NativeAct(_displayObject, Event.REMOVED_FROM_STAGE, [this], false);
 			return _removedFromStage;
 		}
 		/**

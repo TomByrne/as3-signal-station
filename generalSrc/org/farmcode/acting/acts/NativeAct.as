@@ -51,6 +51,7 @@ package org.farmcode.acting.acts
 		}
 		
 		public var parameters:Array;
+		public var passEvent:Boolean;
 		
 		private var _priority:int = 0;
 		private var _useCapture:Boolean=false;
@@ -58,11 +59,12 @@ package org.farmcode.acting.acts
 		private var _eventDispatcher:IEventDispatcher;
 		private var _listening:Boolean;
 		
-		public function NativeAct(eventDispatcher:IEventDispatcher=null, eventName:String=null, parameters:Array=null){
+		public function NativeAct(eventDispatcher:IEventDispatcher=null, eventName:String=null, parameters:Array=null, passEvent:Boolean=true){
 			super();
 			this.eventDispatcher = eventDispatcher;
 			this.eventName = eventName;
 			this.parameters = parameters;
+			this.passEvent = passEvent;
 		}
 		override protected function setHandlerCount(value:int):void{
 			super.setHandlerCount(value);
@@ -83,7 +85,9 @@ package org.farmcode.acting.acts
 		}
 		protected function eventHandler(e:Event):void{
 			if(parameters){
-				var realParams:Array = [e].concat(parameters);
+				var realParams:Array;
+				if(passEvent)realParams = [e].concat(parameters);
+				else realParams = parameters;
 				perform.apply(null,realParams);
 			}else{
 				perform(e);
