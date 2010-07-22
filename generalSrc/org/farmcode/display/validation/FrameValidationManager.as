@@ -130,7 +130,7 @@ package org.farmcode.display.validation
 		}
 		protected function onAssetPosChanged(bundle:AssetBundle):void{
 			var oldRun:DrawRun = findRunForBundle(bundle);
-			if(bundle.parent)removeFromHeirarchy(bundle);
+			removeFromHeirarchy(bundle);
 			if(bundle.asset.stage)addToHeirarchy(bundle);
 			checkIfRunChange(null, bundle, oldRun);
 		}
@@ -174,11 +174,13 @@ package org.farmcode.display.validation
 				bundle.parent.removeChild(bundle);
 			}else{
 				var index:int = rootBundles.indexOf(bundle);
-				rootBundles.splice(index,1);
-				while(bundle.children.length){
-					child = bundle.children[0];
-					bundle.removeChild(child);
-					rootBundles.push(child);
+				if(index!=-1){
+					rootBundles.splice(index,1);
+					while(bundle.children.length){
+						child = bundle.children[0];
+						bundle.removeChild(child);
+						rootBundles.push(child);
+					}
 				}
 			}
 		}
@@ -424,12 +426,9 @@ class DrawRun implements IPoolable{
 	}
 	public function removePending(flag:IFrameValidationFlag):void{
 		var index:int = pendingDraws.indexOf(flag);
-		Config::DEBUG{
-			if(index==-1){
-				throw new Error("Trying to remove non-added flag");
-			}
+		if(index!=-1){
+			pendingDraws.splice(index,1);
 		}
-		pendingDraws.splice(index,1);
 	}
 	public function execute(childRuns:Array):void{
 		var childBundles:Dictionary = new Dictionary();

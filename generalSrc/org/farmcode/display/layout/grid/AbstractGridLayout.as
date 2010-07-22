@@ -554,9 +554,9 @@ package org.farmcode.display.layout.grid
 					}
 				}
 			}
-			if(displayMeasurements[_lengthAxis.dimRef]!= maxLengthMeas){
+			if(_displayMeasurements[_lengthAxis.dimRef]!= maxLengthMeas){
 				measChanged = true;
-				displayMeasurements[_lengthAxis.dimRef] = maxLengthMeas;
+				_displayMeasurements[_lengthAxis.dimRef] = maxLengthMeas;
 			}
 			
 			var maxBreadthMeas:Number = _breadthAxis.foreMargin+_breadthAxis.aftMargin+(_breadthAxis.maxCellSizes.length-1)*_breadthAxis.gap;
@@ -571,9 +571,9 @@ package org.farmcode.display.layout.grid
 					}
 				}
 			}
-			if(displayMeasurements[_breadthAxis.dimRef]!=maxBreadthMeas){
+			if(_displayMeasurements[_breadthAxis.dimRef]!=maxBreadthMeas){
 				measChanged = true;
-				displayMeasurements[_breadthAxis.dimRef] = maxBreadthMeas;
+				_displayMeasurements[_breadthAxis.dimRef] = maxBreadthMeas;
 			}
 			
 			if(measChanged){

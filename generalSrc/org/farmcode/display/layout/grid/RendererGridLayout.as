@@ -564,7 +564,7 @@ package org.farmcode.display.layout.grid
 			var pixScroll:Number;
 			var pixScrollMax:Number;
 			var realDim:Number = _displayPosition[axis.dimRef];
-			var realMeas:Number = displayMeasurements[axis.dimRef];
+			var realMeas:Number = _displayMeasurements[axis.dimRef];
 			var newIndex:int;
 			var newIndexMax:int;
 			
