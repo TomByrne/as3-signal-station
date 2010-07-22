@@ -1,7 +1,5 @@
 package org.farmcode.actLibrary.display.visualSockets.socketContainers
 {
-	import au.com.thefarmdigital.delayedDraw.IDrawable;
-	
 	import flash.utils.Dictionary;
 	
 	import org.farmcode.actLibrary.display.visualSockets.plugs.PlugDisplay;
@@ -38,10 +36,11 @@ package org.farmcode.actLibrary.display.visualSockets.socketContainers
 						layoutSocket = (socket as ILayoutSubject);
 						if(layoutSocket)_layout.removeSubject(layoutSocket);
 					}
+					_layout.scopeView = null;
 				}
 				_layout = value;
-				_layoutView = (_layout as IDrawable);
 				if(_layout){
+					_layout.scopeView = this;
 					for each(socket in socketContHelper.childSockets){
 						layoutSocket = (socket as ILayoutSubject);
 						if(layoutSocket)_layout.addSubject(layoutSocket);
@@ -69,7 +68,6 @@ package org.farmcode.actLibrary.display.visualSockets.socketContainers
 		
 		protected var _childSocketsChanged:Act = new Act();
 		private var _layout:ILayout;
-		private var _layoutView:IDrawable;
 		protected var _socketContHelper:SocketContainerHelper;
 		protected var _childContainer:IContainerAsset;
 		
@@ -135,9 +133,7 @@ package org.farmcode.actLibrary.display.visualSockets.socketContainers
 		}
 		protected function onChildDataAssessed(from:SocketContainerHelper):void{
 			// this is so that when child sockets are filled they have the correct position.
-			if(_layoutView){
-				_layoutView.validate();
-			}
+			_layout.validate();
 		}
 		override protected function doShowIntro():void{
 			checkHelper();

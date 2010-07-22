@@ -67,8 +67,8 @@ package org.farmcode.actLibrary.display.visualSockets.plugs
 				}
 			}
 		}
-		override protected function onAddedToStage(e:Event, from:IAsset):void{
-			super.onAddedToStage(e,from);
+		override protected function onAddedToStage(from:IAsset):void{
+			super.onAddedToStage(from);
 			if(_initialDataSet)validate();
 		}
 		override protected function checkIsBound():void{

@@ -287,7 +287,7 @@ package org.farmcode.display.layout.grid
 		protected var _breadthAxis:GridAxis;
 		protected var _lengthAxis:GridAxis;
 		
-		public function AbstractGridLayout(scopeView:IView){
+		public function AbstractGridLayout(scopeView:IView=null){
 			super(scopeView);
 			createAxes();
 		}

@@ -33,7 +33,7 @@ package org.farmcode.display.layout.accordion
 		private var _minSubjectsMeas:Dictionary = new Dictionary();
 		private var _realMeas:Dictionary = new Dictionary();
 		
-		public function AccordionLayout(scopeView:IView){
+		public function AccordionLayout(scopeView:IView=null){
 			super(scopeView);
 			flowDirection = Direction.VERTICAL;
 			addRendererAct.addHandler(onRendererAdded);
@@ -99,8 +99,8 @@ package org.farmcode.display.layout.accordion
 			var renderer:IMinimisableLayoutSubject = getChildRenderer(key,length,breadth) as IMinimisableLayoutSubject;
 			var cast:IGridLayoutSubject = (renderer as IGridLayoutSubject);
 			if(cast){
-				cast[_lengthIndexRef] = length;
-				cast[_breadthIndexRef] = breadth;
+				cast[_lengthRendAxis.indexRef] = length;
+				cast[_breadthRendAxis.indexRef] = breadth;
 			}
 			
 			var posIndex:int = (key as int)*int(4);

@@ -54,7 +54,7 @@ package org.farmcode.display.containers.accordion
 			_assumedRendererFactory.instanceProperties["asset"] = _assumedRendererAsset.getCloneFactory();
 		}
 		override protected function createLayout():void{
-			_accordionLayout = new AccordionLayout();
+			_accordionLayout = new AccordionLayout(this);
 			_accordionLayout.scopeView = this;
 			_layout = _accordionLayout;
 			_layout.equaliseCellHeights = true;

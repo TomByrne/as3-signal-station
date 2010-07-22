@@ -2,6 +2,8 @@ package org.farmcode.display.layout.grid
 {
 	import flash.geom.Point;
 	
+	import org.farmcode.display.core.IView;
+	
 	
 	public class GridLayout extends AbstractGridLayout
 	{
@@ -47,8 +49,8 @@ package org.farmcode.display.layout.grid
 		}
 		
 		
-		public function GridLayout(){
-			super();
+		public function GridLayout(scopeView:IView){
+			super(scopeView);
 		}
 		public function getStandardGridDimensions(rendererWidth:Number, rendererHeight:Number):Point{
 			var availWidth:Number = (_displayPosition.width+horizontalGap-marginLeft-marginRight);

@@ -82,6 +82,7 @@ package org.farmcode.display.controls.popout
 				var wasShown:Boolean = _popoutShown;
 				popoutShown = false;
 				_popout = value;
+				_relativeLayout.scopeView = value;
 				_outroPopout = (value as IOutroView);
 				popoutShown = wasShown;
 				_popout.assetChanged.addHandler(onAssetChanged);
@@ -122,12 +123,13 @@ package org.farmcode.display.controls.popout
 		private var _outroPopout:IOutroView;
 		private var _popoutShown:Boolean;
 		private var _popoutLayoutProxy:ProxyLayoutSubject;
-		private var _relativeLayout:RelativeLayout = new RelativeLayout();
+		private var _relativeLayout:RelativeLayout;
 		private var _relativeLayoutInfo:RelativeLayoutInfo = new RelativeLayoutInfo();
 		private var _removeCall:DelayedCall;
 		
 		public function PopoutDisplay(){
 			super();
+			_relativeLayout = new RelativeLayout();
 			_relativeLayoutInfo.keepWithinStageBounds = true;
 		}
 		protected function doRemove():void{

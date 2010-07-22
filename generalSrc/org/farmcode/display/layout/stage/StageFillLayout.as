@@ -30,7 +30,7 @@ package org.farmcode.display.layout.stage
 		private var _stage:IStageAsset;
 		private var _stageSize:Rectangle = new Rectangle();
 		
-		public function StageFillLayout(scopeView:IView, stage:IStageAsset=null){
+		public function StageFillLayout(scopeView:IView=null, stage:IStageAsset=null){
 			super(scopeView);
 			this.stage = stage;
 		}

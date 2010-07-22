@@ -29,10 +29,12 @@ package org.farmcode.actLibrary.display.visualSockets.socketContainers
 					if(_collectionLayoutSubject && super.layout){
 						super.layout.removeSubject(_collectionLayoutSubject);
 					}
+					_collectionLayout.scopeView = null;
 				}
 				_collectionLayout = value;
 				_collectionLayoutSubject = (value as ILayoutSubject);
 				if(_collectionLayout){
+					_collectionLayout.scopeView = this;
 					for each(subject in _socketCollContHelper.collectionSockets){
 						_collectionLayout.addSubject(subject);
 					}

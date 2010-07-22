@@ -5,7 +5,7 @@ package org.farmcode.display.layout.list
 	
 	public class ListLayout extends AbstractGridLayout
 	{
-		public function ListLayout(scopeView:IView){
+		public function ListLayout(scopeView:IView=null){
 			super(scopeView);
 		}
 		public function get gap():Number{

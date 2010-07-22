@@ -9,7 +9,7 @@ package org.farmcode.display.layout.canvas
 	public class CanvasLayout extends AbstractLayout
 	{
 		
-		public function CanvasLayout(scopeView:IView){
+		public function CanvasLayout(scopeView:IView=null){
 			super(scopeView);
 		}
 		override protected function drawSubject(subject:ILayoutSubject) : void{

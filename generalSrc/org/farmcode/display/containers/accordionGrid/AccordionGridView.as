@@ -347,7 +347,7 @@ package org.farmcode.display.containers.accordionGrid
 			_gridLayout.setDisplayPosition(0,0,meas.width,meas.height);
 		}
 		protected function createGridLayout() : void{
-			_gridLayout = new RendererGridLayout();
+			_gridLayout = new RendererGridLayout(this);
 			_gridLayout.equaliseCellHeights = true;
 			_gridLayout.equaliseCellWidths = true;
 		}

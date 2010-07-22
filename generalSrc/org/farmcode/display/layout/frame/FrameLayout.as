@@ -13,7 +13,7 @@ package org.farmcode.display.layout.frame
 		protected var marginAffectedPosition:Rectangle = new Rectangle();
 		protected var marginRect:Rectangle = new Rectangle();
 		
-		public function FrameLayout(scopeView:IView){
+		public function FrameLayout(scopeView:IView=null){
 			super(scopeView);
 		}
 		override protected function drawSubject(subject:ILayoutSubject) : void{

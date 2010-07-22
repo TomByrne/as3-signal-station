@@ -14,7 +14,7 @@ package org.farmcode.display.layout.relative
 	{
 		private static const ORIGIN:Point = new Point();
 		
-		public function RelativeLayout(scopeView:IView, stage:IStageAsset=null){
+		public function RelativeLayout(scopeView:IView=null, stage:IStageAsset=null){
 			super(scopeView, stage);
 		}
 		override protected function drawSubject(subject:ILayoutSubject) : void{

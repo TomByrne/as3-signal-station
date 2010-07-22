@@ -233,7 +233,7 @@ package org.farmcode.display.layout.grid
 		protected var _breadthRendAxis:RendererGridAxis;
 		protected var _lengthRendAxis:RendererGridAxis;
 		
-		public function RendererGridLayout(scopeView:IView){
+		public function RendererGridLayout(scopeView:IView=null){
 			super(scopeView);
 		}
 		override protected function createAxes():void{
