@@ -80,7 +80,7 @@ package org.farmcode.sound.soundControls
 		protected function onFinishOutro(e:Event):void{
 			clearTween()
 			clearCurrentChannel();
-			this.dispatchFinished();
+			this.performFinished();
 		}
 		override protected function compileTransform():SoundTransform{
 			var ret:SoundTransform = super.compileTransform();

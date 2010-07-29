@@ -3,10 +3,60 @@ package org.farmcode.sound.soundControls
 	import flash.events.EventDispatcher;
 	import flash.media.SoundTransform;
 	
+	import org.farmcode.acting.actTypes.IAct;
+	import org.farmcode.acting.acts.Act;
 	import org.farmcode.utils.ObjectUtils;
 
-	public class SoundTransformControl extends EventDispatcher implements ISoundControl
+	public class SoundTransformControl implements ISoundControl
 	{
+		
+		/**
+		 * @inheritDoc
+		 */
+		public function get playbackBegun():IAct{
+			if(!_playbackBegun)_playbackBegun = new Act();
+			return _playbackBegun;
+		}
+		
+		/**
+		 * @inheritDoc
+		 */
+		public function get playbackFinished():IAct{
+			if(!_playbackFinished)_playbackFinished = new Act();
+			return _playbackFinished;
+		}
+		
+		/**
+		 * @inheritDoc
+		 */
+		public function get soundAdded():IAct{
+			if(!_soundAdded)_soundAdded = new Act();
+			return _soundAdded;
+		}
+		
+		/**
+		 * @inheritDoc
+		 */
+		public function get soundRemoved():IAct{
+			if(!_soundRemoved)_soundRemoved = new Act();
+			return _soundRemoved;
+		}
+		
+		
+		public function get added():Boolean{
+			return _added;
+		}
+		public function set added(value:Boolean):void{
+			if(_added!=value){
+				_added = value;
+				if(value){
+					if(_soundAdded)_soundAdded.perform(this);
+				}else{
+					if(_soundRemoved)_soundRemoved.perform(this);
+				}
+			}
+		}
+		
 		
 		public function get subject():Object{
 			return _subject;
@@ -43,6 +93,13 @@ package org.farmcode.sound.soundControls
 		public function get infinite():Boolean{
 			return true;
 		}
+		
+		private var _added:Boolean;
+		
+		protected var _soundRemoved:Act;
+		protected var _soundAdded:Act;
+		protected var _playbackFinished:Act;
+		protected var _playbackBegun:Act;
 		
 		private var _subject:Object;
 		private var _soundGroup:String;

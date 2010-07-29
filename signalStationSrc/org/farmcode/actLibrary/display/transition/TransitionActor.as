@@ -1,11 +1,9 @@
 package org.farmcode.actLibrary.display.transition
 {
-	import au.com.thefarmdigital.events.TransitionEvent;
 	import au.com.thefarmdigital.utils.DisplayObjectSnapshot;
 	import au.com.thefarmdigital.utils.DisplayUtils;
 	
 	import flash.display.Bitmap;
-	import flash.display.Sprite;
 	import flash.utils.Dictionary;
 	
 	import org.farmcode.actLibrary.core.UniversalActorHelper;
@@ -121,7 +119,7 @@ package org.farmcode.actLibrary.display.transition
 							bundle.startDisplay.parent.addAsset(bundle.endDisplay);
 						}
 						var trans:TransitionExecution = TransitionManager.execute(bundle.startDisplay,bundle.endDisplay,transitions,easing);
-						trans.addEventListener(TransitionEvent.TRANSITION_END, bundle.onFinish);					
+						trans.transitionEnd.addHandler(bundle.onFinish);
 						return;
 					}
 				}
@@ -133,12 +131,11 @@ package org.farmcode.actLibrary.display.transition
 		}
 	}
 }
-import au.com.thefarmdigital.events.TransitionEvent;
-
 import flash.display.Bitmap;
 
 import org.farmcode.acting.universal.UniversalActExecution;
 import org.farmcode.display.assets.IDisplayAsset;
+import org.farmcode.display.transition.TransitionExecution;
 	
 class TransBundle{
 	public var startDisplay:IDisplayAsset;
@@ -152,7 +149,8 @@ class TransBundle{
 		this.endDisplay = endDisplay;
 		this.hiddenDisplay = hiddenDisplay;
 	}
-	public function onFinish(e:TransitionEvent):void{
+	public function onFinish(from:TransitionExecution):void{
+		from.transitionEnd.removeHandler(onFinish);
 		var snapshot:Bitmap = startDisplay as Bitmap;
 		if(snapshot)snapshot.bitmapData.dispose();
 		if(addedDisplay){

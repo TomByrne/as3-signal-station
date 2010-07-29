@@ -47,7 +47,7 @@ package org.farmcode.sound.soundControls
 		override public function stop():void{
 			this._pending = false;
 			this.doneCall = null;
-			this.dispatchFinished();
+			this.performFinished();
 		}
 	}
 }

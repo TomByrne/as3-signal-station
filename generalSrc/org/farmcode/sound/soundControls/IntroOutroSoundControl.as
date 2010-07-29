@@ -1,7 +1,5 @@
 package org.farmcode.sound.soundControls
 {
-	import org.farmcode.sound.SoundEvent;
-	
 	import flash.events.Event;
 	import flash.media.Sound;
 
@@ -47,7 +45,7 @@ package org.farmcode.sound.soundControls
 				playingOutro = true;
 				setCurrentChannel(outroSound.play(outroStartFract*outroSound.length, 1, compileTransform()),onOutroComplete);
 			}else{
-				dispatchEvent(new SoundEvent(this,SoundEvent.PLAYBACK_FINISHED));
+				if(_playbackFinished)_playbackFinished.perform(this);
 			}
 		}
 		override public function stop():void{
@@ -77,7 +75,7 @@ package org.farmcode.sound.soundControls
 		protected function onOutroComplete(e:Event):void{
 			playingOutro = false;
 			clearCurrentChannel();
-			dispatchEvent(new SoundEvent(this,SoundEvent.PLAYBACK_FINISHED));
+			if(_playbackFinished)_playbackFinished.perform(this);
 		}
 	}
 }

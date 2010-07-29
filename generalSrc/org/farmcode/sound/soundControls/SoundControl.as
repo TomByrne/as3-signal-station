@@ -67,7 +67,7 @@ package org.farmcode.sound.soundControls
 			if(!_pending){
 				clearCurrentChannel();
 				intro();
-				this.dispatchBegun();
+				this.performBegun();
 				_pending = true;
 			}
 		}
@@ -89,7 +89,7 @@ package org.farmcode.sound.soundControls
 				outro();
 			}
 		}
-		override public function toString(): String{
+		public function toString(): String{
 			return "[SoundControl sound:" + this.sound + "]";
 		}
 		protected function setCurrentChannel(channel:SoundChannel, completeHandler:Function=null):void{
@@ -120,7 +120,7 @@ package org.farmcode.sound.soundControls
 		}
 		protected function outro():void{
 			clearCurrentChannel();
-			this.dispatchFinished();
+			this.performFinished();
 		}
 		override protected function applyVolume():void{
 			if(_currentChannel){

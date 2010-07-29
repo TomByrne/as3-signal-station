@@ -1,16 +1,67 @@
 package org.farmcode.sound.soundControls
 {
-	import org.farmcode.sound.SoundEvent;
-	
-	import flash.events.EventDispatcher;
 	import flash.media.SoundTransform;
+	
+	import org.farmcode.acting.actTypes.IAct;
+	import org.farmcode.acting.acts.Act;
 
-	[Event(name="playbackBegun",type="org.farmcode.sodalityLibrary.sound.SoundEvent")]
-	[Event(name="playbackFinished",type="org.farmcode.sodalityLibrary.sound.SoundEvent")]
-	[Event(name="soundAdded",type="org.farmcode.sodalityLibrary.sound.SoundEvent")]
-	[Event(name="soundRemoved",type="org.farmcode.sodalityLibrary.sound.SoundEvent")]
-	public class AbstractSoundControl extends EventDispatcher implements ISoundControl, IQueueableSoundControl, IHeroSoundControl
+	public class AbstractSoundControl implements ISoundControl, IQueueableSoundControl, IHeroSoundControl
 	{
+		
+		/**
+		 * @inheritDoc
+		 */
+		public function get playbackBegun():IAct{
+			if(!_playbackBegun)_playbackBegun = new Act();
+			return _playbackBegun;
+		}
+		
+		/**
+		 * @inheritDoc
+		 */
+		public function get playbackFinished():IAct{
+			if(!_playbackFinished)_playbackFinished = new Act();
+			return _playbackFinished;
+		}
+		
+		/**
+		 * @inheritDoc
+		 */
+		public function get soundAdded():IAct{
+			if(!_soundAdded)_soundAdded = new Act();
+			return _soundAdded;
+		}
+		
+		/**
+		 * @inheritDoc
+		 */
+		public function get soundRemoved():IAct{
+			if(!_soundRemoved)_soundRemoved = new Act();
+			return _soundRemoved;
+		}
+		
+		
+		public function get added():Boolean{
+			return _added;
+		}
+		public function set added(value:Boolean):void{
+			if(_added!=value){
+				_added = value;
+				if(value){
+					if(_soundAdded)_soundAdded.perform(this);
+				}else{
+					if(_soundRemoved)_soundRemoved.perform(this);
+				}
+			}
+		}
+		
+		private var _added:Boolean;
+		
+		protected var _soundRemoved:Act;
+		protected var _soundAdded:Act;
+		protected var _playbackFinished:Act;
+		protected var _playbackBegun:Act;
+		
 		private var _volume:Number;
 		private var _volumeMultiplier:Number;
 		protected var _pending:Boolean;
@@ -118,11 +169,11 @@ package org.farmcode.sound.soundControls
 		protected function applyVolume(): void{
 			
 		}
-		protected function dispatchBegun(): void{
-			this.dispatchEvent(new SoundEvent(this,SoundEvent.PLAYBACK_BEGUN));
+		protected function performBegun(): void{
+			if(_playbackBegun)_playbackBegun.perform(this);
 		}
-		protected function dispatchFinished(): void{
-			this.dispatchEvent(new SoundEvent(this,SoundEvent.PLAYBACK_FINISHED));
+		protected function performFinished(): void{
+			if(_playbackFinished)_playbackFinished.perform(this);
 		}
 		protected function compileTransform():SoundTransform{
 			return new SoundTransform(this.volume*this.volumeMultiplier);

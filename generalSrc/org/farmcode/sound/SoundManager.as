@@ -1,26 +1,61 @@
 package org.farmcode.sound
 {
-	import org.farmcode.tweening.LooseTween;
-	
-	import flash.events.EventDispatcher;
 	import flash.net.SharedObject;
 	import flash.utils.Dictionary;
 	
+	import org.farmcode.acting.actTypes.IAct;
+	import org.farmcode.acting.acts.Act;
 	import org.farmcode.collections.DictionaryUtils;
 	import org.farmcode.hoborg.ObjectPool;
 	import org.farmcode.sound.soundControls.IHeroSoundControl;
 	import org.farmcode.sound.soundControls.IQueueableSoundControl;
 	import org.farmcode.sound.soundControls.ISoundControl;
+	import org.farmcode.tweening.LooseTween;
 	
-	[Event(name="playbackBegun",type="org.farmcode.sound.SoundEvent")]
-	[Event(name="playbackFinished",type="org.farmcode.sound.SoundEvent")]
-	public class SoundManager extends EventDispatcher
+	// TODO: check when ISoundControl.added is set to true (if ever)
+	public class SoundManager
 	{
 		private static const queuePool:ObjectPool = new ObjectPool(SoundQueue);
 		
 		private static const STORAGE_ID: String = "soundSettings";
 		private static const MUTED_STORAGE_ID: String = "muted";
 		private static const VOLUME_STORAGE_ID: String = "volume";
+		
+		
+		/**
+		 * handler(from:SoundManager)
+		 */
+		public function get playbackBegun():IAct{
+			if(!_playbackBegun)_playbackBegun = new Act();
+			return _playbackBegun;
+		}
+		
+		/**
+		 * handler(from:SoundManager)
+		 */
+		public function get playbackFinished():IAct{
+			if(!_playbackFinished)_playbackFinished = new Act();
+			return _playbackFinished;
+		}
+		/**
+		 * handler(from:SoundManager, sound:ISoundControl)
+		 */
+		public function get soundAdded():IAct{
+			if(!_soundAdded)_soundAdded = new Act();
+			return _soundAdded;
+		}
+		/**
+		 * handler(from:SoundManager, sound:ISoundControl)
+		 */
+		public function get soundRemoved():IAct{
+			if(!_soundRemoved)_soundRemoved = new Act();
+			return _soundRemoved;
+		}
+		
+		protected var _soundRemoved:Act;
+		protected var _soundAdded:Act;
+		protected var _playbackFinished:Act;
+		protected var _playbackBegun:Act;
 		
 		protected var _allSounds:Dictionary 		= new Dictionary();
 		protected var _soundQueues:Dictionary 		= new Dictionary(); // keyed by queue name
@@ -109,8 +144,7 @@ package org.farmcode.sound
 		public function playSound(sound:ISoundControl):Boolean{
 			return _playSound(sound, true);
 		}
-		protected function _playSound(sound:ISoundControl, dispatchEvent:Boolean):Boolean{
-						
+		protected function _playSound(sound:ISoundControl, performAct:Boolean):Boolean{
 			var pendingStop:Boolean = _requestedStops[sound];
 			delete _requestedStops[sound];
 			_requestedPlays[sound] = true;
@@ -126,6 +160,7 @@ package org.farmcode.sound
 				// allow queue items through as they won't be played on top of one another
 				throw new Error("This ISoundControl object has already been added to the SoundManager");
 			}else{
+				sound.added = true;
 				if(inQueue){
 					var queue:SoundQueue = _soundQueues[queueName];
 					if(!queue){
@@ -154,7 +189,7 @@ package org.farmcode.sound
 					introSound(sound);
 					ret = true;
 				}
-				if(ret && dispatchEvent)sound.dispatchEvent(new SoundEvent(sound,SoundEvent.SOUND_ADDED));
+				if(ret && performAct && _soundAdded)_soundAdded.perform(this,sound);
 				return ret;
 			}
 		}
@@ -175,7 +210,7 @@ package org.farmcode.sound
 						var cast:IQueueableSoundControl = sound as IQueueableSoundControl;
 						queue.removeSound(cast);
 						if(!queue.hasSound(cast))delete _allSounds[sound];
-						sound.dispatchEvent(new SoundEvent(sound,SoundEvent.SOUND_REMOVED));
+						if(_soundRemoved)_soundRemoved.perform(this,sound);
 					}
 				}else{
 					if(_nonQueuedPlaying[sound]){
@@ -183,7 +218,7 @@ package org.farmcode.sound
 						assessPlayback();
 					}else{
 						delete _allSounds[sound];
-						sound.dispatchEvent(new SoundEvent(sound,SoundEvent.SOUND_REMOVED));
+						if(_soundRemoved)_soundRemoved.perform(this,sound);
 					}
 				}
 			}
@@ -205,7 +240,7 @@ package org.farmcode.sound
 		}
 		protected function introSound(sound:ISoundControl):void{
 			_nonQueuedPlaying[sound] = true;
-			sound.addEventListener(SoundEvent.PLAYBACK_FINISHED, onSoundFinished);
+			sound.playbackFinished.addHandler(onSoundFinished);
 			assessPlayback();
 		}
 		protected function assessPlayback():void{
@@ -269,63 +304,58 @@ package org.farmcode.sound
 			var queue:SoundQueue = queuePool.takeObject();
 			queue.queueName = queueName
 			_soundQueues[queueName] = queue;
-			queue.addEventListener(SoundEvent.PLAYBACK_FINISHED, onQueuePlayingFinish);
-			queue.addEventListener(SoundEvent.SOUND_REMOVED, onQueueSoundRemoved);
+			queue.playbackFinished.addHandler(onQueuePlayingFinish);
+			queue.soundRemoved.addHandler(onQueueSoundRemoved);
 			return queue;
 		}
 		protected function destroyQueue(queueName:String):void{
 			var queue:SoundQueue = _soundQueues[queueName];
-			queue.removeEventListener(SoundEvent.PLAYBACK_FINISHED, onQueuePlayingFinish);
-			queue.removeEventListener(SoundEvent.SOUND_REMOVED, onQueueSoundRemoved);
+			queue.playbackFinished.removeHandler(onQueuePlayingFinish);
+			queue.soundRemoved.removeHandler(onQueueSoundRemoved);
 			delete _soundQueues[queueName];
 			queuePool.releaseObject(queue);
 		}
 		
-		protected function onQueueSoundRemoved(e: SoundEvent): void{
-			var queue:SoundQueue = (e.target as SoundQueue);
-			var sound:IQueueableSoundControl = e.soundControl as IQueueableSoundControl;
+		protected function onQueueSoundRemoved(queue:SoundQueue, sound:IQueueableSoundControl): void{
 			if(!queue.hasSound(sound)){
 				delete _allSounds[sound];
 			}
 			if(!queue.soundCount){
 				destroyQueue(queue.queueName);
 			}
-			sound.dispatchEvent(new SoundEvent(sound,SoundEvent.SOUND_REMOVED));
-			dispatchEvent(new SoundEvent(sound,SoundEvent.PLAYBACK_FINISHED));
+			sound.added = false;
+			if(_playbackFinished)_playbackFinished.perform(this);
 		}
-		protected function onQueuePlayingFinish(e:SoundEvent):void{
-			var queue:SoundQueue = (e.target as SoundQueue);
-			var sound:IQueueableSoundControl = e.soundControl as IQueueableSoundControl;
+		protected function onQueuePlayingFinish(queue:SoundQueue, sound:IQueueableSoundControl):void{
 		
 			delete _requestedStops[sound];
 			queue.playingSound = null;
 			if (!queue.hasSound(sound)){
 				delete this._allSounds[sound];
 			}
-			if(!_requestedPlays[sound] || !_playSound(e.soundControl,false)){
+			if(!_requestedPlays[sound] || !_playSound(sound,false)){
 				if(queue.soundCount){
 					assessQueue(queue,false);
 				}else{
 					destroyQueue(queue.queueName);
 					assessPlayback();
 				}
-				sound.dispatchEvent(new SoundEvent(sound,SoundEvent.SOUND_REMOVED));
+				sound.added = false;
 			}
-			dispatchEvent(new SoundEvent(sound,SoundEvent.PLAYBACK_FINISHED));
+			if(_playbackFinished)_playbackFinished.perform(this);
 		}
 				
-		protected function onSoundFinished(e:SoundEvent):void{
-			var sound:ISoundControl = (e.target as ISoundControl);
-			sound.removeEventListener(SoundEvent.PLAYBACK_FINISHED, onSoundFinished);
+		protected function onSoundFinished(sound:ISoundControl):void{
+			sound.playbackFinished.removeHandler(onSoundFinished);
 			delete _nonQueuedPlaying[sound];
 			delete _requestedStops[sound];
 			delete _nonQueuedSounds[sound];
 			delete _allSounds[sound];
 			if(!_requestedPlays[sound] || !_playSound(sound,false)){
 				assessPlayback();
-				sound.dispatchEvent(new SoundEvent(sound,SoundEvent.SOUND_REMOVED));
+				sound.added = false;
 			}
-			dispatchEvent(new SoundEvent(e.soundControl,SoundEvent.PLAYBACK_FINISHED));
+			if(_playbackFinished)_playbackFinished.perform(this);
 		}
 				
 		protected function setSoundVolume(sound:ISoundControl, volume:Number, doTween:Boolean):void{

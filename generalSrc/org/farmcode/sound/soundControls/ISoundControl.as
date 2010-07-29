@@ -1,18 +1,31 @@
 package org.farmcode.sound.soundControls
 {
-	import flash.events.IEventDispatcher;
-	import flash.media.SoundTransform;
+	import org.farmcode.acting.actTypes.IAct;
 	
-	[Event(name="playbackBegun",type="org.farmcode.sodalityLibrary.sound.SoundEvent")]
-	[Event(name="playbackFinished",type="org.farmcode.sodalityLibrary.sound.SoundEvent")]
-	[Event(name="soundAdded",type="org.farmcode.sodalityLibrary.sound.SoundEvent")]
-	[Event(name="soundRemoved",type="org.farmcode.sodalityLibrary.sound.SoundEvent")]
 	/**
 	 * The ISoundControl interface provides control for sound playback, generally it wraps
 	 * a Sound or NetStream object.
 	 */
-	public interface ISoundControl extends IEventDispatcher
+	public interface ISoundControl
 	{
+		
+		/**
+		 * handler(from:ISoundControl)
+		 */
+		function get playbackBegun():IAct;
+		/**
+		 * handler(from:ISoundControl)
+		 */
+		function get playbackFinished():IAct;
+		/**
+		 * handler(from:ISoundControl)
+		 */
+		function get soundAdded():IAct;
+		/**
+		 * handler(from:ISoundControl)
+		 */
+		function get soundRemoved():IAct;
+		
 		function play():void;
 		function stop():void;
 		/**
@@ -23,5 +36,10 @@ package org.farmcode.sound.soundControls
 		function get playing():Boolean;
 		function get infinite():Boolean;
 		function get soundGroup():String; // currently can only change volume and queue name
+		/**
+		 * This is to be set by the SoundManager to trigger the soundsAdded
+		 * and soundRemoved acts.
+		 */
+		function set added(value:Boolean):void;
 	}
 }

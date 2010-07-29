@@ -1,6 +1,6 @@
 package org.farmcode.sound.soundControls
 {
-	import org.farmcode.sound.SoundEvent;
+	
 
 	public class CompositeSoundControl extends AbstractSoundControl implements IAccessibleSoundControl
 	{
@@ -79,19 +79,19 @@ package org.farmcode.sound.soundControls
 				}else{
 					this.currentSoundIndex = 0;
 					this.currentLoop = 0;
-					this.dispatchBegun();
+					this.performBegun();
 					this.playCurrentSound();
 				}
 			}
 		}
 		
 		private function playCurrentSound(): void{
-			currentSound.addEventListener(SoundEvent.PLAYBACK_FINISHED, handleCurrentPlaybackFinish);
+			currentSound.playbackFinished.addHandler(handleCurrentPlaybackFinish);
 			currentSound.play();
 		}
 		
-		private function handleCurrentPlaybackFinish(event: SoundEvent): void{
-			currentSound.removeEventListener(SoundEvent.PLAYBACK_FINISHED, handleCurrentPlaybackFinish);
+		private function handleCurrentPlaybackFinish(from:ISoundControl): void{
+			currentSound.playbackFinished.removeHandler(handleCurrentPlaybackFinish);
 			
 			if (_pending && ((this.currentSoundIndex + 1) < this.controls.length)){
 				this.currentSoundIndex++;
@@ -119,7 +119,7 @@ package org.farmcode.sound.soundControls
 		private function finishPlaying(): void{
 			this.currentSoundIndex = -1;
 			this.currentLoop = -1;
-			this.dispatchFinished();
+			this.performFinished();
 		}
 	}
 }

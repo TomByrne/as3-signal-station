@@ -32,14 +32,14 @@ package org.farmcode.sound.soundControls
 		override public function play():void{
 			_shouldBePlaying = true;
 			if(_isPlaying){
-				dispatchBegun();
+				performBegun();
 			}
 		}
 		
 		override public function stop():void{
 			_shouldBePlaying = false;
 			if(!_isPlaying){
-				dispatchFinished();
+				performFinished();
 			}
 		}
 		override protected function applyVolume(): void{
@@ -52,13 +52,13 @@ package org.farmcode.sound.soundControls
 	    		case NetStreamCodes.PLAY_START:
 	    			_isPlaying = true;
 	    			if(_shouldBePlaying){
-	    				dispatchBegun();
+	    				performBegun();
 	    			}
 	    			break;
 	    		case NetStreamCodes.PLAY_STOP:
 	    			_isPlaying = false;
 	    			if(!_shouldBePlaying){
-	    				dispatchFinished();
+	    				performFinished();
 	    			}
 	    			break;
 	    	}

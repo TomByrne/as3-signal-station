@@ -1,35 +1,55 @@
 package org.farmcode.display.transition
 {
-	import au.com.thefarmdigital.events.TransitionEvent;
 	import au.com.thefarmdigital.utils.DisplayUtils;
 	
-	import flash.display.Bitmap;
 	import flash.display.BitmapData;
-	import flash.display.DisplayObject;
-	import flash.display.DisplayObjectContainer;
 	import flash.display.PixelSnapping;
 	import flash.events.Event;
-	import flash.events.EventDispatcher;
 	import flash.geom.Matrix;
 	import flash.geom.Point;
 	import flash.geom.Rectangle;
 	import flash.utils.getTimer;
 	
+	import org.farmcode.acting.actTypes.IAct;
+	import org.farmcode.acting.acts.Act;
 	import org.farmcode.display.assets.IBitmapAsset;
 	import org.farmcode.display.assets.IContainerAsset;
 	import org.farmcode.display.assets.IDisplayAsset;
 	import org.farmcode.display.assets.nativeAssets.Asset;
 	
-	[Event(name="transitionBegin",type="au.com.thefarmdigital.events.TransitionEvent")]
-	[Event(name="transitionChange",type="au.com.thefarmdigital.events.TransitionEvent")]
-	[Event(name="transitionEnd",type="au.com.thefarmdigital.events.TransitionEvent")]
 	/**
 	 * The TransitionExecution class takes two DisplayObjects and transitions between them.
 	 */
-	public class TransitionExecution extends EventDispatcher
+	public class TransitionExecution
 	{
 		private static const MAX_WIDTH: uint = 2880;
 		private static const MAX_HEIGHT: uint = 2880;
+		
+		
+		/**
+		 * handler(from:TransitionExecution)
+		 */
+		public function get transitionBegin():IAct{
+			if(!_transitionBegin)_transitionBegin = new Act();
+			return _transitionBegin;
+		}
+		
+		/**
+		 * handler(from:TransitionExecution)
+		 */
+		public function get transitionChange():IAct{
+			if(!_transitionChange)_transitionChange = new Act();
+			return _transitionChange;
+		}
+		
+		/**
+		 * handler(from:TransitionExecution)
+		 */
+		public function get transitionEnd():IAct{
+			if(!_transitionEnd)_transitionEnd = new Act();
+			return _transitionEnd;
+		}
+		
 		
 		/**
 		 * The easing function should be any of the easing functions normally used for tweening.
@@ -94,6 +114,10 @@ package org.farmcode.display.transition
 		private var startTime:Number;
 		private var bounds:Rectangle;
 		
+		protected var _transitionEnd:Act;
+		protected var _transitionChange:Act;
+		protected var _transitionBegin:Act;
+		
 		public function TransitionExecution(transitions:Array){
 			_transitions = transitions;
 		}
@@ -152,8 +176,7 @@ package org.farmcode.display.transition
 				matrix.ty = startBounds.y-_renderArea.y;
 				bitmapData.draw(_startDisplay.bitmapDrawable,matrix,_startDisplay.transform.colorTransform,_startDisplay.blendMode);
 				
-				
-				dispatchEvent(new TransitionEvent(TransitionEvent.TRANSITION_BEGIN));
+				if(_transitionBegin)_transitionBegin.perform(this);
 			}
 		}
 		protected function getBounds(subject:IDisplayAsset, parent:IDisplayAsset):Rectangle{
@@ -207,14 +230,14 @@ package org.farmcode.display.transition
 			if(parent.stage==parent){
 				_renderArea.visible = true;
 			}
-			dispatchEvent(new TransitionEvent(TransitionEvent.TRANSITION_CHANGE));
+			if(_transitionChange)_transitionChange.perform(this);
 			if(_time>=_duration){
 				for each(trans in _transitions){
 					trans.endTransition(_startDisplay,_finishDisplay,_renderArea,_duration);
 				}
 				_finishDisplay.visible = true;
 				onEnd(true);
-				dispatchEvent(new TransitionEvent(TransitionEvent.TRANSITION_END));
+				if(_transitionEnd)_transitionEnd.perform(this);
 			}else if(easedTime>currentGroup.timeBefore+currentGroup.duration){
 				_timedTransitions.splice(0,1);
 				currentGroup = _timedTransitions[0];
@@ -226,7 +249,7 @@ package org.farmcode.display.transition
 		}
 		internal function endEarly():IBitmapAsset{
 			onEnd(false);
-			dispatchEvent(new TransitionEvent(TransitionEvent.TRANSITION_END));
+			if(_transitionEnd)_transitionEnd.perform(this);
 			return _renderArea;
 		}
 		private function onEnd(removeRender:Boolean):void{

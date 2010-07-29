@@ -19,6 +19,8 @@ package
 	import org.farmcode.actLibrary.display.visualSockets.socketContainers.SocketCollectionContainer;
 	import org.farmcode.actLibrary.display.visualSockets.socketContainers.SocketCollectionContainerHelper;
 	import org.farmcode.actLibrary.display.visualSockets.socketContainers.SocketContainer;
+	import org.farmcode.actLibrary.sound.SoundActor;
+	import org.farmcode.actLibrary.sound.acts.AddSoundAct;
 	import org.farmcode.data.actions.Link;
 	import org.farmcode.display.assets.nativeAssets.NativeAssetFactory;
 	import org.farmcode.display.containers.AbstractList;
@@ -60,6 +62,10 @@ package
 	import org.farmcode.media.video.ProgressiveVideoSource;
 	import org.farmcode.media.video.StreamingVideoSource;
 	import org.farmcode.media.video.VolumeMemory;
+	import org.farmcode.sound.soundControls.CompositeSoundControl;
+	import org.farmcode.sound.soundControls.IntroOutroSoundControl;
+	import org.farmcode.sound.soundControls.SoundControl;
+	import org.farmcode.sound.soundControls.SoundTransformControl;
 
 	public class TestInclude
 	{
@@ -124,6 +130,13 @@ package
 			PlugDisplay;
 			AbstractAccordionView;
 			AccordionGridView;
+			SoundActor
+			SoundControl
+			SoundTransformControl
+			AddSoundAct
+			CompositeSoundControl
+			IntroOutroSoundControl
+			
 		}
 	}
 }

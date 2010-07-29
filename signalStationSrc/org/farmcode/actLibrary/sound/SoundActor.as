@@ -5,7 +5,6 @@ package org.farmcode.actLibrary.sound
 	import org.farmcode.actLibrary.core.UniversalActorHelper;
 	import org.farmcode.actLibrary.sound.actTypes.*;
 	import org.farmcode.acting.universal.UniversalActExecution;
-	import org.farmcode.sound.SoundEvent;
 	import org.farmcode.sound.SoundManager;
 	import org.farmcode.sound.soundControls.ISoundControl;
 	
@@ -15,13 +14,13 @@ package org.farmcode.actLibrary.sound
 		protected var _executionMap:Dictionary = new Dictionary(true);
 		
 		public function SoundActor(){
-			_soundManager.addEventListener(SoundEvent.PLAYBACK_FINISHED,onSoundFinished); 
+			_soundManager.playbackFinished.addHandler(onSoundFinished);
 		}
-		protected function onSoundFinished(e:SoundEvent):void{
-			var execution:UniversalActExecution = _executionMap[e.soundControl];
+		protected function onSoundFinished(from:SoundManager, sound:ISoundControl):void{
+			var execution:UniversalActExecution = _executionMap[sound];
 			if(execution){
 				execution.continueExecution();
-				delete _executionMap[e.soundControl];
+				delete _executionMap[sound];
 			}
 		}
 		

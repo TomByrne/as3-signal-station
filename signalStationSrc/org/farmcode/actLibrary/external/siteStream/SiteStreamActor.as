@@ -7,15 +7,15 @@ package org.farmcode.actLibrary.external.siteStream
 	import org.farmcode.actLibrary.errors.ErrorDetails;
 	import org.farmcode.actLibrary.errors.actTypes.IDetailedErrorAct;
 	import org.farmcode.actLibrary.errors.acts.DetailedErrorAct;
-	import org.farmcode.actLibrary.errors.acts.ErrorAct;
 	import org.farmcode.actLibrary.external.siteStream.actTypes.*;
 	import org.farmcode.actLibrary.external.siteStream.errors.SiteStreamErrors;
 	import org.farmcode.acting.ActingNamspace;
 	import org.farmcode.acting.universal.UniversalActExecution;
 	import org.farmcode.acting.universal.phases.LogicPhases;
 	import org.farmcode.acting.universal.phases.ObjectPhases;
+	import org.farmcode.siteStream.AbstractSiteStream;
 	import org.farmcode.siteStream.SiteStream;
-	import org.farmcode.siteStream.events.SiteStreamErrorEvent;
+	import org.farmcode.siteStream.dataLoader.IDataInfo;
 	
 	use namespace ActingNamspace;
 
@@ -78,19 +78,19 @@ package org.farmcode.actLibrary.external.siteStream
 			
 			this.loadRequests = new Dictionary();
 			_siteStream = this.createSiteStream();
-			_siteStream.addEventListener(SiteStreamErrorEvent.CLASS_FAILURE, onClassFailure);
-			_siteStream.addEventListener(SiteStreamErrorEvent.DATA_FAILURE, onDataFailure);
+			_siteStream.classFailure.addHandler(onClassFailure);
+			_siteStream.dataFailure.addHandler(onDataFailure);
 		}
-		protected function onClassFailure(e:SiteStreamErrorEvent):void{
+		protected function onClassFailure(from:AbstractSiteStream, libraryID:String):void{
 			_errorAct.errorTarget = this;
 			_errorAct.errorType = SiteStreamErrors.CLASS_ERROR;
-			_errorAct.errorDetails = new ErrorDetails(e.text);
+			_errorAct.errorDetails = new ErrorDetails("Failed to load library: "+libraryID);
 			_errorAct.perform();
 		}
-		protected function onDataFailure(e:SiteStreamErrorEvent):void{
+		protected function onDataFailure(from:AbstractSiteStream, dataInfo:IDataInfo):void{
 			_errorAct.errorTarget = this;
 			_errorAct.errorType = SiteStreamErrors.DATA_ERROR;
-			_errorAct.errorDetails = new ErrorDetails(e.text);
+			_errorAct.errorDetails = new ErrorDetails("Failed to load data: "+dataInfo.bestData);
 			_errorAct.perform();
 		}
 		protected function createSiteStream():SiteStream{

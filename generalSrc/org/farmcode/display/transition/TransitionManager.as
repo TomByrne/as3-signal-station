@@ -1,9 +1,5 @@
 package org.farmcode.display.transition
 {
-	import au.com.thefarmdigital.events.TransitionEvent;
-	
-	import flash.display.DisplayObject;
-	
 	import org.farmcode.display.assets.IDisplayAsset;
 	
 	/**
@@ -38,18 +34,19 @@ package org.farmcode.display.transition
 			ret.easing = easing;
 			ret.startDisplay = start;
 			ret.finishDisplay = finish;
-			ret.addEventListener(TransitionEvent.TRANSITION_END, onTransitionEnd);
+			ret.transitionEnd.addHandler(onTransitionEnd);
 			ret.execute();
 			_executions.push(ret);
 			return ret;
 		}
-		private static function onTransitionEnd(e:TransitionEvent):void{
-			removeTransition(e.target as TransitionExecution);
+		private static function onTransitionEnd(from:TransitionExecution):void{
+			removeTransition(from);
 		}
 		private static function removeTransition(transition:TransitionExecution):void{
 			var index:Number = _executions.indexOf(transition);
 			if(index!=-1){
 				_executions.splice(index,1);
+				transition.transitionEnd.removeHandler(onTransitionEnd);
 			}
 		}
 		private static function findExecution(visual:IDisplayAsset):TransitionExecution{

@@ -1,16 +1,36 @@
 package org.farmcode.sound
 {
-	import org.farmcode.sound.soundControls.IQueueableSoundControl;
-	
 	import flash.events.Event;
-	import flash.events.EventDispatcher;
 	
+	import org.farmcode.acting.actTypes.IAct;
+	import org.farmcode.acting.acts.Act;
 	import org.farmcode.hoborg.IPoolable;
+	import org.farmcode.sound.soundControls.IQueueableSoundControl;
 	
 	[Event(name="playbackFinished",type="org.farmcode.sound.SoundEvent")]
 	[Event(name="soundRemoved",type="org.farmcode.sound.SoundEvent")]
-	public class SoundQueue extends EventDispatcher implements IPoolable
+	public class SoundQueue implements IPoolable
 	{
+		
+		/**
+		 * handler(from:SoundQueue, sound:IQueueableSoundControl)
+		 */
+		public function get playbackFinished():IAct{
+			if(!_playbackFinished)_playbackFinished = new Act();
+			return _playbackFinished;
+		}
+		
+		/**
+		 * handler(from:SoundQueue, sound:IQueueableSoundControl)
+		 */
+		public function get soundRemoved():IAct{
+			if(!_soundRemoved)_soundRemoved = new Act();
+			return _soundRemoved;
+		}
+		
+		protected var _soundRemoved:Act;
+		protected var _playbackFinished:Act;
+		
 		public function get leader():IQueueableSoundControl{
 			return sounds[0];
 		}
@@ -25,11 +45,11 @@ package org.farmcode.sound
 		public function set playingSound(value:IQueueableSoundControl):void{
 			if(_playingSound != value){
 				if(_playingSound){
-					_playingSound.removeEventListener(SoundEvent.PLAYBACK_FINISHED, onPlayingFinished);
+					_playingSound.playbackFinished.removeHandler(onPlayingFinished);
 				}
 				_playingSound = value;
 				if(_playingSound){
-					_playingSound.addEventListener(SoundEvent.PLAYBACK_FINISHED, onPlayingFinished);
+					_playingSound.playbackFinished.addHandler(onPlayingFinished);
 				}
 				
 			}
@@ -69,7 +89,7 @@ package org.farmcode.sound
 			if (first && leader && !leader.allowQueuePostpone){
 				var oldLeader:IQueueableSoundControl = leader;
 				sounds.splice(0, 1)
-				dispatchEvent(new SoundEvent(oldLeader,SoundEvent.SOUND_REMOVED));
+				if(_soundRemoved)_soundRemoved.perform(this,oldLeader);
 			}
 			if(first || sound.allowQueuePostpone){
 				sounds.splice(i,0,sound);
@@ -91,18 +111,18 @@ package org.farmcode.sound
 			return this.sounds.indexOf(sound) >= 0;
 		}
 		
-		protected function onPlayingFinished(e:Event):void{
+		protected function onPlayingFinished(from:IQueueableSoundControl):void{
 			this.notifySoundFinished(playingSound);
 		}
 		
 		protected function notifySoundFinished(sound: IQueueableSoundControl): void
 		{
-			this.dispatchEvent(new SoundEvent(sound, SoundEvent.PLAYBACK_FINISHED));
+			if(_playbackFinished)_playbackFinished.perform(this,sound);
 		}
 		
 		protected function notifySoundRemoved(sound: IQueueableSoundControl): void
 		{
-			this.dispatchEvent(new SoundEvent(sound, SoundEvent.SOUND_REMOVED));
+			if(_soundRemoved)_soundRemoved.perform(this,sound);
 		}
 		
 		public function reset():void{

@@ -1,7 +1,6 @@
 package org.farmcode.bezier
 {
 	import flash.display.Graphics;
-	import flash.events.EventDispatcher;
 	import flash.geom.Point;
 	
 	import org.farmcode.acting.actTypes.IAct;
@@ -13,7 +12,7 @@ package org.farmcode.bezier
 	import org.farmcode.hoborg.ObjectPool;
 	import org.farmcode.math.Trigonometry;
 	
-	public class Path extends EventDispatcher implements ISelfCloning
+	public class Path implements ISelfCloning
 	{
 		private static const bezierPool:ObjectPool = new ObjectPool(Bezier);
 		

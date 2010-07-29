@@ -3,7 +3,6 @@ package org.farmcode.actLibrary.sound.acts
 	import org.farmcode.actLibrary.core.IRevertableAct;
 	import org.farmcode.actLibrary.sound.actTypes.IAddSoundAct;
 	import org.farmcode.acting.actTypes.IAct;
-	import org.farmcode.sound.SoundEvent;
 	import org.farmcode.sound.soundControls.ISoundControl;
 
 	public class AddSoundAct extends AbstractSoundControlAct implements IAddSoundAct, IRevertableAct
@@ -37,21 +36,21 @@ package org.farmcode.actLibrary.sound.acts
 		override public function set soundControl(value: ISoundControl):void{
 			if(super.soundControl !=value){
 				if(super.soundControl){
-					super.soundControl.removeEventListener(SoundEvent.SOUND_ADDED, onSoundAdded);
-					super.soundControl.removeEventListener(SoundEvent.SOUND_REMOVED, onSoundRemoved);
+					super.soundControl.soundAdded.removeHandler(onSoundAdded);
+					super.soundControl.soundRemoved.removeHandler(onSoundAdded);
 				}
 				super.soundControl = value;
 				if(super.soundControl){
-					super.soundControl.addEventListener(SoundEvent.SOUND_ADDED, onSoundAdded);
-					super.soundControl.addEventListener(SoundEvent.SOUND_REMOVED, onSoundRemoved);
+					super.soundControl.soundAdded.addHandler(onSoundAdded);
+					super.soundControl.soundRemoved.addHandler(onSoundAdded);
 				}
 			}
 		}
 		
-		protected function onSoundAdded(e:SoundEvent):void{
+		protected function onSoundAdded(from:ISoundControl):void{
 			_added = true;
 		}
-		protected function onSoundRemoved(e:SoundEvent):void{
+		protected function onSoundRemoved(from:ISoundControl):void{
 			_added = false;
 		}
 	}
