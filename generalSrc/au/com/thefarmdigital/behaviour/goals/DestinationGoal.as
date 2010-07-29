@@ -1,6 +1,6 @@
 package au.com.thefarmdigital.behaviour.goals
 {
-	import au.com.thefarmdigital.behaviour.GoalEvent;
+	
 	
 	/**
 	 * DestinationGoal is used when a particular goal is only complete when a numerical value is reached.
@@ -11,7 +11,7 @@ package au.com.thefarmdigital.behaviour.goals
 		public function set destination(value:Number):void{
 			if(_destination != value){
 				_destination = value;
-				dispatchEvent(new GoalEvent(GoalEvent.GOAL_CHANGED));
+				performChangeAct();
 			}
 		}
 		public function get destination():Number{
@@ -23,7 +23,7 @@ package au.com.thefarmdigital.behaviour.goals
 			if(isNaN(startValue))startValue = value;
 			if(_value != value){
 				_value = value;
-				dispatchEvent(new GoalEvent(GoalEvent.GOAL_CHANGED));
+				performChangeAct();
 			}
 		}
 		public function get value():Number{

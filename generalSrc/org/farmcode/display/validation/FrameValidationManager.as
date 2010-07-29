@@ -246,6 +246,7 @@ package org.farmcode.display.validation
 			// If we were to make this asynchronous, we'd do it right here
 			--currentRunCount;
 			delete currentRuns[bundle];
+			run.release();
 		}
 		/**
 		 * Adds this flag to the applicable running DrawRun

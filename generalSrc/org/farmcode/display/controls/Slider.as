@@ -98,6 +98,7 @@ package org.farmcode.display.controls
 		private var _button:Button = new Button();
 		private var _thumb:Button = new Button();
 		private var _track:IDisplayAsset;
+		private var _ignoreThumb:Boolean;
 		
 		private var _assumedDirection:String;
 		private var _assumedThumbX:Number;
@@ -116,8 +117,8 @@ package org.farmcode.display.controls
 		override protected function bindToAsset() : void{
 			super.bindToAsset();
 			
-			_button.asset = _containerAsset;
 			_track = _containerAsset.takeAssetByName(TRACK,IInteractiveObjectAsset);
+			_button.asset = _track;
 			
 			_assumedDirection = (_track.width>_track.height?Direction.HORIZONTAL:Direction.VERTICAL);
 			
@@ -139,6 +140,7 @@ package org.farmcode.display.controls
 			_track = null;
 		}
 		override protected function draw() : void{
+			positionAsset();
 			_asset.scaleX = 1;
 			_asset.scaleY = 1;
 			
@@ -175,7 +177,7 @@ package org.farmcode.display.controls
 				thumbX = _track.x+(_track.width-_thumb.asset.width)*fract;
 			}
 			_thumb.setDisplayPosition(thumbX,thumbY,_thumb.asset.width,_thumb.asset.height);
-			_button.setDisplayPosition(displayPosition.x,displayPosition.y,displayPosition.width,displayPosition.height);
+			_button.setDisplayPosition(0,0,displayPosition.width,displayPosition.height);
 		}
 		override public function setAssetAndPosition(asset:IDisplayAsset) : void{
 			super.setAssetAndPosition(asset);
@@ -187,6 +189,7 @@ package org.farmcode.display.controls
 			setValueToMouse();
 		}
 		protected function onThumbMouseDown(from:Button):void{
+			if(_ignoreThumb)return;
 			if(_direction==Direction.VERTICAL){
 				_dragOffset = _thumb.asset.mouseY-_thumb.asset.height/2;
 			}else{
@@ -199,6 +202,7 @@ package org.farmcode.display.controls
 			setValueToMouse();
 		}
 		protected function onThumbMouseUp(from:Button):void{
+			if(_ignoreThumb || !_dragDelay.running)return;
 			_dragDelay.clear();
 			setValueToMouse();
 			_dragOffset = 0;
@@ -217,7 +221,9 @@ package org.farmcode.display.controls
 			newVal = (newVal*(maximum-minimum))+minimum;
 			if(_value!=newVal){
 				_value = newVal;
+				_ignoreThumb = true;
 				validate(true);
+				_ignoreThumb = false;
 				if(_updateDuringDrag || !_dragDelay.running){
 					if(_valueChange)_valueChange.perform(this,_value);
 					if(_valueChangeByUser)_valueChangeByUser.perform(this,_value);

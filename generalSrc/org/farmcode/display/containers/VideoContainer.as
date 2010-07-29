@@ -3,8 +3,10 @@ package org.farmcode.display.containers
 	import flash.display.DisplayObject;
 	import flash.display.StageDisplayState;
 	import flash.events.Event;
+	import flash.events.KeyboardEvent;
 	import flash.events.TimerEvent;
 	import flash.geom.Rectangle;
+	import flash.ui.Keyboard;
 	import flash.ui.Mouse;
 	import flash.utils.Timer;
 	
@@ -142,11 +144,23 @@ package org.farmcode.display.containers
 			_videoCover.doubleClickEnabled = true;
 			_videoCover.graphics.beginFill(0,0);
 			_videoCover.graphics.drawRect(0,0,10,10);
+			_videoCover.buttonMode = true;
+			_videoCover.useHandCursor = false;
+			_videoCover.keyUp.addHandler(onKeyUp);
 			_containerAsset.addAssetAt(_videoCover,_containerAsset.getAssetIndex(_mediaBounds || _mediaContainer)+1);
+			
 			
 			_mouseOver = true;
 			syncToData();
 			activateMouse();
+		}
+		protected function onKeyUp(e:KeyboardEvent, from:IDisplayAsset):void{
+			if(e.charCode==Keyboard.SPACE){
+				if(_videoSource){
+					_videoSource.playing = !_videoSource.playing;
+					assessPlaying();
+				}
+			}
 		}
 		protected function syncToData():void{
 			if(_videoSource){
@@ -203,6 +217,7 @@ package org.farmcode.display.containers
 			super.unbindFromAsset();
 			
 			_videoCover.doubleClicked.removeHandler(onFullscreenClick);
+			_videoCover.keyUp.removeHandler(onKeyUp);
 			_containerAsset.removeAsset(_videoCover);
 			asset.destroyAsset(_videoCover);
 			
@@ -239,7 +254,7 @@ package org.farmcode.display.containers
 		protected function onPlayPauseClick(from:Button):void{
 			if(_videoSource){
 				_videoSource.playing = !_videoSource.playing;
-				if(_playPauseButton)_playPauseButton.selected = _videoSource.playing;
+				assessPlaying();
 			}
 		}
 		protected function onStopClick(from:Button):void{

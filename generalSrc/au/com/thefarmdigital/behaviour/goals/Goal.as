@@ -1,22 +1,29 @@
 package au.com.thefarmdigital.behaviour.goals
 {
-	import au.com.thefarmdigital.behaviour.GoalEvent;
 	import au.com.thefarmdigital.behaviour.IBehavingItem;
 	
-	import flash.events.EventDispatcher;
-	
+	import org.farmcode.acting.actTypes.IAct;
+	import org.farmcode.acting.acts.Act;
 	import org.farmcode.hoborg.ReadableObjectDescriber;
 	
-	[Event(name="goalChanged",type="org.farmcode.sodalityPlatformEngine.behaviour.GoalEvent")]
-	public class Goal extends EventDispatcher implements IGoal
+	public class Goal implements IGoal
 	{
+		
+		/**
+		 * @inheritDocs
+		 */
+		public function get goalChanged():IAct{
+			if(!_goalChanged)_goalChanged = new Act();
+			return _goalChanged;
+		}
+		
 		[Property(toString="true",clonable="true")]
 		public function get priority():uint{
 			return _priority;
 		}
 		public function set priority(value:uint):void{
 			if(_priority != value){
-				this.dispatchChangeEvent();
+				this.performChangeAct();
 				_priority = value;
 			}
 		}
@@ -27,7 +34,7 @@ package au.com.thefarmdigital.behaviour.goals
 		}
 		public function set active(value:Boolean):void{
 			if(_priority != value){
-				this.dispatchChangeEvent();
+				this.performChangeAct();
 				_active = value;
 			}
 		}
@@ -47,10 +54,12 @@ package au.com.thefarmdigital.behaviour.goals
 		}
 		public function set behavingItem(value:IBehavingItem):void{
 			if(_behavingItem != value){
-				this.dispatchChangeEvent();
+				this.performChangeAct();
 				_behavingItem = value;
 			}
 		}
+		
+		protected var _goalChanged:Act;
 		
 		private var _priority:uint;
 		private var _active:Boolean;
@@ -60,12 +69,12 @@ package au.com.thefarmdigital.behaviour.goals
 			this.priority = priority;
 		}
 		
-		protected function dispatchChangeEvent(): void
+		protected function performChangeAct(): void
 		{
-			this.dispatchEvent(new GoalEvent(GoalEvent.GOAL_CHANGED));
+			if(_goalChanged)_goalChanged.perform(this);
 		}
 		
-		override public function toString(): String
+		public function toString(): String
 		{
 			return ReadableObjectDescriber.describe(this);
 		}

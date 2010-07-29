@@ -5,6 +5,9 @@ package org.farmcode.display.controls
 	import flash.geom.Rectangle;
 	
 	import org.farmcode.display.assets.IDisplayAsset;
+	import org.farmcode.display.assets.IInteractiveObjectAsset;
+	import org.farmcode.display.assets.IShapeAsset;
+	import org.farmcode.display.assets.ISpriteAsset;
 	import org.farmcode.display.constants.Direction;
 	import org.farmcode.display.layout.ILayoutSubject;
 	import org.farmcode.media.IMediaSource;
@@ -56,10 +59,32 @@ package org.farmcode.display.controls
 		}
 		override protected function bindToAsset() : void{
 			_slider.asset = asset;
-			_playedBar = _containerAsset.takeAssetByName(PLAYED_BAR,IDisplayAsset);
-			_bufferedBar = _containerAsset.takeAssetByName(BUFFERED_BAR,IDisplayAsset);
+			
+			_playedBar = _containerAsset.takeAssetByName(PLAYED_BAR,IDisplayAsset,true);
+			var cast:ISpriteAsset;
+			if(_playedBar){
+				cast = (_playedBar as ISpriteAsset);
+				if(cast)cast.hitArea = _asset.createAsset(ISpriteAsset);
+			}
+			
+			_bufferedBar = _containerAsset.takeAssetByName(BUFFERED_BAR,IDisplayAsset,true);
+			if(_bufferedBar){
+				cast = (_bufferedBar as ISpriteAsset);
+				if(cast)cast.hitArea = _asset.createAsset(ISpriteAsset);
+			}
 		}
 		override protected function unbindFromAsset() : void{
+			var cast:ISpriteAsset;
+			if(_playedBar){
+				cast = (_playedBar as ISpriteAsset);
+				if(cast)cast.hitArea = null;
+			}
+			
+			if(_bufferedBar){
+				cast = (_bufferedBar as ISpriteAsset);
+				if(cast)cast.hitArea = null;
+			}
+			
 			_slider.asset = null;
 			_containerAsset.returnAsset(_playedBar);
 			_playedBar = null;

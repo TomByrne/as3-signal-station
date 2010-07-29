@@ -1,16 +1,27 @@
 package au.com.thefarmdigital.behaviour
 {
 	import au.com.thefarmdigital.behaviour.behaviours.IBehaviour;
-	import au.com.thefarmdigital.behaviour.events.BehaviourServiceEvent;
 	import au.com.thefarmdigital.behaviour.goals.IGoal;
 	import au.com.thefarmdigital.behaviour.rules.IBehaviourRule;
 	
-	import flash.events.EventDispatcher;
 	import flash.utils.Dictionary;
 	
-	[Event(name="behaviourExecute", type="au.com.thefarmdigital.behaviour.events.BehaviourServiceEvent")]
-	public class BehaviourService extends EventDispatcher
+	import org.farmcode.acting.actTypes.IAct;
+	import org.farmcode.acting.acts.Act;
+	
+	public class BehaviourService
 	{
+		
+		/**
+		 * handler(from:BehaviourService, behaviours:Array)
+		 */
+		public function get behaviourExecute():IAct{
+			if(!_behaviourExecute)_behaviourExecute = new Act();
+			return _behaviourExecute;
+		}
+		
+		protected var _behaviourExecute:Act;
+		
 		private var _rules:Array;
 		private var _goals:Array;
 		private var _goalMapping:Dictionary;
@@ -66,7 +77,7 @@ package au.com.thefarmdigital.behaviour
 		}
 		public function addGoal(goal:IGoal):void{
 			if(_goals.indexOf(goal)==-1){
-				goal.addEventListener(GoalEvent.GOAL_CHANGED, onGoalChanged);
+				goal.goalChanged.addHandler(onGoalChanged);
 				_goals.push(goal);
 				assessAllRules(goal);
 				searchByGoal(goal);
@@ -74,7 +85,7 @@ package au.com.thefarmdigital.behaviour
 		}
 		public function removeGoal(goal:IGoal):void{
 			var index:Number = _goals.indexOf(goal);
-			goal.removeEventListener(GoalEvent.GOAL_CHANGED, onGoalChanged);
+			goal.goalChanged.removeHandler(onGoalChanged);
 			if(index!=-1){
 				_goals.splice(index,1);
 				delete _goalMapping[goal];
@@ -126,8 +137,7 @@ package au.com.thefarmdigital.behaviour
 				ruleMap.push(goal);
 			}
 		}
-		protected function onGoalChanged(e:GoalEvent):void{
-			var goal:IGoal = e.target as IGoal;
+		protected function onGoalChanged(goal:IGoal):void{
 			if(goal.isComplete){
 				removeGoal(goal);
 			}else{
@@ -180,15 +190,14 @@ package au.com.thefarmdigital.behaviour
 			}
 			_executingBehaviours.push(execution);
 			// we give this a negative priority to ensure other behaviour remove their dependancies before any executions are restarted.
-			execution.addEventListener(BehaviourEvent.EXECUTION_COMPLETE, onExecutionFinished, false, -1, true);
-			
+			execution.executionComplete.addHandler(onExecutionFinished);
 			if (dependant)
 			{
-				execution.addEventListener(BehaviourEvent.EXECUTE, this.handleDependantExecute);
+				execution.executionBegin.addHandler(handleDependantExecute);
 			}
 			else
 			{
-				this.dispatchExecuteEvent(execution.behaviours);
+				this.performBeginAct(execution.behaviours);
 				execution.execute();
 			}
 			for each(var cancelBeh: BehaviourExecution in cancelBehaviours)
@@ -198,18 +207,15 @@ package au.com.thefarmdigital.behaviour
 			}
 		}
 		
-		private function handleDependantExecute(event: BehaviourEvent): void
+		private function handleDependantExecute(exec:BehaviourExecution): void
 		{
-			var exec: BehaviourExecution = event.target as BehaviourExecution;
-			exec.removeEventListener(BehaviourEvent.EXECUTE, this.handleDependantExecute);
-			this.dispatchExecuteEvent(exec.behaviours);
+			exec.executionBegin.removeHandler(handleDependantExecute);
+			this.performBeginAct(exec.behaviours);
 		}
 		
-		private function dispatchExecuteEvent(behaviours: Array): void
+		private function performBeginAct(behaviours: Array): void
 		{
-			var event: BehaviourServiceEvent = new BehaviourServiceEvent(BehaviourServiceEvent.BEHAVIOUR_EXECUTE);
-			event.behaviours = behaviours;
-			this.dispatchEvent(event);
+			if(_behaviourExecute)_behaviourExecute.perform(this,behaviours);
 		}
 		
 		protected function getRuleExecutionIndex(rule:IBehaviourRule):int{
@@ -219,18 +225,15 @@ package au.com.thefarmdigital.behaviour
 			}
 			return -1;
 		}
-		protected function onExecutionFinished(e:BehaviourEvent):void{
-			var behEx:BehaviourExecution = (e.target as BehaviourExecution);
-			behEx.removeEventListener(BehaviourEvent.EXECUTION_COMPLETE, onExecutionFinished);
+		protected function onExecutionFinished(behEx:BehaviourExecution):void{
+			behEx.executionComplete.removeHandler(onExecutionFinished);
 			
 			// remove from executing list
-			var index:int = _executingBehaviours.indexOf(e.target);
+			var index:int = _executingBehaviours.indexOf(behEx);
 			if(index!=-1){
 				_executingBehaviours.splice(index,1);
 			}
-			var event: BehaviourServiceEvent = new BehaviourServiceEvent(BehaviourServiceEvent.BEHAVIOUR_COMPLETE);
-			event.behaviours = behEx.behaviours;
-			this.dispatchEvent(event);
+			performBeginAct(behEx.behaviours);
 			// if this was cancelled to make way for another behaviour, add it back to the queue
 			index = _restartBehaviours.indexOf(behEx);
 			if(index!=-1){

@@ -1,6 +1,6 @@
 package au.com.thefarmdigital.behaviour.behaviours
 {
-	import flash.events.IEventDispatcher;
+	
 
 	public class RunningBehaviour extends Behaviour
 	{

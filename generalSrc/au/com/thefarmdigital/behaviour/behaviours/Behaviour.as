@@ -1,11 +1,9 @@
 package au.com.thefarmdigital.behaviour.behaviours
 {
-	import au.com.thefarmdigital.behaviour.BehaviourEvent;
-	
-	import flash.events.EventDispatcher;
-	import flash.events.IEventDispatcher;
+	import org.farmcode.acting.actTypes.IAct;
+	import org.farmcode.acting.acts.Act;
 
-	public class Behaviour extends EventDispatcher implements IBehaviour
+	public class Behaviour implements IBehaviour
 	{
 		public function get abortable():Boolean{
 			return _abortable;
@@ -14,10 +12,18 @@ package au.com.thefarmdigital.behaviour.behaviours
 			_abortable = value;
 		}
 		
+		/**
+		 * @inheritDoc
+		 */
+		public function get executionComplete():IAct{
+			if(!_executionComplete)_executionComplete = new Act();
+			return _executionComplete;
+		}
+		
+		protected var _executionComplete:Act;
 		private var _abortable:Boolean;
 		
-		public function Behaviour()
-		{
+		public function Behaviour(){
 			super();
 		}
 		
@@ -31,7 +37,7 @@ package au.com.thefarmdigital.behaviour.behaviours
 		
 		protected function completeEarly():void
 		{
-			dispatchEvent(new BehaviourEvent(BehaviourEvent.EXECUTION_COMPLETE));
+			if(_executionComplete)_executionComplete.perform(this);
 		}
 		
 		public function finish():void

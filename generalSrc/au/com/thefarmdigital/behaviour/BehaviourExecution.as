@@ -6,13 +6,11 @@ package au.com.thefarmdigital.behaviour
 	import au.com.thefarmdigital.behaviour.rules.IBehaviourRule;
 	import au.com.thefarmdigital.math.StatisticsUtils;
 	
-	import flash.events.EventDispatcher;
-	
+	import org.farmcode.acting.actTypes.IAct;
+	import org.farmcode.acting.acts.Act;
 	import org.farmcode.hoborg.ReadableObjectDescriber;
 	
-	[Event(name="executionComplete",type="org.farmcode.sodalityPlatformEngine.behaviour.BehaviourEvent")]
-	[Event(name="execute",type="org.farmcode.sodalityPlatformEngine.behaviour.BehaviourEvent")]
-	public class BehaviourExecution extends EventDispatcher
+	public class BehaviourExecution
 	{
 		public function get executing():Boolean{
 			return _executing;
@@ -23,6 +21,26 @@ package au.com.thefarmdigital.behaviour
 			}
 			return true;
 		}
+		
+		
+		/**
+		 * handler(from:BehaviourExecution)
+		 */
+		public function get executionBegin():IAct{
+			if(!_executionBegin)_executionBegin = new Act();
+			return _executionBegin;
+		}
+		
+		/**
+		 * handler(from:BehaviourExecution)
+		 */
+		public function get executionComplete():IAct{
+			if(!_executionComplete)_executionComplete = new Act();
+			return _executionComplete;
+		}
+		
+		protected var _executionComplete:Act;
+		protected var _executionBegin:Act;
 		
 		[Property(toString="true",clonable="true")]
 		public var rule:IBehaviourRule;
@@ -97,17 +115,17 @@ package au.com.thefarmdigital.behaviour
 		public function execute():void{
 			if(!_executing){
 				_executing = true;
-				this.dispatchEvent(new BehaviourEvent(BehaviourEvent.EXECUTE));
+				if(_executionBegin)_executionBegin.perform(this);
 				_pendingBehaviours.splice();
 				for each(var behaviour:IBehaviour in behaviours){
 					var done:Boolean = !behaviour.execute(goals);
 					if(!done){
-						behaviour.addEventListener(BehaviourEvent.EXECUTION_COMPLETE, onBehaviourComplete);
+						behaviour.executionComplete.addHandler(onBehaviourComplete);
 						_pendingBehaviours.push(behaviour);
 					}
 				}
 				if(!_pendingBehaviours.length){
-					dispatchEvent(new BehaviourEvent(BehaviourEvent.EXECUTION_COMPLETE));
+					if(_executionComplete)_executionComplete.perform(this);
 				}
 			}
 		}
@@ -124,19 +142,18 @@ package au.com.thefarmdigital.behaviour
 		public function addDependancy(execution:BehaviourExecution):void{
 			if(_dependancies.indexOf(execution)==-1){
 				_dependancies.push(execution);
-				execution.addEventListener(BehaviourEvent.EXECUTION_COMPLETE, onDependancyFinish, false, 0, true);
+				execution.executionComplete.addHandler(onDependancyFinish);
 			}
 		}
 		public function clearDependancies():void{
 			for each(var execution:BehaviourExecution in _dependancies){
-				execution.removeEventListener(BehaviourEvent.EXECUTION_COMPLETE, onDependancyFinish);
+				execution.executionComplete.removeHandler(onDependancyFinish);
 			}
 			this._dependancies = new Array();
 		}
-		protected function onDependancyFinish(e:BehaviourEvent):void{
-			var execution:BehaviourExecution = (e.target as BehaviourExecution);
-			execution.removeEventListener(BehaviourEvent.EXECUTION_COMPLETE, onDependancyFinish);
-			var index:Number = _dependancies.indexOf(e.target);
+		protected function onDependancyFinish(execution:BehaviourExecution):void{
+			execution.executionComplete.removeHandler(onDependancyFinish);
+			var index:Number = _dependancies.indexOf(execution);
 			if(index!=-1){
 				_dependancies.splice(index,1);
 			}
@@ -144,9 +161,8 @@ package au.com.thefarmdigital.behaviour
 				execute();
 			}
 		}
-		protected function onBehaviourComplete(e:BehaviourEvent):void{
-			var behaviour:IBehaviour = (e.target as IBehaviour);
-			behaviour.removeEventListener(BehaviourEvent.EXECUTION_COMPLETE, onBehaviourComplete);
+		protected function onBehaviourComplete(behaviour:IBehaviour):void{
+			behaviour.executionComplete.removeHandler(onBehaviourComplete);
 			for each(var goal:IGoal in goals){
 				if(goal is BinaryGoal){
 					(goal as BinaryGoal).done = true;
@@ -162,7 +178,7 @@ package au.com.thefarmdigital.behaviour
 			if(!_pendingBehaviours.length){
 				this.finishAll();
 				clearDependancies();
-				dispatchEvent(new BehaviourEvent(BehaviourEvent.EXECUTION_COMPLETE));
+				if(_executionComplete)_executionComplete.perform(this);
 			}
 		}
 		protected function finishAll(): void
@@ -178,12 +194,12 @@ package au.com.thefarmdigital.behaviour
 			while (this.behaviours.length > 0)
 			{
 				var behaviour: IBehaviour = this.behaviours.pop() as IBehaviour;
-				behaviour.removeEventListener(BehaviourEvent.EXECUTION_COMPLETE, onBehaviourComplete);
+				behaviour.executionComplete.removeHandler(onBehaviourComplete);
 			}
 			clearDependancies();
 		}
 		
-		override public function toString(): String
+		public function toString(): String
 		{
 			return ReadableObjectDescriber.describe(this);
 		}

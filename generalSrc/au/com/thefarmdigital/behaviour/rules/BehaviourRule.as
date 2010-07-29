@@ -3,11 +3,9 @@ package au.com.thefarmdigital.behaviour.rules
 	import au.com.thefarmdigital.behaviour.BehaviourExecution;
 	import au.com.thefarmdigital.behaviour.goals.IGoal;
 	
-	import flash.events.EventDispatcher;
-	
 	import org.farmcode.hoborg.ReadableObjectDescriber;
 
-	public class BehaviourRule extends EventDispatcher implements IBehaviourRule
+	public class BehaviourRule implements IBehaviourRule
 	{
 		public function get allGoalsConcern():Boolean{
 			return false;
@@ -28,7 +26,7 @@ package au.com.thefarmdigital.behaviour.rules
 			return null;
 		}
 		
-		override public function toString(): String
+		public function toString(): String
 		{
 			return ReadableObjectDescriber.describe(this);
 		}

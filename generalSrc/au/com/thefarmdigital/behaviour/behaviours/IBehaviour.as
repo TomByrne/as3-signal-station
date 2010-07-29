@@ -1,14 +1,18 @@
 package au.com.thefarmdigital.behaviour.behaviours
 {
-	import flash.events.IEventDispatcher;
+	import org.farmcode.acting.actTypes.IAct;
 	
-	[Event(name="executionComplete",type="org.farmcode.sodalityPlatformEngine.behaviour.BehaviourEvent")]
-	public interface IBehaviour extends IEventDispatcher
+	public interface IBehaviour
 	{
 		/**
 		 * Return true if this behaviour needs no more time.
 		 */
 		function execute(goals:Array):Boolean;
+		/**
+		 * handler(from:IBehaviour)
+		 */
+		function get executionComplete():IAct;
+		
 		function cancel():void;
 		function finish():void;
 		function get abortable():Boolean;
