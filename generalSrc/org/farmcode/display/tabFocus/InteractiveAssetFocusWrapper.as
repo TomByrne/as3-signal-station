@@ -28,15 +28,32 @@ package org.farmcode.display.tabFocus
 			return 1;
 		}
 		
+		public function get interactiveAsset():IInteractiveObjectAsset{
+			return _interactiveAsset;
+		}
+		public function set interactiveAsset(value:IInteractiveObjectAsset):void{
+			if(_interactiveAsset!=value){
+				if(_interactiveAsset){
+					_interactiveAsset.focusIn.removeHandler(onFocusIn);
+					_interactiveAsset.focusOut.removeHandler(onFocusOut);
+					_interactiveAsset.addedToStage.removeHandler(onAddedToStage);
+					_interactiveAsset.removedFromStage.removeHandler(onRemovedFromStage);
+				}
+				_interactiveAsset = value;
+				if(_interactiveAsset){
+					_interactiveAsset.focusIn.addHandler(onFocusIn);
+					_interactiveAsset.focusOut.addHandler(onFocusOut);
+					_interactiveAsset.addedToStage.addHandler(onAddedToStage);
+					_interactiveAsset.removedFromStage.addHandler(onRemovedFromStage);
+				}
+			}
+		}
+		
 		private var _interactiveAsset:IInteractiveObjectAsset;
 		private var _focused:Boolean;
 		
-		public function InteractiveAssetFocusWrapper(interactiveObject:IInteractiveObjectAsset){
-			_interactiveAsset = interactiveObject;
-			_interactiveAsset.focusIn.addHandler(onFocusIn);
-			_interactiveAsset.focusOut.addHandler(onFocusOut);
-			_interactiveAsset.addedToStage.addHandler(onAddedToStage);
-			_interactiveAsset.removedFromStage.addHandler(onRemovedFromStage);
+		public function InteractiveAssetFocusWrapper(interactiveAsset:IInteractiveObjectAsset=null){
+			this.interactiveAsset = interactiveAsset;
 		}
 		public function onFocusIn(e:Event, from:IInteractiveObjectAsset):void{
 			_focused = true;

@@ -76,7 +76,7 @@ package org.farmcode.display.controls.popout {
 			textLabelButton=new TextLabelButton();
 			textLabelButton.useDataForSelected = false;
 			textLabelButton.measurementsChanged.addHandler(onTextMeasureChange);
-			textLabelButton.clickAct.addHandler(onButtonClicked);
+			textLabelButton.clicked.addHandler(onButtonClicked);
 			//textLabelButton.addEventListener(ValidationEvent.VALIDATION_VALUE_CHANGED, onButtonClicked);
 			_listBox.selectionChangeAct.addHandler(onListSelect);
 		}

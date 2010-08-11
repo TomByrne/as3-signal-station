@@ -1,7 +1,5 @@
 package org.farmcode.display.containers
 {
-	import flash.display.DisplayObject;
-	import flash.display.StageDisplayState;
 	import flash.events.Event;
 	import flash.events.KeyboardEvent;
 	import flash.events.TimerEvent;
@@ -19,6 +17,7 @@ package org.farmcode.display.containers
 	import org.farmcode.display.controls.Button;
 	import org.farmcode.display.controls.Control;
 	import org.farmcode.display.controls.Slider;
+	import org.farmcode.display.controls.SliderButton;
 	import org.farmcode.display.controls.ToggleButton;
 	import org.farmcode.display.layout.canvas.CanvasLayout;
 	import org.farmcode.display.layout.canvas.CanvasLayoutInfo;
@@ -89,7 +88,7 @@ package org.farmcode.display.containers
 		private var _fullscreenButton:ToggleButton;
 		private var _rewindButton:Button;
 		private var _centredPauseButton:ToggleButton;
-		private var _muteButton:ToggleButton;
+		private var _muteButton:SliderButton;
 		private var _volumeSlider:Slider;
 		private var _bufferBar:BufferBar;
 		
@@ -105,8 +104,11 @@ package org.farmcode.display.containers
 		private var _videoSource:IVideoSource;
 		
 		public function VideoContainer(asset:IDisplayAsset=null){
-			_uiLayout = new CanvasLayout(this);
 			super(asset);
+		}
+		override protected function init() : void{
+			super.init();
+			_uiLayout = new CanvasLayout(this);
 		}
 		override protected function bindToAsset() : void{
 			super.bindToAsset();
@@ -114,13 +116,13 @@ package org.farmcode.display.containers
 			_stopButton = bindButton(_stopButton, Button, STOP_BUTTON,onStopClick);
 			_fullscreenButton = bindButton(_fullscreenButton, ToggleButton,FULLSCREEN_BUTTON,onFullscreenClick) as ToggleButton;
 			_rewindButton = bindButton(_rewindButton, Button,REWIND_BUTTON,onRewindClick);
-			_muteButton = bindButton(_muteButton, ToggleButton,MUTE_BUTTON,onMuteClick) as ToggleButton;
+			_muteButton = bindButton(_muteButton, SliderButton,MUTE_BUTTON,onMuteClick) as SliderButton;
 			
 			var pauseAsset:IInteractiveObjectAsset = _containerAsset.takeAssetByName(CENTERED_PAUSE_BUTTON,IInteractiveObjectAsset,true);
 			if(pauseAsset){
 				if(!_centredPauseButton){
 					_centredPauseButton = new ToggleButton();
-					_centredPauseButton.clickAct.addHandler(onPlayPauseClick);
+					_centredPauseButton.clicked.addHandler(onPlayPauseClick);
 				}
 				_centredPauseButton.setAssetAndPosition(pauseAsset);
 			}
@@ -181,7 +183,7 @@ package org.farmcode.display.containers
 		}
 		protected function bindButton(control:Control, controlClass:Class, name:String, clickHandler:Function):Button{
 			var ret:Button = (bindControl(control, controlClass, name,false) as Button);
-			if(!control && ret)ret.clickAct.addHandler(clickHandler);
+			if(!control && ret)ret.clicked.addHandler(clickHandler);
 			return ret;
 		}
 		protected function bindControl(control:Control, controlClass:Class, name:String, bindBothSides:Boolean):Control{
@@ -195,6 +197,11 @@ package org.farmcode.display.containers
 				var layout:CanvasLayoutInfo;
 				if(_backing){
 					var bounds:Rectangle = asset.getBounds(this.asset);
+					var meas:Rectangle = control.displayMeasurements;
+					if(meas){
+						bounds.width = meas.width;
+						bounds.height = meas.height;
+					}
 					layout = _uiLayout.layoutInfo as CanvasLayoutInfo;
 					if(!layout){
 						layout = new CanvasLayoutInfo();
@@ -225,6 +232,7 @@ package org.farmcode.display.containers
 				(_playPauseButton.asset as IInteractiveObjectAsset).mouseMoved.removeHandler(onVideoMouse);
 				unbindControl(_playPauseButton);
 			}
+			unbindControl(_muteButton);
 			unbindControl(_stopButton);
 			unbindControl(_fullscreenButton);
 			unbindControl(_centredPauseButton);

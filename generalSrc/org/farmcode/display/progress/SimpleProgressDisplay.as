@@ -74,10 +74,10 @@ package org.farmcode.display.progress
 		private var _border:IShapeAsset;
 		
 		public function SimpleProgressDisplay(){
-			init();
 			super(NativeAssetFactory.getNewByType(ISpriteAsset));
 		}
-		protected function init():void{
+		override protected function init():void{
+			super.init();
 			_textFormat = new TextFormat("_sans",10.5,0);
 			_textFormat.align = TextFormatAlign.CENTER;
 			backgroundAlpha = DEFAULT_BACKGROUND_ALPHA;
@@ -116,6 +116,7 @@ package org.farmcode.display.progress
 			_container.enterFrame.removeHandler(outroTick);
 		}
 		override protected function bindToAsset() : void{
+			super.bindToAsset();
 			_container = _containerAsset.createAsset(IContainerAsset);
 			_container.alpha = 0;
 			_container.blendMode = BlendMode.INVERT;
@@ -156,6 +157,7 @@ package org.farmcode.display.progress
 		override protected function unbindFromAsset() : void{
 			_containerAsset.destroyAsset(_container);
 			_containerAsset.removeAsset(_container);
+			super.unbindFromAsset();
 		}
 		override protected function measure() : void{
 			

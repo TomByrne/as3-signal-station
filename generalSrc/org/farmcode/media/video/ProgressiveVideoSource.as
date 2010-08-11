@@ -450,6 +450,9 @@ class VideoStreamProxy{
 	
 	protected var _metadataChanged:Act;
 	
+	public function onCuePoint(cuePoint:Object):void{
+		// ignore
+	}
 	public function onMetaData(info:Object):void{
 		metadataReceived = true;
 		width = info.width;

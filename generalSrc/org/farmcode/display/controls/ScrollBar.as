@@ -1,7 +1,5 @@
 package org.farmcode.display.controls
 {
-	import flash.display.DisplayObject;
-	import flash.display.Sprite;
 	import flash.events.Event;
 	import flash.events.TimerEvent;
 	import flash.geom.Rectangle;
@@ -11,7 +9,6 @@ package org.farmcode.display.controls
 	import org.farmcode.acting.acts.Act;
 	import org.farmcode.display.DisplayNamespace;
 	import org.farmcode.display.actInfo.IMouseActInfo;
-	import org.farmcode.display.assets.IAsset;
 	import org.farmcode.display.assets.IDisplayAsset;
 	import org.farmcode.display.assets.IInteractiveObjectAsset;
 	import org.farmcode.display.assets.ISpriteAsset;
@@ -184,10 +181,10 @@ package org.farmcode.display.controls
 			_scrollMetrics.value = 0;
 			_displayMeasurements = new Rectangle();
 			
-			_track.clickAct.addHandler(scrollToMouse);
-			_scrollThumb.mouseDownAct.addHandler(beginDrag);
-			_foreButton.mouseDownAct.addHandler(beginScroll);
-			_aftButton.mouseDownAct.addHandler(beginScroll);
+			_track.clicked.addHandler(scrollToMouse);
+			_scrollThumb.mousePressed.addHandler(beginDrag);
+			_foreButton.mousePressed.addHandler(beginScroll);
+			_aftButton.mousePressed.addHandler(beginScroll);
 			
 			_track.scaleAsset = true;
 			_scrollThumb.scaleAsset = true;
@@ -520,7 +517,7 @@ package org.farmcode.display.controls
 		protected function onSubjectMouseWheel(from:IScrollable, delta:int):void{
 			doMouseWheel(delta);
 		}
-		protected function onMouseWheel(from:IScrollable, info:IMouseActInfo, delta:int):void{
+		protected function onMouseWheel(from:IInteractiveObjectAsset, mouseActInfo:IMouseActInfo, delta:int):void{
 			doMouseWheel(delta);
 		}
 		protected function doMouseWheel(delta:int):void{

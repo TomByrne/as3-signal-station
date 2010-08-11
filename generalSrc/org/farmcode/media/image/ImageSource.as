@@ -63,7 +63,7 @@ package org.farmcode.media.image
 		private var _smoothing:Boolean;
 		private var _imageUrl:String;
 		private var _urlLoader:URLLoader;
-		private var _protoLoader:Loader;
+		private var _protoLoader:ILoaderAsset;
 		private var _loadStarted:Boolean;
 		private var _loaded:Boolean;
 		private var _displayMeasurements:Rectangle = new Rectangle(0,0,1,1);
@@ -108,7 +108,7 @@ package org.farmcode.media.image
 				loader.loadBytes(_urlLoader.data);
 			}
 			if(!_protoLoader){
-				_protoLoader = loader;
+				_protoLoader = NativeAssetFactory.getNew(loader);
 				_protoLoader.contentLoaderInfo.addEventListener(Event.COMPLETE, onProtoLoaded);
 			}
 			var loaderAsset:ILoaderAsset = NativeAssetFactory.getNew(loader);
@@ -120,7 +120,7 @@ package org.farmcode.media.image
 			updateDisplayMeasurements(0,0,_protoLoader.content.width,_protoLoader.content.height);
 		}
 		override protected function destroyMediaDisplay(value:ILayoutView):void{
-			var loader:Loader = value.asset as Loader;
+			var loader:ILoaderAsset = value.asset as ILoaderAsset;
 			if(_protoLoader==loader){
 				_protoLoader.contentLoaderInfo.removeEventListener(Event.COMPLETE, onProtoLoaded);
 				_protoLoader = null;

@@ -64,9 +64,6 @@ package org.farmcode.display.controls
 			super.setDisplayPosition(x,y,width,height);
 			_textLabel.setDisplayPosition(x,y,width,height);
 		}
-		override protected function draw() : void{
-			// ignore, TextLabel will take care of it.
-		}
 		override protected function measure() : void{
 			_displayMeasurements = _textLabel.displayMeasurements;
 		}

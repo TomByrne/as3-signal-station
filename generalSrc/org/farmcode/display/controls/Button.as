@@ -2,6 +2,8 @@ package org.farmcode.display.controls
 {
 	
 	import flash.display.DisplayObject;
+	import flash.events.Event;
+	import flash.geom.Rectangle;
 	
 	import org.farmcode.acting.actTypes.IAct;
 	import org.farmcode.acting.acts.Act;
@@ -55,41 +57,40 @@ package org.farmcode.display.controls
 			dispatchMeasurementChange();
 		}
 		
-		//TODO: rename acts into past-tense without 'Act' (e.g. mouseDownAct > mousedDown, rollOverAct > rolledOver)
 		/**
 		 * handler(button:Button)
 		 */
-		public function get clickAct():IAct{
-			if(!_clickAct)_clickAct = new Act();
-			return _clickAct;
+		public function get clicked():IAct{
+			if(!_clicked)_clicked = new Act();
+			return _clicked;
 		}
 		/**
 		 * handler(button:Button)
 		 */
-		public function get mouseDownAct():IAct{
-			if(!_mouseDownAct)_mouseDownAct = new Act();
-			return _mouseDownAct;
+		public function get mousePressed():IAct{
+			if(!_mousePressed)_mousePressed = new Act();
+			return _mousePressed;
 		}
 		/**
 		 * handler(button:Button)
 		 */
-		public function get rollOverAct():IAct{
-			if(!_rollOverAct)_rollOverAct = new Act();
-			return _rollOverAct;
+		public function get mouseReleased():IAct{
+			if(!_mouseReleased)_mouseReleased = new Act();
+			return _mouseReleased;
 		}
 		/**
 		 * handler(button:Button)
 		 */
-		public function get rollOutAct():IAct{
-			if(!_rollOutAct)_rollOutAct = new Act();
-			return _rollOutAct;
+		public function get rolledOver():IAct{
+			if(!_rolledOver)_rolledOver = new Act();
+			return _rolledOver;
 		}
 		/**
 		 * handler(button:Button)
 		 */
-		public function get mouseUpAct():IAct{
-			if(!_mouseUpAct)_mouseUpAct = new Act();
-			return _mouseUpAct;
+		public function get rolledOut():IAct{
+			if(!_rolledOut)_rolledOut = new Act();
+			return _rolledOut;
 		}
 		
 		public function get over():Boolean{
@@ -119,9 +120,9 @@ package org.farmcode.display.controls
 					_over = false;
 					_down = false;
 				}
-				if(_spriteAsset){
-					_spriteAsset.buttonMode = value;
-					_spriteAsset.useHandCursor = (value && _useHandCursor);
+				if(_interactiveArea){
+					_interactiveArea.buttonMode = value;
+					_interactiveArea.useHandCursor = (value && _useHandCursor);
 				}
 				super.active = value;
 			}
@@ -138,37 +139,61 @@ package org.farmcode.display.controls
 		protected var _overState:StateDef = new StateDef([OVER_FRAME_LABEL,OUT_FRAME_LABEL],1);
 		protected var _downState:StateDef = new StateDef([DOWN_FRAME_LABEL,UP_FRAME_LABEL],1);
 		
-		protected var _clickAct:Act;
-		protected var _mouseDownAct:Act;
-		protected var _mouseUpAct:Act;
-		protected var _rollOverAct:Act;
-		protected var _rollOutAct:Act;
+		protected var _interactiveArea:ISpriteAsset;
+		
+		protected var _clicked:Act;
+		protected var _mousePressed:Act;
+		protected var _mouseReleased:Act;
+		protected var _rolledOver:Act;
+		protected var _rolledOut:Act;
 		
 		public function Button(asset:IDisplayAsset=null){
 			super(asset);
 		}
 		override protected function bindToAsset() : void{
 			super.bindToAsset();
-			_interactiveObjectAsset.mouseReleased.addHandler(onMouseDown);
-			_interactiveObjectAsset.rolledOver.addHandler(onRollOver);
-			_interactiveObjectAsset.rolledOut.addHandler(onRollOut);
-			_interactiveObjectAsset.clicked.addHandler(onClick);
+			_asset.added.addHandler(onChildAdded);
 			
-			_containerAsset.mouseChildren = false;
+			_interactiveArea = _asset.createAsset(ISpriteAsset);
+			_interactiveArea.graphics.beginFill(0,0);
+			_interactiveArea.graphics.drawRect(0,0,10,10);
+			_interactiveArea.graphics.endFill();
+			_containerAsset.addAsset(_interactiveArea);
 			
-			if(_spriteAsset){
-				_spriteAsset.buttonMode = _active;
-				_spriteAsset.useHandCursor = (_active && _useHandCursor);
-			}
+			_interactiveArea.mouseReleased.addHandler(onMouseDown);
+			_interactiveArea.rolledOver.addHandler(onRollOver);
+			_interactiveArea.rolledOut.addHandler(onRollOut);
+			_interactiveArea.clicked.addHandler(onClick);
+			
+			//_containerAsset.mouseChildren = false;
+			
+			_interactiveArea.buttonMode = _active;
+			_interactiveArea.useHandCursor = (_active && _useHandCursor);
 		}
 		override protected function unbindFromAsset() : void{
-			_interactiveObjectAsset.mouseReleased.removeHandler(onMouseDown);
-			_interactiveObjectAsset.rolledOver.removeHandler(onRollOver);
-			_interactiveObjectAsset.rolledOut.removeHandler(onRollOut);
-			_interactiveObjectAsset.clicked.removeHandler(onClick);
+			if(down)onMouseUp(_interactiveArea);
+			_containerAsset.removeAsset(_interactiveArea);
 			
-			_containerAsset.mouseChildren = true;
+			_interactiveArea.mouseReleased.removeHandler(onMouseDown);
+			_interactiveArea.rolledOver.removeHandler(onRollOver);
+			_interactiveArea.rolledOut.removeHandler(onRollOut);
+			_interactiveArea.clicked.removeHandler(onClick);
+			
+			_asset.destroyAsset(_interactiveArea);
+			_interactiveArea = null;
+			
+			//_containerAsset.mouseChildren = true;
+			_asset.added.removeHandler(onChildAdded);
 			super.unbindFromAsset();
+		}
+		protected function onChildAdded(e:Event, from:IDisplayAsset) : void{
+			//TODO: when events are replaced with Info objects, do a check here to see if it's a descendant or not
+			_containerAsset.setAssetIndex(_interactiveArea,_containerAsset.numChildren-1);
+		}
+		override protected function measure() : void{
+			super.measure();
+			_interactiveArea.width = _displayMeasurements.width;
+			_interactiveArea.height = _displayMeasurements.height;
 		}
 		override protected function draw() : void{
 			positionAsset();
@@ -181,8 +206,8 @@ package org.farmcode.display.controls
 			if(_active){
 				_overState.selection = 0;
 				_over = true;
-				if(_rollOverAct){
-					_rollOverAct.perform(this);
+				if(_rolledOver){
+					_rolledOver.perform(this);
 				}
 			}
 		}
@@ -190,8 +215,8 @@ package org.farmcode.display.controls
 			if(_active){
 				_overState.selection = 1;
 				_over = false;
-				if(_rollOutAct){
-					_rollOutAct.perform(this);
+				if(_rolledOut){
+					_rolledOut.perform(this);
 				}
 			}
 		}
@@ -200,28 +225,28 @@ package org.farmcode.display.controls
 				asset.stage.mousePressed.addHandler(onMouseUp);
 				_downState.selection = 0;
 				_down = true;
-				if(_mouseDownAct)_mouseDownAct.perform(this);
+				if(_mousePressed)_mousePressed.perform(this);
 			}
 		}
-		private function onMouseUp(from:IInteractiveObjectAsset, info:IMouseActInfo):void{
+		private function onMouseUp(from:IInteractiveObjectAsset, info:IMouseActInfo=null):void{
 			if(_active){
 				asset.stage.mousePressed.removeHandler(onMouseUp);
 				_downState.selection = 1;
 				_down = false;
-				if(_mouseUpAct)_mouseUpAct.perform(this);
+				if(_mouseReleased)_mouseReleased.perform(this);
 			}
 		}
 		private function onClick(from:IInteractiveObjectAsset, info:IMouseActInfo):void{
 			if(_active){
-				var assetMatch:Boolean = (info.mouseTarget==asset);
-				if(!assetMatch){
+				var assetMatch:Boolean = (info.mouseTarget==_interactiveArea);
+				/*if(!assetMatch){
 					var cast:ISpriteAsset = (info.mouseTarget as ISpriteAsset);
 					if(!cast || !cast.buttonMode){
 						assetMatch = true;
 					}
-				}
+				}*/
 				if(assetMatch){
-					if(_clickAct)_clickAct.perform(this);
+					if(_clicked)_clicked.perform(this);
 					if(_triggerableData)_triggerableData.triggerAction(asset);
 				}
 			}

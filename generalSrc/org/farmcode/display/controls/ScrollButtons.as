@@ -55,12 +55,12 @@ package org.farmcode.display.controls
 		
 		public function ScrollButtons(asset:IDisplayAsset=null){
 			_foreButton = new Button();
-			_foreButton.mouseDownAct.addHandler(onForeDown);
-			_foreButton.mouseUpAct.addHandler(onButtonUp);
+			_foreButton.mousePressed.addHandler(onForeDown);
+			_foreButton.mouseReleased.addHandler(onButtonUp);
 			
 			_aftButton = new Button();
-			_aftButton.mouseDownAct.addHandler(onAftDown);
-			_aftButton.mouseUpAct.addHandler(onButtonUp);
+			_aftButton.mousePressed.addHandler(onAftDown);
+			_aftButton.mouseReleased.addHandler(onButtonUp);
 			
 			super(asset);
 			scrollDirection = Direction.VERTICAL;

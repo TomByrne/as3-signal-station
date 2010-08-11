@@ -65,6 +65,7 @@ package org.farmcode.display.core
 		protected var _interactiveObjectAsset:IInteractiveObjectAsset;
 		protected var _spriteAsset:ISpriteAsset;
 		
+		protected var _inited:Boolean;
 		protected var _bound:Boolean;
 		protected var _introShown:Boolean;
 		protected var _outroShown:Boolean;
@@ -78,6 +79,14 @@ package org.farmcode.display.core
 		public function DrawableView(asset:IDisplayAsset=null){
 			_drawFlag = new FrameValidationFlag(this,commitDraw,false);
 			super(asset);
+		}
+		protected function attemptInit() : void{
+			if(!_inited){
+				_inited = true;
+				init();
+			}
+		}
+		protected function init():void{
 			_stateList = fillStateList([]);
 		}
 		protected function autoIntro():Boolean{
@@ -156,6 +165,7 @@ package org.farmcode.display.core
 			
 		}
 		protected function bindToAsset():void{
+			attemptInit();
 			_asset.addStateList(_stateList);
 		}
 		protected function unbindFromAsset():void{

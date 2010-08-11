@@ -8,6 +8,13 @@ package org.farmcode.display.layout.frame
 	import org.farmcode.display.layout.getMarginAffectedArea;
 	import org.farmcode.display.utils.DisplayFramer;
 
+	
+	/*
+	TODO: we have problems with layouts, they need to work better in relation to their invalidation
+	and measurement, measurement waits a frame in most/all cases, this won't do.
+	Also, drawing and invalidation needs to be rethought.
+	
+	*/
 	public class FrameLayout extends AbstractLayout
 	{
 		protected var marginAffectedPosition:Rectangle = new Rectangle();

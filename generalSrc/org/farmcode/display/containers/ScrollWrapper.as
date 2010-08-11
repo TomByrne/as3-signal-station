@@ -1,11 +1,11 @@
 package org.farmcode.display.containers
 {
 	
-	import flash.events.MouseEvent;
 	import flash.geom.Rectangle;
 	
 	import org.farmcode.acting.actTypes.IAct;
 	import org.farmcode.acting.acts.Act;
+	import org.farmcode.display.actInfo.IMouseActInfo;
 	import org.farmcode.display.assets.IInteractiveObjectAsset;
 	import org.farmcode.display.constants.Direction;
 	import org.farmcode.display.core.IView;
@@ -204,8 +204,8 @@ package org.farmcode.display.containers
 				_targetAsset.scrollRect = rect;
 			}
 		}
-		protected function onMouseWheel(e:MouseEvent):void{
-			if(_mouseWheel)_mouseWheel.perform(this,e.delta);
+		protected function onMouseWheel(from:IInteractiveObjectAsset, mouseActInfo:IMouseActInfo, delta:int):void{
+			if(_mouseWheel)_mouseWheel.perform(this,delta);
 		}
 	}
 }
