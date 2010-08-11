@@ -35,5 +35,8 @@ package org.farmcode.display.assets.nativeAssets
 		public function loadBytes(bytes:ByteArray, context:LoaderContext=null):void{
 			_loader.loadBytes(bytes, context);
 		}
+		public function unload():void{
+			_loader.unload();
+		}
 	}
 }

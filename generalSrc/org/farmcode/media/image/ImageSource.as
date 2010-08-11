@@ -3,6 +3,7 @@ package org.farmcode.media.image
 	import flash.display.Loader;
 	import flash.events.Event;
 	import flash.events.ProgressEvent;
+	import flash.geom.Point;
 	import flash.geom.Rectangle;
 	import flash.net.URLLoader;
 	import flash.net.URLLoaderDataFormat;
@@ -63,10 +64,9 @@ package org.farmcode.media.image
 		private var _smoothing:Boolean;
 		private var _imageUrl:String;
 		private var _urlLoader:URLLoader;
-		private var _protoLoader:Loader;
+		private var _protoLoader:ILoaderAsset;
 		private var _loadStarted:Boolean;
 		private var _loaded:Boolean;
-		private var _displayMeasurements:Rectangle = new Rectangle(0,0,1,1);
 		private var _displaysTaken:int = 0;
 		
 		public function ImageSource(url:String=null){
@@ -108,34 +108,24 @@ package org.farmcode.media.image
 				loader.loadBytes(_urlLoader.data);
 			}
 			if(!_protoLoader){
-				_protoLoader = loader;
+				_protoLoader = NativeAssetFactory.getNew(loader);
 				_protoLoader.contentLoaderInfo.addEventListener(Event.COMPLETE, onProtoLoaded);
 			}
 			var loaderAsset:ILoaderAsset = NativeAssetFactory.getNew(loader);
-			var view:ImageView = new ImageView(loaderAsset,_displayMeasurements,smoothing);
+			var view:ImageView = new ImageView(loaderAsset,_measurements,smoothing);
 			view.layoutInfo = new FrameLayoutInfo();
 			return view;
 		}
 		protected function onProtoLoaded(e:Event):void{
-			updateDisplayMeasurements(0,0,_protoLoader.content.width,_protoLoader.content.height);
+			updateDisplayMeasurements(_protoLoader.content.width,_protoLoader.content.height);
 		}
 		override protected function destroyMediaDisplay(value:ILayoutView):void{
-			var loader:Loader = value.asset as Loader;
+			var loader:ILoaderAsset = value.asset as ILoaderAsset;
 			if(_protoLoader==loader){
 				_protoLoader.contentLoaderInfo.removeEventListener(Event.COMPLETE, onProtoLoaded);
 				_protoLoader = null;
 			}
 			loader.unload();
-		}
-		protected function updateDisplayMeasurements(x:Number, y:Number, width:Number, height:Number):void{
-			_displayMeasurements.x = x;
-			_displayMeasurements.y = y;
-			_displayMeasurements.width = width;
-			_displayMeasurements.height = height;
-			for(var i:* in _allMediaDisplays){
-				var view:MediaView = (i as MediaView);
-				view.displayMeasurementsChanged();
-			}
 		}
 	}
 }

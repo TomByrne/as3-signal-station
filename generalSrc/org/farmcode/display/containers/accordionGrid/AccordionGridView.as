@@ -1,5 +1,6 @@
 package org.farmcode.display.containers.accordionGrid
 {
+	import flash.geom.Point;
 	import flash.geom.Rectangle;
 	import flash.utils.Dictionary;
 	
@@ -165,9 +166,9 @@ package org.farmcode.display.containers.accordionGrid
 		public function onCollectionChanged(from:ICollection, fromX:Number, toX:Number):void{
 			mapData();
 		}
-		protected function onGridMeasChange(from:RendererGridLayout, oldX:Number, oldY:Number, oldWidth:Number, oldHeight:Number):void{
-			var meas:Rectangle = _gridLayout.displayMeasurements;
-			_gridLayout.setDisplayPosition(meas.x,meas.y,meas.width,meas.height);
+		protected function onGridMeasChange(from:RendererGridLayout, oldWidth:Number, oldHeight:Number):void{
+			var meas:Point = _gridLayout.measurements;
+			_gridLayout.setDisplayPosition(0,0,meas.x,meas.y);
 		}
 		override protected function bindToAsset() : void{
 			super.bindToAsset();
@@ -343,8 +344,8 @@ package org.farmcode.display.containers.accordionGrid
 			drawGridLayout(displayPosition);
 		}
 		protected function drawGridLayout(position:Rectangle) : void{
-			var meas:Rectangle = _gridLayout.displayMeasurements;
-			_gridLayout.setDisplayPosition(0,0,meas.width,meas.height);
+			var meas:Point = _gridLayout.measurements;
+			_gridLayout.setDisplayPosition(0,0,meas.x,meas.y);
 		}
 		protected function createGridLayout() : void{
 			_gridLayout = new RendererGridLayout(this);

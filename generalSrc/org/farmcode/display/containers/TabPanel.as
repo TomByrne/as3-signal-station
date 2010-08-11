@@ -1,6 +1,7 @@
 package org.farmcode.display.containers
 {
 	import flash.display.DisplayObject;
+	import flash.geom.Point;
 	import flash.geom.Rectangle;
 	
 	import org.farmcode.display.assets.IAsset;
@@ -68,14 +69,14 @@ package org.farmcode.display.containers
 		private var _panelAsset:IDisplayAsset;
 		private var _assumedPanelAsset:IDisplayAsset;
 		private var _panelDataField:String;
-		private var _listMeasure:Rectangle;
+		private var _listMeasure:Point;
 		private var _listPosition:Rectangle;
 		private var _anchor:String = Anchor.TOP_LEFT;
 		private var _alignHorizontal:Boolean;
 		
 		public function TabPanel(asset:IDisplayAsset=null){
 			super(asset);
-			_listMeasure = new Rectangle();
+			_listMeasure = new Point();
 			_listPosition = new Rectangle();
 			direction = Direction.HORIZONTAL;
 		}
@@ -95,16 +96,14 @@ package org.farmcode.display.containers
 				_containerAsset.removeAsset(_panelAsset);
 			}
 		}
-		override protected function onLayoutMeasChange(from:ILayoutSubject, oldX:Number, oldY:Number, oldWidth:Number, oldHeight:Number) : void{
-			super.onLayoutMeasChange(from, oldX, oldY, oldWidth, oldHeight);
+		override protected function onLayoutMeasChange(from:ILayoutSubject, oldWidth:Number, oldHeight:Number) : void{
+			super.onLayoutMeasChange(from, oldWidth, oldHeight);
 			invalidate();
 		}
 		override protected function measure() : void{
 			super.measure();
-			_listMeasure.x = _displayMeasurements.x;
-			_listMeasure.y = _displayMeasurements.y;
-			_listMeasure.width = _displayMeasurements.width;
-			_listMeasure.height = _displayMeasurements.height;
+			_listMeasure.x = _measurements.x;
+			_listMeasure.y = _measurements.y;
 			
 			if(_layout.flowDirection==Direction.VERTICAL){
 				switch(anchor){
@@ -125,17 +124,17 @@ package org.farmcode.display.containers
 						_alignHorizontal = false;
 				}
 			}
-			var panelMeas:Rectangle = _panelDisplay.displayMeasurements;
+			var panelMeas:Point = _panelDisplay.measurements;
 			if(panelMeas){
 				if(_alignHorizontal){
-					_displayMeasurements.height += panelMeas.height;
-					if(_displayMeasurements.width<panelMeas.width){
-						_displayMeasurements.width = panelMeas.width;
+					_measurements.y += panelMeas.y;
+					if(_measurements.x<panelMeas.x){
+						_measurements.x = panelMeas.x;
 					}
 				}else{
-					_displayMeasurements.width += panelMeas.width;
-					if(_displayMeasurements.height<panelMeas.height){
-						_displayMeasurements.height = panelMeas.height;
+					_measurements.x += panelMeas.x;
+					if(_measurements.y<panelMeas.y){
+						_measurements.y = panelMeas.y;
 					}
 				}
 			}
@@ -144,8 +143,8 @@ package org.farmcode.display.containers
 			_measureFlag.validate();
 			positionAsset();
 			positionBacking();
-			_listPosition.width = (displayPosition.width<_listMeasure.width?displayPosition.width:_listMeasure.width);
-			_listPosition.height = (displayPosition.height<_listMeasure.height?displayPosition.height:_listMeasure.height);
+			_listPosition.width = (displayPosition.width<_listMeasure.x?displayPosition.width:_listMeasure.x);
+			_listPosition.height = (displayPosition.height<_listMeasure.y?displayPosition.height:_listMeasure.y);
 			var panelX:Number;
 			var panelY:Number;
 			var panelWidth:Number;
@@ -224,7 +223,7 @@ package org.farmcode.display.containers
 				_panelDisplay[dataField] = selectedItem;
 			}
 		}
-		protected function onPanelMeasChanged(from:ILayoutView, oldX:Number, oldY:Number, oldWidth:Number, oldHeight:Number):void{
+		protected function onPanelMeasChanged(from:ILayoutView, oldWidth:Number, oldHeight:Number):void{
 			dispatchMeasurementChange();
 		}
 		protected function onPanelAssetChanged(from:ILayoutView, oldAsset:IAsset):void{

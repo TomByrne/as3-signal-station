@@ -186,9 +186,8 @@ package org.farmcode.display.controls
 				
 				if(measText!=textWas)_labelField.htmlText = measText;
 				
-				if(!_displayMeasurements)_displayMeasurements = new Rectangle();
-				_displayMeasurements.width = _labelField.textWidth+paddingLeft+paddingRight;
-				_displayMeasurements.height = _labelField.textHeight+paddingTop+paddingBottom;
+				_measurements.x = _labelField.textWidth+paddingLeft+paddingRight;
+				_measurements.y = _labelField.textHeight+paddingTop+paddingBottom;
 				_labelField.width = widthWas;
 				
 				if(measText!=textWas)_labelField.htmlText = textWas;

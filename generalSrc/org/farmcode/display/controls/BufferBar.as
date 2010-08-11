@@ -2,6 +2,7 @@ package org.farmcode.display.controls
 {
 	
 	import flash.display.DisplayObject;
+	import flash.geom.Point;
 	import flash.geom.Rectangle;
 	
 	import org.farmcode.display.assets.IDisplayAsset;
@@ -42,8 +43,9 @@ package org.farmcode.display.controls
 				invalidate();
 			}
 		}
-		override public function get displayMeasurements() : Rectangle{
-			return _slider.displayMeasurements;
+		// TODO: fix this, it breaks the oldWidth & oldHeight dispatched with the change event
+		override public function get measurements() : Point{
+			return _slider.measurements;
 		}
 		
 		private var _videoSource:IVideoSource;
@@ -155,7 +157,7 @@ package org.farmcode.display.controls
 			}
 			_slider.setDisplayPosition(displayPosition.x,displayPosition.y,displayPosition.width,displayPosition.height);
 		}
-		protected function onSliderMeasChange(from:ILayoutSubject, oldX:Number, oldY:Number, oldWidth:Number, oldHeight:Number):void{
+		protected function onSliderMeasChange(from:ILayoutSubject, oldWidth:Number, oldHeight:Number):void{
 			dispatchMeasurementChange();
 		}
 		protected function onLoadChange(from:IMediaSource):void{

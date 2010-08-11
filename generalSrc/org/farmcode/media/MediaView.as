@@ -1,6 +1,7 @@
 package org.farmcode.media
 {
 	import flash.display.DisplayObject;
+	import flash.geom.Point;
 	import flash.geom.Rectangle;
 	
 	import org.farmcode.display.assets.IDisplayAsset;
@@ -8,9 +9,9 @@ package org.farmcode.media
 	
 	public class MediaView extends LayoutView
 	{
-		public function MediaView(asset:IDisplayAsset, displayMeasurements:Rectangle){
+		public function MediaView(asset:IDisplayAsset, measurements:Point){
+			_measurements = measurements;
 			super(asset);
-			_displayMeasurements = displayMeasurements;
 		}
 		public function displayMeasurementsChanged():void{
 			dispatchMeasurementChange();

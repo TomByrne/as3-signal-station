@@ -19,8 +19,8 @@ package org.farmcode.display.controls
 	import org.farmcode.display.assets.states.StateDef;
 	import org.farmcode.display.containers.ISelectableRenderer;
 	import org.farmcode.display.tabFocus.ITabFocusable;
+	import org.farmcode.display.tabFocus.InteractiveAssetFocusWrapper;
 	import org.farmcode.display.tabFocus.InteractiveObjectFocusWrapper;
-	import org.farmcode.display.assets.states.StateDef;
 	
 	public class ToggleButton extends Button implements ISelectableRenderer
 	{
@@ -109,36 +109,30 @@ package org.farmcode.display.controls
 		private var _booleanConsumer:IBooleanConsumer;
 		private var _selected:Boolean;
 		private var _togglable:Boolean = true;
-		private var _tabFocusable:ITabFocusable;
+		private var _tabFocusable:InteractiveAssetFocusWrapper;
 		
 		protected var _selectedState:StateDef = new StateDef([SELECTED_FRAME_LABEL,UNSELECTED_FRAME_LABEL],1);
 		
 		public function ToggleButton(asset:IDisplayAsset=null){
 			super(asset);
 		}
+		override protected function init() : void{
+			super.init();
+			clicked.addHandler(onClick);
+			_tabFocusable = new InteractiveAssetFocusWrapper();
+		}
 		override protected function bindToAsset() : void{
-			_interactiveObjectAsset.clicked.addHandler(onClick);
-			var interact:InteractiveObject = (asset as InteractiveObject);
-			if(interact){
-				interact.mouseEnabled = true;
-				_tabFocusable = new InteractiveObjectFocusWrapper(interact);
-				var sprite:Sprite = (asset as Sprite);
-				if(sprite){
-					sprite.mouseChildren = false;
-					sprite.buttonMode = true;
-				}
-			}
 			super.bindToAsset();
+			_tabFocusable.interactiveAsset = _interactiveArea;
 		}
 		override protected function unbindFromAsset() : void{
+			_tabFocusable.interactiveAsset = null;
 			super.unbindFromAsset();
-			_tabFocusable = null;
-			_interactiveObjectAsset.clicked.removeHandler(onClick);
 		}
 		private function onProviderChanged(from:IBooleanProvider):void{
 			if(useDataForSelected)this.selected = from.booleanValue;
 		}
-		private function onClick(from:IInteractiveObjectAsset, info:IMouseActInfo):void{
+		private function onClick(from:Button):void{
 			if(_active){
 				selected = !selected;
 			}

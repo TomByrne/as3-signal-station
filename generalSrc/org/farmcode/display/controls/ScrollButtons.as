@@ -3,6 +3,7 @@ package org.farmcode.display.controls
 	import flash.display.DisplayObject;
 	import flash.events.Event;
 	import flash.events.TimerEvent;
+	import flash.geom.Point;
 	import flash.geom.Rectangle;
 	import flash.utils.Timer;
 	import flash.utils.getTimer;
@@ -55,12 +56,12 @@ package org.farmcode.display.controls
 		
 		public function ScrollButtons(asset:IDisplayAsset=null){
 			_foreButton = new Button();
-			_foreButton.mouseDownAct.addHandler(onForeDown);
-			_foreButton.mouseUpAct.addHandler(onButtonUp);
+			_foreButton.mousePressed.addHandler(onForeDown);
+			_foreButton.mouseReleased.addHandler(onButtonUp);
 			
 			_aftButton = new Button();
-			_aftButton.mouseDownAct.addHandler(onAftDown);
-			_aftButton.mouseUpAct.addHandler(onButtonUp);
+			_aftButton.mousePressed.addHandler(onAftDown);
+			_aftButton.mouseReleased.addHandler(onButtonUp);
 			
 			super(asset);
 			scrollDirection = Direction.VERTICAL;
@@ -84,14 +85,14 @@ package org.farmcode.display.controls
 		}
 		override protected function draw() : void{
 			positionAsset();
-			var foreMeas:Rectangle = _foreButton.displayMeasurements;
-			var aftMeas:Rectangle = _aftButton.displayMeasurements;
+			var foreMeas:Point = _foreButton.measurements;
+			var aftMeas:Point = _aftButton.measurements;
 			if(_scrollDirection==Direction.HORIZONTAL){
-				_foreButton.setDisplayPosition(0,0,foreMeas.width,displayPosition.height);
-				_aftButton.setDisplayPosition(displayPosition.width-aftMeas.width,0,aftMeas.width,displayPosition.height);
+				_foreButton.setDisplayPosition(0,0,foreMeas.x,displayPosition.height);
+				_aftButton.setDisplayPosition(displayPosition.width-aftMeas.x,0,aftMeas.x,displayPosition.height);
 			}else{
-				_foreButton.setDisplayPosition(0,0,displayPosition.width,foreMeas.height);
-				_aftButton.setDisplayPosition(0,displayPosition.height-aftMeas.height,displayPosition.width,aftMeas.height);
+				_foreButton.setDisplayPosition(0,0,displayPosition.width,foreMeas.y);
+				_aftButton.setDisplayPosition(0,displayPosition.height-aftMeas.y,displayPosition.width,aftMeas.y);
 			}
 		}
 		protected function onForeDown(from:Button) : void{

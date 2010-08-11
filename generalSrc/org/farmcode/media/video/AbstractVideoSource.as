@@ -5,6 +5,7 @@ package org.farmcode.media.video
 	import flash.events.Event;
 	import flash.events.IOErrorEvent;
 	import flash.events.NetStatusEvent;
+	import flash.geom.Point;
 	import flash.geom.Rectangle;
 	import flash.media.SoundTransform;
 	import flash.media.Video;
@@ -204,7 +205,6 @@ package org.farmcode.media.video
 		protected var _netStream:NetStream;
 		protected var _videoStreamProxy:VideoStreamProxy;
 		
-		protected var _displayMeasurements:Rectangle = new Rectangle(0,0,320,240);
 		
 		protected var _volumeChanged:Act;
 		protected var _totalTimeChanged:Act;
@@ -215,6 +215,8 @@ package org.farmcode.media.video
 		
 		public function AbstractVideoSource(){
 			super();
+			_measurements.x = 320;
+			_measurements.y = 240;
 		}
 		protected function closeStream():void{
 			if(_streamStarted){
@@ -223,7 +225,7 @@ package org.farmcode.media.video
 				_netStream = null;
 				_currentTime = 0;
 				setBuffered(false);
-				updateDisplayMeasurements(0,0,320,240);
+				updateDisplayMeasurements(320,240);
 				
 				for(var i:* in _allMediaDisplays){
 					var mediaView:MediaView = (i as MediaView);
@@ -339,12 +341,12 @@ package org.farmcode.media.video
 			super.returnMediaDisplay(value);
 		}
 		override protected function createMediaDisplay():ILayoutView{
-			var video:Video = new Video(_displayMeasurements.width,_displayMeasurements.height);
+			var video:Video = new Video(_measurements.x,_measurements.y);
 			if(_streamStarted){
 				video.attachNetStream(_netStream);
 			}
 			var videoAsset:IVideoAsset = NativeAssetFactory.getNew(video);
-			var display:MediaView = new MediaView(videoAsset,_displayMeasurements);
+			var display:MediaView = new MediaView(videoAsset,_measurements);
 			display.layoutInfo = new FrameLayoutInfo();
 			return display;
 		}
@@ -394,20 +396,10 @@ package org.farmcode.media.video
 				if(_bufferedChanged)_bufferedChanged.perform(this);
 			}
 		}
-		protected function updateDisplayMeasurements(x:Number, y:Number, width:Number, height:Number):void{
-			_displayMeasurements.x = x;
-			_displayMeasurements.y = y;
-			_displayMeasurements.width = width;
-			_displayMeasurements.height = height;
-			for(var i:* in _allMediaDisplays){
-				var view:MediaView = (i as MediaView);
-				view.displayMeasurementsChanged();
-			}
-		}
 		protected function onMetadata(from:VideoStreamProxy):void{
 			_loadingByteOffset = _netStream.bytesLoaded;
 			_loadingStartAt = getTimer();
-			updateDisplayMeasurements(0,0,_videoStreamProxy.width,_videoStreamProxy.height);
+			updateDisplayMeasurements(_videoStreamProxy.width,_videoStreamProxy.height);
 			assessBufferSize();
 			if(!_playing){
 				_streamPlaying = false;

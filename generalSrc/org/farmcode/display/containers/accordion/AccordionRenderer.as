@@ -1,7 +1,5 @@
 package org.farmcode.display.containers.accordion
 {
-	import org.farmcode.tweening.LooseTween;
-	
 	import fl.transitions.easing.Regular;
 	
 	import flash.events.Event;
@@ -26,6 +24,7 @@ package org.farmcode.display.containers.accordion
 	import org.farmcode.display.layout.ILayoutSubject;
 	import org.farmcode.display.layout.IMinimisableLayoutSubject;
 	import org.farmcode.display.validation.ValidationFlag;
+	import org.farmcode.tweening.LooseTween;
 	import org.goasap.events.GoEvent;
 	
 	use namespace DisplayNamespace;
@@ -166,16 +165,15 @@ package org.farmcode.display.containers.accordion
 		protected var _openWidth:Number;
 		protected var _openHeight:Number;
 		
-		protected var _labelMeas:Rectangle;
+		protected var _labelMeas:Point;
 		
 		protected var _openState:StateDef = new StateDef([STATE_OPEN,STATE_CLOSED],0);
 		
 		public function AccordionRenderer(asset:IDisplayAsset=null){
 			_label = new TextLabel();
 			super(asset);
-			_displayMeasurements = new Rectangle();
 			_label.measurementsChanged.addHandler(onMeasChange);
-			_labelMeas = _label.displayMeasurements || new Rectangle();
+			_labelMeas = _label.measurements || new Point();
 			booleanValue = false;
 		}
 		public function onOpenChanged(from:IBooleanProvider):void{
@@ -240,8 +238,8 @@ package org.farmcode.display.containers.accordion
 		}
 		override protected function measure():void{
 			var minMeas:Point = minMeasurements;
-			_displayMeasurements.width = minMeas.x;
-			_displayMeasurements.height = minMeas.y;
+			_measurements.x = minMeas.x;
+			_measurements.y = minMeas.y;
 			var childMeasurements:Rectangle = getContainerMeasurements();
 			if(childMeasurements){
 				switch(_labelPosition){
@@ -251,7 +249,7 @@ package org.farmcode.display.containers.accordion
 					case Anchor.BOTTOM:
 					case Anchor.BOTTOM_LEFT:
 					case Anchor.BOTTOM_RIGHT:
-						_displayMeasurements.height += childMeasurements.height;
+						_measurements.y += childMeasurements.height;
 						break;
 				}
 				switch(_labelPosition){
@@ -261,15 +259,15 @@ package org.farmcode.display.containers.accordion
 					case Anchor.RIGHT:
 					case Anchor.TOP_RIGHT:
 					case Anchor.BOTTOM_RIGHT:
-						_displayMeasurements.width += childMeasurements.width;
+						_measurements.x += childMeasurements.width;
 						break;
 				}
 			}
 		}
 		override protected function draw() : void{
 			_measureFlag.validate();
-			var lackX:Number = (_displayMeasurements.width<_openWidth?_openWidth-_displayMeasurements.width:0);
-			var lackY:Number = (_displayMeasurements.height<_openHeight?_openHeight-_displayMeasurements.height:0);
+			var lackX:Number = (_measurements.x<_openWidth?_openWidth-_measurements.x:0);
+			var lackY:Number = (_measurements.y<_openHeight?_openHeight-_measurements.y:0);
 			
 			var labelX:Number;
 			var labelY:Number;
@@ -340,23 +338,23 @@ package org.farmcode.display.containers.accordion
 				if(_scrollBar.isUsable || !_scrollBar.hideWhenUnusable){
 					_scrollBar.direction = scrollDir;
 					var vert:Boolean = (scrollDir==Direction.VERTICAL);
-					var scrollMeas:Rectangle = _scrollBar.displayMeasurements;
+					var scrollMeas:Point = _scrollBar.measurements;
 					var scrollX:Number;
 					var scrollY:Number;
 					var scrollW:Number;
 					var scrollH:Number;
 					if(vert){
-						scrollX = _openWidth-scrollMeas.width;
+						scrollX = _openWidth-scrollMeas.x;
 						scrollY = childY;
-						scrollW = scrollMeas.width;
+						scrollW = scrollMeas.x;
 						scrollH = _openHeight-childY;
-						childW -= scrollMeas.width;
+						childW -= scrollMeas.x;
 					}else{
 						scrollX = childX;
-						scrollY = _openHeight-scrollMeas.height;
+						scrollY = _openHeight-scrollMeas.y;
 						scrollW = _openWidth-childX;
-						scrollH = scrollMeas.height;
-						childH -= scrollMeas.height;
+						scrollH = scrollMeas.y;
+						childH -= scrollMeas.y;
 					}
 					setContainerSize(childX,childY,childW,childH);
 					setScrollBarSize(scrollX,scrollY,scrollW,scrollH);
@@ -403,15 +401,15 @@ package org.farmcode.display.containers.accordion
 			_openFract = 1-target.value;
 			if(_openFractChanged)_openFractChanged.perform(this);
 		}
-		protected function onMeasChange(from:ILayoutSubject, oldX:Number, oldY:Number, oldWidth:Number, oldHeight:Number):void{
-			_labelMeas = _label.displayMeasurements || new Rectangle();
+		protected function onMeasChange(from:ILayoutSubject, oldWidth:Number, oldHeight:Number):void{
+			_labelMeas = _label.measurements || new Point();
 			_minMeasurementsFlag.invalidate();
 			if(_minMeasurementsChanged)_minMeasurementsChanged.perform(this);
 			dispatchMeasurementChange();
 		}
 		protected function checkMinMeas():void{
-			_minMeasurements.x = _labelMeas.width;
-			_minMeasurements.y = _labelMeas.height;
+			_minMeasurements.x = _labelMeas.x;
+			_minMeasurements.y = _labelMeas.y;
 		}
 		override protected function fillStateList(fill:Array):Array{
 			fill = super.fillStateList(fill);

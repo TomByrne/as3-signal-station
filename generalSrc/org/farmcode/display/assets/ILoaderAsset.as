@@ -9,5 +9,6 @@ package org.farmcode.display.assets
 		function get content():IDisplayAsset;
 		function get contentLoaderInfo():LoaderInfo;
 		function loadBytes(bytes:ByteArray, context:LoaderContext=null):void;
+		function unload():void;
 	}
 }

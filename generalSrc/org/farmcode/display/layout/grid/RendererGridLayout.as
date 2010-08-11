@@ -237,8 +237,8 @@ package org.farmcode.display.layout.grid
 			super(scopeView);
 		}
 		override protected function createAxes():void{
-			_verticalAxis = _verticalRendAxis = new RendererGridAxis("height","rowIndex");
-			_horizontalAxis = _horizontalRendAxis = new RendererGridAxis("width","columnIndex");
+			_horizontalAxis = _horizontalRendAxis = new RendererGridAxis("x","width","columnIndex");
+			_verticalAxis = _verticalRendAxis = new RendererGridAxis("y","height","rowIndex");
 		}
 		override protected function validateProps():void{
 			super.validateProps();
@@ -359,7 +359,7 @@ package org.farmcode.display.layout.grid
 		override protected function remeasureChild(key:*) : Boolean{
 			return (!_cellMeasCache[key]);
 		}
-		override protected function getChildMeasurement(key:*) : Rectangle{
+		override protected function getChildMeasurement(key:*) : Point{
 			if(key>=_dataCount){
 				return null;
 			}
@@ -373,14 +373,14 @@ package org.farmcode.display.layout.grid
 				if(_setRendererDataAct)_setRendererDataAct.perform(this,_protoRenderer,data,_dataField);
 				renderer = _protoRenderer;
 				
-				var ret:Rectangle = renderer.displayMeasurements.clone();
+				var ret:Point = renderer.measurements.clone();
 				
 				_protoRenderer[_dataField] = null;
 				if(_setRendererDataAct)_setRendererDataAct.perform(this,_protoRenderer,null,_dataField);
 				
 				return ret;
 			}else{
-				return renderer.displayMeasurements;
+				return renderer.measurements;
 			}
 		}
 		override protected function getChildLayoutInfo(key:*) : ILayoutInfo{
@@ -430,7 +430,7 @@ package org.farmcode.display.layout.grid
 			renderer.measurementsChanged.removeHandler(onRendMeasChanged);
 			if(_removeRendererAct)_removeRendererAct.perform(this,renderer);
 		}
-		protected function onRendMeasChanged(from:ILayoutSubject, oldX:Number, oldY:Number, oldWidth:Number, oldHeight:Number):void{
+		protected function onRendMeasChanged(from:ILayoutSubject, oldWidth:Number, oldHeight:Number):void{
 			var data:* = from[_dataField];
 			delete _cellMeasCache[data];
 			invalidateAll();
@@ -564,7 +564,7 @@ package org.farmcode.display.layout.grid
 			var pixScroll:Number;
 			var pixScrollMax:Number;
 			var realDim:Number = _displayPosition[axis.dimRef];
-			var realMeas:Number = _displayMeasurements[axis.dimRef];
+			var realMeas:Number = _measurements[axis.coordRef];
 			var newIndex:int;
 			var newIndexMax:int;
 			
@@ -621,7 +621,7 @@ package org.farmcode.display.layout.grid
 					if(i<axis.maxCellSizes.length-1)pixScrollMax += axis.gap;
 				}
 				if(_protoRenderer){
-					var defaultDim:Number = _protoRenderer.displayMeasurements[axis.dimRef];
+					var defaultDim:Number = _protoRenderer.measurements[axis.coordRef];
 					var leftOver:Number = (realDim-axis.foreMargin+axis.gap-pixScrollMax);
 					if(leftOver>0){
 						var defMax:int = max+int(leftOver/(defaultDim+axis.gap));

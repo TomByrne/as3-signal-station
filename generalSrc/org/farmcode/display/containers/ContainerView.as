@@ -2,6 +2,7 @@ package org.farmcode.display.containers
 {
 	
 	import flash.display.DisplayObject;
+	import flash.geom.Rectangle;
 	
 	import org.farmcode.display.assets.IAsset;
 	import org.farmcode.display.assets.IDisplayAsset;
@@ -28,6 +29,15 @@ package org.farmcode.display.containers
 				_backing = null;
 			}
 			super.unbindFromAsset();
+		}
+		override protected function measure():void{
+			checkIsBound();
+			if(_backing){
+				_measurements.x = _backing.naturalWidth;
+				_measurements.y = _backing.naturalHeight;
+			}else{
+				super.measure();
+			}
 		}
 		override protected function draw() : void{
 			positionAsset();

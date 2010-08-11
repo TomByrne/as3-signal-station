@@ -55,7 +55,7 @@ package org.farmcode.display.assets.nativeAssets
 		public function set focus(value:IInteractiveObjectAsset):void{
 			if(_focus!=value){
 				_focus = value as InteractiveObjectAsset;
-				_stage.focus = _focus.displayObject as InteractiveObject;
+				_stage.focus = _focus?(_focus.displayObject as InteractiveObject):null;
 			}
 		}
 		public function get stageWidth():Number{

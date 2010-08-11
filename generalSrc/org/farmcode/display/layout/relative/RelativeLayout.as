@@ -18,7 +18,7 @@ package org.farmcode.display.layout.relative
 			super(scopeView, stage);
 		}
 		override protected function drawSubject(subject:ILayoutSubject) : void{
-			var subMeas:Rectangle = subject.displayMeasurements;
+			var subMeas:Point = subject.measurements;
 			var layoutInfo:IRelativeLayoutInfo = (subject.layoutInfo as IRelativeLayoutInfo);
 			if(layoutInfo){
 				var castView:IView = (subject as IView);
@@ -37,8 +37,8 @@ package org.farmcode.display.layout.relative
 					transPoint.y  += layoutInfo.relativeOffsetY;
 				}
 				
-				var width:Number = subMeas.width;
-				var height:Number = subMeas.height;
+				var width:Number = subMeas.x;
+				var height:Number = subMeas.y;
 				
 				// constrain size
 				if(!isNaN(layoutInfo.minWidth) && width<layoutInfo.minWidth){
@@ -79,10 +79,8 @@ package org.farmcode.display.layout.relative
 					transPoint = castView.asset.parent.globalToLocal(transPoint);
 				}
 				subject.setDisplayPosition(transPoint.x,transPoint.y,width,height);
-				addToMeas(transPoint.x,transPoint.y,width,height);
-			}else{
-				addToMeas(subMeas.x,subMeas.y,subMeas.width,subMeas.height);
 			}
+			addToMeas(subMeas.x,subMeas.y);
 		}
 	}
 }

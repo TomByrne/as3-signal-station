@@ -2,6 +2,7 @@ package org.farmcode.display.layout
 {
 	
 	import flash.display.DisplayObject;
+	import flash.geom.Point;
 	import flash.geom.Rectangle;
 	import flash.utils.Dictionary;
 	
@@ -25,10 +26,6 @@ package org.farmcode.display.layout
 		}
 		
 		
-		public function get readyForDraw():Boolean{
-			return true;
-		}
-		
 		public function get layoutInfo():ILayoutInfo{
 			return _layoutInfo;
 		}
@@ -38,6 +35,10 @@ package org.farmcode.display.layout
 		
 		public function get displayPosition():Rectangle{
 			return _displayPosition;
+		}
+		public function get measurements():Point{
+			_measureFlag.validate();
+			return _measurements;
 		}
 		
 		/**
@@ -61,7 +62,7 @@ package org.farmcode.display.layout
 		
 		protected var _layoutInfo:ILayoutInfo;
 		protected var _displayPosition:Rectangle = new Rectangle();
-		protected var _displayMeasurements:Rectangle = new Rectangle();
+		protected var _measurements:Point = new Point();
 		protected var _subjects:Dictionary = new Dictionary();
 		protected var _invalidSubjects:Dictionary = new Dictionary();
 		protected var _allInvalid:Boolean;
@@ -91,10 +92,6 @@ package org.farmcode.display.layout
 				delete _invalidSubjects[subject];
 				subject.measurementsChanged.removeHandler(onMeasumentsChange);
 			}
-		}
-		public function get displayMeasurements():Rectangle{
-			_measureFlag.validate();
-			return _displayMeasurements;
 		}
 		public function setLayoutSize(x:Number, y:Number, width:Number, height:Number):void{
 			setDisplayPosition(x, y, width, height);
@@ -153,7 +150,7 @@ package org.farmcode.display.layout
 			_drawFlag.validate(forceDraw);
 		}
 		
-		protected function onMeasumentsChange(from:ILayoutSubject, oldX:Number, oldY:Number, oldWidth:Number, oldHeight:Number): void{
+		protected function onMeasumentsChange(from:ILayoutSubject, oldWidth:Number, oldHeight:Number): void{
 			invalidateSingle(from);
 		}
 		/**
@@ -167,11 +164,9 @@ package org.farmcode.display.layout
 			if(_allInvalid){
 				_allInvalid = false;
 				drawList = _subjects;
-				if(_displayMeasurements){
-					_displayMeasurements.x = NaN;
-					_displayMeasurements.y = NaN;
-					_displayMeasurements.width = NaN;
-					_displayMeasurements.height = NaN;
+				if(_measurements){
+					_measurements.x = NaN;
+					_measurements.y = NaN;
 				}
 			}else{
 				drawList = _invalidSubjects;
@@ -182,10 +177,8 @@ package org.farmcode.display.layout
 			for(var i:* in drawList){
 				drawSubject(i as ILayoutSubject);
 			}
-			if(!isNaN(_displayMeasurements.x) ||
-				!isNaN(_displayMeasurements.y) ||
-				!isNaN(_displayMeasurements.width) ||
-				!isNaN(_displayMeasurements.height)){
+			if(!isNaN(_measurements.x) ||
+				!isNaN(_measurements.y)){
 				dispatchMeasurementChange();
 			}
 		}
@@ -193,29 +186,25 @@ package org.farmcode.display.layout
 			getMarginAffectedArea(_displayPosition,subject.layoutInfo,_marginAffectedArea,_marginRect);
 			subject.setDisplayPosition(_marginAffectedArea.x,_marginAffectedArea.y,_marginAffectedArea.width,_marginAffectedArea.height);
 			
-			var subMeas:Rectangle = subject.displayMeasurements;
+			var subMeas:Point = subject.measurements;
 			if(subMeas){
-				addToMeas(subMeas.x-_marginRect.x,
-					subMeas.y-_marginRect.y,
-					subMeas.width+_marginRect.x+_marginRect.width,
-					subMeas.height+_marginRect.y+_marginRect.height);
+				addToMeas(subMeas.x+_marginRect.x+_marginRect.width,
+							subMeas.y+_marginRect.y+_marginRect.height);
 			}
 		}
 		protected function measure() : void{
 			validate(true);
 		}
-		protected function addToMeas(x:Number, y:Number, width:Number, height:Number):void{
-			var meas:Rectangle = _displayMeasurements;
-			if(isNaN(meas.x) || meas.x>x)meas.x = x;
-			if(isNaN(meas.y) || meas.y>y)meas.y = y;
-			if(isNaN(meas.width) || meas.width<width)meas.width = width;
-			if(isNaN(meas.height) || meas.height<height)meas.height = height;
+		protected function addToMeas(width:Number, height:Number):void{
+			var meas:Point = _measurements;
+			if(isNaN(meas.x) || meas.x<width)meas.x = width;
+			if(isNaN(meas.y) || meas.y<height)meas.y = height;
 		}
 		protected function dispatchMeasurementChange():void{
 			_measureFlag.invalidate();
 		}
 		protected function onMeasInvalidate(validationFlag:ValidationFlag):void{
-			if(_measurementsChanged)_measurementsChanged.perform(this, _displayMeasurements.x, _displayMeasurements.y, _displayMeasurements.width, _displayMeasurements.height);
+			if(_measurementsChanged)_measurementsChanged.perform(this, _measurements.x, _measurements.y);
 		}
 	}
 }

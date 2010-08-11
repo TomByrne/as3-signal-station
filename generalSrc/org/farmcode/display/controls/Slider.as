@@ -15,7 +15,7 @@ package org.farmcode.display.controls
 		
 		
 		public function get direction():String{
-			return _direction;
+			return _direction?_direction:_assumedDirection;
 		}
 		public function set direction(value:String):void{
 			if(_direction!=value){
@@ -110,9 +110,12 @@ package org.farmcode.display.controls
 		
 		public function Slider(){
 			super();
-			_button.clickAct.addHandler(onTrackClick);
-			_thumb.mouseDownAct.addHandler(onThumbMouseDown);
-			_thumb.mouseUpAct.addHandler(onThumbMouseUp);
+		}
+		override protected function init():void{
+			super.init();
+			_button.clicked.addHandler(onTrackClick);
+			_thumb.mousePressed.addHandler(onThumbMouseDown);
+			_thumb.mouseReleased.addHandler(onThumbMouseUp);
 		}
 		override protected function bindToAsset() : void{
 			super.bindToAsset();
@@ -126,10 +129,6 @@ package org.farmcode.display.controls
 			
 			_assumedThumbX = _thumb.asset.x;
 			_assumedThumbY = _thumb.asset.y;
-			
-			if(!_direction){
-				_direction = _assumedDirection;
-			}
 		}
 		override protected function unbindFromAsset() : void{
 			super.unbindFromAsset();
@@ -140,16 +139,18 @@ package org.farmcode.display.controls
 			_track = null;
 		}
 		override protected function draw() : void{
+			var dir:String = direction;
+			
 			positionAsset();
 			_asset.scaleX = 1;
 			_asset.scaleY = 1;
 			
 			var fract:Number = (value-_minimum)/(_maximum-_minimum);
-			_track.rotation = _thumb.asset.rotation = (_direction!=_assumedDirection?90:0);
+			_track.rotation = _thumb.asset.rotation = (dir!=_assumedDirection?90:0);
 			
 			var thumbX:Number;
 			var thumbY:Number;
-			if(_direction==Direction.VERTICAL){
+			if(dir==Direction.VERTICAL){
 				var natWidth:Number = _track.width/_track.scaleX;
 				if(natWidth<displayPosition.width){
 					_track.width = natWidth;
@@ -182,7 +183,6 @@ package org.farmcode.display.controls
 		override public function setAssetAndPosition(asset:IDisplayAsset) : void{
 			super.setAssetAndPosition(asset);
 			checkIsBound();
-			_direction = _assumedDirection;
 		}
 		protected function onTrackClick(from:Button):void{
 			_dragOffset = 0;
@@ -190,7 +190,7 @@ package org.farmcode.display.controls
 		}
 		protected function onThumbMouseDown(from:Button):void{
 			if(_ignoreThumb)return;
-			if(_direction==Direction.VERTICAL){
+			if(direction==Direction.VERTICAL){
 				_dragOffset = _thumb.asset.mouseY-_thumb.asset.height/2;
 			}else{
 				_dragOffset = _thumb.asset.mouseX-_thumb.asset.width/2;
@@ -213,7 +213,7 @@ package org.farmcode.display.controls
 		}
 		protected function setValueToMouse():void{
 			var newVal:Number;
-			if(_direction==Direction.VERTICAL){
+			if(direction==Direction.VERTICAL){
 				newVal = (asset.mouseY-_dragOffset-_thumb.asset.height/2)/(_track.height-_thumb.asset.height)
 			}else{
 				newVal = (asset.mouseX-_dragOffset-_thumb.asset.width/2)/(_track.width-_thumb.asset.width)

@@ -1,11 +1,12 @@
 package org.farmcode.display.containers
 {
 	
-	import flash.events.MouseEvent;
+	import flash.geom.Point;
 	import flash.geom.Rectangle;
 	
 	import org.farmcode.acting.actTypes.IAct;
 	import org.farmcode.acting.acts.Act;
+	import org.farmcode.display.actInfo.IMouseActInfo;
 	import org.farmcode.display.assets.IInteractiveObjectAsset;
 	import org.farmcode.display.constants.Direction;
 	import org.farmcode.display.core.IView;
@@ -29,7 +30,7 @@ package org.farmcode.display.containers
 					_targetAsset.mouseWheel.addHandler(onMouseWheel);
 				}
 				checkScrolling(true);
-				dispatchMeasurementsChanged();
+				checkMeasurements();
 			}
 		}
 		
@@ -147,43 +148,41 @@ package org.farmcode.display.containers
 			_scrollRect.height = height;
 			checkScrolling(true);
 		}
-		override protected function onMeasurementsChanged(from:ILayoutSubject, oldX:Number, oldY:Number, oldWidth:Number, oldHeight:Number):void{
+		override protected function onMeasurementsChanged(from:ILayoutSubject, oldWidth:Number, oldHeight:Number):void{
 			checkScrolling(true);
-			super.onMeasurementsChanged(from,oldX, oldY, oldWidth, oldHeight);
+			super.onMeasurementsChanged(from, oldWidth, oldHeight);
 		}
 		protected function checkScrolling(performAct:Boolean):void{
-			var meas:Rectangle = target.displayMeasurements;
+			var meas:Point = target.measurements;
 			var vChange:Boolean;
 			var hChange:Boolean;
 			if(meas){
-				if(_vScrollMetrics.minimum != meas.top || _vScrollMetrics.maximum != meas.bottom){
-					_vScrollMetrics.minimum = meas.top;
-					_vScrollMetrics.maximum = meas.bottom;
+				if(_vScrollMetrics.maximum != meas.y){
+					_vScrollMetrics.maximum = meas.y;
 					vChange = true;
 				}
-				if(_hScrollMetrics.minimum != meas.left || _hScrollMetrics.maximum != meas.right){
-					_hScrollMetrics.minimum = meas.left;
-					_hScrollMetrics.maximum = meas.right;
+				if(_hScrollMetrics.maximum != meas.x){
+					_hScrollMetrics.maximum = meas.x;
 					hChange = true;
 				}
-				if(_displayPosition.width<meas.width || _displayPosition.height<meas.height){
+				if(_displayPosition.width<meas.x || _displayPosition.height<meas.y){
 					setScrollRect(_scrollRect);
 				}else{
 					setScrollRect(null);
 				}
 				var targetWidth:Number;
 				var targetHeight:Number;
-				if(_allowHorizontalScroll && meas.width>_displayPosition.width){
-					targetWidth = meas.width;
+				if(_allowHorizontalScroll && meas.x>_displayPosition.width){
+					targetWidth = meas.x;
 				}else{
 					targetWidth = _displayPosition.width;
 				}
-				if(_allowVerticalScroll && meas.height>_displayPosition.height){
-					targetHeight = meas.height;
+				if(_allowVerticalScroll && meas.y>_displayPosition.height){
+					targetHeight = meas.y;
 				}else{
 					targetHeight = _displayPosition.height;
 				}
-				target.setDisplayPosition(meas.x,meas.y,targetWidth,targetHeight);
+				target.setDisplayPosition(0,0,targetWidth,targetHeight);
 			}else{
 				hChange = vChange = true;
 				setScrollRect(null);
@@ -204,8 +203,8 @@ package org.farmcode.display.containers
 				_targetAsset.scrollRect = rect;
 			}
 		}
-		protected function onMouseWheel(e:MouseEvent):void{
-			if(_mouseWheel)_mouseWheel.perform(this,e.delta);
+		protected function onMouseWheel(from:IInteractiveObjectAsset, mouseActInfo:IMouseActInfo, delta:int):void{
+			if(_mouseWheel)_mouseWheel.perform(this,delta);
 		}
 	}
 }

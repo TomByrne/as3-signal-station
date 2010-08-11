@@ -1,5 +1,6 @@
 package org.farmcode.display.layout.grid
 {
+	import flash.geom.Point;
 	import flash.geom.Rectangle;
 	import flash.utils.Dictionary;
 	
@@ -292,8 +293,8 @@ package org.farmcode.display.layout.grid
 			createAxes();
 		}
 		protected function createAxes():void{
-			_verticalAxis = new GridAxis("height","rowIndex");
-			_horizontalAxis = new GridAxis("width","columnIndex");
+			_horizontalAxis = new GridAxis("x","width","columnIndex");
+			_verticalAxis = new GridAxis("y","height","rowIndex");
 		}
 		
 		override public function removeSubject(subject:ILayoutSubject):void{
@@ -322,8 +323,8 @@ package org.farmcode.display.layout.grid
 		/**
 		 * The measurements of the object associated with this key.
 		 */
-		protected function getChildMeasurement(key:*):Rectangle{
-			return key.displayMeasurements;
+		protected function getChildMeasurement(key:*):Point{
+			return key.measurements;
 		}
 		/**
 		 * The ILayoutInfo of the object associated with this key.
@@ -416,7 +417,7 @@ package org.farmcode.display.layout.grid
 			
 			var keys:Dictionary = getChildKeys();
 			for(var key:* in keys){
-				var subMeas:Rectangle = _cellMeasCache[key];
+				var subMeas:Point = _cellMeasCache[key];
 				// derive grid position
 				var breadthIndex:int;
 				var lengthIndex:int;
@@ -444,8 +445,8 @@ package org.farmcode.display.layout.grid
 					}
 				}
 				if(subMeas && posFound){
-					var subLengthDim:Number = subMeas[_lengthAxis.dimRef];
-					var subBreadthDim:Number = subMeas[_breadthAxis.dimRef];
+					var subLengthDim:Number = subMeas[_lengthAxis.coordRef];
+					var subBreadthDim:Number = subMeas[_breadthAxis.coordRef];
 					var breadthIndices:Array;
 					// do flowing behaviour
 					var doFlow:Boolean;
@@ -489,9 +490,9 @@ package org.farmcode.display.layout.grid
 										if(_breadthAxis.hasCellSizes){
 											cellBreadth = _breadthAxis.cellSizes[i%_breadthAxis.cellSizesCount];
 										}else if(otherKey!=null){
-											cellBreadth = _cellMeasCache[otherKey][_breadthAxis.dimRef];
+											cellBreadth = _cellMeasCache[otherKey][_breadthAxis.coordRef];
 										}else{
-											cellBreadth = subMeas[_breadthAxis.dimRef];
+											cellBreadth = subMeas[_breadthAxis.coordRef];
 										}
 										breadthStack += cellBreadth+_breadthAxis.gap;
 										if(breadthStack>breadthStackMax){
@@ -554,9 +555,9 @@ package org.farmcode.display.layout.grid
 					}
 				}
 			}
-			if(_displayMeasurements[_lengthAxis.dimRef]!= maxLengthMeas){
+			if(_measurements[_lengthAxis.coordRef]!= maxLengthMeas){
 				measChanged = true;
-				_displayMeasurements[_lengthAxis.dimRef] = maxLengthMeas;
+				_measurements[_lengthAxis.coordRef] = maxLengthMeas;
 			}
 			
 			var maxBreadthMeas:Number = _breadthAxis.foreMargin+_breadthAxis.aftMargin+(_breadthAxis.maxCellSizes.length-1)*_breadthAxis.gap;
@@ -571,9 +572,9 @@ package org.farmcode.display.layout.grid
 					}
 				}
 			}
-			if(_displayMeasurements[_breadthAxis.dimRef]!=maxBreadthMeas){
+			if(_measurements[_breadthAxis.coordRef]!=maxBreadthMeas){
 				measChanged = true;
-				_displayMeasurements[_breadthAxis.dimRef] = maxBreadthMeas;
+				_measurements[_breadthAxis.coordRef] = maxBreadthMeas;
 			}
 			
 			if(measChanged){
@@ -605,7 +606,7 @@ package org.farmcode.display.layout.grid
 			var pixScroll:Number;
 			var pixScrollMax:Number;
 			var realDim:Number = _displayPosition[axis.dimRef];
-			var realMeas:Number = displayMeasurements[axis.dimRef];
+			var realMeas:Number = measurements[axis.dimRef];
 			if(realMeas>realDim){
 				pixScrollMax = realMeas-realDim;
 				if(axis.scrollByLine){
@@ -659,20 +660,20 @@ package org.farmcode.display.layout.grid
 					var breadthCount:int = breadthIndices.length;
 					for(var j:int=0; j<breadthCount; j++){
 						var key:* = breadthIndices[j];
-						var subMeas:Rectangle = _cellMeasCache[key];
+						var subMeas:Point = _cellMeasCache[key];
 						if(subMeas){
 							var subBreadthDim:Number;
 							if(equaliseBreadths){
 								subBreadthDim = _breadthAxis.maxCellSizes[j];
 							}else{
-								subBreadthDim = subMeas[_breadthAxis.dimRef];
+								subBreadthDim = subMeas[_breadthAxis.coordRef];
 							}
 							
 							var subLengthDim:Number;
 							if(equaliseLengths){
 								subLengthDim = length;
 							}else{
-								subLengthDim = subMeas[_lengthAxis.dimRef];
+								subLengthDim = subMeas[_lengthAxis.coordRef];
 							}
 							if(_isVertical){
 								positionRenderer(key,i,j,

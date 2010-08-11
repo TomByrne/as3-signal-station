@@ -57,8 +57,6 @@ package org.farmcode.actLibrary.display.visualSockets.sockets
 		protected var _measurementsChanged:Act;
 		protected var _positionChanged:Act;
 		
-		protected var _oldMeasX:Number;
-		protected var _oldMeasY:Number;
 		protected var _oldMeasWidth:Number;
 		protected var _oldMeasHeight:Number;
 		
@@ -228,17 +226,13 @@ package org.farmcode.actLibrary.display.visualSockets.sockets
 		public function get layoutDisplay():IDisplayAsset{
 			return _plugDisplay?_plugDisplay.display:null;
 		}
-		public function get displayMeasurements():Rectangle{
-			var meas:Rectangle;
-			if(_plugDisplay && (meas = _plugDisplay.displayMeasurements)){
-				_oldMeasX = meas.x;
-				_oldMeasY = meas.y;
-				_oldMeasWidth = meas.width;
-				_oldMeasHeight = meas.height;
+		public function get measurements():Point{
+			var meas:Point;
+			if(_plugDisplay && (meas = _plugDisplay.measurements)){
+				_oldMeasWidth = meas.x;
+				_oldMeasHeight = meas.y;
 				return meas; 
 			}else{
-				_oldMeasX = NaN;
-				_oldMeasY = NaN;
 				_oldMeasWidth = NaN;
 				_oldMeasHeight = NaN;
 				return null;
@@ -273,7 +267,7 @@ package org.farmcode.actLibrary.display.visualSockets.sockets
 				if(_positionChanged)_positionChanged.perform(this,oldX,oldY,oldWidth,oldHeight);
 			}
 		}
-		protected function onPlugMeasChanged(from:ILayoutSubject, oldX:Number, oldY:Number, oldWidth:Number, oldHeight:Number):void{
+		protected function onPlugMeasChanged(from:ILayoutSubject, oldWidth:Number, oldHeight:Number):void{
 			dispatchMeasurementChange();
 		}
 		protected function onDisplayChanged(from:IPlugDisplay, oldDisplay:DisplayObject, newDisplay:DisplayObject):void{
@@ -338,7 +332,7 @@ package org.farmcode.actLibrary.display.visualSockets.sockets
 			}
 		}
 		protected function dispatchMeasurementChange():void{
-			if(_measurementsChanged)_measurementsChanged.perform(this, _oldMeasX, _oldMeasY, _oldMeasWidth, _oldMeasHeight);
+			if(_measurementsChanged)_measurementsChanged.perform(this, _oldMeasWidth, _oldMeasHeight);
 		}
 	}
 }

@@ -3,6 +3,7 @@ package org.farmcode.display.containers
 	import flash.display.DisplayObject;
 	import flash.display.DisplayObjectContainer;
 	import flash.display.Sprite;
+	import flash.geom.Point;
 	import flash.geom.Rectangle;
 	import flash.utils.Dictionary;
 	
@@ -95,13 +96,14 @@ package org.farmcode.display.containers
 		
 		public function AbstractList(asset:IDisplayAsset=null){
 			super(asset);
+		}
+		override protected function init() : void{
+			super.init();
 			createLayout();
 			_layout.measurementsChanged.addHandler(onLayoutMeasChange);
 			_layout.scrollMetricsChanged.addHandler(onLayoutScroll);
 			_layout.addRendererAct.addHandler(onAddRenderer);
 			_layout.removeRendererAct.addHandler(onRemoveRenderer);
-			
-			_displayMeasurements = new Rectangle();
 		}
 		protected function createLayout() : void{
 			_layout = new RendererGridLayout(this);
@@ -165,7 +167,7 @@ package org.farmcode.display.containers
 			_containerAsset.destroyAsset(_container);
 			_container = null;
 		}
-		protected function onLayoutMeasChange(from:ILayoutSubject, oldX:Number, oldY:Number, oldWidth:Number, oldHeight:Number) : void{
+		protected function onLayoutMeasChange(from:ILayoutSubject, oldWidth:Number, oldHeight:Number) : void{
 			dispatchMeasurementChange();
 		}
 		protected function onAddRenderer(layout:RendererGridLayout, renderer:ILayoutView) : void{
@@ -186,23 +188,21 @@ package org.farmcode.display.containers
 		}
 		override protected function measure() : void{
 			assessFactory();
-			_displayMeasurements.x = _layout.displayMeasurements.x;
-			_displayMeasurements.y = _layout.displayMeasurements.y;
-			_displayMeasurements.height = _layout.displayMeasurements.height;
-			_displayMeasurements.width = _layout.displayMeasurements.width;
+			_measurements.x = _layout.measurements.x;
+			_measurements.y = _layout.measurements.y;
 			if(_scrollBar){
 				var metrics:ScrollMetrics = _scrollBar.scrollSubject.getScrollMetrics(_scrollBar.direction);
 				var scrollBar:Boolean = (metrics.maximum>metrics.pageSize && metrics.pageSize) || (!_scrollBar.hideWhenUnusable);
 				if(scrollBar){
-					var meas:Rectangle = _scrollBar.displayMeasurements;
+					var meas:Point = _scrollBar.measurements;
 					if(_scrollBar.direction==Direction.VERTICAL){
-						_displayMeasurements.width += meas.width;
+						_measurements.x += meas.x;
 					}else{
-						_displayMeasurements.height += meas.height;
+						_measurements.y += meas.y;
 					}
 				}
 			}else{
-				_displayMeasurements.width = _layout.displayMeasurements.width;
+				_measurements.x = _layout.measurements.x;
 			}
 		}
 		override protected function draw() : void{
@@ -213,18 +213,18 @@ package org.farmcode.display.containers
 			var layoutWidth:Number = position.width;
 			var layoutHeight:Number = position.height;
 			if(_scrollBar){
-				var meas:Rectangle = _scrollBar.displayMeasurements;
+				var meas:Point = _scrollBar.measurements;
 				var metrics:ScrollMetrics = _scrollBar.scrollSubject.getScrollMetrics(_scrollBar.direction);
 				_scrollBarShown = (metrics.maximum>metrics.pageSize || !_scrollBar.hideWhenUnusable);
 				if(_scrollBar.direction==Direction.VERTICAL){
-					_scrollBar.setDisplayPosition(position.width-meas.width-_layout.marginRight,_layout.marginTop,meas.width,position.height-_layout.marginTop-_layout.marginBottom);
+					_scrollBar.setDisplayPosition(position.width-meas.x-_layout.marginRight,_layout.marginTop,meas.x,position.height-_layout.marginTop-_layout.marginBottom);
 					if(_scrollBarShown){
-						layoutWidth = position.width-meas.width;
+						layoutWidth = position.width-meas.x;
 					}
 				}else{
-					_scrollBar.setDisplayPosition(_layout.marginLeft,position.height-meas.height-_layout.marginBottom,position.width-_layout.marginLeft-_layout.marginRight,meas.height);
+					_scrollBar.setDisplayPosition(_layout.marginLeft,position.height-meas.y-_layout.marginBottom,position.width-_layout.marginLeft-_layout.marginRight,meas.y);
 					if(_scrollBarShown){
-						layoutHeight = position.height-meas.height;
+						layoutHeight = position.height-meas.y;
 					}
 				}
 			}

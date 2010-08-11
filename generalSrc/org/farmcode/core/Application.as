@@ -76,7 +76,6 @@ package org.farmcode.core
 		protected var _container:DisplayObjectContainer;
 		protected var _assetContainer:IContainerAsset;
 		protected var _lastStage:IStageAsset;
-		protected var _inited:Boolean;
 		
 		public function Application(asset:IDisplayAsset=null){
 			super(asset);
@@ -93,7 +92,6 @@ package org.farmcode.core
 		}
 		override protected function bindToAsset() : void{
 			setStage(asset.stage);
-			attemptInit();
 			if(_mainView && !_mainView.asset){
 				_mainView.asset = asset;
 			}
@@ -105,15 +103,6 @@ package org.farmcode.core
 				_mainView.asset = null;
 			}
 			setStage(null);
-		}
-		protected function attemptInit() : void{
-			if(!_inited){
-				_inited = true;
-				init();
-			}
-		}
-		protected function init() : void{
-			// override me
 		}
 		protected function setStage(value:IStageAsset) : void{
 			if(_lastStage!=value){

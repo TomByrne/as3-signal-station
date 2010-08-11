@@ -15,7 +15,7 @@ package org.farmcode.actLibrary.display.visualSockets.plugs.controls
 		
 		public function TextLabelButtonPlug(){
 			_textLabelButton = new TextLabelButton();
-			_textLabelButton.clickAct.addHandler(onButtonClick);
+			_textLabelButton.clicked.addHandler(onButtonClick);
 			super(_textLabelButton);
 		}
 		override protected function commitData(execution:UniversalActExecution=null):void{

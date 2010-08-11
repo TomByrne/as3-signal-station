@@ -1,6 +1,7 @@
 package org.farmcode.display.controls.toolTip
 {
 	
+	import flash.geom.Point;
 	import flash.geom.Rectangle;
 	
 	import org.farmcode.core.DelayedCall;
@@ -120,7 +121,7 @@ package org.farmcode.display.controls.toolTip
 				_activeTriggers.splice(index,1);
 			}
 		}
-		protected function onDisplayMeasChanged(from:ILayoutView, oldX:Number, oldY:Number, oldWidth:Number, oldHeight:Number):void{
+		protected function onDisplayMeasChanged(from:ILayoutView, oldWidth:Number, oldHeight:Number):void{
 			setPosition();
 		}
 		protected function onPositionChanged(from:ILayoutView, oldX:Number, oldY:Number, oldWidth:Number, oldHeight:Number):void{
@@ -129,13 +130,13 @@ package org.farmcode.display.controls.toolTip
 		protected function setPosition() : void{
 			if(_anchorView && _popoutDisplay.popout){
 				var anchorPos:Rectangle = _anchorView.displayPosition;
-				var displayMeas:Rectangle = _popoutDisplay.popout.displayMeasurements;
+				var displayMeas:Point = _popoutDisplay.popout.measurements;
 				if(displayMeas){
 					switch(_anchor){
 						case Anchor.LEFT:
 						case Anchor.TOP_LEFT:
 						case Anchor.BOTTOM_LEFT:
-							_popoutDisplay.popoutLayoutInfo.relativeOffsetX = -displayMeas.width;
+							_popoutDisplay.popoutLayoutInfo.relativeOffsetX = -displayMeas.x;
 							break;
 						case Anchor.RIGHT:
 						case Anchor.TOP_RIGHT:
@@ -143,13 +144,13 @@ package org.farmcode.display.controls.toolTip
 							_popoutDisplay.popoutLayoutInfo.relativeOffsetX = anchorPos.width;
 							break;
 						default:
-							_popoutDisplay.popoutLayoutInfo.relativeOffsetX = (anchorPos.width-displayMeas.width)/2;
+							_popoutDisplay.popoutLayoutInfo.relativeOffsetX = (anchorPos.width-displayMeas.x)/2;
 					}
 					switch(_anchor){
 						case Anchor.TOP:
 						case Anchor.TOP_LEFT:
 						case Anchor.TOP_RIGHT:
-							_popoutDisplay.popoutLayoutInfo.relativeOffsetY = -displayMeas.height;
+							_popoutDisplay.popoutLayoutInfo.relativeOffsetY = -displayMeas.y;
 							break;
 						case Anchor.BOTTOM:
 						case Anchor.BOTTOM_LEFT:
@@ -157,7 +158,7 @@ package org.farmcode.display.controls.toolTip
 							_popoutDisplay.popoutLayoutInfo.relativeOffsetY = anchorPos.height;
 							break;
 						default:
-							_popoutDisplay.popoutLayoutInfo.relativeOffsetY = (anchorPos.height-displayMeas.height)/2;
+							_popoutDisplay.popoutLayoutInfo.relativeOffsetY = (anchorPos.height-displayMeas.y)/2;
 					}
 				}
 			}
