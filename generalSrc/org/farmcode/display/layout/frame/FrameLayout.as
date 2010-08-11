@@ -4,19 +4,13 @@ package org.farmcode.display.layout.frame
 	import flash.geom.Rectangle;
 	
 	import org.farmcode.display.core.IView;
-	import org.farmcode.display.layout.AbstractLayout;
+	import org.farmcode.display.layout.AbstractSeperateLayout;
 	import org.farmcode.display.layout.ILayoutSubject;
 	import org.farmcode.display.layout.getMarginAffectedArea;
 	import org.farmcode.display.utils.DisplayFramer;
 
 	
-	/*
-	TODO: we have problems with layouts, they need to work better in relation to their invalidation
-	and measurement, measurement waits a frame in most/all cases, this won't do.
-	Also, drawing and invalidation needs to be rethought.
-	
-	*/
-	public class FrameLayout extends AbstractLayout
+	public class FrameLayout extends AbstractSeperateLayout
 	{
 		protected var marginAffectedPosition:Rectangle = new Rectangle();
 		protected var marginRect:Rectangle = new Rectangle();
@@ -24,7 +18,11 @@ package org.farmcode.display.layout.frame
 		public function FrameLayout(scopeView:IView=null){
 			super(scopeView);
 		}
-		override protected function drawSubject(subject:ILayoutSubject) : void{
+		override protected function onSubjectMeasChanged(from:ILayoutSubject, oldWidth:Number, oldHeight:Number): void{
+			super.onSubjectMeasChanged(from, oldWidth, oldHeight);
+			subjMeasurementsChanged(from);
+		}
+		override protected function layoutSubject(subject:ILayoutSubject, subjMeas:Point=null):void{
 			var cast:IFrameLayoutInfo = (subject.layoutInfo as IFrameLayoutInfo);
 			if(cast){
 				
@@ -35,11 +33,9 @@ package org.farmcode.display.layout.frame
 				subject.setDisplayPosition(framed.x,framed.y,framed.width,framed.height);
 				
 				if(subMeas){
-					addToMeas(subMeas.x+marginRect.x+marginRect.width,
-								subMeas.y+marginRect.y+marginRect.height);
+					subjMeas.x = subMeas.x+marginRect.x+marginRect.width;
+					subjMeas.y = subMeas.y+marginRect.y+marginRect.height;
 				}
-			}else{
-				super.drawSubject(subject);
 			}
 		}
 	}

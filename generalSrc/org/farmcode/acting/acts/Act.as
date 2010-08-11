@@ -92,6 +92,7 @@ package org.farmcode.acting.acts
 			var _index:* = handlerIndices[handler];
 			if(_index!=null){
 				if(performing){
+					_checkRemove = true;
 					toRemove.push(handler);
 				}else{
 					var index:int = int(_index);

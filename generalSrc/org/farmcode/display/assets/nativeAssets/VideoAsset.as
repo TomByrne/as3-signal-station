@@ -2,6 +2,7 @@ package org.farmcode.display.assets.nativeAssets
 {
 	import flash.display.DisplayObject;
 	import flash.media.Video;
+	import flash.net.NetStream;
 	
 	import org.farmcode.display.assets.IVideoAsset;
 	
@@ -21,6 +22,9 @@ package org.farmcode.display.assets.nativeAssets
 		public function VideoAsset()
 		{
 			super();
+		}
+		public function attachNetStream(netStream:NetStream):void{
+			_video.attachNetStream(netStream);
 		}
 	}
 }

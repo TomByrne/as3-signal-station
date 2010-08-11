@@ -54,12 +54,8 @@ package org.farmcode.display.core
 		
 		public function LayoutView(asset:IDisplayAsset=null){
 			_measureFlag = new ValidationFlag(doMeasure, false);
-			_measureFlag.invalidateAct.addHandler(onMeasInvalidate);
-			super(asset);
-		}
-		override protected function init():void{
-			super.init();
 			if(!_measurements)_measurements = new Point();
+			super(asset);
 		}
 		
 		public function setDisplayPosition(x:Number, y:Number, width:Number, height:Number):void{
@@ -136,14 +132,7 @@ package org.farmcode.display.core
 		}
 		protected function dispatchMeasurementChange():void{
 			_measureFlag.invalidate();
-		}
-		protected function onMeasInvalidate(validationFlag:ValidationFlag):void{
 			if(_measurementsChanged)_measurementsChanged.perform(this, _measurements.x, _measurements.y);
 		}
-		/*protected function dispatchEventIf(eventType:String, eventClass:Class):void{
-			if(willTrigger(eventType)){
-				dispatchEvent(new eventClass(eventType));
-			}
-		}*/
 	}
 }

@@ -85,10 +85,7 @@ package org.farmcode.display.layout.grid
 			if(_rendererFactory!=value){
 				_rendererFactory = value;
 				_protoRenderer = null;
-				_cellMeasCache = new Dictionary();
 				removeAllRenderers();
-				invalidateAll();
-				dispatchMeasurementChange();
 			}
 		}
 		
@@ -103,7 +100,6 @@ package org.farmcode.display.layout.grid
 					_dataProviderCollection.collectionChanged.removeHandler(onCollectionChanged);
 				}
 				_dataProvider = value;
-				_cellMeasCache = new Dictionary();
 				_dataToRenderers = new Dictionary();
 				if(value){
 					_dataProviderCollection2D = (value as ICollection2D);
@@ -127,8 +123,7 @@ package org.farmcode.display.layout.grid
 				
 				clearDataChecks();
 				
-				invalidateAll();
-				dispatchMeasurementChange();
+				clearMeasurements();
 			}
 		}
 		
@@ -138,8 +133,7 @@ package org.farmcode.display.layout.grid
 		public function set dataField(value:String):void{
 			if(_dataField!=value){
 				_dataField = value;
-				invalidateAll();
-				dispatchMeasurementChange();
+				clearMeasurements();
 			}
 		}
 		public function get renderEmptyCells():Boolean{
@@ -253,12 +247,12 @@ package org.farmcode.display.layout.grid
 		public function onCollection2DChanged(from:ICollection2D, fromX:Number, toX:Number, fromY:Number, toY:Number):void{
 			clearDataChecks();
 			//TODO: use parameters to limit invalidation (would require refactor of data checking logic)
-			invalidateAll();
+			clearMeasurements();
 		}
 		public function onCollectionChanged(from:ICollection, fromX:Number, toX:Number):void{
 			clearDataChecks();
 			//TODO: use parameters to limit invalidation (would require refactor of data checking logic)
-			invalidateAll();
+			clearMeasurements();
 		}
 		public function getDataLayout(data:*) : ILayoutInfo{
 			validate();
@@ -300,15 +294,12 @@ package org.farmcode.display.layout.grid
 			}
 			return fillPoint;
 		}
-		override protected function invalidateAll() : void{
-			super.invalidateAll();
-		}
-		override protected function draw(): void{
+		override protected function doLayout(): void{
 			if(_rendererFactory){
-				super.draw();
+				super.doLayout();
 				_cullRenderersFlag.validate();
 			}else{
-				_allInvalid = false; // to allow invalidateAll() call to go through again
+				invalidate();
 			}
 		}
 		override protected function getChildKeys() : Dictionary{
@@ -355,6 +346,21 @@ package org.farmcode.display.layout.grid
 			_dataLayouts = new Dictionary();
 			_dataMap = new Dictionary();
 			_dataIndices = new Dictionary();
+		}
+		protected function onRendMeasChanged(from:ILayoutSubject, oldWidth:Number, oldHeight:Number):void{
+			var data:* = from[_dataField];
+			if(data){
+				for(var key:* in _dataMap){
+					if(_dataMap[key]==data){
+						delete _cellMeasCache[key];
+						break;
+					}
+				}
+				_cellMeasFlag.invalidate();
+				invalidate();
+			}else{
+				trace("WARNING: RendererGridLayout.onRendMeasChanged() data couldn't be found");
+			}
 		}
 		override protected function remeasureChild(key:*) : Boolean{
 			return (!_cellMeasCache[key]);
@@ -429,11 +435,6 @@ package org.farmcode.display.layout.grid
 			delete _dataToRenderers[renderer[_dataField]];
 			renderer.measurementsChanged.removeHandler(onRendMeasChanged);
 			if(_removeRendererAct)_removeRendererAct.perform(this,renderer);
-		}
-		protected function onRendMeasChanged(from:ILayoutSubject, oldWidth:Number, oldHeight:Number):void{
-			var data:* = from[_dataField];
-			delete _cellMeasCache[data];
-			invalidateAll();
 		}
 		protected function cullRenderers():void{
 			/*
@@ -653,6 +654,12 @@ package org.farmcode.display.layout.grid
 				rendererRemoved(renderer);
 			}
 			_renderers = [];
+			clearMeasurements();
+		}
+		protected function clearMeasurements():void{
+			_cellMeasCache = new Dictionary();
+			_cellMeasFlag.invalidate();
+			invalidate();
 		}
 		override protected function positionRenderer(key:*, length:int, breadth:int, x:Number, y:Number, width:Number, height:Number):void{
 			super.positionRenderer(key, length, breadth, x, y, width, height);

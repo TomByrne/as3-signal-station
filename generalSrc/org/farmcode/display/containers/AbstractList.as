@@ -188,8 +188,10 @@ package org.farmcode.display.containers
 		}
 		override protected function measure() : void{
 			assessFactory();
-			_measurements.x = _layout.measurements.x;
-			_measurements.y = _layout.measurements.y;
+			var layoutMeas:Point = _layout.measurements;
+			
+			_measurements.x = layoutMeas.x;
+			_measurements.y = layoutMeas.y;
 			if(_scrollBar){
 				var metrics:ScrollMetrics = _scrollBar.scrollSubject.getScrollMetrics(_scrollBar.direction);
 				var scrollBar:Boolean = (metrics.maximum>metrics.pageSize && metrics.pageSize) || (!_scrollBar.hideWhenUnusable);
@@ -202,7 +204,7 @@ package org.farmcode.display.containers
 					}
 				}
 			}else{
-				_measurements.x = _layout.measurements.x;
+				_measurements.x = layoutMeas.x;
 			}
 		}
 		override protected function draw() : void{
