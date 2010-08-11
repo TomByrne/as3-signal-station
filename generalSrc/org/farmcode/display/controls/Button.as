@@ -3,6 +3,7 @@ package org.farmcode.display.controls
 	
 	import flash.display.DisplayObject;
 	import flash.events.Event;
+	import flash.geom.Point;
 	import flash.geom.Rectangle;
 	
 	import org.farmcode.acting.actTypes.IAct;
@@ -192,8 +193,6 @@ package org.farmcode.display.controls
 		}
 		override protected function measure() : void{
 			super.measure();
-			_interactiveArea.width = _displayMeasurements.width;
-			_interactiveArea.height = _displayMeasurements.height;
 		}
 		override protected function draw() : void{
 			positionAsset();
@@ -201,6 +200,9 @@ package org.farmcode.display.controls
 				asset.width = displayPosition.width;
 				asset.height = displayPosition.height;
 			}
+			var meas:Point = measurements;
+			_interactiveArea.width = meas.x;
+			_interactiveArea.height = meas.y;
 		}
 		private function onRollOver(from:IInteractiveObjectAsset, info:IMouseActInfo):void{
 			if(_active){

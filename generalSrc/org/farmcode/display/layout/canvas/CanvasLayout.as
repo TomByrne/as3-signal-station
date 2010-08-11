@@ -1,5 +1,6 @@
 package org.farmcode.display.layout.canvas
 {
+	import flash.geom.Point;
 	import flash.geom.Rectangle;
 	
 	import org.farmcode.display.core.IView;
@@ -15,7 +16,7 @@ package org.farmcode.display.layout.canvas
 		override protected function drawSubject(subject:ILayoutSubject) : void{
 			var cast:ICanvasLayoutInfo = (subject.layoutInfo as ICanvasLayoutInfo);
 			if(cast){
-				var measurements:Rectangle = subject.displayMeasurements;
+				var measurements:Point = subject.measurements;
 				var hasMeasurements:Boolean = (measurements!=null);
 				
 				var x:Number;
@@ -31,7 +32,7 @@ package org.farmcode.display.layout.canvas
 				}else if(!isNaN(cast.percentWidth)){
 					width = (cast.percentWidth/100)*_displayPosition.width;
 				}else if(hasMeasurements){
-					width = measurements.width;
+					width = measurements.x;
 				}else{
 					width = _displayPosition.width;
 				}
@@ -61,7 +62,7 @@ package org.farmcode.display.layout.canvas
 				}else if(!isNaN(cast.percentHeight)){
 					height = (cast.percentHeight/100)*_displayPosition.height;
 				}else if(hasMeasurements){
-					height = measurements.height;
+					height = measurements.y;
 				}else{
 					height = _displayPosition.height;
 				}
@@ -78,7 +79,9 @@ package org.farmcode.display.layout.canvas
 					y = _displayPosition.y;
 				}
 				subject.setDisplayPosition(x,y,width,height);
-				addToMeas(x,y,width,height);
+				
+				// TODO: the measurements shuold really just be the measurements of the subject
+				addToMeas(width,height);
 			}else{
 				super.drawSubject(subject);
 			}

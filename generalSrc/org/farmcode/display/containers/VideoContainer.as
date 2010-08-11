@@ -3,6 +3,7 @@ package org.farmcode.display.containers
 	import flash.events.Event;
 	import flash.events.KeyboardEvent;
 	import flash.events.TimerEvent;
+	import flash.geom.Point;
 	import flash.geom.Rectangle;
 	import flash.ui.Keyboard;
 	import flash.ui.Mouse;
@@ -197,10 +198,10 @@ package org.farmcode.display.containers
 				var layout:CanvasLayoutInfo;
 				if(_backing){
 					var bounds:Rectangle = asset.getBounds(this.asset);
-					var meas:Rectangle = control.displayMeasurements;
+					var meas:Point = control.measurements;
 					if(meas){
-						bounds.width = meas.width;
-						bounds.height = meas.height;
+						bounds.width = meas.x;
+						bounds.height = meas.y;
 					}
 					layout = _uiLayout.layoutInfo as CanvasLayoutInfo;
 					if(!layout){
@@ -249,9 +250,9 @@ package org.farmcode.display.containers
 			super.draw();
 			_uiLayout.setDisplayPosition(0,0,displayPosition.width,displayPosition.height);
 			if(_centredPauseButton){
-				var meas:Rectangle = _centredPauseButton.displayMeasurements;
+				var meas:Point = _centredPauseButton.measurements;
 				var align:Rectangle =_mediaContainer.scrollRect;
-				_centredPauseButton.setDisplayPosition(align.x+(align.width-meas.width)/2,align.y+(align.height-meas.height)/2,meas.width,meas.height);
+				_centredPauseButton.setDisplayPosition(align.x+(align.width-meas.x)/2,align.y+(align.height-meas.y)/2,meas.x,meas.y);
 			}
 			_videoCover.x = _scrollRect.x;
 			_videoCover.y = _scrollRect.y;

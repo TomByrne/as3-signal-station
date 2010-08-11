@@ -2,6 +2,7 @@ package org.farmcode.display.core
 {
 	import flash.display.DisplayObject;
 	import flash.display.DisplayObjectContainer;
+	import flash.geom.Point;
 	import flash.geom.Rectangle;
 	
 	import org.farmcode.acting.actTypes.IAct;
@@ -13,6 +14,18 @@ package org.farmcode.display.core
 	
 	public class LayoutView extends DrawableView implements ILayoutView
 	{
+		public function get layoutInfo():ILayoutInfo{
+			return _layoutInfo;
+		}
+		public function set layoutInfo(value:ILayoutInfo):void{
+			_layoutInfo = value;
+		}
+		
+		public function get measurements():Point{
+			checkIsBound();
+			_measureFlag.validate();
+			return _measurements;
+		}
 		
 		/**
 		 * @inheritDoc
@@ -33,30 +46,22 @@ package org.farmcode.display.core
 		protected var _measurementsChanged:Act;
 		
 		protected var _measureFlag:ValidationFlag;
-		protected var _displayMeasurements:Rectangle;
+		protected var _measurements:Point;
 		private var _displayPosition:Rectangle = new Rectangle();
 		private var _scrollRect:Rectangle;
 		private var _maskDisplay:Boolean;
 		private var _layoutInfo:ILayoutInfo;
 		
 		public function LayoutView(asset:IDisplayAsset=null){
-			_measureFlag = new ValidationFlag(measure, false);
+			_measureFlag = new ValidationFlag(doMeasure, false);
 			_measureFlag.invalidateAct.addHandler(onMeasInvalidate);
 			super(asset);
 		}
-		
-		public function get layoutInfo():ILayoutInfo{
-			return _layoutInfo;
-		}
-		public function set layoutInfo(value:ILayoutInfo):void{
-			_layoutInfo = value;
+		override protected function init():void{
+			super.init();
+			if(!_measurements)_measurements = new Point();
 		}
 		
-		public function get displayMeasurements():Rectangle{
-			checkIsBound();
-			_measureFlag.validate();
-			return _displayMeasurements;
-		}
 		public function setDisplayPosition(x:Number, y:Number, width:Number, height:Number):void{
 			if(_positionChanged){
 				var oldX:Number = _displayPosition.x;
@@ -87,7 +92,8 @@ package org.farmcode.display.core
 			}
 		}
 		public function get displayPosition():Rectangle{
-			return _displayPosition?_displayPosition:displayMeasurements;
+			// TODO: optimise
+			return _displayPosition?_displayPosition:new Rectangle(0,0,measurements.x,measurements.y);
 		}
 		
 		public function get maskDisplay():Boolean{
@@ -103,19 +109,18 @@ package org.farmcode.display.core
 			this.asset = asset;
 			if(asset){
 				_measureFlag.validate();
-				setDisplayPosition(asset.x,asset.y,_displayMeasurements.width,_displayMeasurements.height);
+				setDisplayPosition(asset.x,asset.y,_measurements.x,_measurements.y);
 			}
+		}
+		final protected function doMeasure():void{
+			attemptInit();
+			measure();
 		}
 		protected function measure():void{
 			// override me, set _displayMeasurements.
 			if(asset){
-				if(!_displayMeasurements){
-					_displayMeasurements = new Rectangle();
-					_displayMeasurements.x = 0;
-					_displayMeasurements.y = 0;
-					_displayMeasurements.width = asset.naturalWidth;
-					_displayMeasurements.height = asset.naturalHeight;
-				}
+				_measurements.x = asset.naturalWidth;
+				_measurements.y = asset.naturalHeight;
 			}else{
 				_measureFlag.invalidate();
 			}
@@ -133,7 +138,7 @@ package org.farmcode.display.core
 			_measureFlag.invalidate();
 		}
 		protected function onMeasInvalidate(validationFlag:ValidationFlag):void{
-			if(_measurementsChanged)_measurementsChanged.perform(this, _displayMeasurements.x, _displayMeasurements.y, _displayMeasurements.width, _displayMeasurements.height);
+			if(_measurementsChanged)_measurementsChanged.perform(this, _measurements.x, _measurements.y);
 		}
 		/*protected function dispatchEventIf(eventType:String, eventClass:Class):void{
 			if(willTrigger(eventType)){

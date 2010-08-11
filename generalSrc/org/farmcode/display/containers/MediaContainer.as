@@ -68,10 +68,9 @@ package org.farmcode.display.containers
 			super(asset);
 			_layout = new FrameLayout(this)
 			_layout.addSubject(_layoutProxy);
-			_displayMeasurements = new Rectangle();
 			_layout.measurementsChanged.addHandler(onLayoutMeasChange);
 		}
-		protected function onLayoutMeasChange(from:ILayoutSubject, oldX:Number, oldY:Number, oldWidth:Number, oldHeight:Number):void{
+		protected function onLayoutMeasChange(from:ILayoutSubject, oldWidth:Number, oldHeight:Number):void{
 			dispatchMeasurementChange();
 		}
 		override protected function bindToAsset() : void{
@@ -107,8 +106,8 @@ package org.farmcode.display.containers
 			_asset.destroyAsset(_mediaContainer);
 		}
 		override protected function measure() : void{
-			_displayMeasurements.width = _layout.displayMeasurements.width;
-			_displayMeasurements.height = _layout.displayMeasurements.height;
+			_measurements.x = _layout.measurements.x;
+			_measurements.y = _layout.measurements.y;
 		}
 		override protected function draw() : void{
 			super.draw();

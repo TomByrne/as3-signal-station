@@ -27,13 +27,17 @@ package
 	import org.farmcode.display.containers.ContainerView;
 	import org.farmcode.display.containers.MediaContainer;
 	import org.farmcode.display.containers.ScrollWrapper;
+	import org.farmcode.display.containers.TabPanel;
 	import org.farmcode.display.containers.accordion.AbstractAccordionView;
 	import org.farmcode.display.containers.accordionGrid.AccordionGridRenderer;
 	import org.farmcode.display.containers.accordionGrid.AccordionGridView;
 	import org.farmcode.display.controls.ScrollButtons;
 	import org.farmcode.display.controls.TextInput;
 	import org.farmcode.display.controls.TextLabelButton;
+	import org.farmcode.display.controls.popout.DropDownList;
 	import org.farmcode.display.controls.popout.PopoutDisplay;
+	import org.farmcode.display.controls.popout.PopoutList;
+	import org.farmcode.display.controls.toolTip.ToolTipManager;
 	import org.farmcode.display.core.View;
 	import org.farmcode.display.layout.AbstractLayout;
 	import org.farmcode.display.layout.ProxyLayoutSubject;
@@ -136,7 +140,10 @@ package
 			AddSoundAct
 			CompositeSoundControl
 			IntroOutroSoundControl
-			
+			TabPanel
+			DropDownList
+			PopoutList
+			ToolTipManager
 		}
 	}
 }

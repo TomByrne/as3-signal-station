@@ -80,7 +80,7 @@ package org.farmcode.display.core
 			_drawFlag = new FrameValidationFlag(this,commitDraw,false);
 			super(asset);
 		}
-		protected function attemptInit() : void{
+		final protected function attemptInit() : void{
 			if(!_inited){
 				_inited = true;
 				init();

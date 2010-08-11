@@ -1,5 +1,6 @@
 package org.farmcode.display.layout.frame
 {
+	import flash.geom.Point;
 	import flash.geom.Rectangle;
 	
 	import org.farmcode.display.core.IView;
@@ -29,15 +30,13 @@ package org.farmcode.display.layout.frame
 				
 				getMarginAffectedArea(_displayPosition, subject.layoutInfo, marginAffectedPosition, marginRect);
 				
-				var framed:Rectangle = DisplayFramer.frame(subject.displayMeasurements,marginAffectedPosition,cast.anchor,cast.scaleXPolicy,cast.scaleYPolicy,cast.fitPolicy);
+				var subMeas:Point = subject.measurements;
+				var framed:Rectangle = DisplayFramer.frame(subMeas.x,subMeas.y,marginAffectedPosition,cast.anchor,cast.scaleXPolicy,cast.scaleYPolicy,cast.fitPolicy);
 				subject.setDisplayPosition(framed.x,framed.y,framed.width,framed.height);
 				
-				var subMeas:Rectangle = subject.displayMeasurements;
 				if(subMeas){
-					addToMeas(subMeas.x-marginRect.x,
-						subMeas.y-marginRect.y,
-						subMeas.width+marginRect.x+marginRect.width,
-						subMeas.height+marginRect.y+marginRect.height);
+					addToMeas(subMeas.x+marginRect.x+marginRect.width,
+								subMeas.y+marginRect.y+marginRect.height);
 				}
 			}else{
 				super.drawSubject(subject);

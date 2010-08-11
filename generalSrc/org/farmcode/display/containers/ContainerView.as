@@ -33,13 +33,8 @@ package org.farmcode.display.containers
 		override protected function measure():void{
 			checkIsBound();
 			if(_backing){
-				if(!_displayMeasurements){
-					_displayMeasurements = new Rectangle();
-					_displayMeasurements.x = 0;
-					_displayMeasurements.y = 0;
-					_displayMeasurements.width = _backing.naturalWidth;
-					_displayMeasurements.height = _backing.naturalHeight;
-				}
+				_measurements.x = _backing.naturalWidth;
+				_measurements.y = _backing.naturalHeight;
 			}else{
 				super.measure();
 			}

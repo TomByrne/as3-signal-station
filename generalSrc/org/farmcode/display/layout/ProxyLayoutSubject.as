@@ -1,6 +1,7 @@
 package org.farmcode.display.layout
 {
 	import flash.errors.InvalidSWFError;
+	import flash.geom.Point;
 	import flash.geom.Rectangle;
 	
 	import org.farmcode.acting.actTypes.IAct;
@@ -9,30 +10,13 @@ package org.farmcode.display.layout
 	
 	public class ProxyLayoutSubject implements ILayoutSubject
 	{
-		public function get displayMeasurements():Rectangle{
-			var ret:Rectangle;
-			if(_displayMeasurements){
-				ret = _displayMeasurements;
-			}else if(_target){
-				ret = target.displayMeasurements;
-			}
-			if(ret){
-				_oldMeasX = ret.x;
-				_oldMeasY = ret.y;
-				_oldMeasWidth = ret.width;
-				_oldMeasHeight = ret.height;
-			}else{
-				_oldMeasX = NaN;
-				_oldMeasY = NaN;
-				_oldMeasWidth = NaN;
-				_oldMeasHeight = NaN;
-			}
-			return ret;
+		public function get measurements():Point{
+			return _realMeasurements;
 		}
-		public function set displayMeasurements(value:Rectangle):void{
-			if(_displayMeasurements!=value){
-				_displayMeasurements = value;
-				dispatchMeasurementsChanged();
+		public function set measurements(value:Point):void{
+			if(_forceMeasurements!=value){
+				_forceMeasurements = value;
+				checkMeasurements();
 			}
 		}
 		
@@ -58,16 +42,16 @@ package org.farmcode.display.layout
 		}
 		public function set target(value:ILayoutSubject):void{
 			if(_target!=value){
-				var oldMeas:Rectangle;
+				var oldMeas:Point;
 				if(_target){
 					_target.measurementsChanged.removeHandler(onMeasurementsChanged);
-					oldMeas = _target.displayMeasurements;
+					oldMeas = _target.measurements;
 				}
 				_target = value;
 				if(_target){
 					_target.measurementsChanged.addHandler(onMeasurementsChanged);
-					if(!_displayMeasurements && (!oldMeas || !_target.displayMeasurements.equals(oldMeas))){
-						dispatchMeasurementsChanged();
+					if(!_forceMeasurements && (!oldMeas || !_target.measurements.equals(oldMeas))){
+						checkMeasurements();
 					}else{
 						_target.setDisplayPosition(_displayPosition.x,_displayPosition.y,_displayPosition.width,_displayPosition.height);
 					}
@@ -94,19 +78,16 @@ package org.farmcode.display.layout
 		protected var _positionChanged:Act;
 		protected var _measurementsChanged:Act;
 		
-		protected var _oldMeasX:Number;
-		protected var _oldMeasY:Number;
-		protected var _oldMeasWidth:Number;
-		protected var _oldMeasHeight:Number;
-		
 		private var _target:ILayoutSubject;
 		private var _layoutInfo:ILayoutInfo;
-		private var _displayMeasurements:Rectangle;
+		private var _forceMeasurements:Point;
+		private var _realMeasurements:Point;
 		protected var _displayPosition:Rectangle;
 		
 		public function ProxyLayoutSubject(target:ILayoutSubject=null){
 			_displayPosition = new Rectangle();
 			this.target = target;
+			_realMeasurements = new Point();
 		}
 		
 		public function setDisplayPosition(x:Number, y:Number, width:Number, height:Number):void{
@@ -138,18 +119,25 @@ package org.farmcode.display.layout
 				if(_positionChanged)_positionChanged.perform(this,oldX,oldY,oldWidth,oldHeight);
 			}
 		}
-		protected function onMeasurementsChanged(from:ILayoutSubject, oldX:Number, oldY:Number, oldWidth:Number, oldHeight:Number):void{
-			if(!_displayMeasurements){
-				dispatchMeasurementsChanged();
+		protected function onMeasurementsChanged(from:ILayoutSubject, oldWidth:Number, oldHeight:Number):void{
+			if(!_forceMeasurements){
+				checkMeasurements();
 			}
 		}
-		protected function dispatchMeasurementsChanged():void{
-			if(_measurementsChanged)_measurementsChanged.perform(this,_oldMeasX, _oldMeasY, _oldMeasWidth, _oldMeasHeight);
-		}
-		/*protected function dispatchEventIf(eventType:String, eventClass:Class):void{
-			if(willTrigger(eventType)){
-				dispatchEvent(new eventClass(eventType));
+		protected function checkMeasurements():void{
+			var meas:Point;
+			if(_forceMeasurements){
+				meas = _forceMeasurements;
+			}else if(_target){
+				meas = target.measurements;
 			}
-		}*/
+			if(_realMeasurements.x!=meas.x || _realMeasurements.y!=meas.y){
+				var oldMeasWidth:Number = _realMeasurements.x;
+				var oldMeasHeight:Number = _realMeasurements.y;
+				_realMeasurements.x = meas.x;
+				_realMeasurements.y = meas.y;
+				if(_measurementsChanged)_measurementsChanged.perform(this, oldMeasWidth, oldMeasHeight);
+			}
+		}
 	}
 }

@@ -2,6 +2,7 @@ package org.farmcode.media.image
 {
 	import flash.display.Bitmap;
 	import flash.events.Event;
+	import flash.geom.Point;
 	import flash.geom.Rectangle;
 	
 	import org.farmcode.display.assets.IBitmapAsset;
@@ -23,8 +24,8 @@ package org.farmcode.media.image
 		
 		private var _smoothing:Boolean;
 		
-		public function ImageView(asset:ILoaderAsset, displayMeasurements:Rectangle, smoothing:Boolean){
-			super(asset, displayMeasurements);
+		public function ImageView(asset:ILoaderAsset, measurements:Point, smoothing:Boolean){
+			super(asset, measurements);
 			asset.contentLoaderInfo.addEventListener(Event.COMPLETE, onLoaderComplete);
 			this.smoothing = smoothing;
 		}

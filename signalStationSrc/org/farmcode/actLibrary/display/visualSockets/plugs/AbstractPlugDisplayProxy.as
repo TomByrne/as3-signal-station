@@ -1,6 +1,7 @@
 package org.farmcode.actLibrary.display.visualSockets.plugs
 {
 	
+	import flash.geom.Point;
 	import flash.geom.Rectangle;
 	
 	import org.farmcode.actLibrary.display.visualSockets.sockets.IDisplaySocket;
@@ -8,8 +9,8 @@ package org.farmcode.actLibrary.display.visualSockets.plugs
 	import org.farmcode.acting.actTypes.IUniversalAct;
 	import org.farmcode.acting.acts.Act;
 	import org.farmcode.acting.acts.UniversalAct;
-	import org.farmcode.display.assets.IDisplayAsset;
 	import org.farmcode.acting.universal.UniversalActExecution;
+	import org.farmcode.display.assets.IDisplayAsset;
 	import org.farmcode.display.core.DrawableView;
 	import org.farmcode.display.layout.ILayoutSubject;
 	import org.farmcode.display.layout.core.ILayoutInfo;
@@ -63,8 +64,6 @@ package org.farmcode.actLibrary.display.visualSockets.plugs
 		
 		protected var _displayChanged:UniversalAct;
 		protected var _measurementsChanged:Act;
-		protected var _oldMeasX:Number;
-		protected var _oldMeasY:Number;
 		protected var _oldMeasWidth:Number;
 		protected var _oldMeasHeight:Number;
 		
@@ -110,17 +109,13 @@ package org.farmcode.actLibrary.display.visualSockets.plugs
 			}
 		}
 		
-		public function get displayMeasurements():Rectangle{
+		public function get measurements():Point{
 			if(_layoutTarget){
-				var meas:Rectangle = _layoutTarget.displayMeasurements;
-				_oldMeasX = meas.x;
-				_oldMeasY = meas.y;
-				_oldMeasWidth = meas.width;
-				_oldMeasHeight = meas.height;
+				var meas:Point = _layoutTarget.measurements;
+				_oldMeasWidth = meas.x;
+				_oldMeasHeight = meas.y;
 				return meas; 
 			}else{
-				_oldMeasX = NaN;
-				_oldMeasY = NaN;
 				_oldMeasWidth = NaN;
 				_oldMeasHeight = NaN;
 				return null;
@@ -145,11 +140,11 @@ package org.farmcode.actLibrary.display.visualSockets.plugs
 		protected function uncommitData(execution:UniversalActExecution=null):void{
 			// override me
 		}
-		protected function onLayoutMeasChange(from:ILayoutSubject, oldX:Number, oldY:Number, oldWidth:Number, oldHeight:Number):void{
+		protected function onLayoutMeasChange(from:ILayoutSubject, oldWidth:Number, oldHeight:Number):void{
 			dispatchMeasurementChange();
 		}
 		protected function dispatchMeasurementChange():void{
-			if(_measurementsChanged)_measurementsChanged.perform(this, _oldMeasX, _oldMeasY, _oldMeasWidth, _oldMeasHeight);
+			if(_measurementsChanged)_measurementsChanged.perform(this, _oldMeasWidth, _oldMeasHeight);
 		} 
 	}
 }

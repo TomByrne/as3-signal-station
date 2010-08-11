@@ -1,5 +1,6 @@
 package org.farmcode.media
 {
+	import flash.geom.Point;
 	import flash.utils.Dictionary;
 	
 	import org.farmcode.acting.actTypes.IAct;
@@ -67,6 +68,7 @@ package org.farmcode.media
 		protected var _cacheMediaDisplays:int = 1;
 		protected var _cache:Array = [];
 		protected var _allMediaDisplays:Dictionary = new Dictionary(true);
+		protected var _measurements:Point = new Point(1,1);
 		
 		
 		public function MediaSource(){
@@ -104,6 +106,17 @@ package org.farmcode.media
 				_isCompleted = isCompleted;
 				if(isCompleted && _loadCompleted){
 					_loadCompleted.perform(this);
+				}
+			}
+		}
+		
+		protected function updateDisplayMeasurements(width:Number, height:Number):void{
+			if(_measurements.x != width || _measurements.y != height){
+				_measurements.x = width;
+				_measurements.y = height;
+				for(var i:* in _allMediaDisplays){
+					var view:MediaView = (i as MediaView);
+					view.displayMeasurementsChanged();
 				}
 			}
 		}

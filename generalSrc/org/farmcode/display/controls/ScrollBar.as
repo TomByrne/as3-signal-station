@@ -2,6 +2,7 @@ package org.farmcode.display.controls
 {
 	import flash.events.Event;
 	import flash.events.TimerEvent;
+	import flash.geom.Point;
 	import flash.geom.Rectangle;
 	import flash.utils.Timer;
 	
@@ -31,7 +32,7 @@ package org.farmcode.display.controls
 		private static const FORE_BUTTON_CHILD:String = "foreButton";
 		private static const AFT_BUTTON_CHILD:String = "aftButton";
 		
-		private static const EMPTY_RECT:Rectangle = new Rectangle();
+		private static const EMPTY_POINT:Point = new Point();
 		
 		public function set scrollSubject(to:IScrollable):void{
 			if(_scrollSubject != to){
@@ -177,9 +178,11 @@ package org.farmcode.display.controls
 		
 		public function ScrollBar(asset:IDisplayAsset=null){
 			super(asset);
+		}
+		override protected function init(): void{
+			super.init();
 			_scrollMetrics = new ScrollMetrics(0,1,1);
 			_scrollMetrics.value = 0;
-			_displayMeasurements = new Rectangle();
 			
 			_track.clicked.addHandler(scrollToMouse);
 			_scrollThumb.mousePressed.addHandler(beginDrag);
@@ -220,20 +223,20 @@ package org.farmcode.display.controls
 			_containerAsset.returnAsset(asset);
 		}
 		override protected function measure(): void{
-			var trackMeas:Rectangle = _track.displayMeasurements;
-			var thumbMeas:Rectangle = _scrollThumb.displayMeasurements;
-			var foreMeas:Rectangle = _foreButton.asset?_foreButton.displayMeasurements:EMPTY_RECT;
-			var aftMeas:Rectangle = _aftButton.asset?_foreButton.displayMeasurements:EMPTY_RECT;
+			var trackMeas:Point = _track.measurements;
+			var thumbMeas:Point = _scrollThumb.measurements;
+			var foreMeas:Point = _foreButton.asset?_foreButton.measurements:EMPTY_POINT;
+			var aftMeas:Point = _aftButton.asset?_foreButton.measurements:EMPTY_POINT;
 			
 			if(_direction==Direction.VERTICAL){
-				_displayMeasurements.width = Math.max(thumbMeas.width,trackMeas.width, foreMeas.width, aftMeas.width);
-				_displayMeasurements.height = foreMeas.height+aftMeas.height;
+				_measurements.x = Math.max(thumbMeas.x,trackMeas.x, foreMeas.x, aftMeas.x);
+				_measurements.y = foreMeas.y+aftMeas.y;
 			}else if(_rotateForHorizontal){
-				_displayMeasurements.height = Math.max(thumbMeas.width,trackMeas.width, foreMeas.width, aftMeas.width);
-				_displayMeasurements.width = foreMeas.height+aftMeas.height;
+				_measurements.y = Math.max(thumbMeas.x,trackMeas.x, foreMeas.x, aftMeas.x);
+				_measurements.x = foreMeas.y+aftMeas.y;
 			}else{
-				_displayMeasurements.height = Math.max(thumbMeas.height, trackMeas.height, foreMeas.height, aftMeas.height);
-				_displayMeasurements.width = foreMeas.width+aftMeas.width;
+				_measurements.y = Math.max(thumbMeas.y, trackMeas.y, foreMeas.y, aftMeas.y);
+				_measurements.x = foreMeas.x+aftMeas.x;
 			}
 		}
 		
@@ -281,10 +284,10 @@ package org.farmcode.display.controls
 			_foreButton.active = _isUsable;
 			_aftButton.active = _isUsable;
 			
-			var trackMeas:Rectangle = _track.displayMeasurements;
-			var thumbMeas:Rectangle = _scrollThumb.displayMeasurements;
-			var foreMeas:Rectangle = _foreButton.asset?_foreButton.displayMeasurements:EMPTY_RECT;
-			var aftMeas:Rectangle = _aftButton.asset?_foreButton.displayMeasurements:EMPTY_RECT;
+			var trackMeas:Point = _track.measurements;
+			var thumbMeas:Point = _scrollThumb.measurements;
+			var foreMeas:Point = _foreButton.asset?_foreButton.measurements:EMPTY_POINT;
+			var aftMeas:Point = _aftButton.asset?_foreButton.measurements:EMPTY_POINT;
 			
 			var trackX:Number;
 			var trackY:Number;
@@ -320,13 +323,13 @@ package org.farmcode.display.controls
 				}
 				
 				foreY = 0;
-				var buttonHeight:Number = foreMeas.height+aftMeas.height;
+				var buttonHeight:Number = foreMeas.y+aftMeas.y;
 				if(height<buttonHeight){
-					aftHeight = height*(aftMeas.height/buttonHeight);
-					foreHeight = height*(foreMeas.height/buttonHeight);
+					aftHeight = height*(aftMeas.y/buttonHeight);
+					foreHeight = height*(foreMeas.y/buttonHeight);
 				}else{
-					aftHeight = aftMeas.height;
-					foreHeight = foreMeas.height;
+					aftHeight = aftMeas.y;
+					foreHeight = foreMeas.y;
 				}
 				trackHeight = height-foreHeight-aftHeight;
 				trackY = foreHeight;
@@ -336,34 +339,34 @@ package org.farmcode.display.controls
 					if (_sizeThumbToContent) {
 						thumbHeight = Math.min(trackHeight*sizeFraction,trackHeight);
 					}else{
-						thumbHeight = thumbMeas.height;
+						thumbHeight = thumbMeas.y;
 					}
-					thumbY = ((trackHeight-thumbHeight)*ratio)+foreMeas.height;
+					thumbY = ((trackHeight-thumbHeight)*ratio)+foreMeas.y;
 				}
 				
-				if(trackMeas.width<width){
-					trackWidth = trackMeas.width;
+				if(trackMeas.x<width){
+					trackWidth = trackMeas.x;
 					trackX = (width-trackWidth)/2;
 				}else{
 					trackWidth = width;
 					trackX = 0;
 				}
-				if(thumbMeas.width<width){
-					thumbWidth = thumbMeas.width;
+				if(thumbMeas.x<width){
+					thumbWidth = thumbMeas.x;
 					thumbX = (width-thumbWidth)/2;
 				}else{
 					thumbWidth = width;
 					thumbX = 0;
 				}
-				if(foreMeas.width<width){
-					foreWidth = foreMeas.width;
+				if(foreMeas.x<width){
+					foreWidth = foreMeas.x;
 					foreX = (width-foreWidth)/2;
 				}else{
 					foreWidth = width;
 					foreX = 0;
 				}
-				if(aftMeas.width<width){
-					aftWidth = aftMeas.width;
+				if(aftMeas.x<width){
+					aftWidth = aftMeas.x;
 					aftX = (width-aftWidth)/2;
 				}else{
 					aftWidth = width;
@@ -371,13 +374,13 @@ package org.farmcode.display.controls
 				}
 			}else{
 				foreX = 0;
-				var buttonWidth:Number = foreMeas.width+aftMeas.width;
+				var buttonWidth:Number = foreMeas.x+aftMeas.x;
 				if(displayPosition.width<buttonWidth){
-					aftWidth = displayPosition.width*(aftMeas.width/buttonWidth);
-					foreWidth = displayPosition.width*(foreMeas.width/buttonWidth);
+					aftWidth = displayPosition.width*(aftMeas.x/buttonWidth);
+					foreWidth = displayPosition.width*(foreMeas.x/buttonWidth);
 				}else{
-					aftWidth = aftMeas.width;
-					foreWidth = foreMeas.width;
+					aftWidth = aftMeas.x;
+					foreWidth = foreMeas.x;
 				}
 				trackWidth = displayPosition.width-foreHeight-aftWidth;
 				trackX = foreWidth;
@@ -387,35 +390,35 @@ package org.farmcode.display.controls
 					if (sizeThumbToContent){
 						thumbWidth = Math.min(trackWidth*sizeFraction,trackWidth);
 					}else{
-						thumbWidth = thumbMeas.width;
+						thumbWidth = thumbMeas.x;
 					}
-					thumbX = ((trackWidth-thumbWidth)*ratio)+foreMeas.width;
+					thumbX = ((trackWidth-thumbWidth)*ratio)+foreMeas.x;
 				}
 				
 				
-				if(trackMeas.height<displayPosition.height){
-					trackHeight = trackMeas.height;
+				if(trackMeas.y<displayPosition.height){
+					trackHeight = trackMeas.y;
 					trackY = (displayPosition.height-trackHeight)/2;
 				}else{
 					trackHeight = displayPosition.height;
 					trackY = 0;
 				}
-				if(thumbMeas.height<displayPosition.height){
-					thumbHeight = thumbMeas.height;
+				if(thumbMeas.y<displayPosition.height){
+					thumbHeight = thumbMeas.y;
 					thumbY = (displayPosition.height-thumbHeight)/2;
 				}else{
 					thumbHeight = displayPosition.height;
 					thumbY = 0;
 				}
-				if(foreMeas.height<displayPosition.height){
-					foreHeight = foreMeas.height;
+				if(foreMeas.y<displayPosition.height){
+					foreHeight = foreMeas.y;
 					foreY = (displayPosition.height-foreHeight)/2;
 				}else{
 					foreHeight = displayPosition.height;
 					foreY = 0;
 				}
-				if(aftMeas.height<displayPosition.height){
-					aftHeight = aftMeas.height;
+				if(aftMeas.y<displayPosition.height){
+					aftHeight = aftMeas.y;
 					aftY = (displayPosition.height-aftHeight)/2;
 				}else{
 					aftHeight = displayPosition.height;

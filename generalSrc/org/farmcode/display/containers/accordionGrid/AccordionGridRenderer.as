@@ -89,8 +89,8 @@ package org.farmcode.display.containers.accordionGrid
 			return _containerMeas;
 		}
 		override protected function setContainerSize(x:Number, y:Number, width:Number, height:Number) : void{
-			_headerContainer.x = x-_headerX-(_minMeasurements.x-_labelMeas.width);
-			_headerContainer.y = y-_headerY-(_minMeasurements.y-_labelMeas.height);
+			_headerContainer.x = x-_headerX-(_minMeasurements.x-_labelMeas.x);
+			_headerContainer.y = y-_headerY-(_minMeasurements.y-_labelMeas.y);
 			
 			_cellContainer.x = x;
 			_cellContainer.y = y;

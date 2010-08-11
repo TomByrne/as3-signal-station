@@ -4,6 +4,7 @@ package org.farmcode.display.controls.popout {
 	import flash.display.DisplayObject;
 	import flash.display.DisplayObjectContainer;
 	import flash.display.InteractiveObject;
+	import flash.geom.Point;
 	import flash.geom.Rectangle;
 	
 	import org.farmcode.display.actInfo.IMouseActInfo;
@@ -66,7 +67,6 @@ package org.farmcode.display.controls.popout {
 			_listBox=new ListBox();
 			_listBox.measurementsChanged.addHandler(onListMeasureChange);
 			_popoutDisplay.popout = _listBox;
-			_displayMeasurements = new Rectangle();
 		}
 		protected function onPopoutOpen(popoutDisplay:PopoutDisplay, popout:ListBox):void {
 			if(closeOnClickOutside()){
@@ -102,27 +102,25 @@ package org.farmcode.display.controls.popout {
 		
 		override protected function measure():void {
 			var alignArea:Rectangle = getListAlignMeas();
-			var listMeas:Rectangle = _listBox.displayMeasurements;
-			_displayMeasurements.x = alignArea.x;
-			_displayMeasurements.y = alignArea.y;
+			var listMeas:Point = _listBox.measurements;
 			switch(_listAnchor){
 				case Anchor.TOP:
 				case Anchor.CENTER:
 				case Anchor.BOTTOM:
-					if(alignArea.width>listMeas.width){
-						_displayMeasurements.width = alignArea.width;
+					if(alignArea.width>listMeas.x){
+						_measurements.x = alignArea.width;
 					}else{
-						_displayMeasurements.width = listMeas.width;
+						_measurements.x = listMeas.x;
 					}
 					break;
 				default:
-					_displayMeasurements.width = alignArea.width+listMeas.width
+					_measurements.x = alignArea.width+listMeas.x;
 					break;
 			}
-			_displayMeasurements.height = alignArea.height;
+			_measurements.y = alignArea.height;
 		}
 		override protected function draw():void {
-			var listMeas:Rectangle = _listBox.displayMeasurements;
+			var listMeas:Point = _listBox.measurements;
 			var alignArea:Rectangle = getListAlignArea();
 			var useRect:Boolean = (alignArea!=null);
 			var x:Number;
@@ -133,10 +131,10 @@ package org.farmcode.display.controls.popout {
 				case Anchor.TOP_LEFT:
 				case Anchor.TOP_RIGHT:
 					if(useRect){
-						y = alignArea.top-listMeas.bottom;
+						y = alignArea.top-listMeas.y;
 						minListWidth = alignArea.width;
 					}else{
-						y = -listMeas.bottom;
+						y = -listMeas.y;
 					}
 					break;
 				case Anchor.BOTTOM:
@@ -154,7 +152,7 @@ package org.farmcode.display.controls.popout {
 						if(_listAnchor==Anchor.CENTER){
 							minListWidth = alignArea.width;
 						}
-						y = (alignArea.y+alignArea.height/2)-(listMeas.y+listMeas.height/2);
+						y = (alignArea.y+alignArea.height/2)-(listMeas.y/2);
 					}else{
 						y = 0;
 					}
@@ -164,9 +162,9 @@ package org.farmcode.display.controls.popout {
 				case Anchor.TOP_LEFT:
 				case Anchor.BOTTOM_LEFT:
 					if(useRect){
-						x = alignArea.left-listMeas.right;
+						x = alignArea.left-listMeas.x;
 					}else{
-						x = -listMeas.left;
+						x = -listMeas.x;
 					}
 					break;
 				case Anchor.RIGHT:
@@ -193,7 +191,7 @@ package org.farmcode.display.controls.popout {
 		protected function getListAlignMeas():Rectangle{
 			return null;
 		}
-		protected function onListMeasureChange(from:ILayoutSubject, oldX:Number, oldY:Number, oldWidth:Number, oldHeight:Number):void{
+		protected function onListMeasureChange(from:ILayoutSubject, oldWidth:Number, oldHeight:Number):void{
 			dispatchMeasurementChange();
 		}
 		protected function closeOnClickOutside():Boolean{

@@ -109,7 +109,7 @@ package org.farmcode.display.controls.popout {
 		protected function onButtonClicked(from:TextLabelButton):void {
 			_popoutDisplay.popoutShown = textLabelButton.selected;
 		}
-		protected function onTextMeasureChange(from:ILayoutSubject, oldX:Number, oldY:Number, oldWidth:Number, oldHeight:Number):void{
+		protected function onTextMeasureChange(from:ILayoutSubject, oldWidth:Number, oldHeight:Number):void{
 			dispatchMeasurementChange();
 		}
 		override protected function getListAlignArea():Rectangle{
@@ -119,8 +119,8 @@ package org.farmcode.display.controls.popout {
 		}
 		override protected function getListAlignMeas():Rectangle{
 			checkIsBound();
-			_listAlignMeas.width = textLabelButton.displayMeasurements.width;
-			_listAlignMeas.height = textLabelButton.displayMeasurements.height;
+			_listAlignMeas.width = textLabelButton.measurements.x;
+			_listAlignMeas.height = textLabelButton.measurements.y;
 			return _listAlignMeas;
 		}
 		override protected function closeOnClickOutside():Boolean{

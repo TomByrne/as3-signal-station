@@ -2,6 +2,7 @@ package org.farmcode.actLibrary.application
 {
 	import flash.display.DisplayObjectContainer;
 	import flash.events.KeyboardEvent;
+	import flash.geom.Point;
 	import flash.geom.Rectangle;
 	
 	import org.farmcode.actLibrary.display.visualSockets.VisualSocketActor;
@@ -62,8 +63,9 @@ package org.farmcode.actLibrary.application
 		override public function get measurementsChanged() : IAct{
 			return _proxiedDisplaySocket.measurementsChanged;
 		}
-		override public function get displayMeasurements() : Rectangle{
-			return _proxiedDisplaySocket.displayMeasurements;
+		// TODO: fix this, it'll screw up the oldWidth & oldHeight values
+		override public function get measurements() : Point{
+			return _proxiedDisplaySocket.measurements;
 		}
 		
 		protected var _visSocketActor:VisualSocketActor;

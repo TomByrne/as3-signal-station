@@ -226,6 +226,9 @@ package org.farmcode.display.containers
 		
 		public function ListBox(asset:IDisplayAsset=null){
 			super(asset);
+		}
+		override protected function init() : void{
+			super.init();
 			_layout.equaliseCellWidths = true;
 		}
 		override protected function bindToAsset() : void{
@@ -319,6 +322,7 @@ package org.farmcode.display.containers
 		 * returns true if selection was changed
 		 */
 		public function validateSelectionCount():Boolean{
+			attemptInit();
 			var change:Boolean;
 			var selectableData:IBooleanConsumer
 			if(_selectedCount>_maxSelected){

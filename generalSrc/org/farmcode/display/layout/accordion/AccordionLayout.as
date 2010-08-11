@@ -62,7 +62,7 @@ package org.farmcode.display.layout.accordion
 			delete _cellMeasCache[data];
 			invalidateAll();
 		}
-		override protected function getChildMeasurement(key:*) : Rectangle{
+		override protected function getChildMeasurement(key:*) : Point{
 			if(key>=_dataCount){
 				return null;
 			}
@@ -78,16 +78,14 @@ package org.farmcode.display.layout.accordion
 			}
 			var minRenderer:IMinimisableLayoutSubject = (renderer as IMinimisableLayoutSubject);
 			
-			var ret:Rectangle = new Rectangle();
+			var ret:Point = new Point();
 			var min:Point = minRenderer.minMeasurements;
-			var fullMeas:Rectangle = renderer.displayMeasurements;
+			var fullMeas:Point = renderer.measurements;
 			_realMeas[key] = fullMeas;
 			
-			ret.width = min.x+(fullMeas.width-min.x)*minRenderer.openFract;
-			ret.height = min.y+(fullMeas.height-min.y)*minRenderer.openFract;
+			ret.x = min.x+(fullMeas.x-min.x)*minRenderer.openFract;
+			ret.y = min.y+(fullMeas.y-min.y)*minRenderer.openFract;
 			
-			ret.x = fullMeas.x;
-			ret.y = fullMeas.y;
 			if(renderer==_protoRenderer){
 				_protoRenderer[_dataField] = null;
 				if(_setRendererDataAct)_setRendererDataAct.perform(this,_protoRenderer,null,_dataField);

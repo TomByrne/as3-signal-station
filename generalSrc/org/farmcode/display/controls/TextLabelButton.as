@@ -63,11 +63,13 @@ package org.farmcode.display.controls
 		override public function setDisplayPosition(x:Number, y:Number, width:Number, height:Number) : void{
 			super.setDisplayPosition(x,y,width,height);
 			_textLabel.setDisplayPosition(x,y,width,height);
+			_interactiveArea.width = width;
+			_interactiveArea.height = height;
 		}
 		override protected function measure() : void{
-			_displayMeasurements = _textLabel.displayMeasurements;
+			_measurements = _textLabel.measurements;
 		}
-		protected function onMeasurementsChange(from:ILayoutSubject, oldX:Number, oldY:Number, oldWidth:Number, oldHeight:Number):void{
+		protected function onMeasurementsChange(from:ILayoutSubject, oldWidth:Number, oldHeight:Number):void{
 			dispatchMeasurementChange();
 		}
 	}

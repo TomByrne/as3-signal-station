@@ -2,6 +2,7 @@ package org.farmcode.display.controls
 {
 	import fl.transitions.easing.Regular;
 	
+	import flash.geom.Point;
 	import flash.geom.Rectangle;
 	
 	import org.farmcode.display.actInfo.IMouseActInfo;
@@ -66,7 +67,7 @@ package org.farmcode.display.controls
 			_slider.measurementsChanged.addHandler(onSliderMeasChanged);
 			_scrollRect = new Rectangle();
 		}
-		protected function onSliderMeasChanged(from:Slider, oldX:Number, oldY:Number, oldW:Number, oldH:Number):void{
+		protected function onSliderMeasChanged(from:Slider, oldW:Number, oldH:Number):void{
 			invalidate();
 		}
 		override protected function bindToAsset() : void{
@@ -111,37 +112,37 @@ package org.farmcode.display.controls
 		}
 		protected function updateMask():void{
 			var anch:String = sliderAnchor;
-			var slidMeas:Rectangle = _slider.displayMeasurements;
-			var meas:Rectangle = displayMeasurements;
+			var slidMeas:Point = _slider.measurements;
+			var meas:Point = measurements;
 			var sliderX:Number;
 			var sliderY:Number;
 			
 			if(_slider.direction==Direction.VERTICAL){
 				_scrollRect.x = -MASK_PADDING;
-				_scrollRect.height = (slidMeas.height*_openFract)+MASK_PADDING;
-				_scrollRect.width = slidMeas.width+MASK_PADDING*2;
+				_scrollRect.height = (slidMeas.y*_openFract)+MASK_PADDING;
+				_scrollRect.width = slidMeas.x+MASK_PADDING*2;
 				sliderX = -MASK_PADDING;
 				if(anch==Anchor.TOP){
-					sliderY = -(slidMeas.height*_openFract)-MASK_PADDING;
+					sliderY = -(slidMeas.y*_openFract)-MASK_PADDING;
 					_scrollRect.y = -MASK_PADDING;
 				}else if(anch==Anchor.BOTTOM){
-					sliderY = meas.height;
-					_scrollRect.y = slidMeas.height*(1-_openFract);
+					sliderY = meas.y;
+					_scrollRect.y = slidMeas.y*(1-_openFract);
 				}
 			}else{
 				_scrollRect.y = -MASK_PADDING;
-				_scrollRect.width = (slidMeas.width*_openFract)+MASK_PADDING;
-				_scrollRect.height = slidMeas.height+MASK_PADDING*2;
+				_scrollRect.width = (slidMeas.x*_openFract)+MASK_PADDING;
+				_scrollRect.height = slidMeas.y+MASK_PADDING*2;
 				sliderY = -MASK_PADDING;
 				if(anch==Anchor.LEFT){
-					sliderX = -(slidMeas.width*_openFract)-MASK_PADDING;
+					sliderX = -(slidMeas.x*_openFract)-MASK_PADDING;
 					_scrollRect.x = -MASK_PADDING;
 				}else if(anch==Anchor.RIGHT){
-					sliderX = meas.width;
-					_scrollRect.x = slidMeas.width*(1-_openFract);
+					sliderX = meas.x;
+					_scrollRect.x = slidMeas.x*(1-_openFract);
 				}
 			}
-			_slider.setDisplayPosition(sliderX,sliderY,slidMeas.width,slidMeas.height);
+			_slider.setDisplayPosition(sliderX,sliderY,slidMeas.x,slidMeas.y);
 			_slider.asset.scrollRect = _scrollRect;
 		}
 		
