@@ -5,8 +5,6 @@ package org.farmcode.media.video
 	import flash.events.Event;
 	import flash.events.IOErrorEvent;
 	import flash.events.NetStatusEvent;
-	import flash.geom.Point;
-	import flash.geom.Rectangle;
 	import flash.media.SoundTransform;
 	import flash.media.Video;
 	import flash.net.NetStream;
@@ -16,7 +14,6 @@ package org.farmcode.media.video
 	import org.farmcode.acting.actTypes.IAct;
 	import org.farmcode.acting.acts.Act;
 	import org.farmcode.core.DelayedCall;
-	import org.farmcode.display.assets.IDisplayAsset;
 	import org.farmcode.display.assets.IVideoAsset;
 	import org.farmcode.display.assets.nativeAssets.NativeAssetFactory;
 	import org.farmcode.display.assets.nativeAssets.VideoAsset;
@@ -229,7 +226,7 @@ package org.farmcode.media.video
 				
 				for(var i:* in _allMediaDisplays){
 					var mediaView:MediaView = (i as MediaView);
-					(mediaView.asset as Video).attachNetStream(null);
+					(mediaView.asset as IVideoAsset).attachNetStream(null);
 				}
 			}
 		}
@@ -256,7 +253,7 @@ package org.farmcode.media.video
 					assessBufferSize();
 					for(var i:* in _allMediaDisplays){
 						var mediaView:MediaView = (i as MediaView);
-						(mediaView.asset as Video).attachNetStream(_netStream);
+						(mediaView.asset as IVideoAsset).attachNetStream(_netStream);
 					}
 				}
 			}

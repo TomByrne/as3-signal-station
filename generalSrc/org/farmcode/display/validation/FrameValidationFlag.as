@@ -49,14 +49,15 @@ package org.farmcode.display.validation
 			return true;
 		}
 		
+		
 		private var _view:IView;
 		private var _asset:IDisplayAsset;
 		protected var _assetChanged:Act;
 		protected var _added:Boolean;
 		protected var _manager:FrameValidationManager;
 		
-		public function FrameValidationFlag(view:IView, validator:Function, valid:Boolean){
-			super(validator, valid);
+		public function FrameValidationFlag(view:IView, validator:Function, valid:Boolean, parameters:Array=null){
+			super(validator, valid, parameters);
 			_manager = FrameValidationManager.instance;
 			this.view = view;
 			
@@ -94,7 +95,12 @@ package org.farmcode.display.validation
 		}
 		public function execute():void{
 			_valid = true;
-			_validator();
+			if(parameters)_validator.apply(null,parameters);
+			else _validator();
+		}
+		override public function release():void{
+			super.release();
+			this.view = null;
 		}
 	}
 }

@@ -1,19 +1,30 @@
 package org.farmcode.display.layout.canvas
 {
 	import flash.geom.Point;
-	import flash.geom.Rectangle;
 	
 	import org.farmcode.display.core.IView;
-	import org.farmcode.display.layout.AbstractLayout;
+	import org.farmcode.display.layout.AbstractSeperateLayout;
 	import org.farmcode.display.layout.ILayoutSubject;
 	
-	public class CanvasLayout extends AbstractLayout
+	public class CanvasLayout extends AbstractSeperateLayout
 	{
 		
 		public function CanvasLayout(scopeView:IView=null){
 			super(scopeView);
 		}
-		override protected function drawSubject(subject:ILayoutSubject) : void{
+		override protected function drawToMeasure() : Boolean{
+			return false;
+		}
+		override protected function onSubjectMeasChanged(from:ILayoutSubject, oldWidth:Number, oldHeight:Number): void{
+			super.onSubjectMeasChanged(from, oldWidth, oldHeight);
+			subjMeasurementsChanged(from);
+		}
+		override protected function measureSubject(subject:ILayoutSubject, subjMeas:Point):void{
+			var meas:Point = subject.measurements;
+			subjMeas.x = meas.x;
+			subjMeas.y = meas.y;
+		}
+		override protected function layoutSubject(subject:ILayoutSubject, subjMeas:Point=null):void{
 			var cast:ICanvasLayoutInfo = (subject.layoutInfo as ICanvasLayoutInfo);
 			if(cast){
 				var measurements:Point = subject.measurements;
@@ -79,11 +90,6 @@ package org.farmcode.display.layout.canvas
 					y = _displayPosition.y;
 				}
 				subject.setDisplayPosition(x,y,width,height);
-				
-				// TODO: the measurements shuold really just be the measurements of the subject
-				addToMeas(width,height);
-			}else{
-				super.drawSubject(subject);
 			}
 		}
 	}

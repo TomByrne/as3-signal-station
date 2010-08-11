@@ -80,7 +80,6 @@ package org.farmcode.display.layout.relative
 				}
 				subject.setDisplayPosition(transPoint.x,transPoint.y,width,height);
 			}
-			addToMeas(subMeas.x,subMeas.y);
 		}
 	}
 }

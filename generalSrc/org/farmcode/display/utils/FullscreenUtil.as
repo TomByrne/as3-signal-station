@@ -84,6 +84,7 @@ package org.farmcode.display.utils
 			_lastStage = (stage?stage:_view.asset.stage);
 			TopLayerManager.add(_view.asset,_lastStage);
 			checkSize();
+			
 			_lastStage.resize.addHandler(onResize);
 			_lastStage.displayState = StageDisplayState.FULL_SCREEN;
 			_lastStage.fullScreen.addHandler(onFullScreen);

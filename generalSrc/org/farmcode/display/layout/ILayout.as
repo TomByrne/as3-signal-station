@@ -8,7 +8,13 @@ package org.farmcode.display.layout
 		function setLayoutSize(x:Number, y:Number, width:Number, height:Number):void;
 		function validate(forceDraw:Boolean=false):void;
 		
-		function addSubject(subject:ILayoutSubject):void;
-		function removeSubject(subject:ILayoutSubject):void;
+		/**
+		 * returns true if subject was successfully added
+		 */
+		function addSubject(subject:ILayoutSubject):Boolean;
+		/**
+		 * returns true if subject was successfully removed
+		 */
+		function removeSubject(subject:ILayoutSubject):Boolean;
 	}
 }

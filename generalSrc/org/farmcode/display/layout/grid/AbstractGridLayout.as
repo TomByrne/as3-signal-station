@@ -1,14 +1,13 @@
 package org.farmcode.display.layout.grid
 {
 	import flash.geom.Point;
-	import flash.geom.Rectangle;
 	import flash.utils.Dictionary;
 	
 	import org.farmcode.acting.actTypes.IAct;
 	import org.farmcode.acting.acts.Act;
 	import org.farmcode.display.constants.Direction;
 	import org.farmcode.display.core.IView;
-	import org.farmcode.display.layout.AbstractLayout;
+	import org.farmcode.display.layout.AbstractCompositeLayout;
 	import org.farmcode.display.layout.ILayoutSubject;
 	import org.farmcode.display.layout.core.ILayoutInfo;
 	import org.farmcode.display.layout.list.IListLayoutInfo;
@@ -22,7 +21,7 @@ package org.farmcode.display.layout.grid
 	 * the direction along the stacking of the list (i.e. height for vertical lists, width for
 	 * horizontal lists).
 	 */
-	public class AbstractGridLayout extends AbstractLayout implements IScrollable
+	public class AbstractGridLayout extends AbstractCompositeLayout implements IScrollable
 	{
 		public function get marginTop():Number{
 			return _verticalAxis.foreMargin;
@@ -119,6 +118,7 @@ package org.farmcode.display.layout.grid
 		protected function set _flowDirection(value:String):void{
 			if(__flowDirection!=value){
 				__flowDirection = value;
+				_isVertical = (value==Direction.VERTICAL);
 				_propsFlag.invalidate();
 				invalidate();
 			}
@@ -156,7 +156,7 @@ package org.farmcode.display.layout.grid
 		protected function set _horizontalScroll(value:Number):void{
 			if(_horizontalAxis.scrollMetrics.value!=value){
 				_horizontalAxis.scrollMetrics.value = value;
-				if(__flowDirection==Direction.VERTICAL){
+				if(_isVertical){
 					_lengthScrollFlag.invalidate();
 				}else{
 					_breadthScrollFlag.invalidate();
@@ -170,7 +170,7 @@ package org.farmcode.display.layout.grid
 		protected function set _horizontalScrollByLine(value:Boolean):void{
 			if(_horizontalAxis.scrollByLine!=value){
 				_horizontalAxis.scrollByLine = value;
-				if(__flowDirection==Direction.VERTICAL){
+				if(_isVertical){
 					_lengthScrollFlag.invalidate();
 				}else{
 					_breadthScrollFlag.invalidate();
@@ -185,7 +185,7 @@ package org.farmcode.display.layout.grid
 		protected function set _verticalScroll(value:Number):void{
 			if(_verticalAxis.scrollMetrics.value!=value){
 				_verticalAxis.scrollMetrics.value = value;
-				if(__flowDirection==Direction.VERTICAL){
+				if(_isVertical){
 					_breadthScrollFlag.invalidate();
 				}else{
 					_lengthScrollFlag.invalidate();
@@ -199,7 +199,7 @@ package org.farmcode.display.layout.grid
 		protected function set _verticalScrollByLine(value:Boolean):void{
 			if(_verticalAxis.scrollByLine!=value){
 				_verticalAxis.scrollByLine = value;
-				if(__flowDirection==Direction.VERTICAL){
+				if(_isVertical){
 					_breadthScrollFlag.invalidate();
 				}else{
 					_lengthScrollFlag.invalidate();
@@ -267,20 +267,20 @@ package org.farmcode.display.layout.grid
 		protected var _mouseWheel:Act;
 		protected var _scrollMetricsChanged:Act;
 		
-		private var __pixelFlow:Boolean;
+		protected var __pixelFlow:Boolean;
 		
 		protected var _cellMeasCache:Dictionary = new Dictionary(true);
 		protected var _cellPosCache:Array;
 		
-		private var __flowDirection:String = Direction.VERTICAL;
+		protected var __flowDirection:String = Direction.VERTICAL;
+		protected var _isVertical:Boolean = true;
 		
 		protected var _propsFlag:ValidationFlag = new ValidationFlag(validateProps,false);
 		protected var _cellMappingFlag:ValidationFlag = new ValidationFlag(validateCellMapping,false);
 		protected var _breadthScrollFlag:ValidationFlag = new ValidationFlag(validateBreadthScroll,false);
 		protected var _lengthScrollFlag:ValidationFlag = new ValidationFlag(validateLengthScroll,false);
+		protected var _cellMeasFlag:ValidationFlag = new ValidationFlag(validateCellMeas,false);
 		protected var _cellPosFlag:ValidationFlag = new ValidationFlag(validateCellPos,false);
-		
-		protected var _isVertical:Boolean;
 		
 		protected var _verticalAxis:GridAxis;
 		protected var _horizontalAxis:GridAxis;
@@ -288,22 +288,36 @@ package org.farmcode.display.layout.grid
 		protected var _breadthAxis:GridAxis;
 		protected var _lengthAxis:GridAxis;
 		
+		protected var _subjMeasChanged:Dictionary = new Dictionary();
+		
 		public function AbstractGridLayout(scopeView:IView=null){
 			super(scopeView);
 			createAxes();
+			positionChanged.addHandler(onPosChanged);
+		}
+		protected function onPosChanged(from:AbstractGridLayout, oldX:Number, oldY:Number, oldWidth:Number, oldHeight:Number): void{
+			_cellMappingFlag.invalidate();
+		}
+		override protected function onSubjectMeasChanged(from:ILayoutSubject, oldWidth:Number, oldHeight:Number): void{
+			_subjMeasChanged[from] = true;
+			_cellMeasFlag.invalidate();
+			super.onSubjectMeasChanged(from, oldWidth, oldHeight);
 		}
 		protected function createAxes():void{
 			_horizontalAxis = new GridAxis("x","width","columnIndex");
 			_verticalAxis = new GridAxis("y","height","rowIndex");
 		}
 		
-		override public function removeSubject(subject:ILayoutSubject):void{
-			super.removeSubject(subject);
-			var cast:IGridLayoutSubject = (subject as IGridLayoutSubject);
-			if(cast){
-				cast.columnIndex = -1;
-				cast.rowIndex = -1;
+		override public function removeSubject(subject:ILayoutSubject):Boolean{
+			if(super.removeSubject(subject)){
+				var cast:IGridLayoutSubject = (subject as IGridLayoutSubject);
+				if(cast){
+					cast.columnIndex = -1;
+					cast.rowIndex = -1;
+				}
+				return true;
 			}
+			return false;
 		}
 		/**
 		 * Gets the collection of keys that will be used generate and store
@@ -318,7 +332,7 @@ package org.farmcode.display.layout.grid
 		 * Whether to remeasure this key.
 		 */
 		protected function remeasureChild(key:*):Boolean{
-			return (_invalidSubjects[key] || !_cellMeasCache[key]);
+			return (_subjMeasChanged[key] || !_cellMeasCache[key]);
 		}
 		/**
 		 * The measurements of the object associated with this key.
@@ -339,23 +353,14 @@ package org.farmcode.display.layout.grid
 			return key as ILayoutSubject;
 		}
 		
-		override protected function draw(): void{
+		override protected function doLayout(): void{
 			_propsFlag.validate();
-			
-			var hasInvalid:Boolean;
-			for each(var i:* in _invalidSubjects){
-				hasInvalid = true;
-				break;
-			}
-			if(_allInvalid || hasInvalid){
-				validateCellMeas();
-			}
+			_cellMeasFlag.validate();
 			_cellMappingFlag.validate();
 			validateAllScrolling();
 			_cellPosFlag.validate();
 		}
 		protected function validateProps():void{
-			_isVertical = (_flowDirection==Direction.VERTICAL);
 			if(_isVertical){
 				_breadthAxis = _verticalAxis;
 				_lengthAxis = _horizontalAxis;
@@ -381,18 +386,14 @@ package org.farmcode.display.layout.grid
 			_cellPosFlag.invalidate();
 		}
 		protected function validateCellMeas():void{
-			var allInvalid:Boolean = _allInvalid;
 			var keys:Dictionary = getChildKeys();
 			for(var key:* in keys){
-				if(allInvalid || remeasureChild(key)){
+				if(remeasureChild(key)){
 					_cellMeasCache[key] = getChildMeasurement(key);
 				}
 			}
-			if(!allInvalid){
-				_invalidSubjects = new Dictionary();
-			}else{
-				_allInvalid = false;
-			}
+			_subjMeasChanged = new Dictionary();
+			
 			_cellMappingFlag.invalidate();
 			_breadthScrollFlag.invalidate();
 			_lengthScrollFlag.invalidate();
@@ -542,7 +543,6 @@ package org.farmcode.display.layout.grid
 					}
 				}
 			}
-			var measChanged:Boolean;
 			var maxLengthMeas:Number = _lengthAxis.foreMargin+_lengthAxis.aftMargin+(_lengthAxis.maxCellSizes.length-1)*_lengthAxis.gap;
 			for(i=0; i<_lengthAxis.maxCellSizes.length; i++){
 				subLengthDim = _lengthAxis.maxCellSizes[i];
@@ -554,10 +554,6 @@ package org.farmcode.display.layout.grid
 						_lengthAxis.maxCellSizes[i] = specLength;
 					}
 				}
-			}
-			if(_measurements[_lengthAxis.coordRef]!= maxLengthMeas){
-				measChanged = true;
-				_measurements[_lengthAxis.coordRef] = maxLengthMeas;
 			}
 			
 			var maxBreadthMeas:Number = _breadthAxis.foreMargin+_breadthAxis.aftMargin+(_breadthAxis.maxCellSizes.length-1)*_breadthAxis.gap;
@@ -572,14 +568,16 @@ package org.farmcode.display.layout.grid
 					}
 				}
 			}
-			if(_measurements[_breadthAxis.coordRef]!=maxBreadthMeas){
-				measChanged = true;
-				_measurements[_breadthAxis.coordRef] = maxBreadthMeas;
+			
+			
+			// measurement changes get dispatched in the draw() function that wraps this doLayout function
+			if(_measurements[_lengthAxis.coordRef]!= maxLengthMeas){
+				_measurements[_lengthAxis.coordRef]= maxLengthMeas;
+			}
+			if(_measurements[_breadthAxis.coordRef]!= maxBreadthMeas){
+				_measurements[_breadthAxis.coordRef]= maxBreadthMeas;
 			}
 			
-			if(measChanged){
-				dispatchMeasurementChange();
-			}
 			_breadthScrollFlag.invalidate();
 			_lengthScrollFlag.invalidate();
 			_cellPosFlag.invalidate();

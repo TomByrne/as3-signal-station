@@ -117,6 +117,7 @@ package org.farmcode.media.image
 			return view;
 		}
 		protected function onProtoLoaded(e:Event):void{
+			trace("onProtoLoaded: "+_protoLoader.content.width,_protoLoader.content.height);
 			updateDisplayMeasurements(_protoLoader.content.width,_protoLoader.content.height);
 		}
 		override protected function destroyMediaDisplay(value:ILayoutView):void{

@@ -113,6 +113,9 @@ package org.farmcode.core
 		protected function commitStage() : void{
 			// override me
 		}
+		override public function setDisplayPosition(x:Number, y:Number, width:Number, height:Number):void{
+			super.setDisplayPosition(x, y, width, height);
+		}
 		override protected function draw() : void{
 			// If FullscreenUtil is being used then this will be skipped
 			if(_mainView && _mainView.asset.parent==_assetContainer){

@@ -1,14 +1,15 @@
 package org.farmcode.display.layout.stage
 {
-	import flash.display.Stage;
 	import flash.events.Event;
+	import flash.geom.Point;
 	import flash.geom.Rectangle;
 	
 	import org.farmcode.display.assets.IStageAsset;
 	import org.farmcode.display.core.IView;
-	import org.farmcode.display.layout.AbstractLayout;
+	import org.farmcode.display.layout.AbstractSeperateLayout;
+	import org.farmcode.display.layout.ILayoutSubject;
 
-	public class StageFillLayout extends AbstractLayout
+	public class StageFillLayout extends AbstractSeperateLayout
 	{
 		
 		public function get stage():IStageAsset{
@@ -33,6 +34,18 @@ package org.farmcode.display.layout.stage
 		public function StageFillLayout(scopeView:IView=null, stage:IStageAsset=null){
 			super(scopeView);
 			this.stage = stage;
+		}
+		override protected function drawToMeasure() : Boolean{
+			return false;
+		}
+		override protected function onSubjectMeasChanged(from:ILayoutSubject, oldWidth:Number, oldHeight:Number): void{
+			super.onSubjectMeasChanged(from, oldWidth, oldHeight);
+			subjMeasurementsChanged(from);
+		}
+		override protected function measureSubject(subject:ILayoutSubject, subjMeas:Point):void{
+			var meas:Point = subject.measurements;
+			subjMeas.x = meas.x;
+			subjMeas.y = meas.y;
 		}
 		protected function onStageResize(e:Event=null, from:IStageAsset=null) : void{
 			_displayPosition.width = _stage.stageWidth;
