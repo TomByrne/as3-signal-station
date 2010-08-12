@@ -17,7 +17,10 @@ package org.farmcode.display.layout.relative
 		public function RelativeLayout(scopeView:IView=null, stage:IStageAsset=null){
 			super(scopeView, stage);
 		}
-		override protected function drawSubject(subject:ILayoutSubject) : void{
+		public function update():void{
+			invalidate();
+		}
+		override protected function layoutSubject(subject:ILayoutSubject, subjMeas:Point=null):void{
 			var subMeas:Point = subject.measurements;
 			var layoutInfo:IRelativeLayoutInfo = (subject.layoutInfo as IRelativeLayoutInfo);
 			if(layoutInfo){

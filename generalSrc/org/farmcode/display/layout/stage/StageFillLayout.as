@@ -50,7 +50,7 @@ package org.farmcode.display.layout.stage
 		protected function onStageResize(e:Event=null, from:IStageAsset=null) : void{
 			_displayPosition.width = _stage.stageWidth;
 			_displayPosition.height = _stage.stageHeight;
-			invalidateAll();
+			invalidate();
 		}
 	}
 }

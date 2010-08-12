@@ -46,7 +46,7 @@ package org.farmcode.display.layout.accordion
 			renderer.openFractChanged.removeHandler(onOpenFractChanged);
 		}
 		protected function onOpenFractChanged(from:IMinimisableLayoutSubject) : void{
-			invalidateAll();
+			invalidate();
 		}
 		override protected function rendererAdded(renderer:ILayoutSubject):void{
 			super.rendererAdded(renderer);
@@ -60,7 +60,7 @@ package org.farmcode.display.layout.accordion
 		protected function onMinChanged(from:IMinimisableLayoutSubject) : void{
 			var data:* = from[_dataField];
 			delete _cellMeasCache[data];
-			invalidateAll();
+			invalidate();
 		}
 		override protected function getChildMeasurement(key:*) : Point{
 			if(key>=_dataCount){

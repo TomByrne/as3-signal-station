@@ -183,7 +183,7 @@ package org.farmcode.display.controls.popout {
 			_popoutDisplay.popoutLayoutInfo.minWidth = minListWidth;
 			_popoutDisplay.popoutLayoutInfo.relativeOffsetX = x;
 			_popoutDisplay.popoutLayoutInfo.relativeOffsetY = y;
-			_popoutDisplay.popoutLayout.invalidate();
+			_popoutDisplay.popoutLayout.update();
 		}
 		protected function getListAlignArea():Rectangle{
 			return null;
