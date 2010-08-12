@@ -173,10 +173,12 @@ package org.farmcode.display.assets.nativeAssets
 		}
 		
 		protected function storeChildAsset(child:IDisplayAsset, displayObject:DisplayObject):void{
-			for each(var stateList:Array in _stateLists){
-				child.addStateList(stateList);
+			if(!_children[displayObject]){
+				for each(var stateList:Array in _stateLists){
+					child.addStateList(stateList);
+				}
+				_children[displayObject] = child;
 			}
-			_children[displayObject] = child;
 		}
 		protected function removeChildAsset(child:IDisplayAsset, displayObject:DisplayObject):void{
 			for each(var stateList:Array in _stateLists){

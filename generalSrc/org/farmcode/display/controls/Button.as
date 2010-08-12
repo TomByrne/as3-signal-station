@@ -191,18 +191,18 @@ package org.farmcode.display.controls
 			//TODO: when events are replaced with Info objects, do a check here to see if it's a descendant or not
 			_containerAsset.setAssetIndex(_interactiveArea,_containerAsset.numChildren-1);
 		}
-		override protected function measure() : void{
-			super.measure();
-		}
 		override protected function draw() : void{
 			positionAsset();
 			if(_scaleAsset){
 				asset.width = displayPosition.width;
 				asset.height = displayPosition.height;
+				_interactiveArea.width = displayPosition.width/asset.scaleX;
+				_interactiveArea.height = displayPosition.height/asset.scaleY;
+			}else{
+				var meas:Point = measurements;
+				_interactiveArea.width = meas.x/asset.scaleX;
+				_interactiveArea.height = meas.y/asset.scaleY;
 			}
-			var meas:Point = measurements;
-			_interactiveArea.width = meas.x;
-			_interactiveArea.height = meas.y;
 		}
 		private function onRollOver(from:IInteractiveObjectAsset, info:IMouseActInfo):void{
 			if(_active){

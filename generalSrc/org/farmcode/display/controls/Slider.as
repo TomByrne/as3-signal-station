@@ -4,9 +4,12 @@ package org.farmcode.display.controls
 	import org.farmcode.acting.actTypes.IAct;
 	import org.farmcode.acting.acts.Act;
 	import org.farmcode.core.DelayedCall;
+	import org.farmcode.display.DisplayNamespace;
 	import org.farmcode.display.assets.IDisplayAsset;
 	import org.farmcode.display.assets.IInteractiveObjectAsset;
 	import org.farmcode.display.constants.Direction;
+	
+	use namespace DisplayNamespace;
 	
 	public class Slider extends Control
 	{
@@ -95,7 +98,7 @@ package org.farmcode.display.controls
 		private var _direction:String;
 		private var _updateDuringDrag:Boolean = false;
 		
-		private var _button:Button = new Button();
+		private var _trackButton:Button = new Button();
 		private var _thumb:Button = new Button();
 		private var _track:IDisplayAsset;
 		private var _ignoreThumb:Boolean;
@@ -113,7 +116,8 @@ package org.farmcode.display.controls
 		}
 		override protected function init():void{
 			super.init();
-			_button.clicked.addHandler(onTrackClick);
+			_trackButton.scaleAsset = true;
+			_trackButton.clicked.addHandler(onTrackClick);
 			_thumb.mousePressed.addHandler(onThumbMouseDown);
 			_thumb.mouseReleased.addHandler(onThumbMouseUp);
 		}
@@ -121,7 +125,7 @@ package org.farmcode.display.controls
 			super.bindToAsset();
 			
 			_track = _containerAsset.takeAssetByName(TRACK,IInteractiveObjectAsset);
-			_button.asset = _track;
+			_trackButton.asset = _track;
 			
 			_assumedDirection = (_track.width>_track.height?Direction.HORIZONTAL:Direction.VERTICAL);
 			
@@ -132,8 +136,8 @@ package org.farmcode.display.controls
 		}
 		override protected function unbindFromAsset() : void{
 			super.unbindFromAsset();
-			_containerAsset.returnAsset(_button.asset);
-			_button.asset = null;
+			_containerAsset.returnAsset(_trackButton.asset);
+			_trackButton.asset = null;
 			_containerAsset.returnAsset(_thumb.asset);
 			_thumb.asset = null;
 			_track = null;
@@ -150,35 +154,39 @@ package org.farmcode.display.controls
 			
 			var thumbX:Number;
 			var thumbY:Number;
+			var trackX:Number;
+			var trackY:Number;
+			var trackWidth:Number;
+			var trackHeight:Number;
 			if(dir==Direction.VERTICAL){
 				var natWidth:Number = _track.width/_track.scaleX;
 				if(natWidth<displayPosition.width){
-					_track.width = natWidth;
-					_track.x = (displayPosition.width-_track.width)/2;
+					trackWidth = natWidth;
+					trackX = (displayPosition.width-_track.width)/2;
 				}else{
-					_track.width = displayPosition.width;
-					_track.x = 0;
+					trackWidth = displayPosition.width;
+					trackX = 0;
 				}
-				_track.height = displayPosition.height;
-				_track.y = 0;
+				trackHeight = displayPosition.height;
+				trackY = 0;
 				thumbX = _assumedThumbX;
 				thumbY = _track.y+(_track.height-_thumb.asset.height)*fract;
 			}else{
 				var natHeight:Number = _track.height/_track.scaleY;
 				if(natHeight<displayPosition.height){
-					_track.height = natHeight;
-					_track.y = (displayPosition.height-_track.height)/2;
+					trackHeight = natHeight;
+					trackY = (displayPosition.height-_track.height)/2;
 				}else{
-					_track.height = displayPosition.height;
-					_track.y = 0;
+					trackHeight = displayPosition.height;
+					trackY = 0;
 				}
-				_track.width = displayPosition.width;
-				_track.x = 0;
+				trackWidth = displayPosition.width;
+				trackX = 0;
 				thumbY = _assumedThumbY;
-				thumbX = _track.x+(_track.width-_thumb.asset.width)*fract;
+				thumbX = trackX+(trackWidth-_thumb.asset.width)*fract;
 			}
 			_thumb.setDisplayPosition(thumbX,thumbY,_thumb.asset.width,_thumb.asset.height);
-			_button.setDisplayPosition(0,0,displayPosition.width,displayPosition.height);
+			_trackButton.setDisplayPosition(trackX,trackY,trackWidth,trackHeight);
 		}
 		override public function setAssetAndPosition(asset:IDisplayAsset) : void{
 			super.setAssetAndPosition(asset);
