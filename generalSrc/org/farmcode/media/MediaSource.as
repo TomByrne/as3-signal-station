@@ -5,34 +5,25 @@ package org.farmcode.media
 	
 	import org.farmcode.acting.actTypes.IAct;
 	import org.farmcode.acting.acts.Act;
+	import org.farmcode.data.core.NumberData;
+	import org.farmcode.data.core.StringData;
+	import org.farmcode.data.dataTypes.INumberProvider;
+	import org.farmcode.data.dataTypes.IStringProvider;
 	import org.farmcode.display.core.ILayoutView;
+	import org.farmcode.math.UnitConversion;
 	
 	public class MediaSource implements IMediaSource
 	{
-		/**
-		 * @inheritDoc
-		 */
-		public function get loadProgressChanged():IAct{
-			if(!_loadProgressChanged)_loadProgressChanged = new Act();
-			return _loadProgressChanged;
-		}
-		/**
-		 * @inheritDoc
-		 */
-		public function get loadTotalChanged():IAct{
-			if(!_loadTotalChanged)_loadTotalChanged = new Act();
-			return _loadTotalChanged;
-		}
+		public static const MEMORY_UNIT_NAMES:Array = ["tb","gb","mb","kb","b"];
 		
-		
-		public function get loadUnits():String{
-			return null;
-		}
-		public function get loadProgress():Number{
+		public function get loadProgress():INumberProvider{
 			return _loadProgress;
 		}
-		public function get loadTotal():Number{
+		public function get loadTotal():INumberProvider{
 			return _loadTotal;
+		}
+		public function get loadUnits():IStringProvider{
+			return _loadUnits;
 		}
 		
 		public function get cacheMediaSources():int{
@@ -58,11 +49,11 @@ package org.farmcode.media
 		}
 		
 		protected var _loadCompleted:Act;
-		protected var _loadProgressChanged:Act;
-		protected var _loadTotalChanged:Act;
+		/*protected var _loadProgressChanged:Act;
+		protected var _loadTotalChanged:Act;*/
 		
-		protected var _loadProgress:Number;
-		protected var _loadTotal:Number;
+		/*protected var _loadProgress:Number;
+		protected var _loadTotal:Number;*/
 		protected var _isCompleted:Boolean;
 		
 		protected var _cacheMediaDisplays:int = 1;
@@ -70,6 +61,9 @@ package org.farmcode.media
 		protected var _allMediaDisplays:Dictionary = new Dictionary(true);
 		protected var _measurements:Point = new Point(1,1);
 		
+		protected var _loadProgress:NumberData = new NumberData(0);
+		protected var _loadTotal:NumberData = new NumberData(0);
+		protected var _loadUnits:StringData = new StringData();
 		
 		public function MediaSource(){
 		}
@@ -92,15 +86,40 @@ package org.farmcode.media
 			}
 		}
 		
-		protected function setLoadProps(progress:Number, total:Number):void{
-			if(progress!=_loadProgress){
-				_loadProgress = progress;
-				if(_loadProgressChanged)_loadProgressChanged.perform(this);
+		protected function setMemoryLoadProps(progress:Number, total:Number):void{
+			var progBreakdown:Array = UnitConversion.standardMemoryBreakdown(progress);
+			var totalBreakdown:Array = UnitConversion.standardMemoryBreakdown(total);
+			for(var i:int=0; i<progBreakdown.length; ++i){
+				var prog:Number = progBreakdown[i];
+				var tot:Number = totalBreakdown[i];
+				if(prog>0 && tot>0){
+					var units:Number = UnitConversion.STANDARD_MEMORY_UNITS[i];
+					if(units!=UnitConversion.MEMORY_BYTES){
+						prog = UnitConversion.convert(progress,UnitConversion.MEMORY_BYTES,units);
+						tot = UnitConversion.convert(total,UnitConversion.MEMORY_BYTES,units);
+					}else{
+						prog = progress;
+						tot = total;
+					}
+					if(prog>=10 && tot>=10){
+						prog = int(prog+0.5);
+						tot = int(tot+0.5);
+					}else{
+						prog = (int((prog*100)+0.5))/100;
+						tot = (int((tot*100)+0.5))/100;
+					}
+					setLoadProps(prog,tot,MEMORY_UNIT_NAMES[i]);
+				}
 			}
-			if(total!=_loadTotal){
-				_loadTotal = total;
-				if(_loadTotalChanged)_loadTotalChanged.perform(this);
-			}
+		}
+		protected function setLoadProps(progress:Number, total:Number, units:String):void{
+			if(total<0)total = 0;
+			if(progress<0)progress = 0;
+			if(progress>total)progress = total;
+			_loadProgress.numericalValue = progress;
+			_loadTotal.numericalValue = total;
+			_loadUnits.stringValue = units;
+			
 			var isCompleted:Boolean = (progress>=total);
 			if(_isCompleted != isCompleted){
 				_isCompleted = isCompleted;

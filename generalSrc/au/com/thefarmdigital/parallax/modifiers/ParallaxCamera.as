@@ -14,32 +14,34 @@ package au.com.thefarmdigital.parallax.modifiers
 		private static var POSITION_ACCURACY:Number = 1/10;
 		private static var SCALE_ACCURACY:Number = 1/100;
 		
-		private static function translate2Dto3D(point:Point, z:Number, fieldOfView:Number):Point3D{
+		private static function translate2Dto3D(point:Point, z:Number, focalLength:Number):Point3D{
 			var ret:Point3D = Point3D.getNew();
-			if(z){
-				var scale:Number = Math.pow(Math.E,-z/fieldOfView);
+			if(focalLength>0){
+				//var scale:Number = Math.pow(Math.E,-z/fieldOfView);
+				var scale:Number = focalLength / (focalLength + z);
 				ret.x = point.x/scale;
 				ret.y = point.y/scale;
 				ret.z = scale;
 			}else{
 				ret.x = point.x;
 				ret.y = point.y;
-				ret.z = scale;
+				ret.z = 1;
 			}
 			return ret;
 		}
-		private static function getItemPointAndScale(item:IParallaxDisplay, cameraPoint:Point3D, fieldOfView:Number):Point3D{
+		private static function getItemPointAndScale(item:IParallaxDisplay, cameraPoint:Point3D, focalLength:Number):Point3D{
 			var point3D:Point3D = item.position.clone();
 			while(item.parallaxParent){
 				item = item.parallaxParent;
 				point3D.add(item.position);
 			}
-			return getPointAndScale(point3D, cameraPoint, fieldOfView);
+			return getPointAndScale(point3D, cameraPoint, focalLength);
 		}
-		private static function getPointAndScale(point3D:Point3D, cameraPoint:Point3D, fieldOfView:Number):Point3D{
+		private static function getPointAndScale(point3D:Point3D, cameraPoint:Point3D, focalLength:Number):Point3D{
 			point3D.subtract(cameraPoint);
-			if(fieldOfView){
-				var scale:Number = Math.pow(Math.E,-point3D.z/fieldOfView)
+			if(fieldOfView>0){
+				//var scale:Number = Math.pow(Math.E,-point3D.z/fieldOfView)
+				var scale:Number = focalLength / (focalLength + point3D.z);
 				return Point3D.getNew(point3D.x*scale,point3D.y*scale,scale);
 			}else{
 				return Point3D.getNew(point3D.x,point3D.y,1);
@@ -74,7 +76,7 @@ package au.com.thefarmdigital.parallax.modifiers
 		override public function get z():Number{
 			return super.z;
 		}
-		public function set fieldOfView(value:Number):void{
+		/*public function set fieldOfView(value:Number):void{
 			if(_fieldOfView!=value){
 				_fieldOfView = value;
 				dispatchEvent(new ParallaxEvent(ParallaxEvent.POSITION_CHANGED));
@@ -83,7 +85,7 @@ package au.com.thefarmdigital.parallax.modifiers
 		}
 		public function get fieldOfView():Number{
 			return _fieldOfView;
-		}
+		}*/
 		public function get rounding():Boolean{
 			return _rounding;
 		}
@@ -100,9 +102,21 @@ package au.com.thefarmdigital.parallax.modifiers
 			}
 		}
 		
+		public function get focalLength():Number{
+			return _focalLength;
+		}
+		public function set focalLength(value:Number):void{
+			if(_focalLength!=value){
+				_focalLength = value;
+				dispatchEvent(new ParallaxEvent(ParallaxEvent.POSITION_CHANGED));
+				dispatchEvent(new ParallaxEvent(ParallaxEvent.DEPTH_CHANGED));
+			}
+		}
+		
+		private var _focalLength:Number=0;
 		private var _rounding:Boolean = false;
 		private var _roundingOffset:Point;
-		protected var _fieldOfView:Number=250;
+		//protected var _fieldOfView:Number=250;
 		private var _screenRect:Rectangle;
 		private var _positionAccuracy: Number;
 		private var _scaleAccuracy: Number;
@@ -151,10 +165,10 @@ package au.com.thefarmdigital.parallax.modifiers
 			}
 		}
 		public function getPointAndScale(point3D:Point3D):Point3D{
-			return ParallaxCamera.getPointAndScale(point3D,this,fieldOfView);
+			return ParallaxCamera.getPointAndScale(point3D,this,focalLength);
 		}
 		public function translate2Dto3D(point:Point, z:Number):Point3D{
-			return ParallaxCamera.translate2Dto3D(point,z,fieldOfView);
+			return ParallaxCamera.translate2Dto3D(point,z,focalLength);
 		}
 		public function modifyItem(item:IParallaxDisplay, container:DisplayObjectContainer):void
 		{

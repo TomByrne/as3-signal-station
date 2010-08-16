@@ -3,10 +3,16 @@ package org.farmcode.acting.acts
 	import flash.utils.Dictionary;
 	
 	import org.farmcode.acting.actTypes.IAct;
+	import org.farmcode.hoborg.IPoolable;
+	import org.farmcode.hoborg.ObjectPool;
 	
-	//TODO: pool Act class
-	public class Act implements IAct
+	public class Act implements IAct, IPoolable
 	{
+		private static const pool:ObjectPool = new ObjectPool(Act);
+		public static function getNew():Act{
+			var ret:Act = pool.takeObject();
+			return ret;
+		}
 		
 		public function get handlerCount():int{
 			return _handlerCount;
@@ -122,6 +128,13 @@ package org.farmcode.acting.acts
 		
 		protected function setHandlerCount(value:int):void{
 			_handlerCount = value;
+		}
+		
+		public function reset():void{
+			removeAllHandlers();
+		}
+		public function release():void{
+			pool.releaseObject(this);
 		}
 	}
 }

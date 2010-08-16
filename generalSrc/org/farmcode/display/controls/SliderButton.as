@@ -29,6 +29,10 @@ package org.farmcode.display.controls
 		private static const TRANS_DURATION:Number = 0.25;
 		
 		
+		override public function set active(value:Boolean):void{
+			_slider.active = value;
+			super.active = value;
+		}
 		public function get sliderAnchor():String{
 			return _sliderAnchor?_sliderAnchor:_assumedAnchor;
 		}

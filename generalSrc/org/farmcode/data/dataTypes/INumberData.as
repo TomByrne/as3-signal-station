@@ -2,8 +2,9 @@ package org.farmcode.data.dataTypes
 {
 	import org.farmcode.acting.actTypes.IAct;
 
-	public interface INumberProvider extends IValueProvider, IStringProvider
+	public interface INumberData extends IStringProvider
 	{
+		function set numericalValue(value:Number):void;
 		function get numericalValue():Number;
 		
 		/**

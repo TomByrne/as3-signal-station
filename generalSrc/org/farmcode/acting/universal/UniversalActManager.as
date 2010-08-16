@@ -11,7 +11,7 @@ package org.farmcode.acting.universal
 	
 	use namespace ActingNamspace;
 
-	/**
+	/*
 	 * TODO: fix issues arising when one IActReaction has two rules that match the same IUniversalAct
 	 */
 	public class UniversalActManager

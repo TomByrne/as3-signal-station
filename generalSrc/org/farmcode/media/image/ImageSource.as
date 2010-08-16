@@ -57,10 +57,6 @@ package org.farmcode.media.image
 			}
 		}
 		
-		override public function get loadUnits():String{
-			return LOAD_UNITS;
-		}
-		
 		private var _smoothing:Boolean;
 		private var _imageUrl:String;
 		private var _urlLoader:URLLoader;
@@ -71,6 +67,7 @@ package org.farmcode.media.image
 		
 		public function ImageSource(url:String=null){
 			super();
+			_loadUnits.stringValue = LOAD_UNITS;
 			_urlLoader = new URLLoader();
 			_urlLoader.dataFormat = URLLoaderDataFormat.BINARY;
 			_urlLoader.addEventListener(Event.COMPLETE, onLoadComplete);
@@ -84,11 +81,10 @@ package org.farmcode.media.image
 				var loader:ILoaderAsset = (view.asset as ILoaderAsset);
 				loader.loadBytes(_urlLoader.data);
 			}
-			setLoadProps(int(UnitConversion.convert(_urlLoader.bytesLoaded,UnitConversion.MEMORY_BYTES,UnitConversion.MEMORY_KILOBYTES)+0.5),
-						int(UnitConversion.convert(_urlLoader.bytesTotal,UnitConversion.MEMORY_BYTES,UnitConversion.MEMORY_KILOBYTES)+0.5));
+			setMemoryLoadProps(_urlLoader.bytesLoaded, _urlLoader.bytesTotal);
 		}
 		protected function onLoadProgress(e:Event):void{
-			setLoadProps(_urlLoader.bytesLoaded,_urlLoader.bytesTotal);
+			setMemoryLoadProps(_urlLoader.bytesLoaded, _urlLoader.bytesTotal);
 		}
 		override public function takeMediaDisplay():ILayoutView{
 			_displaysTaken++;
@@ -117,7 +113,6 @@ package org.farmcode.media.image
 			return view;
 		}
 		protected function onProtoLoaded(e:Event):void{
-			trace("onProtoLoaded: "+_protoLoader.content.width,_protoLoader.content.height);
 			updateDisplayMeasurements(_protoLoader.content.width,_protoLoader.content.height);
 		}
 		override protected function destroyMediaDisplay(value:ILayoutView):void{

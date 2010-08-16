@@ -9,6 +9,7 @@ package org.farmcode.display.containers
 	import flash.ui.Mouse;
 	import flash.utils.Timer;
 	
+	import org.farmcode.data.core.StringData;
 	import org.farmcode.display.DisplayNamespace;
 	import org.farmcode.display.actInfo.IMouseActInfo;
 	import org.farmcode.display.assets.IDisplayAsset;
@@ -19,10 +20,12 @@ package org.farmcode.display.containers
 	import org.farmcode.display.controls.Control;
 	import org.farmcode.display.controls.Slider;
 	import org.farmcode.display.controls.SliderButton;
+	import org.farmcode.display.controls.TextLabel;
 	import org.farmcode.display.controls.ToggleButton;
 	import org.farmcode.display.layout.canvas.CanvasLayout;
 	import org.farmcode.display.layout.canvas.CanvasLayoutInfo;
 	import org.farmcode.display.utils.FullscreenUtil;
+	import org.farmcode.formatters.patternFormatters.VideoProgressFormatter;
 	import org.farmcode.media.IMediaSource;
 	import org.farmcode.media.video.IVideoSource;
 	
@@ -39,18 +42,21 @@ package org.farmcode.display.containers
 		DisplayNamespace static const BUFFER_BAR:String = "bufferBar";
 		DisplayNamespace static const MUTE_BUTTON:String = "muteButton";
 		DisplayNamespace static const CENTERED_PAUSE_BUTTON:String = "centredPauseButton";
+		DisplayNamespace static const PROGRESS_LABEL:String = "progressLabel";
 		
-		DisplayNamespace static const DEFAULT_HIDE_MOUSE_TIME:Number = 3;
+		DisplayNamespace static const DEFAULT_DISABLE_TIME:Number = 1;
 		
 		override public function set mediaSource(value:IMediaSource):void{
 			if(super.mediaSource != value){
 				if(_videoSource){
 					_videoSource.playingChanged.removeHandler(onPlayingChange);
+					if(_videoProgressProvider)_videoProgressProvider.videoSource = null;
 				}
 				super.mediaSource = value;
 				_videoSource = (value as IVideoSource);
 				if(_videoSource){
 					_videoSource.playingChanged.addHandler(onPlayingChange);
+					if(_videoProgressProvider)_videoProgressProvider.videoSource = _videoSource;
 					syncToData();
 				}
 			}
@@ -59,12 +65,12 @@ package org.farmcode.display.containers
 		 * If the mouse is inactive and sits over the playing video, it will be hidden
 		 * after this amount of time (in seconds). Setting this to NaN will deactivate this feature.
 		 */
-		public function get hideMouseTime():Number{
-			return _hideMouseTime;
+		public function get disableTime():Number{
+			return _disableTime;
 		}
-		public function set hideMouseTime(value:Number):void{
-			if(_hideMouseTime!=value){
-				_hideMouseTime = value;
+		public function set disableTime(value:Number):void{
+			if(_disableTime!=value){
+				_disableTime = value;
 				if(_mouseActive){
 					activateMouse();
 				}
@@ -76,13 +82,37 @@ package org.farmcode.display.containers
 		public function set fullScreenScale(value:Number):void{
 			_fullscreenUtil.fullScreenScale = value;
 		}
+		
+		/**
+		 * The pattern to be used to generate the text for the Progress Label.
+		 * Acceptable tokens are:
+		 * <ul>
+		 * 	<li>${tt}	- The total time of the video (in the format 0:00)</li>
+		 * 	<li>${rt}	- The time remaining (in the format 0:00)</li>
+		 * 	<li>${pt}	- The time of the playhead (in the format 0:00)</li>
+		 * 	<li>${ts}	- The total size of the video (in the format 500kb, 1.2mb)</li>
+		 * 	<li>${ls}	- The amount of video currently loaded (in the format 500kb, 1.2mb)</li>
+		 * 	<li>${ps}	- The percent loaded</li>
+		 * 	<li>${su}	- The units that the size values are in (e.g. kb, mb, etc.)</li>
+		 * </ul>
+		 */
+		public function get progressLabelPattern():String{
+			return _progressLabelPattern;
+		}
+		public function set progressLabelPattern(value:String):void{
+			if(_progressLabelPattern!=value){
+				_progressLabelPattern = value;
+				if(_videoProgressProvider)checkProgressPattern();
+			}
+		}
+		
 		DisplayNamespace function get fullscreenUtil():FullscreenUtil{
 			checkFullScreenUtil();
 			return _fullscreenUtil;
 		}
 		
-		private var _hideMouseTime:Number = DEFAULT_HIDE_MOUSE_TIME;
-		private var _hideMouseTimer:Timer;
+		private var _disableTime:Number = DEFAULT_DISABLE_TIME;
+		private var _disableTimer:Timer;
 		
 		private var _playPauseButton:ToggleButton;
 		private var _stopButton:Button;
@@ -92,16 +122,19 @@ package org.farmcode.display.containers
 		private var _muteButton:SliderButton;
 		private var _volumeSlider:Slider;
 		private var _bufferBar:BufferBar;
+		private var _progressLabel:TextLabel;
+		
+		private var _videoProgressProvider:VideoProgressFormatter;
+		private var _videoProgressProviderPattern:StringData;
+		private var _assumedPattern:String;
 		
 		private var _mouseActive:Boolean = true;
 		private var _mouseOver:Boolean = true;
 		
+		private var _progressLabelPattern:String;
 		private var _fullscreenUtil:FullscreenUtil;
-		
 		private var _uiLayout:CanvasLayout;
-		
 		private var _videoCover:ISpriteAsset;
-		
 		private var _videoSource:IVideoSource;
 		
 		public function VideoContainer(asset:IDisplayAsset=null){
@@ -139,8 +172,15 @@ package org.farmcode.display.containers
 				}
 			}
 			
-			var hadBufferBar:Boolean = (_bufferBar!=null);
 			_bufferBar = bindControl(_bufferBar,BufferBar,BUFFER_BAR,true) as BufferBar;
+			
+			_progressLabel = bindControl(_progressLabel,TextLabel,PROGRESS_LABEL,false) as TextLabel;
+			if(_progressLabel){
+				_assumedPattern = _progressLabel.data;
+				if(!_videoProgressProvider)_videoProgressProvider = new VideoProgressFormatter(_videoSource,_videoProgressProviderPattern = new StringData());
+				_progressLabel.data = _videoProgressProvider;
+				checkProgressPattern();
+			}
 			
 			_videoCover = asset.createAsset(ISpriteAsset);
 			_videoCover.doubleClicked.addHandler(onFullscreenClick);
@@ -156,6 +196,15 @@ package org.farmcode.display.containers
 			_mouseOver = true;
 			syncToData();
 			activateMouse();
+		}
+		protected function checkProgressPattern():void{
+			if(_progressLabelPattern){
+				_videoProgressProviderPattern.stringValue = _progressLabelPattern;
+			}else if(_assumedPattern){
+				_videoProgressProviderPattern.stringValue = _assumedPattern;
+			}else{
+				_videoProgressProviderPattern.stringValue = null;
+			}
 		}
 		protected function onKeyUp(e:KeyboardEvent, from:IDisplayAsset):void{
 			if(e.charCode==Keyboard.SPACE){
@@ -239,6 +288,11 @@ package org.farmcode.display.containers
 			unbindControl(_centredPauseButton);
 			unbindControl(_volumeSlider);
 			unbindControl(_bufferBar);
+			
+			if(_progressLabel){
+				_progressLabel.data = _assumedPattern;
+			}
+			unbindControl(_progressLabel);
 		}
 		protected function unbindControl(control:Control):void{
 			if(control){
@@ -289,7 +343,7 @@ package org.farmcode.display.containers
 		}
 		protected function onRewindClick(from:Button):void{
 			if(_videoSource){
-				_videoSource.currentTime = 0;
+				_videoSource.currentTime.numericalValue = 0;
 			}
 		}
 		protected function onPlayingChange(from:IVideoSource):void{
@@ -298,9 +352,13 @@ package org.farmcode.display.containers
 		protected function assessPlaying():void{
 			if(_videoSource){
 				if(_playPauseButton)_playPauseButton.selected = _videoSource.playing;
+				
+				setControlsActive([_playPauseButton,_rewindButton,_muteButton,_stopButton,_fullscreenButton,_volumeSlider,_bufferBar,_progressLabel],!_videoSource.playing || _mouseActive);
+				
 				if(_centredPauseButton){
 					_centredPauseButton.selected = _videoSource.playing;
-					_centredPauseButton.asset.alpha = (!_videoSource.playing || (_mouseOver && _mouseActive))?1:0;
+					_centredPauseButton.active = (!_videoSource.playing || (_mouseOver && _mouseActive));
+					
 					if(_mouseOver){
 						if(_videoSource.playing && !_mouseActive){
 							Mouse.hide();
@@ -308,6 +366,13 @@ package org.farmcode.display.containers
 							Mouse.show();
 						}
 					}
+				}
+			}
+		}
+		protected function setControlsActive(controls:Array, active:Boolean):void{
+			for each(var control:Control in controls){
+				if(control){
+					control.active = active;
 				}
 			}
 		}
@@ -340,19 +405,19 @@ package org.farmcode.display.containers
 		}
 		protected function activateMouse():void{
 			_mouseActive = true;
-			if(!isNaN(_hideMouseTime)){
-				if(_hideMouseTimer){
-					_hideMouseTimer.stop();
-					_hideMouseTimer.reset();
-					_hideMouseTimer.delay = _hideMouseTime*1000;
+			if(!isNaN(_disableTime)){
+				if(_disableTimer){
+					_disableTimer.stop();
+					_disableTimer.reset();
+					_disableTimer.delay = _disableTime*1000;
 				}else{
-					_hideMouseTimer = new Timer(_hideMouseTime*1000,1);
-					_hideMouseTimer.addEventListener(TimerEvent.TIMER_COMPLETE, onHideTimerComplete);
+					_disableTimer = new Timer(_disableTime*1000,1);
+					_disableTimer.addEventListener(TimerEvent.TIMER_COMPLETE, onHideTimerComplete);
 				}
-				_hideMouseTimer.start();
-			}else if(_hideMouseTimer){
-				_hideMouseTimer.stop();
-				_hideMouseTimer.reset();
+				_disableTimer.start();
+			}else if(_disableTimer){
+				_disableTimer.stop();
+				_disableTimer.reset();
 			}
 		}
 		protected function onHideTimerComplete(e:Event):void{

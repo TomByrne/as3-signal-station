@@ -5,6 +5,7 @@ package org.farmcode.display.controls
 	import flash.geom.Point;
 	import flash.geom.Rectangle;
 	
+	import org.farmcode.data.dataTypes.INumberProvider;
 	import org.farmcode.display.assets.IDisplayAsset;
 	import org.farmcode.display.assets.IInteractiveObjectAsset;
 	import org.farmcode.display.assets.IShapeAsset;
@@ -20,25 +21,29 @@ package org.farmcode.display.controls
 		private static const BUFFERED_BAR:String = "bufferedBar";
 		
 		
+		override public function set active(value:Boolean):void{
+			_slider.active = value;
+			super.active = value;
+		}
 		public function get videoSource():IVideoSource{
 			return _videoSource;
 		}
 		public function set videoSource(value:IVideoSource):void{
 			if(_videoSource!=value){
 				if(_videoSource){
-					_videoSource.loadProgressChanged.removeHandler(onLoadChange);
-					_videoSource.loadTotalChanged.removeHandler(onLoadChange);
-					_videoSource.currentTimeChanged.removeHandler(onTimeChange);
-					_videoSource.totalTimeChanged.removeHandler(onTimeChange);
+					_videoSource.loadProgress.numericalValueChanged.removeHandler(onLoadChange);
+					_videoSource.loadTotal.numericalValueChanged.removeHandler(onLoadChange);
+					_videoSource.currentTime.numericalValueChanged.removeHandler(onTimeChange);
+					_videoSource.totalTime.numericalValueChanged.removeHandler(onTimeChange);
 				}
 				_videoSource = value;
 				if(_videoSource){
-					_videoSource.loadProgressChanged.addHandler(onLoadChange);
-					_videoSource.loadTotalChanged.addHandler(onLoadChange);
-					_videoSource.currentTimeChanged.addHandler(onTimeChange);
-					_videoSource.totalTimeChanged.addHandler(onTimeChange);
-					_slider.maximum = _videoSource.totalTime;
-					_slider.value = _videoSource.currentTime;
+					_videoSource.loadProgress.numericalValueChanged.addHandler(onLoadChange);
+					_videoSource.loadTotal.numericalValueChanged.addHandler(onLoadChange);
+					_videoSource.currentTime.numericalValueChanged.addHandler(onTimeChange);
+					_videoSource.totalTime.numericalValueChanged.addHandler(onTimeChange);
+					_slider.maximum = _videoSource.totalTime.numericalValue;
+					_slider.value = _videoSource.currentTime.numericalValue;
 				}
 				invalidate();
 			}
@@ -95,12 +100,23 @@ package org.farmcode.display.controls
 		}
 		override protected function draw() : void{
 			var playedFract:Number;
-			if(_videoSource && _videoSource.totalTime>0){
-				playedFract = (_videoSource.currentTime<_videoSource.totalTime)?_videoSource.currentTime/_videoSource.totalTime:1;
+			if(_videoSource){
+				var total:Number = _videoSource.totalTime.numericalValue;
+				var progress:Number = _videoSource.currentTime.numericalValue;
+				if(total>0){
+					playedFract = (progress<total)?progress/total:1;
+				}else{
+					playedFract = 0;
+				}
 			}else{
 				playedFract = 0;
 			}
-			var loadFract:Number = (_videoSource?_videoSource.loadProgress/_videoSource.loadTotal:0);
+			if(_videoSource && total>0){
+				playedFract = (progress<total)?progress/total:1;
+			}else{
+				playedFract = 0;
+			}
+			var loadFract:Number = (_videoSource?_videoSource.loadProgress.numericalValue/_videoSource.loadTotal.numericalValue:0);
 			
 			if(_slider.direction==Direction.VERTICAL){
 				if(_playedBar){
@@ -160,16 +176,16 @@ package org.farmcode.display.controls
 		protected function onSliderMeasChange(from:ILayoutSubject, oldWidth:Number, oldHeight:Number):void{
 			dispatchMeasurementChange();
 		}
-		protected function onLoadChange(from:IMediaSource):void{
+		protected function onLoadChange(from:INumberProvider):void{
 			invalidate();
 		}
-		protected function onTimeChange(from:IVideoSource):void{
-			_slider.maximum = _videoSource.totalTime;
-			_slider.value = _videoSource.currentTime
+		protected function onTimeChange(from:INumberProvider):void{
+			_slider.maximum = _videoSource.totalTime.numericalValue;
+			_slider.value = _videoSource.currentTime.numericalValue
 			invalidate();
 		}
 		protected function onPlayheadChange(from:Slider, value:Number):void{
-			_videoSource.currentTime = value;
+			_videoSource.currentTime.numericalValue = value;
 		}
 	}
 }

@@ -1,6 +1,8 @@
 package org.farmcode.media.video
 {
 	import org.farmcode.acting.actTypes.IAct;
+	import org.farmcode.data.dataTypes.INumberData;
+	import org.farmcode.data.dataTypes.INumberProvider;
 	import org.farmcode.media.IMediaSource;
 	
 	/**
@@ -23,18 +25,8 @@ package org.farmcode.media.video
 		function get bufferedChanged():IAct;
 		function get buffered():Boolean;
 		
-		/**
-		 * handler(from:IVideoSource)
-		 */
-		function get currentTimeChanged():IAct;
-		function set currentTime(value:Number):void;
-		function get currentTime():Number;
-		
-		/**
-		 * handler(from:IVideoSource)
-		 */
-		function get totalTimeChanged():IAct;
-		function get totalTime():Number;
+		function get currentTime():INumberData;
+		function get totalTime():INumberProvider;
 		
 		/**
 		 * handler(from:IVideoSource)

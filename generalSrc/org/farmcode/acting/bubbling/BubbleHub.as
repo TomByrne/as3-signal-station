@@ -79,7 +79,7 @@ package org.farmcode.acting.bubbling
 				if(proxyAct){
 					proxyAct.removeHandler(handler);
 					if(!proxyAct.handlerCount){
-						// TODO: release act (after pooling is implemented)
+						proxyAct.release();
 						delete _proxiedActs[bubbleId];
 					}
 				}

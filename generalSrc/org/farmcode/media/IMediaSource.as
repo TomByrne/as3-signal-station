@@ -1,23 +1,15 @@
 package org.farmcode.media
 {
 	import org.farmcode.acting.actTypes.IAct;
+	import org.farmcode.data.dataTypes.INumberProvider;
+	import org.farmcode.data.dataTypes.IStringProvider;
 	import org.farmcode.display.core.ILayoutView;
 
 	public interface IMediaSource
 	{
-		/**
-		 * handler(from:IMediaSource)
-		 */
-		function get loadProgressChanged():IAct;
-		function get loadProgress():Number;
-		
-		/**
-		 * handler(from:IMediaSource)
-		 */
-		function get loadTotalChanged():IAct;
-		function get loadTotal():Number;
-		
-		function get loadUnits():String;
+		function get loadProgress():INumberProvider;
+		function get loadTotal():INumberProvider;
+		function get loadUnits():IStringProvider;
 		
 		/**
 		 * handler(from:IMediaSource)

@@ -3,9 +3,10 @@ package org.farmcode.data.core
 	import org.farmcode.acting.actTypes.IAct;
 	import org.farmcode.acting.acts.Act;
 	import org.farmcode.data.dataTypes.INumberConsumer;
+	import org.farmcode.data.dataTypes.INumberData;
 	import org.farmcode.data.dataTypes.INumberProvider;
 	
-	public class NumberData extends StringData implements INumberConsumer, INumberProvider
+	public class NumberData extends StringData implements INumberData, INumberProvider, INumberConsumer
 	{
 		
 		public function get numericalValue():Number{

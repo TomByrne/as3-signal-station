@@ -30,6 +30,8 @@
 		/** Number of bits in a terabyte */
 		public static const MEMORY_TERABYTES:Number = 1024*MEMORY_GIGABYTES;
 		
+		public static const STANDARD_MEMORY_UNITS:Array = [MEMORY_TERABYTES,MEMORY_GIGABYTES,MEMORY_MEGABYTES,MEMORY_KILOBYTES,MEMORY_BYTES];
+		
 		// Some units commented out for ease of use. Uncomment if required and 
 		// commit to SVN
 		/*public static const MEMORY_PETABYTES:Number = 1024*MEMORY_TERABYTES;
@@ -153,6 +155,7 @@
 		public static function breakdown(from:Number, fromType:Number,
 			toTypes:Array):Array
 		{
+			if(from<0)from = 0;
 			var ret:Array = [];
 			var remaining:Number = from;
 			var length:int = toTypes.length;
@@ -163,6 +166,14 @@
 				ret[i] = amount;
 			}
 			return ret;
+		}
+		/**
+		 * Breaks down a number of bytes into terabytes, gigabytes, megabytes
+		 * & bytes.
+		 */
+		public static function standardMemoryBreakdown(from:Number):Array
+		{
+			return breakdown(from,MEMORY_BYTES,STANDARD_MEMORY_UNITS);
 		}
 	}
 }

@@ -153,7 +153,8 @@ package org.farmcode.display.controls
 				_assumedPaddingBottom = 0;
 				_assumedPaddingRight = 0;
 			}
-			if(_data && _labelField)syncFieldToData();
+			if(_data)syncFieldToData();
+			else if(_labelField.text.length)_data = _labelField.text;
 			applyFormat();
 		}
 		override protected function unbindFromAsset():void{
@@ -177,16 +178,22 @@ package org.farmcode.display.controls
 				var paddingLeft:Number = (isNaN(_paddingLeft)?_assumedPaddingLeft:_paddingLeft);
 				var paddingRight:Number = (isNaN(_paddingRight)?_assumedPaddingRight:_paddingRight);
 				
+				var measWidth:Boolean = useMeasuredWidth();
+				
 				var textWas:String = _labelField.htmlText;
-				var widthWas:Number = _labelField.width;
 				var measText:String = getMeasurementText();
-				
-				if(_backing)_labelField.width = _backing.naturalWidth-paddingLeft-paddingRight+TextFieldGutter.TEXT_FIELD_GUTTER*2;
-				else _labelField.width = _labelField.naturalWidth;
-				
+				var widthWas:Number = _labelField.width;
+				if(measWidth){
+					if(_backing)_labelField.width = _backing.naturalWidth-paddingLeft-paddingRight+TextFieldGutter.TEXT_FIELD_GUTTER*2;
+					else _labelField.width = _labelField.naturalWidth;
+					
+					_measurements.x = _labelField.textWidth+paddingLeft+paddingRight;
+				}else{
+					_measurements.x = _labelField.naturalWidth+paddingLeft+paddingRight;
+					_labelField.width = _labelField.naturalWidth;
+				}
 				if(measText!=textWas)_labelField.htmlText = measText;
 				
-				_measurements.x = _labelField.textWidth+paddingLeft+paddingRight;
 				_measurements.y = _labelField.textHeight+paddingTop+paddingBottom;
 				_labelField.width = widthWas;
 				
@@ -194,6 +201,9 @@ package org.farmcode.display.controls
 			}else{
 				_measureFlag.invalidate();
 			}
+		}
+		protected function useMeasuredWidth():Boolean{
+			return (!_labelField.multiline);
 		}
 		protected function getMeasurementText():String{
 			return _labelField.htmlText;
@@ -236,8 +246,6 @@ package org.farmcode.display.controls
 			var paddingBottom:Number = getValueOrAssumed(_paddingBottom,_assumedPaddingBottom,0);
 			var paddingRight:Number = getValueOrAssumed(_paddingRight,_assumedPaddingRight,0);
 			
-			positionAsset();
-			
 			var labelWidth:Number = displayPosition.width-paddingLeft-paddingRight+TextFieldGutter.TEXT_FIELD_GUTTER*2;
 			if(labelWidth!=_labelField.width){
 				var textHeightWas:Number = _labelField.textHeight;
@@ -247,20 +255,22 @@ package org.farmcode.display.controls
 				}
 			}
 			_labelField.height = displayPosition.height-paddingTop-paddingBottom+TextFieldGutter.TEXT_FIELD_GUTTER*2;
+			if(_labelField!=asset){
+				_labelField.x = -TextFieldGutter.TEXT_FIELD_GUTTER+paddingLeft;
+				_labelField.y = -TextFieldGutter.TEXT_FIELD_GUTTER+paddingTop;
+			}
 		}
 		override protected function positionAsset():void{
-			var paddingTop:Number = getValueOrAssumed(_paddingTop,_assumedPaddingTop,0);
-			var paddingLeft:Number = getValueOrAssumed(_paddingLeft,_assumedPaddingLeft,0);
-			var paddingBottom:Number = getValueOrAssumed(_paddingBottom,_assumedPaddingBottom,0);
-			var paddingRight:Number = getValueOrAssumed(_paddingRight,_assumedPaddingRight,0);
-			
 			if(_labelField==asset){
+				var paddingTop:Number = getValueOrAssumed(_paddingTop,_assumedPaddingTop,0);
+				var paddingLeft:Number = getValueOrAssumed(_paddingLeft,_assumedPaddingLeft,0);
+				var paddingBottom:Number = getValueOrAssumed(_paddingBottom,_assumedPaddingBottom,0);
+				var paddingRight:Number = getValueOrAssumed(_paddingRight,_assumedPaddingRight,0);
+				
 				asset.x = displayPosition.x-TextFieldGutter.TEXT_FIELD_GUTTER+paddingLeft;
 				asset.y = displayPosition.y-TextFieldGutter.TEXT_FIELD_GUTTER+paddingTop;
 			}else{
 				super.positionAsset();
-				_labelField.x = -TextFieldGutter.TEXT_FIELD_GUTTER+paddingLeft;
-				_labelField.y = -TextFieldGutter.TEXT_FIELD_GUTTER+paddingTop;
 			}
 		}
 		protected function getValueOrAssumed(value:*, assumedValue:*, defaultValue:*=null) : *{

@@ -14,6 +14,9 @@ package org.farmcode.media.video
 	import org.farmcode.acting.actTypes.IAct;
 	import org.farmcode.acting.acts.Act;
 	import org.farmcode.core.DelayedCall;
+	import org.farmcode.data.core.NumberData;
+	import org.farmcode.data.dataTypes.INumberData;
+	import org.farmcode.data.dataTypes.INumberProvider;
 	import org.farmcode.display.assets.IVideoAsset;
 	import org.farmcode.display.assets.nativeAssets.NativeAssetFactory;
 	import org.farmcode.display.assets.nativeAssets.VideoAsset;
@@ -48,22 +51,6 @@ package org.farmcode.media.video
 		/**
 		 * @inheritDoc
 		 */
-		public function get currentTimeChanged():IAct{
-			if(!_currentTimeChanged)_currentTimeChanged = new Act();
-			return _currentTimeChanged;
-		}
-		
-		/**
-		 * @inheritDoc
-		 */
-		public function get totalTimeChanged():IAct{
-			if(!_totalTimeChanged)_totalTimeChanged = new Act();
-			return _totalTimeChanged;
-		}
-		
-		/**
-		 * @inheritDoc
-		 */
 		public function get volumeChanged():IAct{
 			if(!_volumeChanged)_volumeChanged = new Act();
 			return _volumeChanged;
@@ -92,7 +79,7 @@ package org.farmcode.media.video
 							_streamPlaying = true;
 							_netStream.resume();
 							if(_netStream.time==totalTime){
-								currentTime = 0;
+								setCurrentTime(0);
 							}
 						}
 					}else if(_videoStreamProxy.metadataReceived){
@@ -108,31 +95,13 @@ package org.farmcode.media.video
 			return _buffered;
 		}
 		
-		public function get currentTime():Number{
+		public function get currentTime():INumberData{
 			return _currentTime;
 		}
-		public function set currentTime(value:Number):void{
-			if(_streamStarted){
-				var toEnd:Boolean;
-				var end:Number = _netStream.time+_netStream.bufferLength;
-				if(value>=end){
-					value = end;
-					toEnd = true;
-				}
-				value = Math.min(value,_netStream.time+_netStream.bufferLength);
-				if(_currentTime!=value){
-					_currentTime = value;
-					_pendingSeek = true;
-					setBuffered(false);// seeking will force the playhead to wait for the large buffer to be reached without this.
-					_netStream.seek(value);
-					if(_currentTimeChanged)_currentTimeChanged.perform(this);
-				}
-			}
+		public function get totalTime():INumberProvider{
+			return _totalTime;
 		}
 		
-		public function get totalTime():Number{
-			return (!_streamStarted || isNaN(_videoStreamProxy.duration))?0:_videoStreamProxy.duration;
-		}
 		
 		public function get volume():Number{
 			return _volume;
@@ -168,18 +137,10 @@ package org.farmcode.media.video
 				_useTotalForProgress = value;
 			}
 		}
-		override public function get loadUnits():String{
-			if(_streamStarted){
-				return !isNaN(_videoStreamProxy.duration)?TIME_LOAD_UNITS:MEMORY_LOAD_UNITS;
-			}else{
-				return null;
-			}
-		}
 		
 		protected var _streamStarted:Boolean;
 		protected var _volume:Number = 1;
 		protected var _muted:Boolean;
-		protected var _currentTime:Number;
 		protected var _buffered:Boolean;
 		protected var _playing:Boolean;
 		protected var _useTotalForProgress:Boolean;
@@ -188,6 +149,10 @@ package org.farmcode.media.video
 		
 		protected var _loadingStartAt:Number;
 		protected var _loadingByteOffset:Number;
+		
+		protected var _ignoreCurrTimeChange:Boolean;
+		protected var _currentTime:NumberData;
+		protected var _totalTime:NumberData;
 		
 		/**
 		 * Represents whether the NetStream is in 'play' mode NOT whether it's actually playing.
@@ -204,8 +169,6 @@ package org.farmcode.media.video
 		
 		
 		protected var _volumeChanged:Act;
-		protected var _totalTimeChanged:Act;
-		protected var _currentTimeChanged:Act;
 		protected var _bufferedChanged:Act;
 		protected var _playingChanged:Act;
 		protected var _mutedChanged:Act;
@@ -214,13 +177,45 @@ package org.farmcode.media.video
 			super();
 			_measurements.x = 320;
 			_measurements.y = 240;
+			
+			_currentTime = new NumberData(0);
+			_currentTime.numericalValueChanged.addHandler(onCurrentTimeChanged);
+			
+			_totalTime = new NumberData();
+		}
+		
+		protected function onCurrentTimeChanged(from:NumberData):void{
+			var value:Number = from.numericalValue;
+			if(_streamStarted && !_ignoreCurrTimeChange){
+				var toEnd:Boolean;
+				var end:Number = _netStream.time+_netStream.bufferLength;
+				if(value>=end){
+					value = end;
+					toEnd = true;
+				}
+				value = Math.min(value,_netStream.time+_netStream.bufferLength);
+				if(_currentTime.numericalValue!=value){
+					setCurrentTime(value);
+				}
+				if(_netStream.time!=value){
+					_pendingSeek = true;
+					setBuffered(false);// seeking will force the playhead to wait for the large buffer to be reached without this.
+					_netStream.seek(value);
+				}
+			}
+		}
+		protected function setCurrentTime(value:Number):void{
+			_ignoreCurrTimeChange = true;
+			_currentTime.numericalValue = value;
+			_ignoreCurrTimeChange = false;
 		}
 		protected function closeStream():void{
 			if(_streamStarted){
 				_streamStarted = false;
 				_netStream.close();
 				_netStream = null;
-				_currentTime = 0;
+				_totalTime.numericalValue = 0;
+				setCurrentTime(0);
 				setBuffered(false);
 				updateDisplayMeasurements(320,240);
 				
@@ -289,19 +284,22 @@ package org.farmcode.media.video
 		}
 		protected function pollVideo():void{
 			var total:Number;
-			if(!_pendingSeek && _currentTime != _netStream.time){
-				_currentTime = _netStream.time;
-				if(_currentTimeChanged)_currentTimeChanged.perform(this);
+			if(!_pendingSeek && _currentTime.numericalValue != _netStream.time){
+				if(_netStream.time>_totalTime.numericalValue){
+					_totalTime.numericalValue = _netStream.time;
+				}
+				setCurrentTime(_netStream.time);
 			}
 			if(_useTotalForProgress){
 				if(!isNaN(_videoStreamProxy.duration)){
 					// occasionally bufferLength+time is more that duration
 					total = _videoStreamProxy.duration;
 					var progress:Number = _netStream.bufferLength+_netStream.time;
-					setLoadProps(total>progress?progress:total,total);
+					progress = (int((progress*100)+0.5))/100;
+					total = (int((total*100)+0.5))/100;
+					setLoadProps(progress,total,TIME_LOAD_UNITS);
 				}else{
-					setLoadProps(int(_netStream.bytesLoaded+0.5),
-						int(_netStream.bytesTotal+0.5));
+					setMemoryLoadProps(_netStream.bytesLoaded,_netStream.bytesTotal);
 				}
 			}else{
 				
@@ -314,9 +312,10 @@ package org.farmcode.media.video
 					total = _smallBuffer;
 				}
 				if(_buffered || _netStream.bufferLength>total){
-					setLoadProps(total,	total);
+					total = (int((total*100)+0.5))/100;
+					setLoadProps(total,	total, TIME_LOAD_UNITS);
 				}else{
-					setLoadProps(_netStream.bufferLength, total);
+					setMemoryLoadProps(_netStream.bufferLength, total);
 				}
 			}
 			// NetStream doesn't dispatch the Buffer Full event when it is paused
@@ -402,6 +401,7 @@ package org.farmcode.media.video
 				_streamPlaying = false;
 				_netStream.pause();
 			}
+			_totalTime.numericalValue = _videoStreamProxy.duration;
 		}
 		// TODO: dispatch errors
 		protected function onLoadError(e:Event):void{

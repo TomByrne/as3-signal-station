@@ -105,7 +105,8 @@ package org.farmcode.display.core
 			this.asset = asset;
 			if(asset){
 				_measureFlag.validate();
-				setDisplayPosition(asset.x,asset.y,_measurements.x,_measurements.y);
+				//setDisplayPosition(asset.x,asset.y,_measurements.x,_measurements.y);
+				setDisplayPosition(asset.x,asset.y,asset.naturalWidth,asset.naturalHeight);
 			}
 		}
 		final protected function doMeasure():void{

@@ -160,6 +160,13 @@ package org.farmcode.display.assets.nativeAssets
 			return _textField.textHeight;
 		}
 		
+		public function get autoSize():String{
+			return _textField.autoSize;
+		}
+		public function set autoSize(value:String):void{
+			_textField.autoSize = value;
+		}
+		
 		
 		private var _textField:TextField;
 		protected var _change:NativeAct;

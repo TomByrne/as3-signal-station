@@ -36,6 +36,9 @@ package org.farmcode.display.assets
 		function set border(value:Boolean):void;
 		function get border():Boolean;
 		
+		function set autoSize(value:String):void;
+		function get autoSize():String;
+		
 		function get selectionBeginIndex():int;
 		function get selectionEndIndex():int;
 		
