@@ -34,6 +34,9 @@ package org.farmcode.data.operators
 				}
 			}
 		}
+		public function get stringValue():String{
+			return _stringValue;
+		}
 		
 		public function get value():*{
 			return numericalValue;
@@ -51,11 +54,20 @@ package org.farmcode.data.operators
 			if(!_numericalValueChanged)_numericalValueChanged = new Act();
 			return _numericalValueChanged;
 		}
+		/**
+		 * @inheritDoc
+		 */
+		public function get stringValueChanged():IAct{
+			if(!_stringValueChanged)_stringValueChanged = new Act();
+			return _stringValueChanged;
+		}
 		
+		protected var _stringValueChanged:Act;
 		protected var _numericalValueChanged:Act;
 		
 		private var _numericalValue:Number;
 		private var _validatedValue:Number;
+		private var _stringValue:String;
 		private var _numberProvider:INumberProvider;
 		private var _numberConsumer:INumberConsumer;
 		private var _ignoreProviderChanges:Boolean;
@@ -69,14 +81,21 @@ package org.farmcode.data.operators
 		protected function checkValue():void{
 			var newVal:Number = validateValue(_numericalValue);
 			if(_validatedValue!=newVal && !(isNaN(value) && isNaN(_numericalValue))){
+				var oldStr:String = _stringValue;
 				if(_numberConsumer){
 					_ignoreProviderChanges = true;
 					_numberConsumer.numericalValue = newVal;
 					newVal = _numberProvider.numericalValue;
 					_ignoreProviderChanges = false;
+					_stringValue = _numberProvider.stringValue;
+				}else{
+					_stringValue = String(newVal);
 				}
 				_validatedValue = newVal;
 				if(_numericalValueChanged)_numericalValueChanged.perform(this);
+				if(oldStr!=_stringValue && _stringValueChanged){
+					_stringValueChanged.perform(this);
+				}
 			}
 		}
 		protected function validateValue(value:Number):Number{

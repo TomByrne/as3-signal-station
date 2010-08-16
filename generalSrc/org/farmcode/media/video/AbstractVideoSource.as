@@ -1,6 +1,5 @@
 package org.farmcode.media.video
 {
-	import au.com.thefarmdigital.utils.VideoBufferCalculator;
 	
 	import flash.events.Event;
 	import flash.events.IOErrorEvent;

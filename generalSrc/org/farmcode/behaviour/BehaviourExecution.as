@@ -1,13 +1,12 @@
 package org.farmcode.behaviour
 {
-	import org.farmcode.behaviour.behaviours.IBehaviour;
-	import org.farmcode.behaviour.goals.BinaryGoal;
-	import org.farmcode.behaviour.goals.IGoal;
-	import org.farmcode.behaviour.rules.IBehaviourRule;
-	import au.com.thefarmdigital.math.StatisticsUtils;
-	
 	import org.farmcode.acting.actTypes.IAct;
 	import org.farmcode.acting.acts.Act;
+	import org.farmcode.behaviour.behaviours.IBehaviour;
+	import org.farmcode.behaviour.goals.BinaryGoal;
+	import org.farmcode.behaviour.goals.Goal;
+	import org.farmcode.behaviour.goals.IGoal;
+	import org.farmcode.behaviour.rules.IBehaviourRule;
 	import org.farmcode.hoborg.ReadableObjectDescriber;
 	
 	public class BehaviourExecution
@@ -81,7 +80,7 @@ package org.farmcode.behaviour
 			this._goals = value;
 			if (this.goals)
 			{
-				this.priority = StatisticsUtils.average(this.goals, "priority");
+				this.priority = averagePriority(this.goals);
 			}
 		}
 		public function get goals(): Array{
@@ -202,6 +201,15 @@ package org.farmcode.behaviour
 		public function toString(): String
 		{
 			return ReadableObjectDescriber.describe(this);
+		}
+		
+		protected static function averagePriority(items: Array): Number
+		{
+			var priority: Number = 0;
+			for each(var goal:Goal in items){
+				priority += goal.priority;
+			}
+			return priority/items.length;
 		}
 	}
 }

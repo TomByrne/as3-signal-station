@@ -1,7 +1,5 @@
 package org.farmcode.formatters
 {
-	import au.com.thefarmdigital.utils.DateParser;
-	
 	import org.farmcode.acting.actTypes.IAct;
 	import org.farmcode.acting.acts.Act;
 	import org.farmcode.data.dataTypes.IDateConsumer;
@@ -9,6 +7,7 @@ package org.farmcode.formatters
 	import org.farmcode.data.dataTypes.IStringConsumer;
 	import org.farmcode.data.dataTypes.IStringProvider;
 	import org.farmcode.data.dataTypes.IValueProvider;
+	import org.farmcode.utils.DateFormat;
 	
 	public class DateFormatter implements IFormatter, IValueProvider
 	{
@@ -35,11 +34,11 @@ package org.farmcode.formatters
 		}
 		
 		public function get format():String{
-			return _format;
+			return _dateFormat.formatString;
 		}
 		public function set format(value:String):void{
-			if(_format!=value){
-				_format = value;
+			if(_dateFormat.formatString!=value){
+				_dateFormat.formatString = value;
 				invalidateString();
 			}
 		}
@@ -86,10 +85,10 @@ package org.farmcode.formatters
 		private var _ignoreProviderChanges:Boolean;
 		private var _rawDateValue:Date;
 		private var _stringValue:String;
-		private var _format:String;
 		private var _dateValue:Date;
 		private var _stringValueChanged:Act;
-		private var _stringInvalid:Boolean; 
+		private var _stringInvalid:Boolean;
+		private var _dateFormat:DateFormat = new DateFormat();
 		
 		public function DateFormatter(dateProvider:IDateProvider=null){
 			this.dateProvider = dateProvider;
@@ -102,11 +101,11 @@ package org.farmcode.formatters
 			if(!input){
 				return "";
 			}else{
-				return DateParser.format(input,_format);
+				return _dateFormat.format(input);
 			}
 		}
 		protected function parseString(formatted:String):Date{
-			var ret:Date = DateParser.parse(formatted,_format);
+			var ret:Date = _dateFormat.parse(formatted);
 			if(ret){
 				return ret;
 			}else if(_rawDateValue){

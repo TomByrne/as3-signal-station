@@ -1,9 +1,4 @@
 package org.farmcode.display.controls.popout {
-	import au.com.thefarmdigital.utils.DisplayUtils;
-	
-	import flash.display.DisplayObject;
-	import flash.display.DisplayObjectContainer;
-	import flash.display.InteractiveObject;
 	import flash.geom.Point;
 	import flash.geom.Rectangle;
 	
@@ -12,7 +7,7 @@ package org.farmcode.display.controls.popout {
 	import org.farmcode.display.assets.IContainerAsset;
 	import org.farmcode.display.assets.IDisplayAsset;
 	import org.farmcode.display.assets.IInteractiveObjectAsset;
-	import org.farmcode.display.assets.utils.AssetUtils;
+	import org.farmcode.display.assets.utils.isDescendant;
 	import org.farmcode.display.constants.Anchor;
 	import org.farmcode.display.containers.ListBox;
 	import org.farmcode.display.controls.Control;
@@ -79,8 +74,8 @@ package org.farmcode.display.controls.popout {
 			}
 		}
 		protected function onMouseDown(from:IInteractiveObjectAsset, info:IMouseActInfo):void {
-			if(info.mouseTarget!=asset && !AssetUtils.isDescendant(_containerAsset,info.mouseTarget) &&
-				info.mouseTarget!=_listBox.asset && !AssetUtils.isDescendant(_listBox.asset as IContainerAsset,info.mouseTarget)){
+			if(info.mouseTarget!=asset && !isDescendant(_containerAsset,info.mouseTarget) &&
+				info.mouseTarget!=_listBox.asset && !isDescendant(_listBox.asset as IContainerAsset,info.mouseTarget)){
 				_popoutDisplay.popoutShown = false;
 			}
 		}

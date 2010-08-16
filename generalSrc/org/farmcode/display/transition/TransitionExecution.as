@@ -1,7 +1,5 @@
 package org.farmcode.display.transition
 {
-	import au.com.thefarmdigital.utils.DisplayUtils;
-	
 	import flash.display.BitmapData;
 	import flash.display.PixelSnapping;
 	import flash.events.Event;
@@ -16,6 +14,7 @@ package org.farmcode.display.transition
 	import org.farmcode.display.assets.IContainerAsset;
 	import org.farmcode.display.assets.IDisplayAsset;
 	import org.farmcode.display.assets.nativeAssets.Asset;
+	import org.farmcode.display.assets.utils.isDescendant;
 	
 	/**
 	 * The TransitionExecution class takes two DisplayObjects and transitions between them.
@@ -202,7 +201,7 @@ package org.farmcode.display.transition
 			child.visible = false;
 			if(parent!=child.parent){
 				if(child.parent){
-					if(DisplayUtils.isDescendant(child.parent,parent))return;
+					if(isDescendant(child.parent,parent))return;
 					var point:Point = parent.globalToLocal(child.localToGlobal(new Point()));
 					child.parent.removeAsset(child);
 					child.x = point.x;

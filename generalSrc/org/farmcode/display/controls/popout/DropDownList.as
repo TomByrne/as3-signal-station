@@ -1,14 +1,10 @@
 package org.farmcode.display.controls.popout {
-	import au.com.thefarmdigital.validation.ValidationEvent;
-	
-	import flash.display.DisplayObject;
 	import flash.events.Event;
 	import flash.geom.Rectangle;
 	import flash.utils.Dictionary;
 	
 	import org.farmcode.acting.actTypes.IAct;
 	import org.farmcode.acting.acts.Act;
-	import org.farmcode.display.assets.IAsset;
 	import org.farmcode.display.assets.IDisplayAsset;
 	import org.farmcode.display.containers.ListBox;
 	import org.farmcode.display.controls.TextLabelButton;

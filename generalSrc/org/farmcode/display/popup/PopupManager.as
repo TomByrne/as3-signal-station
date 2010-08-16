@@ -1,8 +1,5 @@
 package org.farmcode.display.popup
 {
-	import au.com.thefarmdigital.utils.DisplayUtils;
-	
-	import flash.events.Event;
 	import flash.utils.Dictionary;
 	
 	import org.farmcode.actLibrary.display.popup.IModalDisablerView;
@@ -11,6 +8,7 @@ package org.farmcode.display.popup
 	import org.farmcode.core.DelayedCall;
 	import org.farmcode.display.assets.IContainerAsset;
 	import org.farmcode.display.assets.IDisplayAsset;
+	import org.farmcode.display.assets.utils.isDescendant;
 	import org.farmcode.instanceFactory.IInstanceFactory;
 	
 	/** 
@@ -207,7 +205,7 @@ package org.farmcode.display.popup
 			{
 				var cast:IContainerAsset = popupInfo.popupDisplay as IContainerAsset;
 				var focus:IDisplayAsset = popupInfo.popupDisplay.stage.focus;
-				if(focus && reclaimFocus && ((popupInfo.popupDisplay==focus) || (cast && DisplayUtils.isDescendant(cast,focus)))){
+				if(focus && reclaimFocus && ((popupInfo.popupDisplay==focus) || (cast && isDescendant(cast,focus)))){
 					popupInfo.popupDisplay.stage.focus = null;
 				}
 				

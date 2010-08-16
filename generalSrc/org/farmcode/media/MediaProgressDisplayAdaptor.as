@@ -1,5 +1,7 @@
 package org.farmcode.media
 {
+	import org.farmcode.data.dataTypes.INumberProvider;
+	import org.farmcode.data.dataTypes.IStringProvider;
 	import org.farmcode.display.progress.IProgressDisplay;
 
 	public class MediaProgressDisplayAdaptor
@@ -11,18 +13,20 @@ package org.farmcode.media
 		public function set mediaSource(value:IMediaSource):void{
 			if(_mediaSource!=value){
 				if(_mediaSource){
-					_mediaSource.loadProgressChanged.removeHandler(onProgressChange);
-					_mediaSource.loadTotalChanged.removeHandler(onTotalChange);
+					_mediaSource.loadProgress.numericalValueChanged.removeHandler(onProgressChange);
+					_mediaSource.loadTotal.numericalValueChanged.removeHandler(onTotalChange);
+					_mediaSource.loadUnits.stringValueChanged.removeHandler(onUnitsChange);
 				}
 				_mediaSource = value;
 				if(_mediaSource){
-					_mediaSource.loadProgressChanged.addHandler(onProgressChange);
-					_mediaSource.loadTotalChanged.addHandler(onTotalChange);
+					_mediaSource.loadProgress.numericalValueChanged.addHandler(onProgressChange);
+					_mediaSource.loadTotal.numericalValueChanged.addHandler(onTotalChange);
+					_mediaSource.loadUnits.stringValueChanged.addHandler(onUnitsChange);
 					if(_progressDisplay){
 						_progressDisplay.measurable = true;
-						_progressDisplay.progress = _mediaSource.loadProgress;
-						_progressDisplay.total = _mediaSource.loadTotal;
-						_progressDisplay.units = _mediaSource.loadUnits;
+						_progressDisplay.progress = _mediaSource.loadProgress.numericalValue;
+						_progressDisplay.total = _mediaSource.loadTotal.numericalValue;
+						_progressDisplay.units = _mediaSource.loadUnits.stringValue;
 					}
 				}
 			}
@@ -37,9 +41,9 @@ package org.farmcode.media
 				if(_progressDisplay){
 					if(_mediaSource){
 						_progressDisplay.measurable = true;
-						_progressDisplay.progress = _mediaSource.loadProgress;
-						_progressDisplay.total = _mediaSource.loadTotal;
-						_progressDisplay.units = _mediaSource.loadUnits;
+						_progressDisplay.progress = _mediaSource.loadProgress.numericalValue;
+						_progressDisplay.total = _mediaSource.loadTotal.numericalValue;
+						_progressDisplay.units = _mediaSource.loadUnits.stringValue;
 					}
 				}
 			}
@@ -52,12 +56,14 @@ package org.farmcode.media
 			this.mediaSource = mediaSource;
 			this.progressDisplay = progressDisplay;
 		}
-		protected function onProgressChange(from:IMediaSource):void{
-			_progressDisplay.progress = from.loadProgress;
-			_progressDisplay.units = _mediaSource.loadUnits;
+		protected function onProgressChange(from:INumberProvider):void{
+			_progressDisplay.progress = _mediaSource.loadProgress.numericalValue;
 		}
-		protected function onTotalChange(from:IMediaSource):void{
-			_progressDisplay.total = from.loadTotal;
+		protected function onTotalChange(from:INumberProvider):void{
+			_progressDisplay.total = _mediaSource.loadTotal.numericalValue;
+		}
+		protected function onUnitsChange(from:IStringProvider):void{
+			_progressDisplay.units = _mediaSource.loadUnits.stringValue;
 		}
 	}
 }

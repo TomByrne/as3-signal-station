@@ -1,7 +1,6 @@
 package org.farmcode.actLibrary.display.transition
 {
-	import au.com.thefarmdigital.utils.DisplayObjectSnapshot;
-	import au.com.thefarmdigital.utils.DisplayUtils;
+	import org.farmcode.display.assets.utils.snapshot;
 	
 	import flash.display.Bitmap;
 	import flash.utils.Dictionary;
@@ -13,6 +12,7 @@ package org.farmcode.actLibrary.display.transition
 	import org.farmcode.acting.universal.UniversalActExecution;
 	import org.farmcode.display.assets.IContainerAsset;
 	import org.farmcode.display.assets.IDisplayAsset;
+	import org.farmcode.display.assets.utils.isDescendant;
 	import org.farmcode.display.transition.TransitionExecution;
 	import org.farmcode.display.transition.TransitionManager;
 	
@@ -52,11 +52,11 @@ package org.farmcode.actLibrary.display.transition
 				var hiddenDisplay:IDisplayAsset;
 				if(startDisplay && !alreadyTransitioning(startDisplay)){
 					var castStart:IContainerAsset = (startDisplay as IContainerAsset);
-					if(castStart && DisplayUtils.isDescendant(castStart,endDisplay)){
+					if(castStart && isDescendant(castStart,endDisplay)){
 						endDisplay = startDisplay;
 					}else{
 						var castEnd:IContainerAsset = (endDisplay as IContainerAsset);
-						if(castEnd && DisplayUtils.isDescendant(castEnd,startDisplay)){
+						if(castEnd && isDescendant(castEnd,startDisplay)){
 							startDisplay = endDisplay;
 						}
 					}
@@ -76,7 +76,7 @@ package org.farmcode.actLibrary.display.transition
 						}
 						if(parent){
 							if(wasVisible){
-								startDisplay = DisplayObjectSnapshot.snapshot(startDisplay,parent);
+								startDisplay = snapshot(startDisplay,parent);
 							}else{
 								startDisplay = startDisplay.createAsset(IDisplayAsset);
 							}
