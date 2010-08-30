@@ -90,7 +90,7 @@ package org.farmcode.display.containers.accordionGrid
 		}
 		override protected function setContainerSize(x:Number, y:Number, width:Number, height:Number) : void{
 			_headerContainer.setPosition(x-_headerX-(_minMeasurements.x-_labelMeas.x),
-										y-_headerY-(_minMeasurements.y-_labelMeas.y);
+										y-_headerY-(_minMeasurements.y-_labelMeas.y));
 			
 			_cellContainer.setPosition(x,y);
 			if(wipeFromTop){
