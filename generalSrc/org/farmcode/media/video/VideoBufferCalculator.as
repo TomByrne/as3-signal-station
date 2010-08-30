@@ -2,7 +2,9 @@ package org.farmcode.media.video
 {
 	import flash.net.NetStream;
 	import flash.net.SharedObject;
-	import org.farmcode.math.UnitConversion;
+	
+	import org.farmcode.math.units.MemoryUnitConverter;
+	import org.farmcode.math.units.UnitConverter;
 	
 	public class VideoBufferCalculator
 	{
@@ -97,7 +99,7 @@ package org.farmcode.media.video
 		
 		public static function calcSmallBuffer(_netStream:NetStream, timeSpendLoading:Number, byteOffset:Number, combinedKbps:Number, totalTime:Number):Number{
 			if(_netStream.bytesLoaded && !isNaN(byteOffset)){
-				if(isNaN(combinedKbps) && !isNaN(totalTime))combinedKbps = UnitConversion.convert(_netStream.bytesTotal/totalTime,UnitConversion.MEMORY_BYTES,UnitConversion.MEMORY_KILOBYTES);
+				if(isNaN(combinedKbps) && !isNaN(totalTime))combinedKbps = UnitConverter.convert(_netStream.bytesTotal/totalTime,MemoryUnitConverter.BYTES,MemoryUnitConverter.KILOBYTES);
 				
 				var bandwidth:Number = getBandwidth(_netStream, timeSpendLoading, byteOffset);
 				
@@ -120,10 +122,10 @@ package org.farmcode.media.video
 			return (!isNaN(totalTime) && totalTime?totalTime:BIG_BUFFER);
 		}
 		private static function toKilobits(bytes:Number):Number{
-			return UnitConversion.convert(bytes,UnitConversion.MEMORY_BYTES,UnitConversion.MEMORY_KILOBITS);
+			return UnitConverter.convert(bytes,MemoryUnitConverter.BYTES,MemoryUnitConverter.KILOBITS);
 		}
 		private static function toBytes(kilobits:Number):Number{
-			return UnitConversion.convert(kilobits,UnitConversion.MEMORY_KILOBITS,UnitConversion.MEMORY_BYTES);
+			return UnitConverter.convert(kilobits,MemoryUnitConverter.KILOBITS,MemoryUnitConverter.BYTES);
 		}
 	}
 }

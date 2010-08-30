@@ -3,7 +3,7 @@ package org.farmcode.acting.acts
 	import org.farmcode.acting.actTypes.IAct;
 	import org.farmcode.acting.actTypes.IUniversalAct;
 	import org.farmcode.acting.universal.UniversalActManager;
-	import org.farmcode.display.assets.IDisplayAsset;
+	import org.farmcode.display.assets.assetTypes.IDisplayAsset;
 	import org.farmcode.display.core.ScopedObject;
 	
 	public class UniversalAct extends AsynchronousAct implements IUniversalAct

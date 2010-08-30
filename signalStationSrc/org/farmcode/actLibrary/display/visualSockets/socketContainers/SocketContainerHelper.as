@@ -14,7 +14,7 @@ package org.farmcode.actLibrary.display.visualSockets.socketContainers
 	import org.farmcode.acting.actTypes.IAct;
 	import org.farmcode.acting.acts.Act;
 	import org.farmcode.acting.universal.UniversalActExecution;
-	import org.farmcode.display.assets.IContainerAsset;
+	import org.farmcode.display.assets.assetTypes.IContainerAsset;
 	import org.farmcode.utils.ObjectUtils;
 
 	public class SocketContainerHelper extends UniversalActorHelper

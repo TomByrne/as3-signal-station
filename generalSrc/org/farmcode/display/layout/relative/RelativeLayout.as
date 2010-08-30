@@ -1,11 +1,7 @@
 package org.farmcode.display.layout.relative
 {
-	import flash.display.Stage;
 	import flash.geom.Point;
-	import flash.geom.Rectangle;
 	
-	import org.farmcode.display.assets.IDisplayAsset;
-	import org.farmcode.display.assets.IStageAsset;
 	import org.farmcode.display.core.IView;
 	import org.farmcode.display.layout.ILayoutSubject;
 	import org.farmcode.display.layout.stage.StageFillLayout;
@@ -14,9 +10,10 @@ package org.farmcode.display.layout.relative
 	{
 		private static const ORIGIN:Point = new Point();
 		
-		public function RelativeLayout(scopeView:IView=null, stage:IStageAsset=null){
-			super(scopeView, stage);
+		public function RelativeLayout(scopeView:IView=null){
+			super(scopeView);
 		}
+		// TODO:get rid of this
 		public function update():void{
 			invalidate();
 		}
@@ -25,9 +22,6 @@ package org.farmcode.display.layout.relative
 			var layoutInfo:IRelativeLayoutInfo = (subject.layoutInfo as IRelativeLayoutInfo);
 			if(layoutInfo){
 				var castView:IView = (subject as IView);
-				if(!stage && castView && castView.asset.stage){
-					stage = castView.asset.stage;
-				}
 				
 				// get point in global space
 				var transPoint:Point = layoutInfo.relativeTo.localToGlobal(ORIGIN);
@@ -62,18 +56,18 @@ package org.farmcode.display.layout.relative
 					if(width>_displayPosition.width){
 						width = _displayPosition.width;
 					}
-					if(transPoint.x<subMeas.x+_displayPosition.x){
-						transPoint.x = subMeas.x+_displayPosition.x;
-					}else if(transPoint.x>subMeas.x+_displayPosition.x+_displayPosition.width-width){
-						transPoint.x = subMeas.x+_displayPosition.x+_displayPosition.width-width;
+					if(transPoint.x<_displayPosition.x){
+						transPoint.x = _displayPosition.x;
+					}else if(transPoint.x>_displayPosition.x+_displayPosition.width-width){
+						transPoint.x = _displayPosition.x+_displayPosition.width-width;
 					}
 					if(height>_displayPosition.height){
 						height = _displayPosition.height;
 					}
-					if(transPoint.y<subMeas.y+_displayPosition.y){
-						transPoint.y = subMeas.y+_displayPosition.y;
-					}else if(transPoint.y>subMeas.y+_displayPosition.y+_displayPosition.height-height){
-						transPoint.y = subMeas.y+_displayPosition.y+_displayPosition.height-height;
+					if(transPoint.y<_displayPosition.y){
+						transPoint.y = _displayPosition.y;
+					}else if(transPoint.y>_displayPosition.y+_displayPosition.height-height){
+						transPoint.y = _displayPosition.y+_displayPosition.height-height;
 					}
 				}
 				

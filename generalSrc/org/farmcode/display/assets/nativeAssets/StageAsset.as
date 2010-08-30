@@ -9,9 +9,9 @@ package org.farmcode.display.assets.nativeAssets
 	
 	import org.farmcode.acting.actTypes.IAct;
 	import org.farmcode.acting.acts.NativeAct;
-	import org.farmcode.display.assets.IAsset;
-	import org.farmcode.display.assets.IInteractiveObjectAsset;
-	import org.farmcode.display.assets.IStageAsset;
+	import org.farmcode.display.assets.assetTypes.IAsset;
+	import org.farmcode.display.assets.assetTypes.IInteractiveObjectAsset;
+	import org.farmcode.display.assets.assetTypes.IStageAsset;
 
 	public class StageAsset extends DisplayObjectContainerAsset implements IStageAsset
 	{
@@ -46,7 +46,7 @@ package org.farmcode.display.assets.nativeAssets
 			if(_focus && _focus.displayObject==_stage.focus){
 				return _focus;
 			}else if(_stage.focus){
-				_focus = NativeAssetFactory.getNew(_stage.focus);
+				_focus = _nativeFactory.getNew(_stage.focus);
 				return _focus;
 			}else{
 				return null;
@@ -82,8 +82,8 @@ package org.farmcode.display.assets.nativeAssets
 		protected var _resize:NativeAct;
 		protected var _fullScreen:NativeAct;
 		
-		public function StageAsset(){
-			super();
+		public function StageAsset(factory:NativeAssetFactory=null){
+			super(factory);
 		}
 	}
 }

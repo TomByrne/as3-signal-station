@@ -6,6 +6,10 @@ package org.farmcode.instanceFactory
 	{
 		function createInstance():*;
 		function initialiseInstance(object:*):void;
+		/**
+		 * Should return true if the object supplied can be repurposed
+		 * (using initialiseInstance()) to match this factories output.
+		 */
 		function matchesType(object:*):Boolean;
 		/**
 		 * handler(instanceFactory:IInstanceFactory, instance:*)

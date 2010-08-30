@@ -1,7 +1,7 @@
 package org.farmcode.display.assets.utils
 {
-	import org.farmcode.display.assets.IContainerAsset;
-	import org.farmcode.display.assets.IDisplayAsset;
+	import org.farmcode.display.assets.assetTypes.IContainerAsset;
+	import org.farmcode.display.assets.assetTypes.IDisplayAsset;
 
 	/**
 	 * Finds if the given descendant is within the given parent's display tree

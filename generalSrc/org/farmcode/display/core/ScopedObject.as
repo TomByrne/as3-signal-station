@@ -4,8 +4,8 @@ package org.farmcode.display.core
 	
 	import org.farmcode.acting.actTypes.IAct;
 	import org.farmcode.acting.acts.Act;
-	import org.farmcode.display.assets.IDisplayAsset;
-	import org.farmcode.display.assets.IStageAsset;
+	import org.farmcode.display.assets.assetTypes.IDisplayAsset;
+	import org.farmcode.display.assets.assetTypes.IStageAsset;
 	
 	public class ScopedObject extends View implements IScopedObject
 	{
@@ -68,12 +68,25 @@ package org.farmcode.display.core
 				}
 			}
 		}
+		
+		
+		public function ScopedObject(asset:IDisplayAsset=null){
+			super(asset);
+		}
 		protected function setStage(stage:IStageAsset):void{
 			_assetStage = stage;
 			checkAdded();
 		}
 		protected function onAdded(from:IDisplayAsset):void{
-			setStage(_asset.stage);
+			/*
+			This conditional is here because if the asset property gets
+			set to null during a another handler of the addedToStage
+			Act, then this handler will still be called (handlers
+			aren't removed till after the whole perform call).
+			 */
+			if(_asset){
+				setStage(_asset.stage);
+			}
 		}
 		protected function onRemoved(from:IDisplayAsset):void{
 			setStage(null);

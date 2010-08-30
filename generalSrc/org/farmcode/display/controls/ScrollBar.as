@@ -10,9 +10,9 @@ package org.farmcode.display.controls
 	import org.farmcode.acting.acts.Act;
 	import org.farmcode.display.DisplayNamespace;
 	import org.farmcode.display.actInfo.IMouseActInfo;
-	import org.farmcode.display.assets.IDisplayAsset;
-	import org.farmcode.display.assets.IInteractiveObjectAsset;
-	import org.farmcode.display.assets.ISpriteAsset;
+	import org.farmcode.display.assets.assetTypes.IDisplayAsset;
+	import org.farmcode.display.assets.assetTypes.IInteractiveObjectAsset;
+	import org.farmcode.display.assets.assetTypes.ISpriteAsset;
 	import org.farmcode.display.constants.Direction;
 	import org.farmcode.display.core.LayoutView;
 	import org.farmcode.display.scrolling.IScrollable;
@@ -252,8 +252,7 @@ package org.farmcode.display.controls
 				asset.rotation = 0;
 			}else{
 				asset.rotation = -90;
-				asset.x = displayPosition.x;
-				asset.y = displayPosition.y+displayPosition.height;
+				asset.setPosition(displayPosition.x,displayPosition.y+displayPosition.height);
 			}
 		}
 		override protected function draw():void{

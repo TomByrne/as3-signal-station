@@ -5,8 +5,8 @@ package org.farmcode.actLibrary.display.visualSockets.plugs
 	import org.farmcode.actLibrary.display.visualSockets.sockets.IDisplaySocket;
 	import org.farmcode.acting.actTypes.IUniversalAct;
 	import org.farmcode.acting.universal.UniversalActExecution;
-	import org.farmcode.display.assets.IAsset;
-	import org.farmcode.display.assets.IDisplayAsset;
+	import org.farmcode.display.assets.assetTypes.IAsset;
+	import org.farmcode.display.assets.assetTypes.IDisplayAsset;
 	import org.farmcode.display.layout.ILayoutSubject;
 	
 	public interface IPlugDisplay extends ILayoutSubject

@@ -5,20 +5,19 @@ package org.farmcode.display.controls
 	import org.farmcode.acting.acts.Act;
 	import org.farmcode.data.dataTypes.IBooleanConsumer;
 	import org.farmcode.data.dataTypes.IBooleanProvider;
-	import org.farmcode.display.assets.IDisplayAsset;
+	import org.farmcode.display.DisplayNamespace;
+	import org.farmcode.display.assets.assetTypes.IDisplayAsset;
 	import org.farmcode.display.assets.states.StateDef;
 	import org.farmcode.display.containers.ISelectableRenderer;
 	import org.farmcode.display.tabFocus.ITabFocusable;
 	import org.farmcode.display.tabFocus.InteractiveAssetFocusWrapper;
 	
+	use namespace DisplayNamespace;
+	
 	public class ToggleButton extends Button implements ISelectableRenderer
 	{
-		private static var SELECTED_FRAME_LABEL:String = "selected";
-		private static var UNSELECTED_FRAME_LABEL:String = "unselected";
-		private static var SELECTED_UP_FRAME_LABEL:String = "selectedMouseUp";
-		private static var SELECTED_DOWN_FRAME_LABEL:String = "selectedMouseDown";
-		private static var SELECTED_OVER_FRAME_LABEL:String = "selectedMouseOver";
-		private static var SELECTED_OUT_FRAME_LABEL:String = "selectedMouseOut";
+		DisplayNamespace static var STATE_SELECTED:String = "selected";
+		DisplayNamespace static var STATE_UNSELECTED:String = "unselected";
 		
 		public function get selected():Boolean{
 			return _selected;
@@ -45,6 +44,7 @@ package org.farmcode.display.controls
 		}
 		public function get tabFocusable(): ITabFocusable{
 			checkIsBound();
+			if(!_tabFocusable)_tabFocusable = new InteractiveAssetFocusWrapper(_interactiveObjectAsset);
 			return _tabFocusable;
 		}
 		
@@ -100,7 +100,7 @@ package org.farmcode.display.controls
 		private var _togglable:Boolean = true;
 		private var _tabFocusable:InteractiveAssetFocusWrapper;
 		
-		protected var _selectedState:StateDef = new StateDef([SELECTED_FRAME_LABEL,UNSELECTED_FRAME_LABEL],1);
+		protected var _selectedState:StateDef = new StateDef([STATE_SELECTED,STATE_UNSELECTED],1);
 		
 		public function ToggleButton(asset:IDisplayAsset=null){
 			super(asset);
@@ -108,14 +108,17 @@ package org.farmcode.display.controls
 		override protected function init() : void{
 			super.init();
 			clicked.addHandler(onClick);
-			_tabFocusable = new InteractiveAssetFocusWrapper();
 		}
 		override protected function bindToAsset() : void{
 			super.bindToAsset();
-			_tabFocusable.interactiveAsset = _interactiveArea;
+			if(_tabFocusable){
+				_tabFocusable.interactiveAsset = _interactiveArea;
+			}
 		}
 		override protected function unbindFromAsset() : void{
-			_tabFocusable.interactiveAsset = null;
+			if(_tabFocusable){
+				_tabFocusable.interactiveAsset = null;
+			}
 			super.unbindFromAsset();
 		}
 		private function onProviderChanged(from:IBooleanProvider):void{
@@ -129,8 +132,8 @@ package org.farmcode.display.controls
 		
 		
 		override protected function fillStateList(fill:Array):Array{
-			fill = super.fillStateList(fill);
 			fill.push(_selectedState);
+			fill = super.fillStateList(fill);
 			return fill;
 		}
 	}

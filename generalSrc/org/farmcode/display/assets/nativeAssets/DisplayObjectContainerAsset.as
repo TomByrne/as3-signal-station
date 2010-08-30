@@ -11,9 +11,9 @@ package org.farmcode.display.assets.nativeAssets
 	
 	import org.farmcode.acting.actTypes.IAct;
 	import org.farmcode.acting.acts.NativeAct;
-	import org.farmcode.display.assets.IAsset;
-	import org.farmcode.display.assets.IContainerAsset;
-	import org.farmcode.display.assets.IDisplayAsset;
+	import org.farmcode.display.assets.assetTypes.IAsset;
+	import org.farmcode.display.assets.assetTypes.IContainerAsset;
+	import org.farmcode.display.assets.assetTypes.IDisplayAsset;
 	import org.farmcode.display.assets.states.IStateDef;
 	import org.farmcode.display.utils.MovieClipUtils;
 	import org.farmcode.hoborg.ObjectPool;
@@ -66,7 +66,8 @@ package org.farmcode.display.assets.nativeAssets
 		*/
 		private var _children:Dictionary = new Dictionary(true);
 		
-		public function DisplayObjectContainerAsset(){
+		public function DisplayObjectContainerAsset(factory:NativeAssetFactory=null){
+			super(factory);
 		}
 		
 		public function getAssetIndex(asset:IDisplayAsset):int{
@@ -100,7 +101,8 @@ package org.farmcode.display.assets.nativeAssets
 				if(displayObject){
 					var ret:DisplayObjectAsset = _children[displayObject];
 					if(!ret){
-						ret = NativeAssetFactory.getNew(displayObject);
+						ret = _nativeFactory.getNew(displayObject);
+						ret.parent = this;
 						storeChildAsset(ret,displayObject);
 					}
 					return ret;
@@ -115,14 +117,12 @@ package org.farmcode.display.assets.nativeAssets
 			// nothing to do
 		}
 		public function addAsset(asset:IDisplayAsset):void{
-			var cast:DisplayObjectAsset = (asset as DisplayObjectAsset);
-			_displayObjectContainer.addChild(cast.displayObject);
-			storeChildAsset(cast,cast.displayObject);
+			storeChildAsset(asset,asset.displayObject);
+			_displayObjectContainer.addChild(asset.displayObject);
 		}
 		public function removeAsset(asset:IDisplayAsset):void{
-			var cast:DisplayObjectAsset = (asset as DisplayObjectAsset);
-			_displayObjectContainer.removeChild(cast.displayObject);
-			removeChildAsset(cast,cast.displayObject);
+			_displayObjectContainer.removeChild(asset.displayObject);
+			removeChildAsset(asset,asset.displayObject);
 		}
 		public function addAssetAt(asset:IDisplayAsset, index:int):IDisplayAsset{
 			var cast:DisplayObjectAsset = (asset as DisplayObjectAsset);
@@ -135,7 +135,7 @@ package org.farmcode.display.assets.nativeAssets
 				var displayObject:DisplayObject = _displayObjectContainer.getChildByName(name);
 				var ret:DisplayObjectAsset = _children[displayObject];
 				if(!ret){
-					ret = NativeAssetFactory.getNew(displayObject);
+					ret = _nativeFactory.getNew(displayObject);
 					storeChildAsset(ret,displayObject);
 				}
 				return ret;
@@ -149,42 +149,46 @@ package org.farmcode.display.assets.nativeAssets
 			storeChildAsset(cast,cast.displayObject);
 		}
 		
-		override public function addStateList(stateList:Array):void{
-			super.addStateList(stateList);
+		override protected function _addStateList(stateList:Array):void{
+			super._addStateList(stateList);
 			for each(var child:IDisplayAsset in _children){
-				child.addStateList(stateList);
+				child.addStateList(stateList,true);
 			}
 		}
-		override public function removeStateList(stateList:Array):void{
-			super.removeStateList(stateList);
+		override protected function _removeStateList(stateList:Array):void{
+			super._removeStateList(stateList);
 			for each(var child:IDisplayAsset in _children){
 				child.removeStateList(stateList);
 			}
 		}
-		override public function release():void{
-			super.release();
+		override public function reset():void{
+			super.reset();
 			for each(var child:IDisplayAsset in _children){
 				for each(var stateList:Array in _stateLists){
 					child.removeStateList(stateList);
 				}
-				child.release();
+				_nativeFactory.destroyAsset(child);
 			}
 			_children = new Dictionary(true);
 		}
 		
 		protected function storeChildAsset(child:IDisplayAsset, displayObject:DisplayObject):void{
 			if(!_children[displayObject]){
+				child.parent = this;
 				for each(var stateList:Array in _stateLists){
-					child.addStateList(stateList);
+					child.addStateList(stateList,true);
 				}
 				_children[displayObject] = child;
 			}
 		}
 		protected function removeChildAsset(child:IDisplayAsset, displayObject:DisplayObject):void{
-			for each(var stateList:Array in _stateLists){
-				child.removeStateList(stateList);
+			if(_children[displayObject]){
+				child.parent = null;
+				for each(var stateList:Array in _stateLists){
+					child.removeStateList(stateList);
+				}
+				delete _children[displayObject];
 			}
-			delete _children[displayObject];
 		}
 		protected function findChildByName(name:String):IDisplayAsset{
 			for each(var child:IDisplayAsset in _children){

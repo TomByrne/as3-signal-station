@@ -2,7 +2,7 @@ package org.farmcode.data.dataTypes
 {
 	import flash.display.DisplayObject;
 	
-	import org.farmcode.display.assets.IDisplayAsset;
+	import org.farmcode.display.assets.assetTypes.IDisplayAsset;
 
 	public interface ITriggerableAction
 	{

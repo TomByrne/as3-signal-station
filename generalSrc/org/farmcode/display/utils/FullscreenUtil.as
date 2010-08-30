@@ -6,8 +6,8 @@ package org.farmcode.display.utils
 	
 	import org.farmcode.acting.actTypes.IAct;
 	import org.farmcode.acting.acts.Act;
-	import org.farmcode.display.assets.IContainerAsset;
-	import org.farmcode.display.assets.IStageAsset;
+	import org.farmcode.display.assets.assetTypes.IContainerAsset;
+	import org.farmcode.display.assets.assetTypes.IStageAsset;
 	import org.farmcode.display.core.ILayoutView;
 
 	public class FullscreenUtil

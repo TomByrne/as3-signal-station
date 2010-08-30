@@ -2,7 +2,7 @@ package org.farmcode.display.controls.toolTip
 {
 	import flash.geom.Point;
 	
-	import org.farmcode.display.assets.ITextFieldAsset;
+	import org.farmcode.display.assets.assetTypes.ITextFieldAsset;
 	import org.farmcode.display.core.DrawableView;
 
 	public class ToolTipAnnotator extends DrawableView implements IToolTipManager

@@ -11,16 +11,18 @@ package org.farmcode.display.containers
 	import org.farmcode.acting.acts.Act;
 	import org.farmcode.display.DisplayNamespace;
 	import org.farmcode.display.actInfo.IMouseActInfo;
-	import org.farmcode.display.assets.IAsset;
-	import org.farmcode.display.assets.IContainerAsset;
-	import org.farmcode.display.assets.IDisplayAsset;
-	import org.farmcode.display.assets.IInteractiveObjectAsset;
+	import org.farmcode.display.assets.AssetNames;
+	import org.farmcode.display.assets.assetTypes.IAsset;
+	import org.farmcode.display.assets.assetTypes.IContainerAsset;
+	import org.farmcode.display.assets.assetTypes.IDisplayAsset;
+	import org.farmcode.display.assets.assetTypes.IInteractiveObjectAsset;
 	import org.farmcode.display.constants.Direction;
 	import org.farmcode.display.controls.ScrollBar;
 	import org.farmcode.display.controls.TextLabelButton;
 	import org.farmcode.display.core.DrawableView;
 	import org.farmcode.display.core.ILayoutView;
 	import org.farmcode.display.core.IView;
+	import org.farmcode.display.core.View;
 	import org.farmcode.display.layout.ILayoutSubject;
 	import org.farmcode.display.layout.grid.RendererGridLayout;
 	import org.farmcode.display.scrolling.IScrollable;
@@ -32,12 +34,15 @@ package org.farmcode.display.containers
 	
 	public class AbstractList extends ContainerView implements IScrollable
 	{
-		DisplayNamespace static var SCROLL_BAR_CHILD:String = "scrollBar";
-		DisplayNamespace static var ASSUMED_RENDERER_NAME:String = "listItem";
+		DisplayNamespace const ASSUMED_DATA_FIELD:String = "data";
 		
 		DisplayNamespace function get assumedRendererFactory():SimpleInstanceFactory{
 			return _assumedRendererFactory;
 		}
+		DisplayNamespace function get layout():RendererGridLayout{
+			return _layout;
+		}
+		
 		public function get rendererFactory():IInstanceFactory{
 			return _rendererFactory;
 		}
@@ -89,6 +94,7 @@ package org.farmcode.display.containers
 		protected var _scrollBarShown:Boolean;
 		
 		protected var _assumedRendererAsset:IDisplayAsset;
+		protected var _assumedAssetFactory:IInstanceFactory;
 		protected var _assumedRendererFactory:SimpleInstanceFactory;
 		protected var _scrollRect:Rectangle = new Rectangle();
 		
@@ -125,7 +131,7 @@ package org.farmcode.display.containers
 		override protected function bindToAsset() : void{
 			super.bindToAsset();
 			_interactiveObjectAsset.mouseWheel.addHandler(onMouseWheel);
-			var scrollBarAsset:IDisplayAsset = _containerAsset.takeAssetByName(SCROLL_BAR_CHILD,IDisplayAsset,true);
+			var scrollBarAsset:IDisplayAsset = _containerAsset.takeAssetByName(AssetNames.SCROLL_BAR,IDisplayAsset,true);
 			if(scrollBarAsset){
 				if(!_scrollBar){
 					_scrollBar = new ScrollBar();
@@ -139,11 +145,11 @@ package org.farmcode.display.containers
 				_containerAsset.removeAsset(_assumedRendererAsset);
 				assessFactory();
 			}
-			_container = _containerAsset.createAsset(IContainerAsset);
+			_container = _containerAsset.factory.createContainer();
 			_containerAsset.addAsset(_container);
 		}
 		protected function assumedRendererAssetName() : String{
-			return ASSUMED_RENDERER_NAME;
+			return AssetNames.LIST_ITEM;
 		}
 		override protected function unbindFromAsset() : void{
 			super.unbindFromAsset();
@@ -157,6 +163,9 @@ package org.farmcode.display.containers
 				_containerAsset.returnAsset(_assumedRendererAsset);
 				_assumedRendererAsset = null;
 				
+				if(_assumedAssetFactory){
+					_assumedAssetFactory = null;
+				}
 				if(_assumedRendererFactory){
 					_assumedRendererFactory.instanceProperties = null;
 					_assumedRendererFactory = null;
@@ -164,13 +173,18 @@ package org.farmcode.display.containers
 				}
 			}
 			_containerAsset.removeAsset(_container);
-			_containerAsset.destroyAsset(_container);
+			_containerAsset.factory.destroyAsset(_container);
 			_container = null;
 		}
 		protected function onLayoutMeasChange(from:ILayoutSubject, oldWidth:Number, oldHeight:Number) : void{
 			dispatchMeasurementChange();
 		}
 		protected function onAddRenderer(layout:RendererGridLayout, renderer:ILayoutView) : void{
+			var cast:View = (renderer as View);
+			if(cast && !cast.asset){
+				checkAssetFactory();
+				cast.asset = _assumedAssetFactory.createInstance();
+			}
 			_renderers.push(renderer.asset);
 			if(_container){
 				_container.addAsset(renderer.asset);
@@ -209,24 +223,24 @@ package org.farmcode.display.containers
 		}
 		override protected function draw() : void{
 			super.draw();
-			drawListAndScrollbar(displayPosition);
+			drawListAndScrollbar(displayPosition.x,displayPosition.y,displayPosition.width,displayPosition.height);
 		}
-		protected function drawListAndScrollbar(position:Rectangle) : void{
-			var layoutWidth:Number = position.width;
-			var layoutHeight:Number = position.height;
+		protected function drawListAndScrollbar(x:Number, y:Number, width:Number, height:Number) : void{
+			var layoutWidth:Number = width;
+			var layoutHeight:Number = height;
 			if(_scrollBar){
 				var meas:Point = _scrollBar.measurements;
 				var metrics:ScrollMetrics = _scrollBar.scrollSubject.getScrollMetrics(_scrollBar.direction);
 				_scrollBarShown = (metrics.maximum>metrics.pageSize || !_scrollBar.hideWhenUnusable);
 				if(_scrollBar.direction==Direction.VERTICAL){
-					_scrollBar.setDisplayPosition(position.width-meas.x-_layout.marginRight,_layout.marginTop,meas.x,position.height-_layout.marginTop-_layout.marginBottom);
+					_scrollBar.setDisplayPosition(width-meas.x-_layout.marginRight,_layout.marginTop,meas.x,height-_layout.marginTop-_layout.marginBottom);
 					if(_scrollBarShown){
-						layoutWidth = position.width-meas.x;
+						layoutWidth = width-meas.x;
 					}
 				}else{
-					_scrollBar.setDisplayPosition(_layout.marginLeft,position.height-meas.y-_layout.marginBottom,position.width-_layout.marginLeft-_layout.marginRight,meas.y);
+					_scrollBar.setDisplayPosition(_layout.marginLeft,height-meas.y-_layout.marginBottom,width-_layout.marginLeft-_layout.marginRight,meas.y);
 					if(_scrollBarShown){
-						layoutHeight = position.height-meas.y;
+						layoutHeight = height-meas.y;
 					}
 				}
 			}
@@ -234,10 +248,9 @@ package org.farmcode.display.containers
 			_scrollRect.x = _layout.marginLeft;
 			_scrollRect.y = _layout.marginTop;
 			_scrollRect.width = layoutWidth-_layout.marginLeft-_layout.marginRight;
-			_scrollRect.height = position.height-_layout.marginTop-_layout.marginBottom;
+			_scrollRect.height = height-_layout.marginTop-_layout.marginBottom;
 			_container.scrollRect = _scrollRect;
-			_container.x = _layout.marginLeft;
-			_container.y = _layout.marginTop;
+			_container.setPosition(_layout.marginLeft,_layout.marginTop);
 		}
 		protected function setLayoutDimensions(width:Number, height:Number):void{
 			_layout.setDisplayPosition(0,0,width,height);
@@ -250,17 +263,19 @@ package org.farmcode.display.containers
 			}
 		}
 		protected function assessFactory():void{
+			attemptInit();
+			
 			var factory:IInstanceFactory;
 			var dataField:String;
 			if(_rendererFactory){
 				factory = _rendererFactory;
-				dataField = _dataField;
+				dataField = _dataField || ASSUMED_DATA_FIELD;
 			}else if(_assumedRendererAsset){
 				if(!_assumedRendererFactory){
-					createAssumedFactory();
+					_assumedRendererFactory = createAssumedFactory(_assumedRendererAsset);
 				}
 				factory = _assumedRendererFactory;
-				dataField = "data";
+				dataField = ASSUMED_DATA_FIELD;
 			}else{
 				factory = null;
 				dataField = null;
@@ -269,12 +284,22 @@ package org.farmcode.display.containers
 				updateFactory(factory,dataField);
 			}
 		}
-		protected function createAssumedFactory():void{
-			_assumedRendererFactory = new SimpleInstanceFactory(TextLabelButton);
-			_assumedRendererFactory.useChildFactories = true;
-			_assumedRendererFactory.instanceProperties = new Dictionary();
-			_assumedRendererFactory.instanceProperties["togglable"] = true;
-			_assumedRendererFactory.instanceProperties["asset"] = _assumedRendererAsset.getCloneFactory();
+		protected function createAssumedFactory(asset:IDisplayAsset):SimpleInstanceFactory{
+			var factory:SimpleInstanceFactory = new SimpleInstanceFactory(TextLabelButton);
+			factory.useChildFactories = true;
+			factory.instanceProperties = new Dictionary();
+			factory.instanceProperties["togglable"] = true;
+			checkAssetFactory();
+			factory.instanceProperties["asset"] = _assumedAssetFactory;
+			return factory;
+		}
+		protected function checkAssetFactory():void{
+			if(!_assumedAssetFactory && _assumedRendererAsset){
+				_assumedAssetFactory = createAssumedAssetFactory(_assumedRendererAsset);
+			}
+		}
+		protected function createAssumedAssetFactory(asset:IDisplayAsset):IInstanceFactory{
+			return asset.getCloneFactory();
 		}
 		protected function updateFactory(factory:IInstanceFactory, dataField:String):void{
 			_layout.rendererFactory = factory;

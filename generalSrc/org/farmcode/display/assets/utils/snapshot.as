@@ -3,10 +3,10 @@ package org.farmcode.display.assets.utils
 	import flash.display.*;
 	import flash.geom.*;
 	
-	import org.farmcode.display.assets.IBitmapAsset;
-	import org.farmcode.display.assets.IContainerAsset;
-	import org.farmcode.display.assets.IDisplayAsset;
-	import org.farmcode.display.assets.IStageAsset;
+	import org.farmcode.display.assets.assetTypes.IBitmapAsset;
+	import org.farmcode.display.assets.assetTypes.IContainerAsset;
+	import org.farmcode.display.assets.assetTypes.IDisplayAsset;
+	import org.farmcode.display.assets.assetTypes.IStageAsset;
 	
 	/**
 	 * Creates a Bitmap copy of the supplied DisplayObject, with coordinates that match the actual visual
@@ -36,7 +36,7 @@ package org.farmcode.display.assets.utils
 		matrix.ty = -selfTopLeft.y;
 		bitmapData.draw(displayObject.bitmapDrawable,matrix,displayObject.transform.colorTransform,displayObject.blendMode);
 		
-		var ret:IBitmapAsset = displayObject.createAsset(IBitmapAsset);
+		var ret:IBitmapAsset = displayObject.factory.createBitmap();
 		ret.bitmapData = bitmapData;
 		var point:Point = new Point(stageBounds.x,stageBounds.y);
 		
@@ -44,8 +44,7 @@ package org.farmcode.display.assets.utils
 		if(nextParent){
 			point = nextParent.globalToLocal(point);
 		}
-		ret.x = point.x;
-		ret.y = point.y;
+		ret.setPosition(point.x,point.y);
 		
 		return ret;
 	}

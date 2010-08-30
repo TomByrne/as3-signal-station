@@ -8,7 +8,7 @@ package org.farmcode.display.containers.accordionGrid
 	import org.farmcode.collections.IIterator;
 	import org.farmcode.collections.IIterator2D;
 	import org.farmcode.collections.linkedList.LinkedListConverter;
-	import org.farmcode.display.assets.IDisplayAsset;
+	import org.farmcode.display.assets.assetTypes.IDisplayAsset;
 	import org.farmcode.display.constants.Direction;
 	import org.farmcode.display.containers.accordion.AbstractAccordionView;
 	import org.farmcode.display.core.ILayoutView;

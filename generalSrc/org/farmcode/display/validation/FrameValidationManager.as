@@ -4,7 +4,7 @@ package org.farmcode.display.validation
 	import flash.events.Event;
 	import flash.utils.Dictionary;
 	
-	import org.farmcode.display.assets.IDisplayAsset;
+	import org.farmcode.display.assets.assetTypes.IDisplayAsset;
 
 	public class FrameValidationManager
 	{
@@ -114,7 +114,7 @@ package org.farmcode.display.validation
 				bundle = AssetBundle.getNew(flag.asset);
 				bundleMap[flag.asset] = bundle;
 				bundle.assetPosChanged.addHandler(onAssetPosChanged);
-				if(bundle.asset.stage)addToHeirarchy(bundle);
+				if(bundle.addedToStage)addToHeirarchy(bundle);
 			}
 			bundle.addValidationFlag(flag);
 			return bundle;
@@ -131,7 +131,7 @@ package org.farmcode.display.validation
 		protected function onAssetPosChanged(bundle:AssetBundle):void{
 			var oldRun:DrawRun = findRunForBundle(bundle);
 			removeFromHeirarchy(bundle);
-			if(bundle.asset.stage)addToHeirarchy(bundle);
+			if(bundle.addedToStage)addToHeirarchy(bundle);
 			checkIfRunChange(null, bundle, oldRun);
 		}
 		protected function checkIfRunChange(flag:IFrameValidationFlag, bundle:AssetBundle, oldRun:DrawRun):void{
@@ -297,7 +297,7 @@ import flash.utils.Dictionary;
 
 import org.farmcode.acting.actTypes.IAct;
 import org.farmcode.acting.acts.Act;
-import org.farmcode.display.assets.IDisplayAsset;
+import org.farmcode.display.assets.assetTypes.IDisplayAsset;
 import org.farmcode.display.validation.IFrameValidationFlag;
 import org.farmcode.hoborg.IPoolable;
 import org.farmcode.hoborg.ObjectPool;
@@ -328,13 +328,16 @@ class AssetBundle implements IPoolable{
 	public function set asset(value:IDisplayAsset):void{
 		if(_asset!=value){
 			if(_asset){
-				_asset.addedToStage.removeHandler(onPosChanged);
-				_asset.removedFromStage.removeHandler(onPosChanged);
+				_asset.addedToStage.removeHandler(onAdded);
+				_asset.removedFromStage.removeHandler(onRemoved);
 			}
 			_asset = value;
 			if(_asset){
-				_asset.addedToStage.addHandler(onPosChanged);
-				_asset.removedFromStage.addHandler(onPosChanged);
+				_asset.addedToStage.addHandler(onAdded);
+				_asset.removedFromStage.addHandler(onRemoved);
+				addedToStage = (_asset.stage!=null);
+			}else{
+				addedToStage = false;
 			}
 		}
 	}
@@ -342,11 +345,18 @@ class AssetBundle implements IPoolable{
 	public var parent:AssetBundle;
 	public var children:Array = [];
 	public var validationFlags:Array = [];
+	public var addedToStage:Boolean;
 	
 	protected var _asset:IDisplayAsset;
 	protected var _assetPosChanged:Act = new Act();
 	
-	protected function onPosChanged(from:IDisplayAsset):void{
+	
+	protected function onAdded(from:IDisplayAsset):void{
+		addedToStage = true;
+		_assetPosChanged.perform(this);
+	}
+	protected function onRemoved(from:IDisplayAsset):void{
+		addedToStage = false;
 		_assetPosChanged.perform(this);
 	}
 	public function addChild(bundle:AssetBundle):void{

@@ -1,6 +1,5 @@
 package org.farmcode.actLibrary.application
 {
-	import flash.display.DisplayObjectContainer;
 	import flash.events.KeyboardEvent;
 	import flash.geom.Point;
 	import flash.geom.Rectangle;
@@ -15,9 +14,9 @@ package org.farmcode.actLibrary.application
 	import org.farmcode.acting.actTypes.IAct;
 	import org.farmcode.acting.acts.Act;
 	import org.farmcode.acting.universal.UniversalActExecution;
-	import org.farmcode.display.assets.IDisplayAsset;
-	import org.farmcode.display.assets.IInteractiveObjectAsset;
-	import org.farmcode.display.assets.nativeAssets.NativeAssetFactory;
+	import org.farmcode.display.assets.assetTypes.IContainerAsset;
+	import org.farmcode.display.assets.assetTypes.IDisplayAsset;
+	import org.farmcode.display.assets.assetTypes.IInteractiveObjectAsset;
 	
 	use namespace VisualSocketNamespace;
 	
@@ -35,9 +34,9 @@ package org.farmcode.actLibrary.application
 		}
 		
 		
-		override public function set container(value:DisplayObjectContainer) : void{
+		override public function set container(value:IContainerAsset) : void{
 			super.container = value;
-			_proxiedDisplaySocket.container = NativeAssetFactory.getNew(value);
+			_proxiedDisplaySocket.container = value;
 		}
 		public function get socketId(): String{
 			return _proxiedDisplaySocket.socketId;

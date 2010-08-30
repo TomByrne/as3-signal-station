@@ -3,7 +3,7 @@ package org.farmcode.actLibrary.display.popup.acts
 	import org.farmcode.actLibrary.core.IRevertableAct;
 	import org.farmcode.actLibrary.display.popup.actTypes.IAddPopupAct;
 	import org.farmcode.acting.actTypes.IAct;
-	import org.farmcode.display.assets.IContainerAsset;
+	import org.farmcode.display.assets.assetTypes.IContainerAsset;
 	import org.farmcode.display.popup.IPopupInfo;
 	
 	

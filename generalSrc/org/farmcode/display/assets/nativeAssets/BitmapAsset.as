@@ -4,7 +4,7 @@ package org.farmcode.display.assets.nativeAssets
 	import flash.display.BitmapData;
 	import flash.display.DisplayObject;
 	
-	import org.farmcode.display.assets.IBitmapAsset;
+	import org.farmcode.display.assets.assetTypes.IBitmapAsset;
 	
 	public class BitmapAsset extends DisplayObjectAsset implements IBitmapAsset
 	{
@@ -21,9 +21,8 @@ package org.farmcode.display.assets.nativeAssets
 		
 		protected var _bitmap:Bitmap;
 		
-		public function BitmapAsset()
-		{
-			super();
+		public function BitmapAsset(factory:NativeAssetFactory=null){
+			super(factory);
 		}
 		
 		public function get bitmapData():BitmapData{

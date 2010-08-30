@@ -4,8 +4,8 @@ package org.farmcode.display.containers
 	import flash.display.Sprite;
 	import flash.geom.Rectangle;
 	
-	import org.farmcode.display.assets.IContainerAsset;
-	import org.farmcode.display.assets.IDisplayAsset;
+	import org.farmcode.display.assets.assetTypes.IContainerAsset;
+	import org.farmcode.display.assets.assetTypes.IDisplayAsset;
 	import org.farmcode.display.core.ILayoutView;
 	import org.farmcode.display.layout.ILayoutSubject;
 	import org.farmcode.display.layout.ProxyLayoutSubject;
@@ -75,7 +75,7 @@ package org.farmcode.display.containers
 		}
 		override protected function bindToAsset() : void{
 			super.bindToAsset()
-			_mediaContainer = _asset.createAsset(IContainerAsset);
+			_mediaContainer = _asset.factory.createContainer();
 			if(_mediaSourceDisplay)_mediaContainer.addAsset(_mediaSourceDisplay.asset);
 			_mediaBounds = _containerAsset.takeAssetByName(MEDIA_BOUNDS,IDisplayAsset,true);
 			if(_mediaBounds){
@@ -103,7 +103,7 @@ package org.farmcode.display.containers
 			_containerAsset.removeAsset(_mediaContainer);
 			
 			if(_mediaSourceDisplay)_mediaContainer.removeAsset(_mediaSourceDisplay.asset);
-			_asset.destroyAsset(_mediaContainer);
+			_asset.factory.destroyAsset(_mediaContainer);
 		}
 		override protected function measure() : void{
 			_measurements.x = _layout.measurements.x;
@@ -116,14 +116,10 @@ package org.farmcode.display.containers
 			
 			_scrollRect.x -= displayPosition.x;
 			_scrollRect.y -= displayPosition.y;
-			_mediaContainer.x = _scrollRect.x;
-			_mediaContainer.y = _scrollRect.y;
+			_mediaContainer.setPosition(_scrollRect.x,_scrollRect.y);
 			_mediaContainer.scrollRect = _scrollRect;
 			if(_mediaBounds){
-				_mediaBounds.x = _scrollRect.x;
-				_mediaBounds.y = _scrollRect.y;
-				_mediaBounds.width = _scrollRect.width;
-				_mediaBounds.height = _scrollRect.height;
+				_mediaBounds.setSizeAndPos(_scrollRect.x,_scrollRect.y,_scrollRect.width,_scrollRect.height);
 			}
 		}
 	}

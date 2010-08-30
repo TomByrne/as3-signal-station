@@ -7,8 +7,8 @@ package org.farmcode.actLibrary.display.visualSockets.socketContainers
 	import org.farmcode.acting.actTypes.IAct;
 	import org.farmcode.acting.acts.Act;
 	import org.farmcode.acting.universal.UniversalActExecution;
-	import org.farmcode.display.assets.IContainerAsset;
-	import org.farmcode.display.assets.IDisplayAsset;
+	import org.farmcode.display.assets.assetTypes.IContainerAsset;
+	import org.farmcode.display.assets.assetTypes.IDisplayAsset;
 	import org.farmcode.display.core.IOutroView;
 	import org.farmcode.display.layout.ILayout;
 	import org.farmcode.display.layout.ILayoutSubject;
@@ -80,12 +80,12 @@ package org.farmcode.actLibrary.display.visualSockets.socketContainers
 		}
 		override protected function bindToAsset() : void{
 			super.bindToAsset();
-			_childContainer = _asset.createAsset(IContainerAsset);
+			_childContainer = _asset.factory.createContainer();
 			_containerAsset.addAsset(_childContainer);
 		}
 		override protected function unbindFromAsset() : void{
 			_containerAsset.removeAsset(_childContainer);
-			_asset.destroyAsset(_childContainer);
+			_asset.factory.destroyAsset(_childContainer);
 			super.unbindFromAsset();
 		}
 		public function get childSockets(): Array{

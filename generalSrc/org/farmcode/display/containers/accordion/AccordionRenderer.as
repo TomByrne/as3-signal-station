@@ -12,8 +12,9 @@ package org.farmcode.display.containers.accordion
 	import org.farmcode.data.dataTypes.IBooleanProvider;
 	import org.farmcode.data.dataTypes.IStringProvider;
 	import org.farmcode.display.DisplayNamespace;
-	import org.farmcode.display.assets.IDisplayAsset;
-	import org.farmcode.display.assets.IInteractiveObjectAsset;
+	import org.farmcode.display.assets.AssetNames;
+	import org.farmcode.display.assets.assetTypes.IDisplayAsset;
+	import org.farmcode.display.assets.assetTypes.IInteractiveObjectAsset;
 	import org.farmcode.display.assets.nativeAssets.actInfo.MouseActInfo;
 	import org.farmcode.display.assets.states.StateDef;
 	import org.farmcode.display.constants.Anchor;
@@ -31,7 +32,6 @@ package org.farmcode.display.containers.accordion
 	
 	public class AccordionRenderer extends LayoutView implements IAccordionRenderer
 	{
-		DisplayNamespace static const SCROLL_BAR:String = "scrollBar";
 		
 		// States
 		DisplayNamespace static const STATE_OPEN:String = "open";
@@ -201,12 +201,12 @@ package org.farmcode.display.containers.accordion
 			booleanValue = value;
 		}
 		override protected function bindToAsset() : void{
-			if(_containerAsset.containsAssetByName(TextLabel.LABEL_FIELD_CHILD)){
+			if(_containerAsset.containsAssetByName(AssetNames.LABEL_FIELD)){
 				_label.asset = _asset;
 			}
 			_interactiveObjectAsset.clicked.addHandler(onAssetClick);
 			
-			var scrollBarAsset:IDisplayAsset = _containerAsset.takeAssetByName(SCROLL_BAR,IDisplayAsset,true);
+			var scrollBarAsset:IDisplayAsset = _containerAsset.takeAssetByName(AssetNames.SCROLL_BAR,IDisplayAsset,true);
 			if(scrollBarAsset){
 				if(!_scrollBar){
 					_scrollBar = new ScrollBar();
@@ -330,8 +330,7 @@ package org.farmcode.display.containers.accordion
 			if(_label.asset){
 				_label.setDisplayPosition(displayPosition.x+labelX,displayPosition.y+labelY,labelW,labelH);
 			}else{
-				asset.x = displayPosition.x+labelX;
-				asset.y = displayPosition.y+labelY;
+				asset.setPosition(displayPosition.x+labelX,displayPosition.y+labelY);
 			}
 			if(_scrollBar){
 				if(_scrollBar.hideWhenUnusable)setContainerSize(childX,childY,childW,childH);

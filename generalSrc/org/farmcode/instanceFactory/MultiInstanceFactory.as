@@ -7,8 +7,6 @@ package org.farmcode.instanceFactory
 	 * set of property dictionaries. Property dictionaries added with addProperties
 	 * are applied in the order that they were added, meaning that later dictionaries
 	 * will override former ones.
-	 * There is also an optional function hook that can be used to pass all created instances
-	 * through a custom function.
 	 */
 	public class MultiInstanceFactory extends AbstractInstanceFactory
 	{

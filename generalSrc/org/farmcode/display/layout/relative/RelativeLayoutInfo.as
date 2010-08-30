@@ -1,7 +1,7 @@
 package org.farmcode.display.layout.relative
 {
-	import org.farmcode.display.assets.IAsset;
-	import org.farmcode.display.assets.IDisplayAsset;
+	import org.farmcode.display.assets.assetTypes.IAsset;
+	import org.farmcode.display.assets.assetTypes.IDisplayAsset;
 	import org.farmcode.display.layout.core.ConstrainedLayoutInfo;
 	
 	public class RelativeLayoutInfo extends ConstrainedLayoutInfo implements IRelativeLayoutInfo

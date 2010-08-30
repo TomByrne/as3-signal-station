@@ -1,16 +1,16 @@
 package org.farmcode.display.controls.popout {
 	import flash.events.Event;
+	import flash.geom.Point;
 	import flash.geom.Rectangle;
 	import flash.utils.Dictionary;
 	
 	import org.farmcode.acting.actTypes.IAct;
 	import org.farmcode.acting.acts.Act;
-	import org.farmcode.display.assets.IDisplayAsset;
+	import org.farmcode.display.assets.assetTypes.IDisplayAsset;
 	import org.farmcode.display.containers.ListBox;
 	import org.farmcode.display.controls.TextLabelButton;
 	import org.farmcode.display.layout.ILayoutSubject;
 	
-	[Event(name="select",type="flash.events.Event")]
 	public class DropDownList extends PopoutList {
 		public function set selectedIndex(value: int):void{
 			if(_selectedIndex!=value){
@@ -61,18 +61,18 @@ package org.farmcode.display.controls.popout {
 		private var _prompt:String;
 		private var _selectedIndex:int=-2; // -1 is unselected (initially -2 so that -1 is seen as a change)
 		private var _selectedData:*;
-		private var textLabelButton:TextLabelButton;
-		private var _listAlignArea:Rectangle = new Rectangle();
-		private var _listAlignMeas:Rectangle = new Rectangle();
+		private var _textLabelButton:TextLabelButton;
+		//private var _listAlignArea:Rectangle = new Rectangle();
+		//private var _listAlignMeas:Rectangle = new Rectangle();
 		
 		private var _selectionChangeAct:Act = new Act(); 
 		
 		public function DropDownList(asset:IDisplayAsset=null) {
 			super(asset);
-			textLabelButton=new TextLabelButton();
-			textLabelButton.useDataForSelected = false;
-			textLabelButton.measurementsChanged.addHandler(onTextMeasureChange);
-			textLabelButton.clicked.addHandler(onButtonClicked);
+			_textLabelButton=new TextLabelButton();
+			_textLabelButton.useDataForSelected = false;
+			_textLabelButton.measurementsChanged.addHandler(onTextMeasureChange);
+			_textLabelButton.clicked.addHandler(onButtonClicked);
 			//textLabelButton.addEventListener(ValidationEvent.VALIDATION_VALUE_CHANGED, onButtonClicked);
 			_listBox.selectionChangeAct.addHandler(onListSelect);
 		}
@@ -82,33 +82,39 @@ package org.farmcode.display.controls.popout {
 		}
 		override protected function onPopoutOpen(popoutDisplay:PopoutDisplay, popout:ListBox):void {
 			super.onPopoutOpen(popoutDisplay, popout);
-			textLabelButton.selected = true;
+			_textLabelButton.selected = true;
 		}
 		override protected function onPopoutClose(popoutDisplay:PopoutDisplay, popout:ListBox):void {
 			super.onPopoutClose(popoutDisplay, popout);
-			textLabelButton.selected = false;
+			_textLabelButton.selected = false;
 		}
 		
 		override protected function bindToAsset():void {
 			super.bindToAsset();
-			textLabelButton.asset=asset;
+			_textLabelButton.asset=asset;
 		}
 		
 		override protected function unbindFromAsset():void {
 			super.unbindFromAsset();
-			textLabelButton.asset=null;
+			_textLabelButton.asset=null;
 		}
 		override public function setDisplayPosition(x:Number, y:Number, width:Number, height:Number) : void{
 			super.setDisplayPosition(x,y,width,height);
-			textLabelButton.setDisplayPosition(x,y,width,height);
+			_textLabelButton.setDisplayPosition(x,y,width,height);
 		}
 		protected function onButtonClicked(from:TextLabelButton):void {
-			_popoutDisplay.popoutShown = textLabelButton.selected;
+			_popoutDisplay.popoutShown = _textLabelButton.selected;
 		}
 		protected function onTextMeasureChange(from:ILayoutSubject, oldWidth:Number, oldHeight:Number):void{
 			dispatchMeasurementChange();
 		}
-		override protected function getListAlignArea():Rectangle{
+		override protected function getListAlignArea():void{
+			var labelMeas:Point = _textLabelButton.measurements;
+			_measurements.x = labelMeas.x;
+			_measurements.y = labelMeas.y;
+			addListToMeas();
+		}
+		/*override protected function getListAlignArea():Rectangle{
 			_listAlignArea.width = displayPosition.width;
 			_listAlignArea.height = displayPosition.height;
 			return _listAlignArea;
@@ -118,7 +124,7 @@ package org.farmcode.display.controls.popout {
 			_listAlignMeas.width = textLabelButton.measurements.x;
 			_listAlignMeas.height = textLabelButton.measurements.y;
 			return _listAlignMeas;
-		}
+		}*/
 		override protected function closeOnClickOutside():Boolean{
 			return true;
 		}
@@ -128,10 +134,10 @@ package org.farmcode.display.controls.popout {
 				_selectedIndex = newIndex;
 				if(_selectedIndex==-1){
 					_selectedData = null;
-					textLabelButton.data = prompt;
+					_textLabelButton.data = prompt;
 				}else{
 					_selectedData = _listBox.selectedData[_selectedIndex];
-					textLabelButton.data = _selectedData;
+					_textLabelButton.data = _selectedData;
 				}
 				_selectionChangeAct.perform(this,_selectedIndex,_selectedData);
 			}

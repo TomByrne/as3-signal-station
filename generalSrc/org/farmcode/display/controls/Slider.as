@@ -5,8 +5,8 @@ package org.farmcode.display.controls
 	import org.farmcode.acting.acts.Act;
 	import org.farmcode.core.DelayedCall;
 	import org.farmcode.display.DisplayNamespace;
-	import org.farmcode.display.assets.IDisplayAsset;
-	import org.farmcode.display.assets.IInteractiveObjectAsset;
+	import org.farmcode.display.assets.assetTypes.IDisplayAsset;
+	import org.farmcode.display.assets.assetTypes.IInteractiveObjectAsset;
 	import org.farmcode.display.constants.Direction;
 	
 	use namespace DisplayNamespace;

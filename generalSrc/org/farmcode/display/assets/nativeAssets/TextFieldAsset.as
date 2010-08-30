@@ -9,8 +9,8 @@ package org.farmcode.display.assets.nativeAssets
 	
 	import org.farmcode.acting.actTypes.IAct;
 	import org.farmcode.acting.acts.NativeAct;
-	import org.farmcode.display.assets.IDisplayAsset;
-	import org.farmcode.display.assets.ITextFieldAsset;
+	import org.farmcode.display.assets.assetTypes.IDisplayAsset;
+	import org.farmcode.display.assets.assetTypes.ITextFieldAsset;
 	import org.farmcode.display.assets.states.IStateDef;
 
 	public class TextFieldAsset extends InteractiveObjectAsset implements ITextFieldAsset
@@ -45,9 +45,6 @@ package org.farmcode.display.assets.nativeAssets
 						if(!_textField.embedFonts){
 							trace("WARNING: TextField with embedFonts set to false");
 						}
-					}
-					if(_textField.stage){
-						onAddedToStage();
 					}
 				}else{
 					_textField = null;
@@ -175,12 +172,16 @@ package org.farmcode.display.assets.nativeAssets
 		protected var _defaultState:TextFormat;
 		protected var _stateChanged:Boolean;
 		
-		public function TextFieldAsset(){
-			super();
-			addedToStage.addTempHandler(onAddedToStage);
+		public function TextFieldAsset(factory:NativeAssetFactory=null){
+			super(factory);
 		}
-		public function onAddedToStage(... params):void{
+		override protected function onAddedToStage(from:DisplayObjectAsset):void{
+			super.onAddedToStage(from);
 			enterFrame.addTempHandler(onFirstFrame);
+		}
+		override protected function onRemovedFromStage(from:DisplayObjectAsset):void{
+			super.onRemovedFromStage(from);
+			enterFrame.removeHandler(onFirstFrame);
 		}
 		protected function onFirstFrame(e:Event, from:IDisplayAsset):void {
 			findAvailableStates();

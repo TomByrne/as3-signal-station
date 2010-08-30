@@ -11,6 +11,7 @@ package org.farmcode.display.layout.grid
 	import org.farmcode.collections.IIterator;
 	import org.farmcode.collections.IIterator2D;
 	import org.farmcode.collections.linkedList.LinkedListConverter;
+	import org.farmcode.display.DisplayNamespace;
 	import org.farmcode.display.constants.Direction;
 	import org.farmcode.display.core.IView;
 	import org.farmcode.display.layout.ILayoutSubject;
@@ -285,7 +286,7 @@ package org.farmcode.display.layout.grid
 			if(!fillPoint){
 				fillPoint = new Point();
 			}
-			if(flowDirection==Direction.VERTICAL){
+			if(_isVertical){
 				fillPoint.x = _coordCache[index];
 				fillPoint.y = _coordCache[index+1];
 			}else{
@@ -391,6 +392,12 @@ package org.farmcode.display.layout.grid
 		}
 		override protected function getChildLayoutInfo(key:*) : ILayoutInfo{
 			return _dataLayouts[key] || _cellLayouts[key];
+		}
+		private var _getRendererPoint:Point;
+		DisplayNamespace function getRenderer(dataIndex:int):ILayoutSubject{
+			if(!_getRendererPoint)_getRendererPoint = new Point();
+			getDataCoords(dataIndex,_getRendererPoint);
+			return getChildRenderer(dataIndex,_getRendererPoint[_lengthAxis.coordRef],_getRendererPoint[_breadthAxis.coordRef]);
 		}
 		override protected function getChildRenderer(key:*,length:int,breadth:int):ILayoutSubject{
 			var minLength:int = _lengthRendAxis.dimIndex;

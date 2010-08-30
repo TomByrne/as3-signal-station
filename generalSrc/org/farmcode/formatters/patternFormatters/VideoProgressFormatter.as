@@ -3,7 +3,8 @@ package org.farmcode.formatters.patternFormatters
 	import org.farmcode.data.dataTypes.IStringProvider;
 	import org.farmcode.data.expressions.ParameterisedExpression;
 	import org.farmcode.data.operators.StringProxy;
-	import org.farmcode.math.UnitConversion;
+	import org.farmcode.math.units.TimeUnitConverter;
+	import org.farmcode.math.units.UnitConverter;
 	import org.farmcode.media.video.IVideoSource;
 
 	public class VideoProgressFormatter extends AbstractPatternFormatter
@@ -74,7 +75,7 @@ package org.farmcode.formatters.patternFormatters
 			return formatSeconds(totalTime-currTime);
 		}
 		protected function formatSeconds(value:Number):String{
-			var breakdown:Array = UnitConversion.breakdown(value,UnitConversion.TIME_SECONDS,[UnitConversion.TIME_HOURS,UnitConversion.TIME_MINUTES,UnitConversion.TIME_SECONDS]);
+			var breakdown:Array = UnitConverter.breakdown(value,TimeUnitConverter.SECONDS,[TimeUnitConverter.HOURS,TimeUnitConverter.MINUTES,TimeUnitConverter.SECONDS]);
 			var ret:String = "";
 			var pad:Boolean;
 			if(breakdown[0]>0){

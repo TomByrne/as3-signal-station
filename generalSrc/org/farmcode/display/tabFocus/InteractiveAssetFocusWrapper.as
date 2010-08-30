@@ -2,7 +2,7 @@ package org.farmcode.display.tabFocus
 {
 	import flash.events.Event;
 	
-	import org.farmcode.display.assets.IInteractiveObjectAsset;
+	import org.farmcode.display.assets.assetTypes.IInteractiveObjectAsset;
 
 	public class InteractiveAssetFocusWrapper extends AbstractTabFocusable implements ITabFocusable
 	{

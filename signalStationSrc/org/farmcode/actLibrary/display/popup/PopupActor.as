@@ -10,8 +10,8 @@ package org.farmcode.actLibrary.display.popup
 	import org.farmcode.actLibrary.display.popup.actTypes.IRemoveAllPopupsAct;
 	import org.farmcode.actLibrary.display.popup.actTypes.IRemovePopupAct;
 	import org.farmcode.actLibrary.display.popup.acts.RemovePopupAct;
-	import org.farmcode.display.assets.IContainerAsset;
-	import org.farmcode.display.assets.IDisplayAsset;
+	import org.farmcode.display.assets.assetTypes.IContainerAsset;
+	import org.farmcode.display.assets.assetTypes.IDisplayAsset;
 	import org.farmcode.display.popup.IPopupInfo;
 	import org.farmcode.instanceFactory.IInstanceFactory;
 

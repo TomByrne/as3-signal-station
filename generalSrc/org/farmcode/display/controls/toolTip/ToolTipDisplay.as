@@ -5,8 +5,8 @@ package org.farmcode.display.controls.toolTip
 	import flash.geom.Rectangle;
 	
 	import org.farmcode.display.DisplayNamespace;
-	import org.farmcode.display.assets.IDisplayAsset;
-	import org.farmcode.display.assets.ISpriteAsset;
+	import org.farmcode.display.assets.assetTypes.IDisplayAsset;
+	import org.farmcode.display.assets.assetTypes.ISpriteAsset;
 	import org.farmcode.display.assets.states.StateDef;
 	import org.farmcode.display.constants.Anchor;
 	import org.farmcode.display.controls.TextLabel;
@@ -182,8 +182,7 @@ package org.farmcode.display.controls.toolTip
 		protected function setConnectionPoint(connection:Point, side:String):void {
 			if(_arrow){
 				if(connection){
-					_arrow.x = connection.x;
-					_arrow.y = connection.y;
+					_arrow.setPosition(connection.x,connection.y);
 					_arrow.visible = true;
 				}else{
 					_arrow.visible = false;

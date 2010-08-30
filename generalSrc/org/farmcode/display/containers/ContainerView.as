@@ -4,14 +4,13 @@ package org.farmcode.display.containers
 	import flash.display.DisplayObject;
 	import flash.geom.Rectangle;
 	
-	import org.farmcode.display.assets.IAsset;
-	import org.farmcode.display.assets.IDisplayAsset;
+	import org.farmcode.display.assets.AssetNames;
+	import org.farmcode.display.assets.assetTypes.IAsset;
+	import org.farmcode.display.assets.assetTypes.IDisplayAsset;
 	import org.farmcode.display.core.LayoutView;
 	
 	public class ContainerView extends LayoutView
 	{
-		private static const BACKING_ASSET:String = "backing";
-		
 		protected var _backing:IDisplayAsset;
 		
 		public function ContainerView(asset:IDisplayAsset=null){
@@ -20,7 +19,7 @@ package org.farmcode.display.containers
 		override protected function bindToAsset() : void{
 			super.bindToAsset();
 			if(_containerAsset){
-				_backing = _containerAsset.takeAssetByName(BACKING_ASSET,IAsset,true);
+				_backing = _containerAsset.takeAssetByName(AssetNames.BACKING,IAsset,true);
 			}
 		}
 		override protected function unbindFromAsset() : void{
@@ -41,12 +40,11 @@ package org.farmcode.display.containers
 		}
 		override protected function draw() : void{
 			positionAsset();
-			positionBacking();
+			positionBacking(0,0,displayPosition.width,displayPosition.height);
 		}
-		protected function positionBacking():void{
+		protected function positionBacking(x:Number, y:Number, width:Number, height:Number):void{
 			if(_backing){
-				_backing.width = displayPosition.width;
-				_backing.height = displayPosition.height;
+				_backing.setSizeAndPos(x,y,width,height);
 			}
 		}
 	}

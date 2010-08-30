@@ -3,7 +3,7 @@ package org.farmcode.actLibrary.core.acts
 	import org.farmcode.acting.universal.UniversalActExecution;
 	import org.farmcode.acting.universal.reactions.MethodReaction;
 	import org.farmcode.acting.universal.ruleTypes.IUniversalRule;
-	import org.farmcode.display.assets.IDisplayAsset;
+	import org.farmcode.display.assets.assetTypes.IDisplayAsset;
 	
 	public class SingleMethodReaction extends MethodReaction
 	{

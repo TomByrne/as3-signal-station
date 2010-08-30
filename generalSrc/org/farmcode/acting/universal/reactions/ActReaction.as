@@ -5,7 +5,7 @@ package org.farmcode.acting.universal.reactions
 	import org.farmcode.acting.universal.UniversalActExecution;
 	import org.farmcode.acting.universal.UniversalActManager;
 	import org.farmcode.acting.universal.ruleTypes.IUniversalRule;
-	import org.farmcode.display.assets.IDisplayAsset;
+	import org.farmcode.display.assets.assetTypes.IDisplayAsset;
 	import org.farmcode.display.core.ScopedObject;
 
 	public class ActReaction extends ScopedObject implements IActReaction

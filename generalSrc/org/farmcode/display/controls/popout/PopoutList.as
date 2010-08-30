@@ -3,10 +3,10 @@ package org.farmcode.display.controls.popout {
 	import flash.geom.Rectangle;
 	
 	import org.farmcode.display.actInfo.IMouseActInfo;
-	import org.farmcode.display.assets.IAsset;
-	import org.farmcode.display.assets.IContainerAsset;
-	import org.farmcode.display.assets.IDisplayAsset;
-	import org.farmcode.display.assets.IInteractiveObjectAsset;
+	import org.farmcode.display.assets.assetTypes.IAsset;
+	import org.farmcode.display.assets.assetTypes.IContainerAsset;
+	import org.farmcode.display.assets.assetTypes.IDisplayAsset;
+	import org.farmcode.display.assets.assetTypes.IInteractiveObjectAsset;
 	import org.farmcode.display.assets.utils.isDescendant;
 	import org.farmcode.display.constants.Anchor;
 	import org.farmcode.display.containers.ListBox;
@@ -56,9 +56,12 @@ package org.farmcode.display.controls.popout {
 		
 		public function PopoutList(asset:IDisplayAsset=null) {
 			super(asset);
+			
 			_popoutDisplay=new PopoutDisplay();
+			_popoutDisplay.relativeTo = this;
 			_popoutDisplay.popoutOpen.addHandler(onPopoutOpen);
 			_popoutDisplay.popoutClose.addHandler(onPopoutClose);
+			
 			_listBox=new ListBox();
 			_listBox.measurementsChanged.addHandler(onListMeasureChange);
 			_popoutDisplay.popout = _listBox;
@@ -80,7 +83,6 @@ package org.farmcode.display.controls.popout {
 			}
 		}
 		override protected function bindToAsset():void {
-			_popoutDisplay.relativeTo=asset;
 			var listAsset:IDisplayAsset = _containerAsset.takeAssetByName(LIST_CHILD,IDisplayAsset);
 			_containerAsset.removeAsset(listAsset);
 			_listBox.asset=listAsset;
@@ -89,14 +91,15 @@ package org.farmcode.display.controls.popout {
 		
 		override protected function unbindFromAsset():void {
 			super.unbindFromAsset();
-			_popoutDisplay.relativeTo=null;
 			var listAsset:IAsset = _listBox.asset;
 			_containerAsset.addAsset(_listBox.asset);
 			_listBox.asset=null;
 		}
 		
 		override protected function measure():void {
-			var alignArea:Rectangle = getListAlignMeas();
+			super.measure();
+			addListToMeas();
+			/*var alignArea:Rectangle = getListAlignMeas();
 			var listMeas:Point = _listBox.measurements;
 			switch(_listAnchor){
 				case Anchor.TOP:
@@ -112,10 +115,22 @@ package org.farmcode.display.controls.popout {
 					_measurements.x = alignArea.width+listMeas.x;
 					break;
 			}
-			_measurements.y = alignArea.height;
+			_measurements.y = alignArea.height;*/
+		}
+		protected function addListToMeas():void {
+			var listMeas:Point = _listBox.measurements;
+			switch(_listAnchor){
+				case Anchor.TOP:
+				case Anchor.CENTER:
+				case Anchor.BOTTOM:
+					if(_measurements.x<listMeas.x){
+						_measurements.x = listMeas.x;
+					}
+					break;
+			}
 		}
 		override protected function draw():void {
-			var listMeas:Point = _listBox.measurements;
+			/*var listMeas:Point = _listBox.measurements;
 			var alignArea:Rectangle = getListAlignArea();
 			var useRect:Boolean = (alignArea!=null);
 			var x:Number;
@@ -178,16 +193,22 @@ package org.farmcode.display.controls.popout {
 			_popoutDisplay.popoutLayoutInfo.minWidth = minListWidth;
 			_popoutDisplay.popoutLayoutInfo.relativeOffsetX = x;
 			_popoutDisplay.popoutLayoutInfo.relativeOffsetY = y;
-			_popoutDisplay.popoutLayout.update();
+			_popoutDisplay.popoutLayout.update();*/
 		}
-		protected function getListAlignArea():Rectangle{
+		/*protected function getListAlignArea():Rectangle{
 			return null;
 		}
 		protected function getListAlignMeas():Rectangle{
 			return null;
-		}
+		}*/
 		protected function onListMeasureChange(from:ILayoutSubject, oldWidth:Number, oldHeight:Number):void{
-			dispatchMeasurementChange();
+			switch(_listAnchor){
+				case Anchor.TOP:
+				case Anchor.CENTER:
+				case Anchor.BOTTOM:
+					dispatchMeasurementChange();
+					break;
+			}
 		}
 		protected function closeOnClickOutside():Boolean{
 			return false;

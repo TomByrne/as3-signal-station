@@ -3,8 +3,8 @@ package org.farmcode.display.transition
 	import flash.geom.ColorTransform;
 	import flash.geom.Matrix;
 	
-	import org.farmcode.display.assets.IBitmapAsset;
-	import org.farmcode.display.assets.IDisplayAsset;
+	import org.farmcode.display.assets.assetTypes.IBitmapAsset;
+	import org.farmcode.display.assets.assetTypes.IDisplayAsset;
 	
 	public class CrossFadeTransition extends Transition
 	{

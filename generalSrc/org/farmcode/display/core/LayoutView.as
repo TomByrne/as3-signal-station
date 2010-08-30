@@ -7,8 +7,8 @@ package org.farmcode.display.core
 	
 	import org.farmcode.acting.actTypes.IAct;
 	import org.farmcode.acting.acts.Act;
-	import org.farmcode.display.assets.IAsset;
-	import org.farmcode.display.assets.IDisplayAsset;
+	import org.farmcode.display.assets.assetTypes.IAsset;
+	import org.farmcode.display.assets.assetTypes.IDisplayAsset;
 	import org.farmcode.display.layout.core.ILayoutInfo;
 	import org.farmcode.display.validation.ValidationFlag;
 	
@@ -92,15 +92,6 @@ package org.farmcode.display.core
 			return _displayPosition?_displayPosition:new Rectangle(0,0,measurements.x,measurements.y);
 		}
 		
-		public function get maskDisplay():Boolean{
-			return _maskDisplay;
-		}
-		public function set maskDisplay(value:Boolean):void{
-			if(_maskDisplay!=value){
-				_maskDisplay = value;
-				invalidate();
-			}
-		}
 		public function setAssetAndPosition(asset:IDisplayAsset):void{
 			this.asset = asset;
 			if(asset){
@@ -124,12 +115,10 @@ package org.farmcode.display.core
 		}
 		override protected function draw():void{
 			positionAsset();
-			asset.width = _displayPosition.width;
-			asset.height = _displayPosition.height;
+			asset.setSize(_displayPosition.width,_displayPosition.height);
 		}
 		protected function positionAsset():void{
-			asset.x = _displayPosition.x;
-			asset.y = _displayPosition.y;
+			asset.setPosition(_displayPosition.x,_displayPosition.y);
 		}
 		protected function dispatchMeasurementChange():void{
 			_measureFlag.invalidate();

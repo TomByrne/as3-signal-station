@@ -6,8 +6,8 @@ package org.farmcode.display.controls
 	import flash.geom.Rectangle;
 	
 	import org.farmcode.display.actInfo.IMouseActInfo;
-	import org.farmcode.display.assets.IDisplayAsset;
-	import org.farmcode.display.assets.IInteractiveObjectAsset;
+	import org.farmcode.display.assets.assetTypes.IDisplayAsset;
+	import org.farmcode.display.assets.assetTypes.IInteractiveObjectAsset;
 	import org.farmcode.display.constants.Anchor;
 	import org.farmcode.display.constants.Direction;
 	import org.farmcode.tweening.LooseTween;

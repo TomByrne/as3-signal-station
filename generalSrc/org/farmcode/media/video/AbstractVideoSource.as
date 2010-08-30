@@ -16,7 +16,7 @@ package org.farmcode.media.video
 	import org.farmcode.data.core.NumberData;
 	import org.farmcode.data.dataTypes.INumberData;
 	import org.farmcode.data.dataTypes.INumberProvider;
-	import org.farmcode.display.assets.IVideoAsset;
+	import org.farmcode.display.assets.assetTypes.IVideoAsset;
 	import org.farmcode.display.assets.nativeAssets.NativeAssetFactory;
 	import org.farmcode.display.assets.nativeAssets.VideoAsset;
 	import org.farmcode.display.core.ILayoutView;
@@ -166,6 +166,7 @@ package org.farmcode.media.video
 		protected var _netStream:NetStream;
 		protected var _videoStreamProxy:VideoStreamProxy;
 		
+		private var _nativeFactory:NativeAssetFactory;
 		
 		protected var _volumeChanged:Act;
 		protected var _bufferedChanged:Act;
@@ -181,6 +182,8 @@ package org.farmcode.media.video
 			_currentTime.numericalValueChanged.addHandler(onCurrentTimeChanged);
 			
 			_totalTime = new NumberData();
+			
+			_nativeFactory = new NativeAssetFactory();
 		}
 		
 		protected function onCurrentTimeChanged(from:NumberData):void{
@@ -340,7 +343,7 @@ package org.farmcode.media.video
 			if(_streamStarted){
 				video.attachNetStream(_netStream);
 			}
-			var videoAsset:IVideoAsset = NativeAssetFactory.getNew(video);
+			var videoAsset:IVideoAsset = _nativeFactory.getNew(video);
 			var display:MediaView = new MediaView(videoAsset,_measurements);
 			display.layoutInfo = new FrameLayoutInfo();
 			return display;
@@ -410,9 +413,9 @@ package org.farmcode.media.video
 }
 import org.farmcode.acting.actTypes.IAct;
 import org.farmcode.acting.acts.Act;
-import org.farmcode.math.UnitConversion;
+import org.farmcode.math.units.MemoryUnitConverter;
+import org.farmcode.math.units.UnitConverter;
 
-// dynamic to avoid errors from unknown metadata
 dynamic class VideoStreamProxy{
 	public var width:Number = 320;
 	public var height:Number = 240;
@@ -474,7 +477,7 @@ dynamic class VideoStreamProxy{
 				lastTime = time;
 				lastPos = pos;
 			}
-			dataRate = UnitConversion.convert(dataRate,UnitConversion.MEMORY_BYTES,UnitConversion.MEMORY_KILOBYTES);
+			dataRate = UnitConverter.convert(dataRate,MemoryUnitConverter.BYTES,MemoryUnitConverter.KILOBYTES);
 		}else{
 			dataRate = videoDataRate+audioDataRate;
 		}

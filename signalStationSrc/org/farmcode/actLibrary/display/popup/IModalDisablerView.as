@@ -2,7 +2,7 @@ package org.farmcode.actLibrary.display.popup
 {
 	import flash.display.DisplayObjectContainer;
 	
-	import org.farmcode.display.assets.IContainerAsset;
+	import org.farmcode.display.assets.assetTypes.IContainerAsset;
 
 	public interface IModalDisablerView 
 	{

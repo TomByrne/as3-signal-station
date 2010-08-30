@@ -10,8 +10,8 @@ package org.farmcode.actLibrary.display.transition
 	import org.farmcode.actLibrary.display.transition.actTypes.IAdvancedTransitionAct;
 	import org.farmcode.actLibrary.display.transition.actTypes.ITransitionAct;
 	import org.farmcode.acting.universal.UniversalActExecution;
-	import org.farmcode.display.assets.IContainerAsset;
-	import org.farmcode.display.assets.IDisplayAsset;
+	import org.farmcode.display.assets.assetTypes.IContainerAsset;
+	import org.farmcode.display.assets.assetTypes.IDisplayAsset;
 	import org.farmcode.display.assets.utils.isDescendant;
 	import org.farmcode.display.transition.TransitionExecution;
 	import org.farmcode.display.transition.TransitionManager;
@@ -64,7 +64,7 @@ package org.farmcode.actLibrary.display.transition
 						var depth:Number = 0;
 						var parent: IContainerAsset = null;
 						var wasVisible:Boolean = startDisplay.visible && startDisplay.stage;
-						if (startDisplay == startDisplay.root){
+						if (startDisplay == startDisplay.stage){
 							parent = startDisplay as IContainerAsset;
 							depth = parent.numChildren - 1;
 						}else{
@@ -78,11 +78,11 @@ package org.farmcode.actLibrary.display.transition
 							if(wasVisible){
 								startDisplay = snapshot(startDisplay,parent);
 							}else{
-								startDisplay = startDisplay.createAsset(IDisplayAsset);
+								startDisplay = startDisplay.factory.createContainer();
 							}
 							parent.addAssetAt(startDisplay,depth+1);
 						}else if(!wasVisible){
-							startDisplay = startDisplay.createAsset(IDisplayAsset);
+							startDisplay = startDisplay.factory.createContainer();
 						}
 						hiddenDisplay = endDisplay;
 					}
@@ -115,7 +115,7 @@ package org.farmcode.actLibrary.display.transition
 						var isVisible:Boolean = bundle.endDisplay.visible && bundle.endDisplay.stage;
 						if(!isVisible && bundle.endDisplay==bundle.hiddenDisplay){
 							bundle.hiddenDisplay = null;
-							bundle.endDisplay = bundle.addedDisplay = bundle.startDisplay.createAsset(IDisplayAsset);
+							bundle.endDisplay = bundle.addedDisplay = bundle.startDisplay.factory.createContainer();
 							bundle.startDisplay.parent.addAsset(bundle.endDisplay);
 						}
 						var trans:TransitionExecution = TransitionManager.execute(bundle.startDisplay,bundle.endDisplay,transitions,easing);
@@ -134,7 +134,7 @@ package org.farmcode.actLibrary.display.transition
 import flash.display.Bitmap;
 
 import org.farmcode.acting.universal.UniversalActExecution;
-import org.farmcode.display.assets.IDisplayAsset;
+import org.farmcode.display.assets.assetTypes.IDisplayAsset;
 import org.farmcode.display.transition.TransitionExecution;
 	
 class TransBundle{

@@ -1,7 +1,7 @@
 package org.farmcode.display.core
 {
 	import org.farmcode.acting.actTypes.IAct;
-	import org.farmcode.display.assets.IDisplayAsset;
+	import org.farmcode.display.assets.assetTypes.IDisplayAsset;
 
 	public interface IScopedObject 
 	{

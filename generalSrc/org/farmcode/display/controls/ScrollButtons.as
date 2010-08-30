@@ -8,7 +8,7 @@ package org.farmcode.display.controls
 	import flash.utils.Timer;
 	import flash.utils.getTimer;
 	
-	import org.farmcode.display.assets.IDisplayAsset;
+	import org.farmcode.display.assets.assetTypes.IDisplayAsset;
 	import org.farmcode.display.constants.Direction;
 	import org.farmcode.display.core.LayoutView;
 	import org.farmcode.display.scrolling.IScrollable;

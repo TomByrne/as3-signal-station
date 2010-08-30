@@ -90,7 +90,8 @@ package org.farmcode.acting.acts
 				else realParams = parameters;
 				perform.apply(null,realParams);
 			}else{
-				perform(e);
+				if(passEvent)perform(e);
+				else perform();
 			}
 		}
 	}

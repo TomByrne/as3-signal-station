@@ -1,7 +1,7 @@
 package org.farmcode.actLibrary.display.popup.acts
 {
 	import org.farmcode.actLibrary.display.transition.acts.TransitionAct;
-	import org.farmcode.display.assets.IDisplayAsset;
+	import org.farmcode.display.assets.assetTypes.IDisplayAsset;
 	import org.farmcode.display.popup.IPopupInfo;
 
 	public class AbstractPopupAct extends TransitionAct

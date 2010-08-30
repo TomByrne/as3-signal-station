@@ -8,27 +8,23 @@ package org.farmcode.display.assets.nativeAssets {
 	
 	import org.farmcode.acting.actTypes.IAct;
 	import org.farmcode.acting.acts.NativeAct;
-	import org.farmcode.display.assets.IContainerAsset;
-	import org.farmcode.display.assets.IDisplayAsset;
-	import org.farmcode.display.assets.IStageAsset;
+	import org.farmcode.display.assets.assetTypes.IContainerAsset;
+	import org.farmcode.display.assets.assetTypes.IDisplayAsset;
+	import org.farmcode.display.assets.assetTypes.IStageAsset;
 	import org.farmcode.instanceFactory.*;
 	
 	
-	public class DisplayObjectAsset extends Asset implements IDisplayAsset {
+	public class DisplayObjectAsset extends NativeAsset implements IDisplayAsset {
 		/**
 		 * @inheritDoc
 		 */
 		public function get addedToStage():IAct {
-			if(!_addedToStage)
-				_addedToStage = new NativeAct(_displayObject, Event.ADDED_TO_STAGE, [this],false);
 			return _addedToStage;
 		}
 		/**
 		 * @inheritDoc
 		 */
 		public function get removedFromStage():IAct {
-			if(!_removedFromStage)
-				_removedFromStage = new NativeAct(_displayObject, Event.REMOVED_FROM_STAGE, [this], false);
 			return _removedFromStage;
 		}
 		/**
@@ -54,6 +50,14 @@ package org.farmcode.display.assets.nativeAssets {
 			if(!_enterFrame)
 				_enterFrame = new NativeAct(_displayObject, Event.ENTER_FRAME, [this]);
 			return _enterFrame;
+		}
+		
+		
+		override internal function get display():*{
+			return displayObject;
+		}
+		override internal function set display(value:*):void{
+			displayObject = value as DisplayObject;
 		}
 		
 		
@@ -103,14 +107,24 @@ package org.farmcode.display.assets.nativeAssets {
 		private var _y:Number;
 		private var _forceTopLeft:Boolean = true;
 		
+		protected var _isAddedToStage:Boolean;
+		protected var _parent:IContainerAsset;
+		protected var _stageAsset:IStageAsset;
 		
-		public function DisplayObjectAsset() {
+		
+		public function DisplayObjectAsset(factory:NativeAssetFactory=null){
+			super(factory);
+			
+			_addedToStage = new NativeAct(_displayObject, Event.ADDED_TO_STAGE, [this],false);
+			_addedToStage.addHandler(onAddedToStage);
+			_removedFromStage = new NativeAct(_displayObject, Event.REMOVED_FROM_STAGE, [this], false);
+			_removedFromStage.addHandler(onRemovedFromStage);
 		}
-		
-		
-		// we'll get rid of this soon, please don't use it (it's for DelayedDrawer only)
-		public function get drawDisplay():DisplayObject {
-			return _displayObject;
+		protected function onAddedToStage(from:DisplayObjectAsset):void{
+			_isAddedToStage = true;
+		}
+		protected function onRemovedFromStage(from:DisplayObjectAsset):void{
+			_isAddedToStage = false;
 		}
 		
 		
@@ -120,7 +134,8 @@ package org.farmcode.display.assets.nativeAssets {
 		public function set forceTopLeft(value:Boolean):void{
 			if(_forceTopLeft!=value){
 				_forceTopLeft = value;
-				applyPosition();
+				applyX();
+				applyY();
 			}
 		}
 		public function get naturalWidth():Number {
@@ -168,7 +183,7 @@ package org.farmcode.display.assets.nativeAssets {
 			applyX();
 		}
 		public function get x():Number {
-			takePosition();
+			takeX();
 			return _x;
 		}
 		public function set y(value:Number):void {
@@ -176,7 +191,7 @@ package org.farmcode.display.assets.nativeAssets {
 			applyY();
 		}
 		public function get y():Number {
-			takePosition();
+			takeY();
 			return _y;
 		}
 		public function set scrollRect(value:Rectangle):void {
@@ -241,18 +256,29 @@ package org.farmcode.display.assets.nativeAssets {
 		}
 		
 		
-		public function get stage():IStageAsset {
-			return _displayObject && _displayObject.stage?NativeAssetFactory.getNew(_displayObject.stage):null;
-		}
-		
-		
-		public function get root():IContainerAsset {
-			return _displayObject && _displayObject.root?NativeAssetFactory.getNew(_displayObject.root):null;
-		}
-		
-		
 		public function get parent():IContainerAsset {
-			return _displayObject && _displayObject.parent?NativeAssetFactory.getNew(_displayObject.parent):null;
+			return _parent;
+		}
+		public function set parent(value:IContainerAsset):void {
+			_parent = value;
+			if(!value){
+				_stageAsset = null;
+				if(_addedToStage)onRemovedFromStage(this);
+			}else{
+				if(_parent.stage){
+					if(!_addedToStage)onAddedToStage(this);
+				}else if(_addedToStage)onRemovedFromStage(this);
+			}
+		}
+		public function get stage():IStageAsset {
+			if(_parent && !_stageAsset){
+				var topParent:IContainerAsset = _parent;
+				while(topParent.parent){
+					topParent = topParent.parent;
+				}
+				_stageAsset = (topParent as IStageAsset);
+			}
+			return _stageAsset;
 		}
 		
 		protected function checkInnerBounds():Boolean {
@@ -263,18 +289,13 @@ package org.farmcode.display.assets.nativeAssets {
 				_innerBounds = _displayObject.getBounds(_displayObject);
 				_origScaleX = _displayObject.scaleX;
 				_origScaleY = _displayObject.scaleY;
-				takePosition();
+				takeX();
+				takeY();
 				return true;
 			}else{
 				return false;
 			}
 		}
-		protected function takePosition():void {
-			takeX();
-			takeY();
-		}
-		
-		
 		protected function takeX():void {
 			if(checkInnerBounds()){
 				_x = _displayObject.x+_innerBounds.x*_displayObject.scaleX;
@@ -282,20 +303,12 @@ package org.farmcode.display.assets.nativeAssets {
 				_x = _displayObject.x;
 			}
 		}
-		
-		
 		protected function takeY():void {
 			if(checkInnerBounds()){
 				_y = _displayObject.y+_innerBounds.y*_displayObject.scaleY;
 			}else{
 				_y = _displayObject.y;
 			}
-		}
-		
-		
-		protected function applyPosition():void {
-			applyX();
-			applyY();
 		}
 		
 		
@@ -321,11 +334,17 @@ package org.farmcode.display.assets.nativeAssets {
 		}
 		
 		
-		public function position(x:Number, y:Number, width:Number, height:Number):void {
+		public function setPosition(x:Number, y:Number):void {
 			this.x = x;
 			this.y = y;
+		}
+		public function setSize(width:Number, height:Number):void {
 			this.width = width;
 			this.height = height;
+		}
+		public function setSizeAndPos(x:Number, y:Number, width:Number, height:Number):void {
+			setPosition(x,y);
+			setSize(width,height);
 		}
 		
 		
@@ -336,16 +355,15 @@ package org.farmcode.display.assets.nativeAssets {
 			return _displayObject.localToGlobal(point);
 		}
 		public function getBounds(space:IDisplayAsset):Rectangle {
-			var cast:DisplayObjectAsset = (space as DisplayObjectAsset);
-			return _displayObject.getBounds(cast.displayObject);
+			return _displayObject.getBounds(space.displayObject || space.bitmapDrawable as DisplayObject);
 		}
 		
 		public function getCloneFactory():IInstanceFactory{
-			return NativeAssetFactory.getCloneFactory(this);
+			return _nativeFactory.getCloneFactory(this);
 		}
-		override public function release():void {
+		override public function reset():void {
 			_forceTopLeft = true;
-			super.release();
+			super.reset();
 		}
 	}
 }

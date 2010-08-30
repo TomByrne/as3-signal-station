@@ -7,7 +7,7 @@ package org.farmcode.display.containers
 	import org.farmcode.acting.actTypes.IAct;
 	import org.farmcode.acting.acts.Act;
 	import org.farmcode.display.actInfo.IMouseActInfo;
-	import org.farmcode.display.assets.IInteractiveObjectAsset;
+	import org.farmcode.display.assets.assetTypes.IInteractiveObjectAsset;
 	import org.farmcode.display.constants.Direction;
 	import org.farmcode.display.core.IView;
 	import org.farmcode.display.layout.ILayoutSubject;
@@ -198,8 +198,7 @@ package org.farmcode.display.containers
 		}
 		protected function setScrollRect(rect:Rectangle):void{
 			if(_targetView){
-				_targetAsset.x = _displayPosition.x;
-				_targetAsset.y = _displayPosition.y;
+				_targetAsset.setPosition(_displayPosition.x,_displayPosition.y);
 				_targetAsset.scrollRect = rect;
 			}
 		}

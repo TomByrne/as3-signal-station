@@ -11,8 +11,8 @@ package org.farmcode.display.assets.nativeAssets
 	import org.farmcode.acting.acts.Act;
 	import org.farmcode.acting.acts.NativeAct;
 	import org.farmcode.display.actInfo.IMouseActInfo;
-	import org.farmcode.display.assets.IDisplayAsset;
-	import org.farmcode.display.assets.IInteractiveObjectAsset;
+	import org.farmcode.display.assets.assetTypes.IDisplayAsset;
+	import org.farmcode.display.assets.assetTypes.IInteractiveObjectAsset;
 	import org.farmcode.display.assets.nativeAssets.actInfo.MouseActInfo;
 
 	public class InteractiveObjectAsset extends DisplayObjectAsset implements IInteractiveObjectAsset
@@ -210,8 +210,8 @@ package org.farmcode.display.assets.nativeAssets
 		
 		private var eventBundles:Array;
 		
-		public function InteractiveObjectAsset(){
-			super();
+		public function InteractiveObjectAsset(factory:NativeAssetFactory=null){
+			super(factory);
 			eventBundles = [new EventBundle(MouseEvent.MOUSE_WHEEL, "_mouseWheel", onMouseWheel),
 							new EventBundle(MouseEvent.CLICK, "_click", onMouseEvent),
 							new EventBundle(MouseEvent.DOUBLE_CLICK, "_doubleClick", onMouseEvent),
@@ -233,7 +233,7 @@ package org.farmcode.display.assets.nativeAssets
 			if(_mouseWheel)_mouseWheel.perform(this,createMouseInfo(e),e.delta);
 		}
 		protected function createMouseInfo(e:MouseEvent):IMouseActInfo{
-			var target:IDisplayAsset = (e.target==_interactiveObject?this:NativeAssetFactory.getNew(e.target as DisplayObject));
+			var target:IDisplayAsset = (e.target==_interactiveObject?this:_nativeFactory.getNew(e.target as DisplayObject));
 			return new MouseActInfo(target, e.altKey, e.ctrlKey, e.shiftKey);
 		}
 		

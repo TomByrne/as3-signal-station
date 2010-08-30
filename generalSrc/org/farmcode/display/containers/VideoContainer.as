@@ -12,9 +12,9 @@ package org.farmcode.display.containers
 	import org.farmcode.data.core.StringData;
 	import org.farmcode.display.DisplayNamespace;
 	import org.farmcode.display.actInfo.IMouseActInfo;
-	import org.farmcode.display.assets.IDisplayAsset;
-	import org.farmcode.display.assets.IInteractiveObjectAsset;
-	import org.farmcode.display.assets.ISpriteAsset;
+	import org.farmcode.display.assets.assetTypes.IDisplayAsset;
+	import org.farmcode.display.assets.assetTypes.IInteractiveObjectAsset;
+	import org.farmcode.display.assets.assetTypes.ISpriteAsset;
 	import org.farmcode.display.controls.BufferBar;
 	import org.farmcode.display.controls.Button;
 	import org.farmcode.display.controls.Control;
@@ -129,7 +129,7 @@ package org.farmcode.display.containers
 		private var _assumedPattern:String;
 		
 		private var _mouseActive:Boolean = true;
-		private var _mouseOver:Boolean = true;
+		private var _mouseOver:Boolean;
 		
 		private var _progressLabelPattern:String;
 		private var _fullscreenUtil:FullscreenUtil;
@@ -182,18 +182,15 @@ package org.farmcode.display.containers
 				checkProgressPattern();
 			}
 			
-			_videoCover = asset.createAsset(ISpriteAsset);
+			_videoCover = asset.factory.createHitArea();
 			_videoCover.doubleClicked.addHandler(onFullscreenClick);
 			_videoCover.doubleClickEnabled = true;
-			_videoCover.graphics.beginFill(0,0);
-			_videoCover.graphics.drawRect(0,0,10,10);
 			_videoCover.buttonMode = true;
 			_videoCover.useHandCursor = false;
 			_videoCover.keyUp.addHandler(onKeyUp);
 			_containerAsset.addAssetAt(_videoCover,_containerAsset.getAssetIndex(_mediaBounds || _mediaContainer)+1);
 			
 			
-			_mouseOver = true;
 			syncToData();
 			activateMouse();
 		}
@@ -276,7 +273,7 @@ package org.farmcode.display.containers
 			_videoCover.doubleClicked.removeHandler(onFullscreenClick);
 			_videoCover.keyUp.removeHandler(onKeyUp);
 			_containerAsset.removeAsset(_videoCover);
-			asset.destroyAsset(_videoCover);
+			asset.factory.destroyAsset(_videoCover);
 			
 			if(_playPauseButton){
 				(_playPauseButton.asset as IInteractiveObjectAsset).mouseMoved.removeHandler(onVideoMouse);
@@ -308,10 +305,7 @@ package org.farmcode.display.containers
 				var align:Rectangle =_mediaContainer.scrollRect;
 				_centredPauseButton.setDisplayPosition(align.x+(align.width-meas.x)/2,align.y+(align.height-meas.y)/2,meas.x,meas.y);
 			}
-			_videoCover.x = _scrollRect.x;
-			_videoCover.y = _scrollRect.y;
-			_videoCover.width = _scrollRect.width;
-			_videoCover.height = _scrollRect.height;
+			_videoCover.setSizeAndPos(_scrollRect.x,_scrollRect.y,_scrollRect.width,_scrollRect.height);
 		}
 		
 		protected function onPlayPauseClick(from:Button):void{

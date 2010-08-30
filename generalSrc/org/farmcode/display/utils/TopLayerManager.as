@@ -4,9 +4,9 @@ package org.farmcode.display.utils
 	import flash.display.Stage;
 	import flash.utils.Dictionary;
 	
-	import org.farmcode.display.assets.IAsset;
-	import org.farmcode.display.assets.IDisplayAsset;
-	import org.farmcode.display.assets.IStageAsset;
+	import org.farmcode.display.assets.assetTypes.IAsset;
+	import org.farmcode.display.assets.assetTypes.IDisplayAsset;
+	import org.farmcode.display.assets.assetTypes.IStageAsset;
 	
 	public class TopLayerManager
 	{
@@ -40,10 +40,10 @@ import flash.display.Stage;
 import flash.events.Event;
 import flash.utils.Dictionary;
 
-import org.farmcode.display.assets.IAsset;
-import org.farmcode.display.assets.IContainerAsset;
-import org.farmcode.display.assets.IDisplayAsset;
-import org.farmcode.display.assets.IStageAsset;
+import org.farmcode.display.assets.assetTypes.IAsset;
+import org.farmcode.display.assets.assetTypes.IContainerAsset;
+import org.farmcode.display.assets.assetTypes.IDisplayAsset;
+import org.farmcode.display.assets.assetTypes.IStageAsset;
 
 class TopLayerBundle{
 	private var stage:IStageAsset;
@@ -53,7 +53,7 @@ class TopLayerBundle{
 	
 	public function TopLayerBundle(stage:IStageAsset){
 		this.stage = stage;
-		container = stage.createAsset(IContainerAsset);
+		container = stage.factory.createContainer();
 		container.mouseEnabled = false;
 		stage.addAsset(container);
 		stage.added.addHandler(onAdded);
@@ -79,7 +79,7 @@ class TopLayerBundle{
 	public function dispose():void{
 		stage.added.removeHandler(onAdded);
 		stage.removeAsset(container);
-		stage.destroyAsset(container);
+		stage.factory.destroyAsset(container);
 		stage = null;
 	}
 	public function onAdded(e:Event, from:IStageAsset):void{

@@ -36,7 +36,8 @@ package org.farmcode.data.core
 		protected var _stringValueChanged:Act;
 		private var _stringValue:String;
 		
-		public function StringData(){
+		public function StringData(stringValue:String=null){
+			this.stringValue = stringValue;
 		}
 		public function toString():String{
 			return _stringValue;

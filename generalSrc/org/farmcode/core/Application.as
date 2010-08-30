@@ -1,37 +1,36 @@
 package org.farmcode.core
 {
-	import flash.display.DisplayObject;
-	import flash.display.DisplayObjectContainer;
 	import flash.geom.Rectangle;
 	
-	import org.farmcode.display.assets.IContainerAsset;
-	import org.farmcode.display.assets.IDisplayAsset;
-	import org.farmcode.display.assets.IStageAsset;
-	import org.farmcode.display.assets.nativeAssets.NativeAssetFactory;
-	import org.farmcode.display.core.ILayoutView;
+	import org.farmcode.data.dataTypes.INumberProvider;
+	import org.farmcode.debug.DebugManager;
+	import org.farmcode.debug.data.core.MemoryUsage;
+	import org.farmcode.debug.data.core.RealFrameRate;
+	import org.farmcode.debug.nodes.GraphStatisticNode;
+	import org.farmcode.display.assets.assetTypes.IContainerAsset;
+	import org.farmcode.display.assets.assetTypes.IDisplayAsset;
+	import org.farmcode.display.assets.assetTypes.IStageAsset;
 	import org.farmcode.display.core.LayoutView;
-	import org.farmcode.display.core.View;
+	import org.farmcode.math.units.MemoryUnitConverter;
 	
 	/**
 	 * Application adds the core abstract implementation of the IApplication
 	 * interface.
 	 */
+	// TODO: remove LayoutView inheritance?
 	public class Application extends LayoutView implements IApplication
 	{
-		public function get container():DisplayObjectContainer{
+		public function get container():IContainerAsset{
 			return _container;
 		}
-		public function set container(value:DisplayObjectContainer):void{
+		public function set container(value:IContainerAsset):void{
 			if(_container!=value){
 				removeMainDisplay();
 				_container = value;
 				
 				if(value){
-					_assetContainer = NativeAssetFactory.getNew(value);
-					setStage(_assetContainer.stage);
-					if(value==value.stage)attemptInit();
+					setStage(_container.stage);
 				}else{
-					_assetContainer = null
 					setStage(null);
 				}
 				addMainDisplay();
@@ -73,21 +72,28 @@ package org.farmcode.core
 		
 		private var _applicationScale:Number = 1;
 		private var _mainView:LayoutView;
-		protected var _container:DisplayObjectContainer;
-		protected var _assetContainer:IContainerAsset;
+		protected var _container:IContainerAsset;
 		protected var _lastStage:IStageAsset;
 		
 		public function Application(asset:IDisplayAsset=null){
 			super(asset);
 		}
+		override protected function init():void{
+			super.init();
+			Config::DEBUG{
+				DebugManager.addDebugNode(new GraphStatisticNode(this,"FPS",0x990000,new RealFrameRate(),true));
+				var memory:INumberProvider = new MemoryUnitConverter(new MemoryUsage(),MemoryUnitConverter.BYTES,MemoryUnitConverter.MEGABYTES,true)
+				DebugManager.addDebugNode(new GraphStatisticNode(this,"Mem",0x009900,memory,true));
+			}
+		}
 		protected function removeMainDisplay():void{
-			if(asset && _assetContainer){
-				_assetContainer.removeAsset(asset);
+			if(asset && _container){
+				_container.removeAsset(asset);
 			}
 		}
 		protected function addMainDisplay():void{
-			if(asset && _assetContainer){
-				_assetContainer.addAsset(asset);
+			if(asset && _container){
+				_container.addAsset(asset);
 			}
 		}
 		override protected function bindToAsset() : void{
@@ -113,12 +119,9 @@ package org.farmcode.core
 		protected function commitStage() : void{
 			// override me
 		}
-		override public function setDisplayPosition(x:Number, y:Number, width:Number, height:Number):void{
-			super.setDisplayPosition(x, y, width, height);
-		}
 		override protected function draw() : void{
 			// If FullscreenUtil is being used then this will be skipped
-			if(_mainView && _mainView.asset.parent==_assetContainer){
+			if(_mainView && _mainView.asset.parent==_container){
 				var scale:Number = (isNaN(_applicationScale) || _applicationScale<=0?1:_applicationScale);
 				var pos:Rectangle = displayPosition;
 				_mainView.setDisplayPosition(pos.x,pos.y,pos.width*(1/scale),pos.height*(1/scale));

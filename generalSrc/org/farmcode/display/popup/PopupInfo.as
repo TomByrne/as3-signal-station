@@ -6,8 +6,8 @@ package org.farmcode.display.popup
 	import org.farmcode.actLibrary.core.IRevertableAct;
 	import org.farmcode.acting.actTypes.IAct;
 	import org.farmcode.acting.actTypes.IUniversalAct;
-	import org.farmcode.display.assets.IDisplayAsset;
-	import org.farmcode.display.assets.IStageAsset;
+	import org.farmcode.display.assets.assetTypes.IDisplayAsset;
+	import org.farmcode.display.assets.assetTypes.IStageAsset;
 
 	public class PopupInfo extends AbstractPopupInfo implements IPopupInfo
 	{
@@ -66,8 +66,7 @@ package org.farmcode.display.popup
 				var bounds:Rectangle = _popupDisplay.getBounds(_popupDisplay);
 				centreX -= (bounds.left+bounds.right)/2;
 				centreY -= (bounds.top+bounds.bottom)/2;
-				_popupDisplay.x = centreX;
-				_popupDisplay.y = centreY;
+				_popupDisplay.setPosition(centreX,centreY);
 			}
 		}
 		private function assessFocused():void{

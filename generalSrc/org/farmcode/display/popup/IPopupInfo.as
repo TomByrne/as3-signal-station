@@ -1,7 +1,7 @@
 package org.farmcode.display.popup
 {
 	import org.farmcode.actLibrary.display.popup.IModalDisablerView;
-	import org.farmcode.display.assets.IDisplayAsset;
+	import org.farmcode.display.assets.assetTypes.IDisplayAsset;
 
 	public interface IPopupInfo
 	{

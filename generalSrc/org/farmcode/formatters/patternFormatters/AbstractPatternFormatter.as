@@ -9,6 +9,14 @@ package org.farmcode.formatters.patternFormatters
 	
 	public class AbstractPatternFormatter implements IStringProvider
 	{
+		/**
+		 * If quickValidate is true, the pattern will be reevaluated before
+		 * the stringValueChanged act is performed, this will prevent the act
+		 * from being fired when there is no actual change to the resulting
+		 * stringValue. The downside is that even if nothing was listening to
+		 * the act the pattern will still be reevaluated.
+		 */
+		public var quickValidate:Boolean;
 		
 		public function get pattern():IStringProvider{
 			return _pattern;
@@ -48,13 +56,14 @@ package org.farmcode.formatters.patternFormatters
 			return stringValueChanged;
 		}
 		
+		protected var _quickValidate:Boolean;
 		protected var _stringValue:String;
 		protected var _stringValueFlag:ValidationFlag;
 		protected var _stringValueChanged:Act;
 		protected var _pattern:IStringProvider;
 		protected var _tokens:Dictionary;
 		
-		public function AbstractPatternFormatter(pattern:IStringProvider){
+		public function AbstractPatternFormatter(pattern:IStringProvider=null){
 			_stringValueFlag = new ValidationFlag(validateString,false);
 			this.pattern = pattern;
 			_tokens = new Dictionary();
@@ -77,6 +86,11 @@ package org.farmcode.formatters.patternFormatters
 			delete _tokens[token];
 			doStringChanged();
 		}
+		protected function _removeAllTokens():void{
+			for(var token:String in _tokens){
+				_removeToken(token);
+			}
+		}
 		
 		protected function onPatternChanged(from:IStringProvider):void{
 			doStringChanged();
@@ -85,8 +99,14 @@ package org.farmcode.formatters.patternFormatters
 			doStringChanged();
 		}
 		protected function doStringChanged():void{
-			_stringValueFlag.invalidate();
-			if(_stringValueChanged)_stringValueChanged.perform(this);
+			if(quickValidate){
+				var oldString:String = _stringValue;
+				_stringValueFlag.validate(true);
+				if(oldString!=_stringValue && _stringValueChanged)_stringValueChanged.perform(this);
+			}else{
+				_stringValueFlag.invalidate();
+				if(_stringValueChanged)_stringValueChanged.perform(this);
+			}
 		}
 		protected function validateString():void{
 			if(_pattern){

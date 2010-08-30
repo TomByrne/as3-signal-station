@@ -4,7 +4,7 @@ package org.farmcode.display.assets.nativeAssets
 	import flash.media.Video;
 	import flash.net.NetStream;
 	
-	import org.farmcode.display.assets.IVideoAsset;
+	import org.farmcode.display.assets.assetTypes.IVideoAsset;
 	
 	public class VideoAsset extends DisplayObjectAsset implements IVideoAsset
 	{
@@ -19,9 +19,8 @@ package org.farmcode.display.assets.nativeAssets
 		private var _video:Video;
 		
 		
-		public function VideoAsset()
-		{
-			super();
+		public function VideoAsset(factory:NativeAssetFactory=null){
+			super(factory);
 		}
 		public function attachNetStream(netStream:NetStream):void{
 			_video.attachNetStream(netStream);

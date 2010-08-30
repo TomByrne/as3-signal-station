@@ -10,7 +10,8 @@ package org.farmcode.media
 	import org.farmcode.data.dataTypes.INumberProvider;
 	import org.farmcode.data.dataTypes.IStringProvider;
 	import org.farmcode.display.core.ILayoutView;
-	import org.farmcode.math.UnitConversion;
+	import org.farmcode.math.units.MemoryUnitConverter;
+	import org.farmcode.math.units.UnitConverter;
 	
 	public class MediaSource implements IMediaSource
 	{
@@ -87,16 +88,17 @@ package org.farmcode.media
 		}
 		
 		protected function setMemoryLoadProps(progress:Number, total:Number):void{
-			var progBreakdown:Array = UnitConversion.standardMemoryBreakdown(progress);
-			var totalBreakdown:Array = UnitConversion.standardMemoryBreakdown(total);
+			var progBreakdown:Array = MemoryUnitConverter.standardMemoryBreakdown(progress);
+			var totalBreakdown:Array = MemoryUnitConverter.standardMemoryBreakdown(total);
+			var bytes:Number = MemoryUnitConverter.BYTES;
 			for(var i:int=0; i<progBreakdown.length; ++i){
 				var prog:Number = progBreakdown[i];
 				var tot:Number = totalBreakdown[i];
 				if(prog>0 && tot>0){
-					var units:Number = UnitConversion.STANDARD_MEMORY_UNITS[i];
-					if(units!=UnitConversion.MEMORY_BYTES){
-						prog = UnitConversion.convert(progress,UnitConversion.MEMORY_BYTES,units);
-						tot = UnitConversion.convert(total,UnitConversion.MEMORY_BYTES,units);
+					var units:Number = MemoryUnitConverter.STANDARD_UNITS[i];
+					if(units!=bytes){
+						prog = UnitConverter.convert(progress,bytes,units);
+						tot = UnitConverter.convert(total,bytes,units);
 					}else{
 						prog = progress;
 						tot = total;
@@ -109,6 +111,7 @@ package org.farmcode.media
 						tot = (int((tot*100)+0.5))/100;
 					}
 					setLoadProps(prog,tot,MEMORY_UNIT_NAMES[i]);
+					break;
 				}
 			}
 		}

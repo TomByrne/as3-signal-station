@@ -2,7 +2,7 @@ package org.farmcode.actLibrary.display.transition.acts
 {
 	import org.farmcode.actLibrary.display.transition.actTypes.IAdvancedTransitionAct;
 	import org.farmcode.acting.acts.UniversalAct;
-	import org.farmcode.display.assets.IDisplayAsset;
+	import org.farmcode.display.assets.assetTypes.IDisplayAsset;
 
 	public class TransitionAct extends UniversalAct implements IAdvancedTransitionAct
 	{

@@ -6,8 +6,7 @@ package org.farmcode.display.controls.toolTip
 	
 	import org.farmcode.core.DelayedCall;
 	import org.farmcode.display.DisplayNamespace;
-	import org.farmcode.display.assets.IDisplayAsset;
-	import org.farmcode.display.assets.IStageAsset;
+	import org.farmcode.display.assets.assetTypes.IDisplayAsset;
 	import org.farmcode.display.constants.Anchor;
 	import org.farmcode.display.controls.popout.PopoutDisplay;
 	import org.farmcode.display.core.ILayoutView;
@@ -51,12 +50,6 @@ package org.farmcode.display.controls.toolTip
 				}
 			}
 		}
-		public function get stage():IStageAsset{
-			return _popoutDisplay.stage;
-		}
-		public function set stage(value:IStageAsset):void{
-			_popoutDisplay.stage = value;
-		}
 		
 		
 		public function get toolTipDisplay():IToolTipDisplay{
@@ -66,17 +59,17 @@ package org.farmcode.display.controls.toolTip
 			if(_toolTipDisplay!=value){
 				if(_toolTipDisplay){
 					_popoutDisplay.popout = null;
-					_toolTipDisplay.measurementsChanged.removeHandler(onDisplayMeasChanged);
+					//_toolTipDisplay.measurementsChanged.removeHandler(onDisplayMeasChanged);
 					value.anchorView = null;
 				}
 				_toolTipDisplay = value;
 				if(_toolTipDisplay){
 					_popoutDisplay.popout = _toolTipDisplay;
-					_toolTipDisplay.measurementsChanged.addHandler(onDisplayMeasChanged);
+					//_toolTipDisplay.measurementsChanged.addHandler(onDisplayMeasChanged);
 					value.data = _data;
 					value.anchor = _anchor;
 					value.anchorView = _anchorView;
-					setPosition();
+					//setPosition();
 				}
 			}
 		}
@@ -98,6 +91,8 @@ package org.farmcode.display.controls.toolTip
 		
 		public function ToolTipManager(){
 			super();
+			_popoutDisplay.enforceMinimums = false;
+			_popoutDisplay.lodgeCorners = false;
 			_popoutDisplay.popoutLayoutInfo.keepWithinStageBounds = true;
 		}
 		public function addTipTrigger(trigger:IToolTipTrigger):void{
@@ -121,7 +116,7 @@ package org.farmcode.display.controls.toolTip
 				_activeTriggers.splice(index,1);
 			}
 		}
-		protected function onDisplayMeasChanged(from:ILayoutView, oldWidth:Number, oldHeight:Number):void{
+		/*protected function onDisplayMeasChanged(from:ILayoutView, oldWidth:Number, oldHeight:Number):void{
 			setPosition();
 		}
 		protected function onPositionChanged(from:ILayoutView, oldX:Number, oldY:Number, oldWidth:Number, oldHeight:Number):void{
@@ -162,7 +157,7 @@ package org.farmcode.display.controls.toolTip
 					}
 				}
 			}
-		}
+		}*/
 		
 		protected function onActiveChanged(from:IToolTipTrigger):void{
 			if(from.active){
@@ -258,26 +253,25 @@ package org.farmcode.display.controls.toolTip
 			}
 			if(newAnchorView!=_anchorView){
 				if(_anchorView){
-					_anchorView.positionChanged.removeHandler(onPositionChanged);
+					//_anchorView.positionChanged.removeHandler(onPositionChanged);
 					_anchorView.assetChanged.removeHandler(onAnchorAssetChanged);
 				}
 				_anchorView = newAnchorView;
 				_toolTipDisplay.anchorView = _anchorView;
+				_popoutDisplay.relativeTo = _anchorView;
 				if(_anchorView){
-					_anchorView.positionChanged.addHandler(onPositionChanged);
+					//_anchorView.positionChanged.addHandler(onPositionChanged);
 					_anchorView.assetChanged.addHandler(onAnchorAssetChanged);
 				}
 				checkAsset();
 			}
-			setPosition();
+			//setPosition();
 		}
 		protected function checkAsset():void{
 			if(_anchorView && _anchorView.asset){
-				_popoutDisplay.relativeTo = _anchorView.asset;
 				_popoutDisplay.popoutShown = true;
 			}else{
 				_popoutDisplay.popoutShown = false;
-				_popoutDisplay.relativeTo = null;
 			}
 		}
 		protected function onAnchorAssetChanged(from:ILayoutView, oldAsset:IDisplayAsset):void{

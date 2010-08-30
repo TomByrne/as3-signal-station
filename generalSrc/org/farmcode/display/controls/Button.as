@@ -11,19 +11,19 @@ package org.farmcode.display.controls
 	import org.farmcode.data.dataTypes.ITriggerableAction;
 	import org.farmcode.display.DisplayNamespace;
 	import org.farmcode.display.actInfo.IMouseActInfo;
-	import org.farmcode.display.assets.IDisplayAsset;
-	import org.farmcode.display.assets.IInteractiveObjectAsset;
-	import org.farmcode.display.assets.ISpriteAsset;
+	import org.farmcode.display.assets.assetTypes.IDisplayAsset;
+	import org.farmcode.display.assets.assetTypes.IInteractiveObjectAsset;
+	import org.farmcode.display.assets.assetTypes.ISpriteAsset;
 	import org.farmcode.display.assets.states.StateDef;
 	
 	use namespace DisplayNamespace;
 	
 	public class Button extends Control
 	{
-		internal static var OVER_FRAME_LABEL:String = "mouseOver";
-		internal static var OUT_FRAME_LABEL:String = "mouseOut";
-		internal static var DOWN_FRAME_LABEL:String = "mouseDown";
-		internal static var UP_FRAME_LABEL:String = "mouseUp";
+		DisplayNamespace static var STATE_OVER:String = "mouseOver";
+		DisplayNamespace static var STATE_OUT:String = "mouseOut";
+		DisplayNamespace static var STATE_DOWN:String = "mouseDown";
+		DisplayNamespace static var STATE_UP:String = "mouseUp";
 		
 		
 		public function get data():*{
@@ -137,8 +137,8 @@ package org.farmcode.display.controls
 		protected var _over:Boolean;
 		protected var _down:Boolean;
 		
-		protected var _overState:StateDef = new StateDef([OVER_FRAME_LABEL,OUT_FRAME_LABEL],1);
-		protected var _downState:StateDef = new StateDef([DOWN_FRAME_LABEL,UP_FRAME_LABEL],1);
+		protected var _overState:StateDef = new StateDef([STATE_OVER,STATE_OUT],1);
+		protected var _downState:StateDef = new StateDef([STATE_DOWN,STATE_UP],1);
 		
 		protected var _interactiveArea:ISpriteAsset;
 		
@@ -155,10 +155,7 @@ package org.farmcode.display.controls
 			super.bindToAsset();
 			_asset.added.addHandler(onChildAdded);
 			
-			_interactiveArea = _asset.createAsset(ISpriteAsset);
-			_interactiveArea.graphics.beginFill(0,0);
-			_interactiveArea.graphics.drawRect(0,0,10,10);
-			_interactiveArea.graphics.endFill();
+			_interactiveArea = _asset.factory.createHitArea();
 			_containerAsset.addAsset(_interactiveArea);
 			
 			_interactiveArea.mouseReleased.addHandler(onMouseDown);
@@ -180,7 +177,7 @@ package org.farmcode.display.controls
 			_interactiveArea.rolledOut.removeHandler(onRollOut);
 			_interactiveArea.clicked.removeHandler(onClick);
 			
-			_asset.destroyAsset(_interactiveArea);
+			_asset.factory.destroyAsset(_interactiveArea);
 			_interactiveArea = null;
 			
 			//_containerAsset.mouseChildren = true;
@@ -194,14 +191,11 @@ package org.farmcode.display.controls
 		override protected function draw() : void{
 			positionAsset();
 			if(_scaleAsset){
-				asset.width = displayPosition.width;
-				asset.height = displayPosition.height;
-				_interactiveArea.width = displayPosition.width/asset.scaleX;
-				_interactiveArea.height = displayPosition.height/asset.scaleY;
+				asset.setSize(displayPosition.width,displayPosition.height);
+				_interactiveArea.setSize(displayPosition.width/asset.scaleX,displayPosition.height/asset.scaleY);
 			}else{
 				var meas:Point = measurements;
-				_interactiveArea.width = meas.x/asset.scaleX;
-				_interactiveArea.height = meas.y/asset.scaleY;
+				_interactiveArea.setSize(meas.x/asset.scaleX,meas.y/asset.scaleY);
 			}
 		}
 		private function onRollOver(from:IInteractiveObjectAsset, info:IMouseActInfo):void{

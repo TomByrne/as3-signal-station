@@ -3,23 +3,15 @@ package org.farmcode.display.assets.nativeAssets
 	import flash.display.DisplayObject;
 	import flash.display.Sprite;
 	
-	import org.farmcode.display.assets.IDisplayAsset;
-	import org.farmcode.display.assets.IGraphicsAsset;
-	import org.farmcode.display.assets.ISpriteAsset;
+	import org.farmcode.display.assets.assetTypes.ISpriteAsset;
 
 	public class SpriteAsset extends DisplayObjectContainerAsset implements ISpriteAsset
 	{
 		override public function set displayObject(value:DisplayObject):void{
 			if(super.displayObject!=value){
-				if(_graphics){
-					_graphics.graphics = null;
-				}
 				super.displayObject = value;
 				if(value){
 					_sprite = value as Sprite;
-					if(_graphics){
-						_graphics.graphics = _sprite.graphics;
-					}
 				}else{
 					_sprite = null;
 				}
@@ -31,12 +23,11 @@ package org.farmcode.display.assets.nativeAssets
 		
 		
 		public function get hitArea():ISpriteAsset{
-			return _sprite && _sprite.hitArea?NativeAssetFactory.getNew(_sprite.hitArea):null;
+			return _sprite && _sprite.hitArea?_nativeFactory.getNew(_sprite.hitArea):null;
 		}
 		public function set hitArea(value:ISpriteAsset):void{
 			if(value){
-				var cast:SpriteAsset = (value as SpriteAsset);
-				_sprite.hitArea = cast.sprite;
+				_sprite.hitArea = value.displayObject as Sprite;
 			}else{
 				_sprite.hitArea = null;
 			}
@@ -55,18 +46,9 @@ package org.farmcode.display.assets.nativeAssets
 		}
 		
 		private var _sprite:Sprite;
-		private var _graphics:GraphicsAsset;
 		
-		public function SpriteAsset(){
-			super();
-		}
-		
-		public function get graphics():IGraphicsAsset{
-			if(!_graphics){
-				_graphics = new GraphicsAsset();
-				_graphics.graphics = _sprite.graphics;
-			}
-			return _graphics;
+		public function SpriteAsset(factory:NativeAssetFactory=null){
+			super(factory);
 		}
 	}
 }

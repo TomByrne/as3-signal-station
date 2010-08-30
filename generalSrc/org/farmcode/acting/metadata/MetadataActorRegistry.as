@@ -9,7 +9,7 @@ package org.farmcode.acting.metadata
 	import org.farmcode.acting.universal.reactions.MethodReaction;
 	import org.farmcode.acting.universal.ruleTypes.IUniversalRule;
 	import org.farmcode.compiler.MetadataConfirmer;
-	import org.farmcode.display.assets.IDisplayAsset;
+	import org.farmcode.display.assets.assetTypes.IDisplayAsset;
 	import org.farmcode.reflection.Deliterator;
 	import org.farmcode.reflection.ReflectionUtils;
 	import org.farmcode.utils.ObjectUtils;

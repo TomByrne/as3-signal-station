@@ -17,7 +17,7 @@ package org.farmcode.actLibrary.data.actions
 	import org.farmcode.data.actions.AbstractLink;
 	import org.farmcode.data.dataTypes.IBooleanConsumer;
 	import org.farmcode.data.dataTypes.IBooleanProvider;
-	import org.farmcode.display.assets.IDisplayAsset;
+	import org.farmcode.display.assets.assetTypes.IDisplayAsset;
 	
 	public class InternalLink extends AbstractLink implements IBooleanConsumer, IBooleanProvider
 	{

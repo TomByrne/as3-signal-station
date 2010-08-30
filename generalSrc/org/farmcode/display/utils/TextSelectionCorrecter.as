@@ -5,7 +5,7 @@ package org.farmcode.display.utils
 	import org.farmcode.diff.Common;
 	import org.farmcode.diff.Diff;
 	import org.farmcode.diff.Difference;
-	import org.farmcode.display.assets.ITextFieldAsset;
+	import org.farmcode.display.assets.assetTypes.ITextFieldAsset;
 
 	/**
 	 * TextSelectionCorrecter corrects user selection indices when a block

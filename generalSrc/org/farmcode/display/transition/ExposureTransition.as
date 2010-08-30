@@ -4,8 +4,8 @@ package org.farmcode.display.transition
 	import flash.geom.Matrix;
 	import flash.geom.Rectangle;
 	
-	import org.farmcode.display.assets.IBitmapAsset;
-	import org.farmcode.display.assets.IDisplayAsset;
+	import org.farmcode.display.assets.assetTypes.IBitmapAsset;
+	import org.farmcode.display.assets.assetTypes.IDisplayAsset;
 	
 	public class ExposureTransition extends Transition
 	{

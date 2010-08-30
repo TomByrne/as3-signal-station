@@ -10,9 +10,9 @@ package org.farmcode.actLibrary.display.visualSockets.sockets
 	import org.farmcode.acting.actTypes.IAct;
 	import org.farmcode.acting.acts.Act;
 	import org.farmcode.core.DelayedCall;
-	import org.farmcode.display.assets.IAsset;
-	import org.farmcode.display.assets.IContainerAsset;
-	import org.farmcode.display.assets.IDisplayAsset;
+	import org.farmcode.display.assets.assetTypes.IAsset;
+	import org.farmcode.display.assets.assetTypes.IContainerAsset;
+	import org.farmcode.display.assets.assetTypes.IDisplayAsset;
 	import org.farmcode.display.core.IOutroView;
 	import org.farmcode.display.core.IScopedObject;
 	import org.farmcode.display.core.IView;

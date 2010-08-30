@@ -6,10 +6,10 @@ package org.farmcode.display.assets.nativeAssets {
 	import flash.events.Event;
 	import flash.utils.Dictionary;
 	
-	import org.farmcode.display.assets.IAsset;
-	import org.farmcode.display.assets.IContainerAsset;
-	import org.farmcode.display.assets.IDisplayAsset;
-	import org.farmcode.display.assets.IMovieClipAsset;
+	import org.farmcode.display.assets.assetTypes.IAsset;
+	import org.farmcode.display.assets.assetTypes.IContainerAsset;
+	import org.farmcode.display.assets.assetTypes.IDisplayAsset;
+	import org.farmcode.display.assets.assetTypes.IMovieClipAsset;
 	import org.farmcode.display.assets.states.IStateDef;
 	import org.farmcode.display.validation.ValidationFlag;
 	
@@ -36,18 +36,17 @@ package org.farmcode.display.assets.nativeAssets {
 		private var _mainAnalysis:MovieClipFrameAnalysis = new MovieClipFrameAnalysis();
 		private var _childClips:Dictionary = new Dictionary(true);
 		
-		public function MovieClipAsset() {
-			super();
-			addedToStage.addHandler(onAddedToStage);
+		public function MovieClipAsset(factory:NativeAssetFactory=null){
+			super(factory);
 			added.addHandler(onAdded);
 			removed.addHandler(onRemoved);
 		}
-		override public function addStateList(stateList:Array):void{
-			super.addStateList(stateList);
+		override protected function _addStateList(stateList:Array):void{
+			super._addStateList(stateList);
 			applyChildStates();
 		}
-		override public function removeStateList(stateList:Array):void{
-			super.removeStateList(stateList);
+		override protected function _removeStateList(stateList:Array):void{
+			super._removeStateList(stateList);
 			applyChildStates();
 		}
 		override protected function onStateSelChanged(state:IStateDef):void{
@@ -78,7 +77,8 @@ package org.farmcode.display.assets.nativeAssets {
 			}
 			return ret;
 		}
-		protected function onAddedToStage(from:IAsset):void{
+		override protected function onAddedToStage(from:DisplayObjectAsset):void{
+			super.onAddedToStage(from);
 			applyAvailableStates();
 		}
 		protected function onAdded(e:Event, from:IAsset):void{
@@ -110,7 +110,7 @@ package org.farmcode.display.assets.nativeAssets {
 			}
 		}
 		protected function addChild(target:MovieClip):void{
-			var asset:IMovieClipAsset = NativeAssetFactory.getExisting(target);
+			var asset:IMovieClipAsset = _nativeFactory.getExisting(target);
 			if(!asset){
 				var frameAnalysis:MovieClipFrameAnalysis = MovieClipFrameAnalysis.getNew(target);
 				_childClips[target] = frameAnalysis;

@@ -1,11 +1,13 @@
 package org.farmcode.display.controls.popout
 {
+	import flash.geom.Point;
+	import flash.geom.Rectangle;
+	
 	import org.farmcode.acting.actTypes.IAct;
 	import org.farmcode.acting.acts.Act;
 	import org.farmcode.core.DelayedCall;
-	import org.farmcode.display.assets.IAsset;
-	import org.farmcode.display.assets.IDisplayAsset;
-	import org.farmcode.display.assets.IStageAsset;
+	import org.farmcode.display.assets.assetTypes.IDisplayAsset;
+	import org.farmcode.display.constants.Anchor;
 	import org.farmcode.display.core.ILayoutView;
 	import org.farmcode.display.core.IOutroView;
 	import org.farmcode.display.layout.ProxyLayoutSubject;
@@ -15,12 +17,22 @@ package org.farmcode.display.controls.popout
 	
 	public class PopoutDisplay
 	{
-		public function get stage():IStageAsset{
-			return _stage;
+		/**
+		 * handler(popoutDisplay:PopoutDisplay, popout:ILayoutView)
+		 */
+		public function get popoutOpen():IAct{
+			if(!_popoutOpen)_popoutOpen = new Act();
+			return _popoutOpen;
 		}
-		public function set stage(value:IStageAsset):void{
-			_stage = value;
+		
+		/**
+		 * handler(popoutDisplay:PopoutDisplay, popout:ILayoutView)
+		 */
+		public function get popoutClose():IAct{
+			if(!_popoutClose)_popoutClose = new Act();
+			return _popoutClose;
 		}
+		
 		
 		public function get popoutShown():Boolean{
 			return _popoutShown;
@@ -40,7 +52,6 @@ package org.farmcode.display.controls.popout
 						_popoutLayoutProxy.layoutInfo = _relativeLayoutInfo;
 					}
 					_relativeLayout.addSubject(_popoutLayoutProxy);
-					_relativeLayout.stage = _stage?_stage:relativeTo.stage;
 					if(!_relativeLayout.stage){
 						throw new Error("No reference to the stage found");
 					}
@@ -67,11 +78,26 @@ package org.farmcode.display.controls.popout
 			}
 		}
 		
-		public function get relativeTo():IDisplayAsset{
-			return _relativeLayoutInfo.relativeTo;
+		public function get relativeTo():ILayoutView{
+			return _relativeTo;
 		}
-		public function set relativeTo(value:IDisplayAsset):void{
-			_relativeLayoutInfo.relativeTo = value;
+		public function set relativeTo(value:ILayoutView):void{
+			if(_relativeTo !=value){
+				if(_relativeTo){
+					_relativeTo.positionChanged.removeHandler(onRelativePositionChanged);
+					_relativeTo.assetChanged.removeHandler(onRelativeAssetChanged);
+				}
+				_relativeTo = value;
+				_relativeLayout.scopeView = value;
+				if(_relativeTo){
+					_relativeTo.positionChanged.addHandler(onRelativePositionChanged);
+					_relativeTo.assetChanged.addHandler(onRelativeAssetChanged);
+					_relativeLayoutInfo.relativeTo = value.asset;
+					if(_popout)assessRelativePos();
+				}else{
+					_relativeLayoutInfo.relativeTo = null;
+				}
+			}
 		}
 		
 		public function get popout():ILayoutView{
@@ -79,16 +105,66 @@ package org.farmcode.display.controls.popout
 		}
 		public function set popout(value:ILayoutView):void{
 			if(_popout!=value){
+				if(_popout){
+					_popout.assetChanged.removeHandler(onAssetChanged);
+					_popout.measurementsChanged.removeHandler(onPopoutMeasChanged);
+				}
 				var wasShown:Boolean = _popoutShown;
 				popoutShown = false;
 				_popout = value;
-				_relativeLayout.scopeView = value;
 				_outroPopout = (value as IOutroView);
 				popoutShown = wasShown;
-				_popout.assetChanged.addHandler(onAssetChanged);
+				if(_popout){
+					_popout.assetChanged.addHandler(onAssetChanged);
+					_popout.measurementsChanged.addHandler(onPopoutMeasChanged);
+					if(_relativeTo)assessRelativePos();
+				}
 			}
 		}
 		
+		public function get popoutAnchor():String{
+			return _popoutAnchor;
+		}
+		public function set popoutAnchor(value:String):void{
+			if(_popoutAnchor!=value){
+				_popoutAnchor = value;
+				if(_relativeTo && _popout)assessRelativePos();
+			}
+		}
+		
+		/**
+		 * When set to true enforceMinimums ensures that if the popout is drawn above or below
+		 * the relativeView, then it will have a minimum width of the relativeView's width.
+		 * If the popout is drawn to the left or right of the relativeView, then the popout
+		 * will have a minimum height of the relativeView's height.
+		 */
+		public function get enforceMinimums():Boolean{
+			return _enforceMinimums;
+		}
+		public function set enforceMinimums(value:Boolean):void{
+			if(_enforceMinimums!=value){
+				_enforceMinimums = value;
+				if(_relativeTo && _popout)assessRelativePos();
+			}
+		}
+		
+		/**
+		 * When set to true, as is default, lodgeCorners changes the alignment for side anchoring.
+		 * For example, if the anchor is set to bottom-right:</br>
+		 * - With lodgeCorners set to true, the top-left corner of the popout will touch the top-right
+		 * corner of the relativeView.</br>
+		 * - With lodgeCorners set to false, the top-left corner of the popout will touch the bottom-right
+		 * corner of the relativeView.
+		 */
+		public function get lodgeCorners():Boolean{
+			return _lodgeCorners;
+		}
+		public function set lodgeCorners(value:Boolean):void{
+			if(_lodgeCorners!=value){
+				_lodgeCorners = value;
+				if(_relativeTo && _popout)assessRelativePos();
+			}
+		}
 		
 		public function get popoutLayoutInfo():RelativeLayoutInfo{
 			return _relativeLayoutInfo;
@@ -98,27 +174,11 @@ package org.farmcode.display.controls.popout
 		}
 		
 		
-		/**
-		 * handler(popoutDisplay:PopoutDisplay, popout:ILayoutView)
-		 */
-		public function get popoutOpen():IAct{
-			if(!_popoutOpen)_popoutOpen = new Act();
-			return _popoutOpen;
-		}
-		
-		/**
-		 * handler(popoutDisplay:PopoutDisplay, popout:ILayoutView)
-		 */
-		public function get popoutClose():IAct{
-			if(!_popoutClose)_popoutClose = new Act();
-			return _popoutClose;
-		}
 		
 		protected var _popoutClose:Act;
 		protected var _popoutOpen:Act;
 		
 		private var _added:Boolean;
-		private var _stage:IStageAsset;
 		private var _popout:ILayoutView;
 		private var _outroPopout:IOutroView;
 		private var _popoutShown:Boolean;
@@ -126,6 +186,10 @@ package org.farmcode.display.controls.popout
 		private var _relativeLayout:RelativeLayout;
 		private var _relativeLayoutInfo:RelativeLayoutInfo = new RelativeLayoutInfo();
 		private var _removeCall:DelayedCall;
+		private var _relativeTo:ILayoutView;
+		private var _popoutAnchor:String = Anchor.BOTTOM;
+		private var _enforceMinimums:Boolean = true;
+		private var _lodgeCorners:Boolean = true;
 		
 		public function PopoutDisplay(){
 			super();
@@ -142,6 +206,92 @@ package org.farmcode.display.controls.popout
 				if(oldAsset)TopLayerManager.remove(oldAsset);
 				if(_popout.asset)TopLayerManager.add(_popout.asset, _relativeLayout.stage);
 			}
+		}
+		protected function onRelativeAssetChanged(from:ILayoutView, oldAsset:IDisplayAsset):void{
+			_relativeLayoutInfo.relativeTo = from.asset;
+			_relativeLayout.update();
+		}
+		protected function onRelativePositionChanged(from:ILayoutView, oldX:Number, oldY:Number, oldWidth:Number, oldHeight:Number):void{
+			if(_popout)assessRelativePos();
+		}
+		protected function onPopoutMeasChanged(from:ILayoutView, oldWidth:Number, oldHeight:Number):void{
+			if(_relativeTo)assessRelativePos();
+		}
+		protected function assessRelativePos():void{
+			var relPos:Rectangle = _relativeTo.displayPosition;
+			var popMeas:Point = _popout.measurements;
+			var popMeasWidth:Number = popMeas.x;
+			var popMeasHeight:Number = popMeas.y;
+			
+			if(_enforceMinimums){
+				if(_popoutAnchor==Anchor.TOP || _popoutAnchor==Anchor.BOTTOM){
+					_relativeLayoutInfo.minWidth = relPos.width;
+					if(popMeasWidth<relPos.width){
+						popMeasWidth = relPos.width;
+					}
+					_relativeLayoutInfo.minHeight = NaN;
+				}else{
+					if(_lodgeCorners || _popoutAnchor==Anchor.LEFT || _popoutAnchor==Anchor.RIGHT){
+						_relativeLayoutInfo.minHeight = relPos.height;
+						if(popMeasHeight<relPos.height){
+							popMeasHeight = relPos.height;
+						}
+					}else{
+						_relativeLayoutInfo.minHeight = NaN;
+					}
+					_relativeLayoutInfo.minWidth = NaN;
+				}
+			}else{
+				_relativeLayoutInfo.minHeight = NaN;
+				_relativeLayoutInfo.minWidth = NaN;
+			}
+			
+			var x:Number;
+			var y:Number;
+			switch(_popoutAnchor){
+				case Anchor.TOP:
+					y = -popMeasHeight;
+					break;
+				case Anchor.TOP_LEFT:
+				case Anchor.TOP_RIGHT:
+					if(_lodgeCorners){
+						y = relPos.height-popMeasHeight;
+					}else{
+						y = -popMeasHeight;
+					}
+					break;
+				case Anchor.BOTTOM:
+					y = relPos.height;
+					break;
+				case Anchor.BOTTOM_LEFT:
+				case Anchor.BOTTOM_RIGHT:
+					if(_lodgeCorners){
+						y = 0;
+					}else{
+						y = relPos.height;
+					}
+					break;
+				default:
+					y = (relPos.height-popMeasHeight)/2;
+			}
+			switch(_popoutAnchor){
+				case Anchor.LEFT:
+				case Anchor.TOP_LEFT:
+				case Anchor.BOTTOM_LEFT:
+					x = -popMeasWidth;
+					break;
+				case Anchor.RIGHT:
+				case Anchor.TOP_RIGHT:
+				case Anchor.BOTTOM_RIGHT:
+					x = relPos.width;
+					break;
+				default:
+					x = (relPos.width-popMeasWidth)/2;
+			}
+			
+			_relativeLayoutInfo.relativeOffsetX = x;
+			_relativeLayoutInfo.relativeOffsetY = y;
+			_relativeLayout.update();
 		}
 	}
 }

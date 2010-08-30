@@ -9,16 +9,15 @@ package org.farmcode.display.controls
 	import org.farmcode.data.dataTypes.IStringProvider;
 	import org.farmcode.data.dataTypes.IValueProvider;
 	import org.farmcode.display.DisplayNamespace;
-	import org.farmcode.display.assets.IAsset;
-	import org.farmcode.display.assets.IDisplayAsset;
-	import org.farmcode.display.assets.ITextFieldAsset;
+	import org.farmcode.display.assets.AssetNames;
+	import org.farmcode.display.assets.assetTypes.IAsset;
+	import org.farmcode.display.assets.assetTypes.IDisplayAsset;
+	import org.farmcode.display.assets.assetTypes.ITextFieldAsset;
 	
 	use namespace DisplayNamespace;
 	
 	public class TextLabel extends Control
 	{
-		DisplayNamespace static const LABEL_FIELD_CHILD:String = "labelField";
-		
 		public function get data():*{
 			return _data;
 		}
@@ -121,9 +120,11 @@ package org.farmcode.display.controls
 		}
 		override protected function bindToAsset():void{
 			super.bindToAsset();
-			_labelField = (asset as ITextFieldAsset);
+			if(asset.conformsToType(ITextFieldAsset)){
+				_labelField = (asset as ITextFieldAsset);
+			}
 			if(!_labelField){
-				_labelField = _containerAsset.takeAssetByName(LABEL_FIELD_CHILD, ITextFieldAsset);
+				_labelField = _containerAsset.takeAssetByName(AssetNames.LABEL_FIELD, ITextFieldAsset);
 			}
 			_assumedTextFormat = _labelField.defaultTextFormat;
 			if(_backing){
@@ -247,17 +248,18 @@ package org.farmcode.display.controls
 			var paddingRight:Number = getValueOrAssumed(_paddingRight,_assumedPaddingRight,0);
 			
 			var labelWidth:Number = displayPosition.width-paddingLeft-paddingRight+TextFieldGutter.TEXT_FIELD_GUTTER*2;
+			var labelHeight:Number = displayPosition.height-paddingTop-paddingBottom+TextFieldGutter.TEXT_FIELD_GUTTER*2;
 			if(labelWidth!=_labelField.width){
 				var textHeightWas:Number = _labelField.textHeight;
-				_labelField.width = labelWidth;
+				_labelField.setSize(labelWidth,labelHeight);
 				if(_labelField.textHeight!=textHeightWas){
 					dispatchMeasurementChange();
 				}
+			}else{
+				_labelField.height = labelHeight;
 			}
-			_labelField.height = displayPosition.height-paddingTop-paddingBottom+TextFieldGutter.TEXT_FIELD_GUTTER*2;
 			if(_labelField!=asset){
-				_labelField.x = -TextFieldGutter.TEXT_FIELD_GUTTER+paddingLeft;
-				_labelField.y = -TextFieldGutter.TEXT_FIELD_GUTTER+paddingTop;
+				_labelField.setPosition(-TextFieldGutter.TEXT_FIELD_GUTTER+paddingLeft,-TextFieldGutter.TEXT_FIELD_GUTTER+paddingTop);
 			}
 		}
 		override protected function positionAsset():void{
@@ -267,8 +269,7 @@ package org.farmcode.display.controls
 				var paddingBottom:Number = getValueOrAssumed(_paddingBottom,_assumedPaddingBottom,0);
 				var paddingRight:Number = getValueOrAssumed(_paddingRight,_assumedPaddingRight,0);
 				
-				asset.x = displayPosition.x-TextFieldGutter.TEXT_FIELD_GUTTER+paddingLeft;
-				asset.y = displayPosition.y-TextFieldGutter.TEXT_FIELD_GUTTER+paddingTop;
+				asset.setPosition(displayPosition.x-TextFieldGutter.TEXT_FIELD_GUTTER+paddingLeft,displayPosition.y-TextFieldGutter.TEXT_FIELD_GUTTER+paddingTop);
 			}else{
 				super.positionAsset();
 			}

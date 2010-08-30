@@ -1,10 +1,9 @@
 package org.farmcode.formatters
 {
-	import org.farmcode.data.dataTypes.IStringConsumer;
-	import org.farmcode.data.dataTypes.IStringProvider;
+	import org.farmcode.data.dataTypes.IStringData;
 	import org.farmcode.data.dataTypes.IValueProvider;
 
-	public interface IFormatter extends IStringProvider, IStringConsumer
+	public interface IFormatter extends IStringData
 	{
 		function set valueProvider(value:IValueProvider):void;
 	}

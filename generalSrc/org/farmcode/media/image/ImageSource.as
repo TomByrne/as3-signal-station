@@ -3,19 +3,14 @@ package org.farmcode.media.image
 	import flash.display.Loader;
 	import flash.events.Event;
 	import flash.events.ProgressEvent;
-	import flash.geom.Point;
-	import flash.geom.Rectangle;
 	import flash.net.URLLoader;
 	import flash.net.URLLoaderDataFormat;
 	import flash.net.URLRequest;
 	
-	import org.farmcode.display.assets.IDisplayAsset;
-	import org.farmcode.display.assets.ILoaderAsset;
-	import org.farmcode.display.assets.nativeAssets.LoaderAsset;
+	import org.farmcode.display.assets.assetTypes.ILoaderAsset;
 	import org.farmcode.display.assets.nativeAssets.NativeAssetFactory;
 	import org.farmcode.display.core.ILayoutView;
 	import org.farmcode.display.layout.frame.FrameLayoutInfo;
-	import org.farmcode.math.UnitConversion;
 	import org.farmcode.media.MediaSource;
 	import org.farmcode.media.MediaView;
 	
@@ -64,6 +59,7 @@ package org.farmcode.media.image
 		private var _loadStarted:Boolean;
 		private var _loaded:Boolean;
 		private var _displaysTaken:int = 0;
+		private var _nativeFactory:NativeAssetFactory;
 		
 		public function ImageSource(url:String=null){
 			super();
@@ -73,6 +69,7 @@ package org.farmcode.media.image
 			_urlLoader.addEventListener(Event.COMPLETE, onLoadComplete);
 			_urlLoader.addEventListener(ProgressEvent.PROGRESS, onLoadProgress);
 			this.imageUrl = url;
+			_nativeFactory = new NativeAssetFactory();
 		}
 		protected function onLoadComplete(e:Event):void{
 			_loaded = true;
@@ -104,10 +101,10 @@ package org.farmcode.media.image
 				loader.loadBytes(_urlLoader.data);
 			}
 			if(!_protoLoader){
-				_protoLoader = NativeAssetFactory.getNew(loader);
+				_protoLoader = _nativeFactory.getNew(loader);
 				_protoLoader.contentLoaderInfo.addEventListener(Event.COMPLETE, onProtoLoaded);
 			}
-			var loaderAsset:ILoaderAsset = NativeAssetFactory.getNew(loader);
+			var loaderAsset:ILoaderAsset = _nativeFactory.getNew(loader);
 			var view:ImageView = new ImageView(loaderAsset,_measurements,smoothing);
 			view.layoutInfo = new FrameLayoutInfo();
 			return view;

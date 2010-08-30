@@ -7,7 +7,7 @@ package org.farmcode.acting.universal
 	import org.farmcode.acting.actTypes.IUniversalAct;
 	import org.farmcode.acting.universal.reactions.IActReaction;
 	import org.farmcode.acting.universal.ruleTypes.IUniversalRule;
-	import org.farmcode.display.assets.IDisplayAsset;
+	import org.farmcode.display.assets.assetTypes.IDisplayAsset;
 	
 	use namespace ActingNamspace;
 

@@ -3,8 +3,8 @@ package org.farmcode.display.controls
 	import flash.display.DisplayObject;
 	import flash.geom.Rectangle;
 	
-	import org.farmcode.display.assets.IAsset;
-	import org.farmcode.display.assets.IDisplayAsset;
+	import org.farmcode.display.assets.assetTypes.IAsset;
+	import org.farmcode.display.assets.assetTypes.IDisplayAsset;
 	import org.farmcode.display.layout.ILayoutSubject;
 	
 	public class TextLabelButton extends ToggleButton
@@ -40,6 +40,12 @@ package org.farmcode.display.controls
 		public function set paddingRight(value:Number):void{
 			_textLabel.paddingRight = value;
 		}
+		public function set padding(value:Number):void{
+			paddingTop = value;
+			paddingBottom = value;
+			paddingLeft = value;
+			paddingRight = value;
+		}
 		
 		protected var _textLabel:TextLabel;
 		
@@ -63,8 +69,7 @@ package org.farmcode.display.controls
 		override public function setDisplayPosition(x:Number, y:Number, width:Number, height:Number) : void{
 			super.setDisplayPosition(x,y,width,height);
 			_textLabel.setDisplayPosition(x,y,width,height);
-			_interactiveArea.width = width;
-			_interactiveArea.height = height;
+			_interactiveArea.setSize(width,height);
 		}
 		override protected function measure() : void{
 			_measurements = _textLabel.measurements;

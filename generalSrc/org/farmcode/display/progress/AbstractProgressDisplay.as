@@ -2,8 +2,8 @@ package org.farmcode.display.progress
 {
 	import flash.display.DisplayObject;
 	
-	import org.farmcode.display.assets.IAsset;
-	import org.farmcode.display.assets.IDisplayAsset;
+	import org.farmcode.display.assets.assetTypes.IAsset;
+	import org.farmcode.display.assets.assetTypes.IDisplayAsset;
 	import org.farmcode.display.assets.nativeAssets.DisplayObjectAsset;
 	import org.farmcode.display.core.ILayoutView;
 	import org.farmcode.display.core.LayoutView;

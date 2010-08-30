@@ -5,8 +5,8 @@ package org.farmcode.media.image
 	import flash.geom.Point;
 	import flash.geom.Rectangle;
 	
-	import org.farmcode.display.assets.IBitmapAsset;
-	import org.farmcode.display.assets.ILoaderAsset;
+	import org.farmcode.display.assets.assetTypes.IBitmapAsset;
+	import org.farmcode.display.assets.assetTypes.ILoaderAsset;
 	import org.farmcode.media.MediaView;
 	
 	public class ImageView extends MediaView

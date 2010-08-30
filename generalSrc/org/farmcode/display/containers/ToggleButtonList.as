@@ -6,8 +6,8 @@ package org.farmcode.display.containers
 	import org.farmcode.acting.acts.Act;
 	import org.farmcode.data.dataTypes.IBooleanConsumer;
 	import org.farmcode.data.dataTypes.IBooleanProvider;
-	import org.farmcode.display.assets.IAsset;
-	import org.farmcode.display.assets.IDisplayAsset;
+	import org.farmcode.display.assets.assetTypes.IAsset;
+	import org.farmcode.display.assets.assetTypes.IDisplayAsset;
 	import org.farmcode.display.constants.Direction;
 	import org.farmcode.display.core.ILayoutView;
 	import org.farmcode.display.core.IView;

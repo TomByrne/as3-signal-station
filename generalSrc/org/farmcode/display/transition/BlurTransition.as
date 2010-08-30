@@ -5,8 +5,8 @@ package org.farmcode.display.transition
 	import flash.geom.Matrix;
 	import flash.geom.Point;
 	
-	import org.farmcode.display.assets.IBitmapAsset;
-	import org.farmcode.display.assets.IDisplayAsset;
+	import org.farmcode.display.assets.assetTypes.IBitmapAsset;
+	import org.farmcode.display.assets.assetTypes.IDisplayAsset;
 	
 	public class BlurTransition extends Transition
 	{

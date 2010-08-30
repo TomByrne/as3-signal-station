@@ -1,6 +1,5 @@
 package org.farmcode.display.progress
 {
-	import flash.display.DisplayObject;
 	import flash.display.Sprite;
 	import flash.display.StageAlign;
 	import flash.display.StageScaleMode;
@@ -13,11 +12,10 @@ package org.farmcode.display.progress
 	import flash.utils.getTimer;
 	
 	import org.farmcode.core.IApplication;
-	import org.farmcode.display.assets.IContainerAsset;
+	import org.farmcode.debug.DebugManager;
+	import org.farmcode.display.assets.nativeAssets.DisplayObjectContainerAsset;
 	import org.farmcode.display.assets.nativeAssets.NativeAssetFactory;
-	import org.farmcode.display.core.ILayoutView;
 	import org.farmcode.display.core.IOutroView;
-	import org.farmcode.display.core.IView;
 	
 	public class SWFPreloaderFrame extends Sprite
 	{
@@ -42,6 +40,10 @@ package org.farmcode.display.progress
 				}
 			}
 		}
+		protected function get nativeFactory():NativeAssetFactory{
+			if(!_nativeFactory)_nativeFactory = new NativeAssetFactory();
+			return _nativeFactory;
+		}
 		public var mainClasspath:String;
 		
 		private var _progressDisplay:IProgressDisplay;
@@ -50,11 +52,13 @@ package org.farmcode.display.progress
 		private var _measureFactor:Number;
 		private var _application:IApplication;
 		private var _total:Number;
-		private var _nativeAsset:IContainerAsset;
+		private var _nativeFactory:NativeAssetFactory;
+		private var _nativeAsset:DisplayObjectContainerAsset;
 		
 		public function SWFPreloaderFrame(mainClasspath: String=null, progressDisplay:IProgressDisplay=null, runTest:Boolean=false){
 			super();
-			_nativeAsset = NativeAssetFactory.getNew(this);
+			_nativeAsset = nativeFactory.getNew(this);
+			
 			this.mainClasspath = mainClasspath;
 			this.progressDisplay = progressDisplay;
 			init(runTest);
@@ -147,6 +151,11 @@ package org.farmcode.display.progress
 			var className:String = (mainClasspath?mainClasspath:guessClassName());
 			var mainClass:Class = getDefinitionByName(className) as Class;
 			_application = new mainClass();
+			
+			Config::DEBUG{
+				_application = DebugManager.addApplication(_application);
+			}
+			
 			if(_progressDisplayAnim){
 				var timer:Timer = new Timer(_progressDisplayAnim.showOutro()*1000,1);
 				timer.addEventListener(TimerEvent.TIMER, onOutroFinished);
@@ -162,7 +171,7 @@ package org.farmcode.display.progress
 		}
 		protected function addAppToStage():void{
 			_nativeAsset.removeAsset(_progressDisplay.display);
-			_application.container = stage;
+			_application.container = _nativeAsset;
 			applySizeToApplication();
 		}
 		private function guessClassName():String{

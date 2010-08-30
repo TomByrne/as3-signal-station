@@ -4,7 +4,7 @@ package org.farmcode.media
 	import flash.geom.Point;
 	import flash.geom.Rectangle;
 	
-	import org.farmcode.display.assets.IDisplayAsset;
+	import org.farmcode.display.assets.assetTypes.IDisplayAsset;
 	import org.farmcode.display.core.LayoutView;
 	
 	public class MediaView extends LayoutView
@@ -18,11 +18,6 @@ package org.farmcode.media
 		}
 		override protected function measure() : void{
 			// ignore
-		}
-		override protected function draw() : void{
-			positionAsset();
-			asset.width = displayPosition.width;
-			asset.height = displayPosition.height;
 		}
 	}
 }

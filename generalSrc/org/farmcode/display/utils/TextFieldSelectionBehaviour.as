@@ -6,9 +6,10 @@ package org.farmcode.display.utils
 	
 	import org.farmcode.display.DisplayNamespace;
 	import org.farmcode.display.actInfo.IMouseActInfo;
-	import org.farmcode.display.assets.IDisplayAsset;
-	import org.farmcode.display.assets.IInteractiveObjectAsset;
-	import org.farmcode.display.assets.ITextFieldAsset;
+	import org.farmcode.display.assets.AssetNames;
+	import org.farmcode.display.assets.assetTypes.IDisplayAsset;
+	import org.farmcode.display.assets.assetTypes.IInteractiveObjectAsset;
+	import org.farmcode.display.assets.assetTypes.ITextFieldAsset;
 	import org.farmcode.display.controls.TextLabel;
 	import org.farmcode.display.core.DrawableView;
 	
@@ -62,7 +63,7 @@ package org.farmcode.display.utils
 			super(asset);
 		}
 		override protected function bindToAsset() : void{
-			_textField = _containerAsset.takeAssetByName(TextLabel.LABEL_FIELD_CHILD, ITextFieldAsset);
+			_textField = _containerAsset.takeAssetByName(AssetNames.LABEL_FIELD, ITextFieldAsset);
 			_textField.clicked.addHandler(onClick);
 			_textField.keyUp.addHandler(onKeyUp);
 			_textField.focusIn.addHandler(onFocusIn);

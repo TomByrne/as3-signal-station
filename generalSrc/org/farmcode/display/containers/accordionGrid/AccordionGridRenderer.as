@@ -4,8 +4,8 @@ package org.farmcode.display.containers.accordionGrid
 	import flash.geom.Rectangle;
 	import flash.utils.Dictionary;
 	
-	import org.farmcode.display.assets.IContainerAsset;
-	import org.farmcode.display.assets.IDisplayAsset;
+	import org.farmcode.display.assets.assetTypes.IContainerAsset;
+	import org.farmcode.display.assets.assetTypes.IDisplayAsset;
 	import org.farmcode.display.constants.Anchor;
 	import org.farmcode.display.containers.accordion.AccordionRenderer;
 	import org.farmcode.display.core.ILayoutView;
@@ -46,7 +46,7 @@ package org.farmcode.display.containers.accordionGrid
 		
 		override protected function bindToAsset() : void{
 			super.bindToAsset();
-			_headerContainer = _containerAsset.createAsset(IContainerAsset);
+			_headerContainer = _containerAsset.factory.createContainer();
 			_containerAsset.addAsset(_headerContainer);
 			
 			var i:*;
@@ -56,7 +56,7 @@ package org.farmcode.display.containers.accordionGrid
 				_headerContainer.addAsset(renderer.asset);
 			}
 			
-			_cellContainer = _containerAsset.createAsset(IContainerAsset);
+			_cellContainer = _containerAsset.factory.createContainer();
 			_containerAsset.addAsset(_cellContainer);
 			
 			for(i in _cellRenderers){
@@ -73,7 +73,7 @@ package org.farmcode.display.containers.accordionGrid
 				_headerContainer.removeAsset(renderer.asset);
 			}
 			_containerAsset.removeAsset(_headerContainer);
-			_containerAsset.destroyAsset(_headerContainer);
+			_containerAsset.factory.destroyAsset(_headerContainer);
 			_headerContainer = null;
 			
 			for(i in _cellRenderers){
@@ -81,7 +81,7 @@ package org.farmcode.display.containers.accordionGrid
 				_cellContainer.removeAsset(renderer.asset);
 			}
 			_containerAsset.removeAsset(_cellContainer);
-			_containerAsset.destroyAsset(_cellContainer);
+			_containerAsset.factory.destroyAsset(_cellContainer);
 			_cellContainer = null;
 		}
 		override protected function getContainerMeasurements() : Rectangle{
@@ -89,11 +89,10 @@ package org.farmcode.display.containers.accordionGrid
 			return _containerMeas;
 		}
 		override protected function setContainerSize(x:Number, y:Number, width:Number, height:Number) : void{
-			_headerContainer.x = x-_headerX-(_minMeasurements.x-_labelMeas.x);
-			_headerContainer.y = y-_headerY-(_minMeasurements.y-_labelMeas.y);
+			_headerContainer.setPosition(x-_headerX-(_minMeasurements.x-_labelMeas.x),
+										y-_headerY-(_minMeasurements.y-_labelMeas.y);
 			
-			_cellContainer.x = x;
-			_cellContainer.y = y;
+			_cellContainer.setPosition(x,y);
 			if(wipeFromTop){
 				_cellContainer.scrollRect = new Rectangle(_containerX+Math.max(_containerMeas.width-width,0),_containerY+Math.max(_containerMeas.height-height,0),width,height);
 			}else{

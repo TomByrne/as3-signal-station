@@ -5,7 +5,7 @@ package org.farmcode.actLibrary.core
 	import org.farmcode.acting.metadata.MetadataActorRegistry;
 	import org.farmcode.acting.universal.reactions.MethodReaction;
 	import org.farmcode.acting.universal.rules.ActInstanceRule;
-	import org.farmcode.display.assets.IDisplayAsset;
+	import org.farmcode.display.assets.assetTypes.IDisplayAsset;
 	import org.farmcode.display.core.IScopedObject;
 	import org.farmcode.display.core.ScopedObject;
 	

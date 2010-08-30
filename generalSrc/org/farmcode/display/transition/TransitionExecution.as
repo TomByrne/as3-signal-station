@@ -10,10 +10,10 @@ package org.farmcode.display.transition
 	
 	import org.farmcode.acting.actTypes.IAct;
 	import org.farmcode.acting.acts.Act;
-	import org.farmcode.display.assets.IBitmapAsset;
-	import org.farmcode.display.assets.IContainerAsset;
-	import org.farmcode.display.assets.IDisplayAsset;
-	import org.farmcode.display.assets.nativeAssets.Asset;
+	import org.farmcode.display.assets.assetTypes.IBitmapAsset;
+	import org.farmcode.display.assets.assetTypes.IContainerAsset;
+	import org.farmcode.display.assets.assetTypes.IDisplayAsset;
+	import org.farmcode.display.assets.nativeAssets.NativeAsset;
 	import org.farmcode.display.assets.utils.isDescendant;
 	
 	/**
@@ -148,11 +148,10 @@ package org.farmcode.display.transition
 				bounds.height = Math.ceil(Math.min(MAX_HEIGHT,bounds.height,bottomRight.y));
 				var bitmapData:BitmapData = new BitmapData(Math.max(bounds.width,1),Math.max(bounds.height,1),true,0);
 				//_renderArea = new Bitmap(bitmapData,PixelSnapping.NEVER,smoothing);
-				_renderArea = _startDisplay.createAsset(IBitmapAsset);
+				_renderArea = _startDisplay.factory.createBitmap();
 				_renderArea.pixelSnapping = PixelSnapping.NEVER;
 				_renderArea.smoothing = smoothing;
-				_renderArea.x = bounds.x;
-				_renderArea.y = bounds.y;
+				_renderArea.setPosition(bounds.x,bounds.y);
 				parent.addAssetAt(_renderArea,depth);
 				var timingGroup:TimingGroup;
 				_timedTransitions = [];
@@ -204,13 +203,12 @@ package org.farmcode.display.transition
 					if(isDescendant(child.parent,parent))return;
 					var point:Point = parent.globalToLocal(child.localToGlobal(new Point()));
 					child.parent.removeAsset(child);
-					child.x = point.x;
-					child.y = point.y;
+					child.setPosition(point.x,point.y);
 				}
 				parent.addAssetAt(child,depth);
 			}
 		}
-		private function doFrame(e:Event, from:Asset):void{
+		private function doFrame(e:Event, from:NativeAsset):void{
 			_renderArea.bitmapData.lock()
 			if(parent.stage==parent){
 				_renderArea.visible = false;

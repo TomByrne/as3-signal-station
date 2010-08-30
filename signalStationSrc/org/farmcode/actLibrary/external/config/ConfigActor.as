@@ -10,7 +10,7 @@ package org.farmcode.actLibrary.external.config
 	import org.farmcode.acting.ActingNamspace;
 	import org.farmcode.acting.universal.UniversalActExecution;
 	import org.farmcode.acting.universal.phases.ObjectPhases;
-	import org.farmcode.display.assets.IStageAsset;
+	import org.farmcode.display.assets.assetTypes.IStageAsset;
 	import org.farmcode.utils.MethodCallQueue;
 	
 	use namespace ActingNamspace;

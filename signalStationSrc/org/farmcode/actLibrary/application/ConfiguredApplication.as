@@ -1,6 +1,5 @@
 package org.farmcode.actLibrary.application
 {
-	import flash.display.DisplayObject;
 	import flash.display.Sprite;
 	
 	import org.farmcode.actLibrary.core.UniversalActorHelper;
@@ -16,8 +15,8 @@ package org.farmcode.actLibrary.application
 	import org.farmcode.acting.universal.UniversalActExecution;
 	import org.farmcode.acting.universal.UniversalActManager;
 	import org.farmcode.core.Application;
-	import org.farmcode.display.assets.IDisplayAsset;
-	import org.farmcode.display.assets.nativeAssets.NativeAssetFactory;
+	import org.farmcode.display.assets.assetTypes.IContainerAsset;
+	import org.farmcode.display.assets.assetTypes.IDisplayAsset;
 	import org.farmcode.display.core.IScopedObject;
 	import org.farmcode.threading.AbstractThread;
 	
@@ -45,6 +44,10 @@ package org.farmcode.actLibrary.application
 				}
 			}
 		}
+		override public function set container(value:IContainerAsset):void{
+			super.container = value;
+			if(value)checkScopeDisplay();
+		}
 		
 		/**
 		 * This is used so that apps can get SignalStation running
@@ -52,7 +55,7 @@ package org.farmcode.actLibrary.application
 		 */
 		protected function get scopeDisplay():IDisplayAsset{
 			if(!_scopeDisplay){
-				_scopeDisplay = (asset || _assetContainer);
+				_scopeDisplay = (asset || _container);
 			}
 			return _scopeDisplay;
 		}
@@ -78,6 +81,7 @@ package org.farmcode.actLibrary.application
 			_universalActorHelper.metadataTarget = this;
 			_universalActorHelper.addChild(retrieveConfigUrlAct);
 			_universalActorHelper.addChild(retrieveConfigAct);
+			_universalActorHelper.addedChanged.addTempHandler(onAdded);
 			
 			_siteStreamActor = new SiteStreamActor();
 			addActor(_siteStreamActor);
@@ -94,40 +98,23 @@ package org.farmcode.actLibrary.application
 			var errorActor:ErrorActor = new ErrorActor();
 			addActor(errorActor);
 		}
+		protected function onAdded(from:UniversalActorHelper) : void{
+			attemptInit();
+		}
 		override protected function commitStage() : void{
 			super.commitStage();
 			if(isNaN(AbstractThread.intendedFPS)){
 				AbstractThread.intendedFPS = _lastStage.frameRate;
 			}
 		}
+		protected function checkScopeDisplay():void{
+			if(!_universalActorHelper.asset){
+				UniversalActManager.addManager(scopeDisplay);
+				_universalActorHelper.asset = scopeDisplay;
+			}
+		}
 		override protected function init():void{
 			super.init();
-			
-			/*Config::DEBUG
-			{
-				// testing
-				var executionChecker:ExecutionChecker = new ExecutionChecker(container);
-				//var siteStreamDebugger:SiteStreamDebugger = new SiteStreamDebugger(_siteStreamAdvisor.siteStream);
-				
-				_debugArea = new Sprite();
-				_lastStage.addChild(_debugArea);
-				
-				var onKeyDown:Function = function(e:KeyboardEvent):void{
-					if(e.ctrlKey && e.altKey){
-						if(e.keyCode==69)executionChecker.printExecutingNodes();	// e
-						//if(e.keyCode==83)siteStreamDebugger.printUnresolvedNodes();	// s
-					}
-				}
-				_lastStage.addEventListener(KeyboardEvent.KEY_DOWN, onKeyDown);
-				
-				var toolbar:SimpleDebugToolbar = new SimpleDebugToolbar(_siteStreamActor.siteStream,_president);
-				_debugArea.addChild(toolbar);
-			}*/
-			
-			
-			UniversalActManager.addManager(scopeDisplay);
-			
-			_universalActorHelper.asset = scopeDisplay;
 			
 			var act:SetPropertyConfigParamAct = new SetPropertyConfigParamAct(_siteStreamActor,"baseDataURL","baseDataURL");
 			act.temporaryPerform(scopeDisplay);
@@ -178,9 +165,8 @@ package org.farmcode.actLibrary.application
 		protected function setRootObject(execution:UniversalActExecution, object:Object):void{
 			_appConfig = (object as IAppConfig);
 			
-			var newDisplay:IDisplayAsset = _appConfig.mainAsset;
-			if(newDisplay && !asset){
-				asset = newDisplay;
+			if(!asset && _appConfig.assetFactory){
+				asset = _appConfig.assetFactory.getCoreSkin(getCoreSkinName()) as IDisplayAsset;
 			}
 			
 			var act:IUniversalAct;
@@ -190,6 +176,9 @@ package org.farmcode.actLibrary.application
 				}
 			}
 			if(!isNaN(_appConfig.applicationScale))applicationScale = _appConfig.applicationScale;
+		}
+		protected function getCoreSkinName():String{
+			throw new Error("getCoreSkinName should be overriden");
 		}
 		protected function temporaryPerformAct(act:IUniversalAct, execution:UniversalActExecution):void{
 			act.scope = asset;

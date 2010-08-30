@@ -6,11 +6,11 @@ package org.farmcode.display.core
 	import org.farmcode.acting.actTypes.IAct;
 	import org.farmcode.acting.acts.Act;
 	import org.farmcode.core.DelayedCall;
-	import org.farmcode.display.assets.IAsset;
-	import org.farmcode.display.assets.IContainerAsset;
-	import org.farmcode.display.assets.IDisplayAsset;
-	import org.farmcode.display.assets.IInteractiveObjectAsset;
-	import org.farmcode.display.assets.ISpriteAsset;
+	import org.farmcode.display.assets.assetTypes.IAsset;
+	import org.farmcode.display.assets.assetTypes.IContainerAsset;
+	import org.farmcode.display.assets.assetTypes.IDisplayAsset;
+	import org.farmcode.display.assets.assetTypes.IInteractiveObjectAsset;
+	import org.farmcode.display.assets.assetTypes.ISpriteAsset;
 	import org.farmcode.display.assets.states.StateDef;
 	import org.farmcode.display.validation.FrameValidationFlag;
 	
@@ -73,6 +73,7 @@ package org.farmcode.display.core
 		private var _resetAnimationsDelay:DelayedCall;
 		protected var _stateList:Array;
 		protected var _drawFlag:FrameValidationFlag;
+		protected var _revertParentStateLists:Boolean;
 		
 		private var _transState:StateDef = new StateDef([INTRO_FRAME_LABEL,OUTRO_FRAME_LABEL]);
 		
@@ -166,10 +167,14 @@ package org.farmcode.display.core
 		}
 		protected function bindToAsset():void{
 			attemptInit();
-			_asset.addStateList(_stateList);
+			_revertParentStateLists = _asset.useParentStateLists;
+			_asset.useParentStateLists = false;
+			_asset.addStateList(_stateList,false);
+			
 		}
 		protected function unbindFromAsset():void{
 			_asset.removeStateList(_stateList);
+			_asset.useParentStateLists = _revertParentStateLists;
 		}
 		protected function checkIsBound():void{
 			if(!_bound && _asset){

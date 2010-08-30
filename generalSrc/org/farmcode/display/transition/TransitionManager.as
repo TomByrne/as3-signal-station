@@ -1,6 +1,6 @@
 package org.farmcode.display.transition
 {
-	import org.farmcode.display.assets.IDisplayAsset;
+	import org.farmcode.display.assets.assetTypes.IDisplayAsset;
 	
 	/**
 	 * The TransitionManager manages TransitionExecution objects, making sure that they're not trying to

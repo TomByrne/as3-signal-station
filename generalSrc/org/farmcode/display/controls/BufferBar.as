@@ -1,18 +1,13 @@
 package org.farmcode.display.controls
 {
 	
-	import flash.display.DisplayObject;
 	import flash.geom.Point;
-	import flash.geom.Rectangle;
 	
 	import org.farmcode.data.dataTypes.INumberProvider;
-	import org.farmcode.display.assets.IDisplayAsset;
-	import org.farmcode.display.assets.IInteractiveObjectAsset;
-	import org.farmcode.display.assets.IShapeAsset;
-	import org.farmcode.display.assets.ISpriteAsset;
+	import org.farmcode.display.assets.assetTypes.IDisplayAsset;
+	import org.farmcode.display.assets.assetTypes.IInteractiveObjectAsset;
 	import org.farmcode.display.constants.Direction;
 	import org.farmcode.display.layout.ILayoutSubject;
-	import org.farmcode.media.IMediaSource;
 	import org.farmcode.media.video.IVideoSource;
 	
 	public class BufferBar extends Control
@@ -68,28 +63,28 @@ package org.farmcode.display.controls
 			_slider.asset = asset;
 			
 			_playedBar = _containerAsset.takeAssetByName(PLAYED_BAR,IDisplayAsset,true);
-			var cast:ISpriteAsset;
+			var cast:IInteractiveObjectAsset;
 			if(_playedBar){
-				cast = (_playedBar as ISpriteAsset);
-				if(cast)cast.hitArea = _asset.createAsset(ISpriteAsset);
+				cast = (_playedBar as IInteractiveObjectAsset);
+				if(cast)cast.mouseEnabled = false;
 			}
 			
 			_bufferedBar = _containerAsset.takeAssetByName(BUFFERED_BAR,IDisplayAsset,true);
 			if(_bufferedBar){
-				cast = (_bufferedBar as ISpriteAsset);
-				if(cast)cast.hitArea = _asset.createAsset(ISpriteAsset);
+				cast = (_bufferedBar as IInteractiveObjectAsset);
+				if(cast)cast.mouseEnabled = false;
 			}
 		}
 		override protected function unbindFromAsset() : void{
-			var cast:ISpriteAsset;
+			var cast:IInteractiveObjectAsset;
 			if(_playedBar){
-				cast = (_playedBar as ISpriteAsset);
-				if(cast)cast.hitArea = null;
+				cast = (_playedBar as IInteractiveObjectAsset);
+				if(cast)cast.mouseEnabled = true;
 			}
 			
 			if(_bufferedBar){
-				cast = (_bufferedBar as ISpriteAsset);
-				if(cast)cast.hitArea = null;
+				cast = (_bufferedBar as IInteractiveObjectAsset);
+				if(cast)cast.mouseEnabled = true;
 			}
 			
 			_slider.asset = null;
@@ -118,59 +113,71 @@ package org.farmcode.display.controls
 			}
 			var loadFract:Number = (_videoSource?_videoSource.loadProgress.numericalValue/_videoSource.loadTotal.numericalValue:0);
 			
+			var playedX:Number;
+			var playedY:Number;
+			var playedW:Number;
+			var playedH:Number;
+			
+			var bufferX:Number;
+			var bufferY:Number;
+			var bufferW:Number;
+			var bufferH:Number;
+			
 			if(_slider.direction==Direction.VERTICAL){
 				if(_playedBar){
 					var natWidth:Number = _playedBar.width/_playedBar.scaleX;
 					if(natWidth<displayPosition.width){
-						_playedBar.width = natWidth;
-						_playedBar.x = (displayPosition.width-_playedBar.width)/2;
+						playedW = natWidth;
+						playedX = (displayPosition.width-natWidth)/2;
 					}else{
-						_playedBar.width = displayPosition.width;
-						_playedBar.x = 0;
+						playedW = displayPosition.width;
+						playedX = 0;
 					}
-					_playedBar.height = displayPosition.height*playedFract;
-					_playedBar.y = 0;
+					playedH = displayPosition.height*playedFract;
+					playedY = 0;
 				}
 				
 				if(_bufferedBar){
 					natWidth = _bufferedBar.width/_bufferedBar.scaleX;
 					if(natWidth<displayPosition.width){
-						_bufferedBar.width = natWidth;
-						_bufferedBar.x = (displayPosition.width-_bufferedBar.width)/2;
+						bufferW = natWidth;
+						bufferX = (displayPosition.width-natWidth)/2;
 					}else{
-						_bufferedBar.width = displayPosition.width;
-						_bufferedBar.x = 0;
+						bufferW = displayPosition.width;
+						bufferX = 0;
 					}
-					_bufferedBar.height = displayPosition.height*loadFract;
-					_bufferedBar.y = 0;
+					bufferH = displayPosition.height*loadFract;
+					bufferY = 0;
 				}
 			}else{
 				if(_playedBar){
 					var natHeight:Number = _playedBar.height/_playedBar.scaleY;
 					if(natHeight<displayPosition.height){
-						_playedBar.height = natHeight;
-						_playedBar.y = (displayPosition.height-_playedBar.height)/2;
+						playedH = natHeight;
+						playedY = (displayPosition.height-natHeight)/2;
 					}else{
-						_playedBar.height = displayPosition.height;
-						_playedBar.y = 0;
+						playedH = displayPosition.height;
+						playedY = 0;
 					}
-					_playedBar.width = displayPosition.width*playedFract;
-					_playedBar.x = 0;
+					playedW = displayPosition.width*playedFract;
+					playedX = 0;
 				}
 				
 				if(_bufferedBar){
 					natHeight = _bufferedBar.height/_bufferedBar.scaleY;
 					if(natHeight<displayPosition.height){
-						_bufferedBar.height = natHeight;
-						_bufferedBar.y = (displayPosition.height-_bufferedBar.height)/2;
+						bufferH = natHeight;
+						bufferY = (displayPosition.height-natHeight)/2;
 					}else{
-						_bufferedBar.height = displayPosition.height;
-						_bufferedBar.y = 0;
+						bufferH = displayPosition.height;
+						bufferY = 0;
 					}
-					_bufferedBar.width = displayPosition.width*loadFract;
-					_bufferedBar.x = 0;
+					bufferW = displayPosition.width*loadFract;
+					bufferX = 0;
 				}
 			}
+			_bufferedBar.setSizeAndPos(bufferX,bufferY,bufferW,bufferH);
+			_playedBar.setSizeAndPos(playedX,playedY,playedW,playedH);
 			_slider.setDisplayPosition(displayPosition.x,displayPosition.y,displayPosition.width,displayPosition.height);
 		}
 		protected function onSliderMeasChange(from:ILayoutSubject, oldWidth:Number, oldHeight:Number):void{

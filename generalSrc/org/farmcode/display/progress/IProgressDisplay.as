@@ -1,6 +1,6 @@
 package org.farmcode.display.progress
 {
-	import org.farmcode.display.assets.IDisplayAsset;
+	import org.farmcode.display.assets.assetTypes.IDisplayAsset;
 	import org.farmcode.display.core.ILayoutView;
 	
 	public interface IProgressDisplay

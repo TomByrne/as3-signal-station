@@ -4,7 +4,7 @@ package org.farmcode.data.actions
 	
 	import org.farmcode.acting.actTypes.IAct;
 	import org.farmcode.data.dataTypes.ITriggerableAction;
-	import org.farmcode.display.assets.IDisplayAsset;
+	import org.farmcode.display.assets.assetTypes.IDisplayAsset;
 	
 	public class TriggerableAction implements ITriggerableAction
 	{

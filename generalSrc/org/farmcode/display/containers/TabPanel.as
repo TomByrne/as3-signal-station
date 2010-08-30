@@ -4,8 +4,8 @@ package org.farmcode.display.containers
 	import flash.geom.Point;
 	import flash.geom.Rectangle;
 	
-	import org.farmcode.display.assets.IAsset;
-	import org.farmcode.display.assets.IDisplayAsset;
+	import org.farmcode.display.assets.assetTypes.IAsset;
+	import org.farmcode.display.assets.assetTypes.IDisplayAsset;
 	import org.farmcode.display.constants.Anchor;
 	import org.farmcode.display.constants.Direction;
 	import org.farmcode.display.core.ILayoutView;
@@ -70,14 +70,12 @@ package org.farmcode.display.containers
 		private var _assumedPanelAsset:IDisplayAsset;
 		private var _panelDataField:String;
 		private var _listMeasure:Point;
-		private var _listPosition:Rectangle;
 		private var _anchor:String = Anchor.TOP_LEFT;
 		private var _alignHorizontal:Boolean;
 		
 		public function TabPanel(asset:IDisplayAsset=null){
 			super(asset);
 			_listMeasure = new Point();
-			_listPosition = new Rectangle();
 			direction = Direction.HORIZONTAL;
 		}
 		override protected function bindToAsset() : void{
@@ -143,75 +141,79 @@ package org.farmcode.display.containers
 			_measureFlag.validate();
 			positionAsset();
 			positionBacking();
-			_listPosition.width = (displayPosition.width<_listMeasure.x?displayPosition.width:_listMeasure.x);
-			_listPosition.height = (displayPosition.height<_listMeasure.y?displayPosition.height:_listMeasure.y);
+			
+			var listX:Number;
+			var listY:Number;
+			var listWidth:Number = (displayPosition.width<_listMeasure.x?displayPosition.width:_listMeasure.x);
+			var listHeight:Number = (displayPosition.height<_listMeasure.y?displayPosition.height:_listMeasure.y);
+			
 			var panelX:Number;
 			var panelY:Number;
 			var panelWidth:Number;
 			var panelHeight:Number;
 			if(_alignHorizontal){
 				panelY = 0;
-				panelWidth = displayPosition.width-_listPosition.width;
+				panelWidth = displayPosition.width-listWidth;
 				panelHeight = displayPosition.height;
 				switch(anchor){
 					case Anchor.TOP_LEFT:
 					case Anchor.LEFT:
 					case Anchor.BOTTOM_LEFT:
-						_listPosition.x = 0;
-						panelX = _listPosition.width;
+						listX = 0;
+						panelX = listWidth;
 						break;
 					case Anchor.TOP_RIGHT:
 					case Anchor.RIGHT:
 					case Anchor.BOTTOM_RIGHT:
 						panelX = 0;
-						_listPosition.x = panelWidth;
+						listX = panelWidth;
 						break;
 				}
 				switch(anchor){
 					case Anchor.TOP_LEFT:
 					case Anchor.TOP_RIGHT:
-						_listPosition.y = 0;
+						listY = 0;
 						break;
 					case Anchor.BOTTOM_LEFT:
 					case Anchor.BOTTOM_RIGHT:
-						_listPosition.y = displayPosition.height-_listPosition.height;
+						listY = displayPosition.height-listHeight;
 						break;
 					default:
-						_listPosition.y = (displayPosition.height-_listPosition.height)/2;
+						listY = (displayPosition.height-listHeight)/2;
 				}
 			}else{
 				panelX = 0;
-				panelHeight = displayPosition.height-_listPosition.height;
+				panelHeight = displayPosition.height-listHeight;
 				panelWidth = displayPosition.width;
 				switch(anchor){
 					case Anchor.TOP_LEFT:
 					case Anchor.TOP:
 					case Anchor.TOP_RIGHT:
-						_listPosition.y = 0;
-						panelY = _listPosition.height;
+						listY = 0;
+						panelY = listHeight;
 						break;
 					case Anchor.BOTTOM_LEFT:
 					case Anchor.BOTTOM:
 					case Anchor.BOTTOM_RIGHT:
 						panelY = 0;
-						_listPosition.y = panelHeight;
+						listY = panelHeight;
 						break;
 				}
 				switch(anchor){
 					case Anchor.TOP_LEFT:
 					case Anchor.BOTTOM_LEFT:
-						_listPosition.x = 0;
+						listX = 0;
 						break;
 					case Anchor.TOP_RIGHT:
 					case Anchor.BOTTOM_RIGHT:
-						_listPosition.x = displayPosition.width-_listPosition.width;
+						listX = displayPosition.width-listWidth;
 						break;
 					default:
-						_listPosition.x = (displayPosition.width-_listPosition.width)/2;
+						listX = (displayPosition.width-listWidth)/2;
 				}
 			}
 			_panelDisplay.setDisplayPosition(panelX,panelY,panelWidth,panelHeight);
-			drawListAndScrollbar(_listPosition);
+			drawListAndScrollbar(listX,listY,listWidth,listHeight);
 		}
 		override protected function setSelectedIndex(index:int, forceRefresh:Boolean):void{
 			super.setSelectedIndex(index, forceRefresh);

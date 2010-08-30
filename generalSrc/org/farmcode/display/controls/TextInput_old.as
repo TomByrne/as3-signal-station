@@ -13,9 +13,9 @@ package org.farmcode.display.controls
 	import org.farmcode.data.dataTypes.IStringConsumer;
 	import org.farmcode.data.dataTypes.IStringProvider;
 	import org.farmcode.display.DisplayNamespace;
-	import org.farmcode.display.assets.IDisplayAsset;
-	import org.farmcode.display.assets.IInteractiveObjectAsset;
-	import org.farmcode.display.assets.ITextFieldAsset;
+	import org.farmcode.display.assets.assetTypes.IDisplayAsset;
+	import org.farmcode.display.assets.assetTypes.IInteractiveObjectAsset;
+	import org.farmcode.display.assets.assetTypes.ITextFieldAsset;
 	import org.farmcode.display.assets.states.StateDef;
 	import org.farmcode.display.tabFocus.ITabFocusable;
 	import org.farmcode.display.tabFocus.InteractiveAssetFocusWrapper;
@@ -338,8 +338,7 @@ package org.farmcode.display.controls
 		override protected function draw() : void{
 			_measureFlag.validate();
 			var pos:Rectangle = displayPosition;
-			asset.x = pos.x;
-			asset.y = pos.y;
+			asset.setPosition(pos.x,pos.y);
 			if(_inputBacking){
 				_inputBacking.position(0,0,pos.width,pos.height);
 			}

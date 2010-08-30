@@ -1,24 +1,13 @@
 package org.farmcode.display.progress
 {
-	import flash.display.BlendMode;
-	import flash.display.CapsStyle;
-	import flash.display.JointStyle;
-	import flash.display.LineScaleMode;
-	import flash.display.Shape;
-	import flash.display.Sprite;
+	import flash.display.*;
 	import flash.events.Event;
-	import flash.text.TextField;
-	import flash.text.TextFieldType;
-	import flash.text.TextFormat;
-	import flash.text.TextFormatAlign;
+	import flash.text.*;
 	import flash.utils.getTimer;
 	
-	import org.farmcode.display.assets.IContainerAsset;
-	import org.farmcode.display.assets.IDisplayAsset;
-	import org.farmcode.display.assets.IShapeAsset;
-	import org.farmcode.display.assets.ISpriteAsset;
-	import org.farmcode.display.assets.ITextFieldAsset;
+	import org.farmcode.display.assets.assetTypes.IDisplayAsset;
 	import org.farmcode.display.assets.nativeAssets.NativeAssetFactory;
+	import org.farmcode.display.assets.nativeAssets.SpriteAsset;
 
 	/**
 	 * TODO: add preloader props (e.g. progress,total,units, etc.) into their own 
@@ -65,30 +54,67 @@ package org.farmcode.display.progress
 		private var _textFormat:TextFormat;
 		private var _transStart:Number;
 		
-		private var _detailsField:ITextFieldAsset;
-		private var _messageField:ITextFieldAsset;
-		private var _container:IContainerAsset;
-		private var _centerContainer:IContainerAsset;
-		private var _background:IShapeAsset;
-		private var _bar:IShapeAsset;
-		private var _border:IShapeAsset;
+		private var _containerWrapper:SpriteAsset;
+		private var _detailsField:TextField;
+		private var _messageField:TextField;
+		private var _container:Sprite;
+		private var _centerContainer:Sprite;
+		private var _background:Shape;
+		private var _bar:Shape;
+		private var _border:Shape;
 		
-		public function SimpleProgressDisplay(){
-			super(NativeAssetFactory.getNewByType(ISpriteAsset));
+		public function SimpleProgressDisplay(asset:IDisplayAsset){
+			super(asset);
 		}
 		override protected function init():void{
 			super.init();
 			_textFormat = new TextFormat("_sans",10.5,0);
 			_textFormat.align = TextFormatAlign.CENTER;
 			backgroundAlpha = DEFAULT_BACKGROUND_ALPHA;
+			
+			_container = new Sprite();
+			_container.alpha = 0;
+			_container.blendMode = BlendMode.INVERT;
+			
+			_background = new Shape();
+			_background.graphics.beginFill(0,1);
+			_background.graphics.drawRect(0,0,10,10);
+			_background.alpha = _backgroundAlpha;
+			_container.addChild(_background);
+			
+			_centerContainer = new Sprite();
+			_container.addChild(_centerContainer);
+			
+			_detailsField = new TextField();
+			_detailsField.defaultTextFormat = _textFormat;
+			_detailsField.selectable = false;
+			_detailsField.type = TextFieldType.DYNAMIC;
+			_centerContainer.addChild(_detailsField);
+			
+			_messageField = new TextField();
+			_messageField.defaultTextFormat = _textFormat;
+			_messageField.selectable = false;
+			_messageField.type = TextFieldType.DYNAMIC;
+			_centerContainer.addChild(_messageField);
+			
+			_border = new Shape();
+			_border.graphics.lineStyle(0,0,1,true,LineScaleMode.NONE,CapsStyle.SQUARE,JointStyle.MITER);
+			_border.graphics.drawRect(0,0,BAR_WIDTH,BAR_HEIGHT);
+			_centerContainer.addChild(_border);
+			
+			_bar = new Shape();
+			_bar.graphics.beginFill(0,1);
+			_bar.graphics.drawRect(0,0,BAR_WIDTH,BAR_HEIGHT);
+			_centerContainer.addChild(_bar);
+			
 		}
 		override protected function doShowIntro() : void{
 			super.doShowIntro();
 			clearTransitions();
 			_transStart = getTimer();
-			_container.enterFrame.addHandler(introTick);
+			_container.addEventListener(Event.ENTER_FRAME, introTick);
 		}
-		protected function introTick(e:Event, from:IDisplayAsset) : void{
+		protected function introTick(e:Event) : void{
 			_container.alpha = (getTimer()-_transStart)/(TRANSITION_TIME*1000);
 			if(_container.alpha>=1){
 				clearTransitions();
@@ -98,65 +124,36 @@ package org.farmcode.display.progress
 			var ret:Number = super.doShowOutro();
 			clearTransitions();
 			_transStart = getTimer();
-			_container.enterFrame.addHandler(outroTick);
+			_container.addEventListener(Event.ENTER_FRAME, outroTick);
 			if(ret<TRANSITION_TIME){
 				return TRANSITION_TIME;
 			}else{
 				return ret;
 			}
 		}
-		protected function outroTick(e:Event, from:IDisplayAsset) : void{
+		protected function outroTick(e:Event) : void{
 			_container.alpha = 1-((getTimer()-_transStart)/(TRANSITION_TIME*1000));
 			if(_container.alpha<=0){
 				clearTransitions();
 			}
 		}
 		protected function clearTransitions() : void{
-			_container.enterFrame.removeHandler(introTick);
-			_container.enterFrame.removeHandler(outroTick);
+			_container.removeEventListener(Event.ENTER_FRAME, outroTick);
+			_container.removeEventListener(Event.ENTER_FRAME, outroTick);
 		}
 		override protected function bindToAsset() : void{
 			super.bindToAsset();
-			_container = _containerAsset.createAsset(IContainerAsset);
-			_container.alpha = 0;
-			_container.blendMode = BlendMode.INVERT;
-			
-			_background = _container.createAsset(IShapeAsset);
-			_background.graphics.beginFill(0,1);
-			_background.graphics.drawRect(0,0,10,10);
-			_background.alpha = _backgroundAlpha;
-			_container.addAsset(_background);
-			
-			_centerContainer = _container.createAsset(IContainerAsset);
-			_container.addAsset(_centerContainer);
-			
-			_detailsField = _containerAsset.createAsset(ITextFieldAsset);
-			_detailsField.defaultTextFormat = _textFormat;
-			_detailsField.selectable = false;
-			_detailsField.type = TextFieldType.DYNAMIC;
-			_centerContainer.addAsset(_detailsField);
-			
-			_messageField = _containerAsset.createAsset(ITextFieldAsset);
-			_messageField.defaultTextFormat = _textFormat;
-			_messageField.selectable = false;
-			_messageField.type = TextFieldType.DYNAMIC;
-			_centerContainer.addAsset(_messageField);
-			
-			_border = _containerAsset.createAsset(IShapeAsset);
-			_border.graphics.lineStyle(0,0,1,true,LineScaleMode.NONE,CapsStyle.SQUARE,JointStyle.MITER);
-			_border.graphics.drawRect(0,0,BAR_WIDTH,BAR_HEIGHT);
-			_centerContainer.addAsset(_border);
-			
-			_bar = _containerAsset.createAsset(IShapeAsset);
-			_bar.graphics.beginFill(0,1);
-			_bar.graphics.drawRect(0,0,BAR_WIDTH,BAR_HEIGHT);
-			_centerContainer.addAsset(_bar);
-			
-			_containerAsset.addAsset(_container);
+			if(!_containerWrapper){
+				var factory:NativeAssetFactory = _containerAsset.factory as NativeAssetFactory;
+				if(!factory){
+					factory = new NativeAssetFactory();
+				}
+				_containerWrapper = factory.getNew(_container);
+			}
+			_containerAsset.addAsset(_containerWrapper);
 		}
 		override protected function unbindFromAsset() : void{
-			_containerAsset.destroyAsset(_container);
-			_containerAsset.removeAsset(_container);
+			_containerAsset.removeAsset(_containerWrapper);
 			super.unbindFromAsset();
 		}
 		override protected function measure() : void{

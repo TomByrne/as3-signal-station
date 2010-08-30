@@ -6,8 +6,8 @@ package org.farmcode.display.assets.nativeAssets
 	import flash.system.LoaderContext;
 	import flash.utils.ByteArray;
 	
-	import org.farmcode.display.assets.IDisplayAsset;
-	import org.farmcode.display.assets.ILoaderAsset;
+	import org.farmcode.display.assets.assetTypes.IDisplayAsset;
+	import org.farmcode.display.assets.assetTypes.ILoaderAsset;
 	
 	public class LoaderAsset extends DisplayObjectContainerAsset implements ILoaderAsset
 	{
@@ -22,12 +22,12 @@ package org.farmcode.display.assets.nativeAssets
 		private var _loader:Loader;
 		
 		
-		public function LoaderAsset(){
-			super();
+		public function LoaderAsset(factory:NativeAssetFactory=null){
+			super(factory);
 		}
 		
 		public function get content():IDisplayAsset{
-			return NativeAssetFactory.getNew(_loader.content);
+			return _nativeFactory.getNew(_loader.content);
 		}
 		public function get contentLoaderInfo():LoaderInfo{
 			return _loader.contentLoaderInfo;

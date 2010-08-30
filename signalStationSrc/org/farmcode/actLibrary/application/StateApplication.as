@@ -18,7 +18,7 @@ package org.farmcode.actLibrary.application
 	import org.farmcode.acting.actTypes.IUniversalAct;
 	import org.farmcode.acting.universal.UniversalActExecution;
 	import org.farmcode.acting.universal.rules.ActInstanceRule;
-	import org.farmcode.display.assets.IDisplayAsset;
+	import org.farmcode.display.assets.assetTypes.IDisplayAsset;
 	
 	public class StateApplication extends ConfiguredApplication
 	{

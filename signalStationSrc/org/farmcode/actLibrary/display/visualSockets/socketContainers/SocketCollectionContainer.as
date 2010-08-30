@@ -2,7 +2,7 @@ package org.farmcode.actLibrary.display.visualSockets.socketContainers
 {
 	import flash.display.DisplayObject;
 	
-	import org.farmcode.display.assets.IDisplayAsset;
+	import org.farmcode.display.assets.assetTypes.IDisplayAsset;
 	import org.farmcode.display.layout.ILayout;
 	import org.farmcode.display.layout.ILayoutSubject;
 	

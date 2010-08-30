@@ -1,6 +1,6 @@
 package org.farmcode.display.actInfo
 {
-	import org.farmcode.display.assets.IDisplayAsset;
+	import org.farmcode.display.assets.assetTypes.IDisplayAsset;
 
 	public interface IMouseActInfo
 	{

@@ -1,7 +1,7 @@
 package org.farmcode.display.assets.nativeAssets.actInfo
 {
 	import org.farmcode.display.actInfo.IMouseActInfo;
-	import org.farmcode.display.assets.IDisplayAsset;
+	import org.farmcode.display.assets.assetTypes.IDisplayAsset;
 	
 	public class MouseActInfo implements IMouseActInfo
 	{
