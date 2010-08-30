@@ -140,7 +140,7 @@ package org.farmcode.display.containers
 		override protected function draw() : void{
 			_measureFlag.validate();
 			positionAsset();
-			positionBacking();
+			positionBacking(displayPosition.x,displayPosition.y,displayPosition.width,displayPosition.height);
 			
 			var listX:Number;
 			var listY:Number;

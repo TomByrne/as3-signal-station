@@ -20,6 +20,8 @@ package
 	import org.farmcode.collections.utils.randomSort;
 	import org.farmcode.data.actions.Link;
 	import org.farmcode.data.operators.NumberRange;
+	import org.farmcode.debug.DebugManager;
+	import org.farmcode.debug.display.DebugItemRenderer;
 	import org.farmcode.display.assets.nativeAssets.NativeAssetFactory;
 	import org.farmcode.display.containers.AbstractList;
 	import org.farmcode.display.containers.ContainerView;
@@ -149,6 +151,8 @@ package
 			NumberRange;
 			DateFormat;
 			TextInput_old;
+			DebugManager;
+			DebugItemRenderer;
 		}
 	}
 }

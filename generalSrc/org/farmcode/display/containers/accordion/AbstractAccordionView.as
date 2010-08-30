@@ -2,6 +2,7 @@ package org.farmcode.display.containers.accordion
 {
 	import flash.utils.Dictionary;
 	
+	import org.farmcode.display.assets.assetTypes.IDisplayAsset;
 	import org.farmcode.display.constants.Direction;
 	import org.farmcode.display.containers.AbstractList;
 	import org.farmcode.display.core.ILayoutView;
@@ -47,11 +48,13 @@ package org.farmcode.display.containers.accordion
 			_dataField = "data";
 		}
 		
-		override protected function createAssumedFactory():void{
+		override protected function createAssumedFactory(asset:IDisplayAsset):SimpleInstanceFactory{
 			_assumedRendererFactory = new SimpleInstanceFactory(AccordionRenderer);
 			_assumedRendererFactory.useChildFactories = true;
 			_assumedRendererFactory.instanceProperties = new Dictionary();
-			_assumedRendererFactory.instanceProperties["asset"] = _assumedRendererAsset.getCloneFactory();
+			checkAssetFactory();
+			_assumedRendererFactory.instanceProperties["asset"] = _assumedAssetFactory;
+			return _assumedRendererFactory;
 		}
 		override protected function createLayout():void{
 			_accordionLayout = new AccordionLayout(this);

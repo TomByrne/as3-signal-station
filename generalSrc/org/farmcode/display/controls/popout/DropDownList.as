@@ -108,12 +108,12 @@ package org.farmcode.display.controls.popout {
 		protected function onTextMeasureChange(from:ILayoutSubject, oldWidth:Number, oldHeight:Number):void{
 			dispatchMeasurementChange();
 		}
-		override protected function getListAlignArea():void{
+		/*override protected function getListAlignArea():void{
 			var labelMeas:Point = _textLabelButton.measurements;
 			_measurements.x = labelMeas.x;
 			_measurements.y = labelMeas.y;
 			addListToMeas();
-		}
+		}*/
 		/*override protected function getListAlignArea():Rectangle{
 			_listAlignArea.width = displayPosition.width;
 			_listAlignArea.height = displayPosition.height;

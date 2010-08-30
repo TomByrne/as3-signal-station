@@ -10,7 +10,7 @@
 	-->
 
 	<!--<property name="FLEX_HOME" value="${application.home}" />-->
-	<property name="FLEX_HOME" value="C:\Program Files\Adobe\Adobe Flash Builder 4 Plug-in\sdks\3.5.0" />
+	<property name="FLEX_HOME" value="C:\Program Files\Adobe\Adobe Flash Builder 4 Plug-in\sdks\4.0.0" />
 
     <taskdef name="swcPackager" classpath="${basedir}\build\SWCPackager.jar" classname="org.farmcode.antTasks.SWCPackager"/>
 	

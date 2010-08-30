@@ -376,11 +376,13 @@ package org.farmcode.display.containers.accordionGrid
 			_gridLayout.rendererFactory = factory;
 			_gridLayout.dataField = dataField;
 		}
-		override protected function createAssumedFactory():void{
+		override protected function createAssumedFactory(asset:IDisplayAsset):SimpleInstanceFactory{
 			_assumedRendererFactory = new SimpleInstanceFactory(AccordionGridRenderer);
 			_assumedRendererFactory.useChildFactories = true;
 			_assumedRendererFactory.instanceProperties = new Dictionary();
-			_assumedRendererFactory.instanceProperties["asset"] = _assumedRendererAsset.getCloneFactory();
+			checkAssetFactory();
+			_assumedRendererFactory.instanceProperties["asset"] = _assumedAssetFactory;
+			return _assumedRendererFactory;
 		}
 		protected function createAssumedGridFactory():void{
 			_assumedGridRendererFactory = new SimpleInstanceFactory(AccordionGridRenderer);

@@ -27,7 +27,10 @@ package org.farmcode.debug
 		protected static var _assetFactory:DebugAssetFactory = new DebugAssetFactory(new StandardAssetSchema());
 		
 		public static function addApplication(app:IApplication):IApplication{
-			var manager:DebugManager = new DebugManager(_assetFactory.getCoreSkin(AssetNames.DEBUG_DISPLAY),app);
+			var manager:DebugManager;
+			Config::DEBUG{
+				manager = new DebugManager(_assetFactory.getCoreSkin(AssetNames.DEBUG_DISPLAY),app);
+			}
 			_managers[app] = manager;
 			_scopedObjectAssigner.addManager(manager);
 			return manager;

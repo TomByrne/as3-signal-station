@@ -46,7 +46,9 @@ package org.farmcode.debug.display
 		}
 		override protected function bindToAsset() : void{
 			super.bindToAsset();
-			_bitmap = _containerAsset.takeAssetByName(AssetNames.DEBUG_ITEM_BITMAP,IBitmapAsset);
+			Config::DEBUG{
+				_bitmap = _containerAsset.takeAssetByName(AssetNames.DEBUG_ITEM_BITMAP,IBitmapAsset);
+			}
 			_bitmapPaddingTop = _bitmap.y;
 			_bitmapPaddingLeft = _bitmap.x;
 			_bitmapPaddingRight = _backing.naturalWidth-(_bitmap.x+_bitmap.naturalWidth);

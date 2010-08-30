@@ -340,14 +340,14 @@ package org.farmcode.display.controls
 			var pos:Rectangle = displayPosition;
 			asset.setPosition(pos.x,pos.y);
 			if(_inputBacking){
-				_inputBacking.position(0,0,pos.width,pos.height);
+				_inputBacking.setSizeAndPos(0,0,pos.width,pos.height);
 			}
 			var pTop:Number = getValueOrAssumed(_paddingTop,_assumedPaddingTop,0);
 			var pLeft:Number = getValueOrAssumed(_paddingLeft,_assumedPaddingLeft,0);
 			var pBottom:Number = getValueOrAssumed(_paddingBottom,_assumedPaddingBottom,0);
 			var pRight:Number = getValueOrAssumed(_paddingRight,_assumedPaddingRight,0);
 			
-			_inputField.position(pLeft-TextFieldGutter.TEXT_FIELD_GUTTER,
+			_inputField.setSizeAndPos(pLeft-TextFieldGutter.TEXT_FIELD_GUTTER,
 								pTop-TextFieldGutter.TEXT_FIELD_GUTTER,
 								pos.width-pLeft-pRight+TextFieldGutter.TEXT_FIELD_GUTTER*2,
 								pos.height-pTop-pBottom+TextFieldGutter.TEXT_FIELD_GUTTER*2);
