@@ -23,6 +23,12 @@ package org.farmcode.display.layout.grid
 	 */
 	public class AbstractGridLayout extends AbstractCompositeLayout implements IScrollable
 	{
+		public function set margin(value:Number):void{
+			marginTop = value;
+			marginLeft = value;
+			marginRight = value;
+			marginBottom= value;
+		}
 		public function get marginTop():Number{
 			return _verticalAxis.foreMargin;
 		}
@@ -604,7 +610,7 @@ package org.farmcode.display.layout.grid
 			var pixScroll:Number;
 			var pixScrollMax:Number;
 			var realDim:Number = _displayPosition[axis.dimRef];
-			var realMeas:Number = measurements[axis.dimRef];
+			var realMeas:Number = midDrawMeas[axis.coordRef];
 			if(realMeas>realDim){
 				pixScrollMax = realMeas-realDim;
 				if(axis.scrollByLine){

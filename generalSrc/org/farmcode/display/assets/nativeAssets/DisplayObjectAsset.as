@@ -7,6 +7,7 @@ package org.farmcode.display.assets.nativeAssets {
 	import flash.geom.Transform;
 	
 	import org.farmcode.acting.actTypes.IAct;
+	import org.farmcode.acting.acts.Act;
 	import org.farmcode.acting.acts.NativeAct;
 	import org.farmcode.display.assets.assetTypes.IContainerAsset;
 	import org.farmcode.display.assets.assetTypes.IDisplayAsset;
@@ -25,6 +26,8 @@ package org.farmcode.display.assets.nativeAssets {
 		 * @inheritDoc
 		 */
 		public function get removedFromStage():IAct {
+			if(!_removedFromStage)
+				_removedFromStage = new Act();
 			return _removedFromStage;
 		}
 		/**
@@ -52,6 +55,13 @@ package org.farmcode.display.assets.nativeAssets {
 			return _enterFrame;
 		}
 		
+		/**
+		 * @inheritDoc
+		 */
+		public function get stageChanged():IAct{
+			if(!_stageChanged)_stageChanged = new Act();
+			return _stageChanged;
+		}
 		
 		override internal function get display():*{
 			return displayObject;
@@ -72,13 +82,11 @@ package org.farmcode.display.assets.nativeAssets {
 					_innerBounds = null;
 					_displayObject.scaleX = _origScaleX;
 					_displayObject.scaleY = _origScaleY;
+					_displayObject.removeEventListener(Event.REMOVED_FROM_STAGE,onRemovedFromStage);
 				}
 				_displayObject = value;
 				if(_addedToStage)
 					_addedToStage.eventDispatcher = value;
-				
-				if(_removedFromStage)
-					_removedFromStage.eventDispatcher = value;
 				
 				if(_added)
 					_added.eventDispatcher = value;
@@ -88,12 +96,17 @@ package org.farmcode.display.assets.nativeAssets {
 				
 				if(_enterFrame)
 					_enterFrame.eventDispatcher = value;
+				
+				if(_displayObject){
+					_displayObject.addEventListener(Event.REMOVED_FROM_STAGE,onRemovedFromStage);
+				}
 			}
 		}
 		
 		
+		private var _stageChanged:Act;
 		private var _addedToStage:NativeAct;
-		private var _removedFromStage:NativeAct;
+		private var _removedFromStage:Act;
 		private var _added:NativeAct;
 		private var _removed:NativeAct;
 		private var _enterFrame:NativeAct;
@@ -115,16 +128,18 @@ package org.farmcode.display.assets.nativeAssets {
 		public function DisplayObjectAsset(factory:NativeAssetFactory=null){
 			super(factory);
 			
-			_addedToStage = new NativeAct(_displayObject, Event.ADDED_TO_STAGE, [this],false);
+			_addedToStage = new NativeAct(null, Event.ADDED_TO_STAGE, [this],false);
 			_addedToStage.addHandler(onAddedToStage);
-			_removedFromStage = new NativeAct(_displayObject, Event.REMOVED_FROM_STAGE, [this], false);
-			_removedFromStage.addHandler(onRemovedFromStage);
 		}
 		protected function onAddedToStage(from:DisplayObjectAsset):void{
 			_isAddedToStage = true;
+			if(_stageChanged)_stageChanged.perform(this);
 		}
-		protected function onRemovedFromStage(from:DisplayObjectAsset):void{
+		protected function onRemovedFromStage(e:Event=null):void{
+			if(_removedFromStage)_removedFromStage.perform(this);
 			_isAddedToStage = false;
+			_stageAsset = null;
+			if(_stageChanged)_stageChanged.perform(this);
 		}
 		
 		
@@ -262,16 +277,15 @@ package org.farmcode.display.assets.nativeAssets {
 		public function set parent(value:IContainerAsset):void {
 			_parent = value;
 			if(!value){
-				_stageAsset = null;
-				if(_addedToStage)onRemovedFromStage(this);
+				if(_addedToStage)onRemovedFromStage();
 			}else{
 				if(_parent.stage){
 					if(!_addedToStage)onAddedToStage(this);
-				}else if(_addedToStage)onRemovedFromStage(this);
+				}else if(_addedToStage)onRemovedFromStage();
 			}
 		}
 		public function get stage():IStageAsset {
-			if(_parent && !_stageAsset){
+			if(_parent && !_stageAsset && _isAddedToStage){
 				var topParent:IContainerAsset = _parent;
 				while(topParent.parent){
 					topParent = topParent.parent;

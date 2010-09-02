@@ -5,7 +5,7 @@ package org.farmcode.data.dataTypes
 	import org.farmcode.acting.actTypes.IAct;
 	import org.farmcode.display.assets.assetTypes.IDisplayAsset;
 
-	public interface IBitmapProvider
+	public interface IBitmapDataProvider
 	{
 		/**
 		 * handler(from:IBitmapProvider)

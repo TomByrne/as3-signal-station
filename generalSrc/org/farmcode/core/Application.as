@@ -2,10 +2,15 @@ package org.farmcode.core
 {
 	import flash.geom.Rectangle;
 	
+	import org.farmcode.data.core.StringData;
 	import org.farmcode.data.dataTypes.INumberProvider;
 	import org.farmcode.debug.DebugManager;
-	import org.farmcode.debug.data.core.MemoryUsage;
-	import org.farmcode.debug.data.core.RealFrameRate;
+	import org.farmcode.debug.data.baseMetrics.GarbageCollect;
+	import org.farmcode.debug.data.baseMetrics.IntendedFrameRate;
+	import org.farmcode.debug.data.baseMetrics.MemoryUsage;
+	import org.farmcode.debug.data.baseMetrics.RealFrameRate;
+	import org.farmcode.debug.data.core.DebugData;
+	import org.farmcode.debug.nodes.DebugDataNode;
 	import org.farmcode.debug.nodes.GraphStatisticNode;
 	import org.farmcode.display.assets.assetTypes.IContainerAsset;
 	import org.farmcode.display.assets.assetTypes.IDisplayAsset;
@@ -81,9 +86,13 @@ package org.farmcode.core
 		override protected function init():void{
 			super.init();
 			Config::DEBUG{
-				DebugManager.addDebugNode(new GraphStatisticNode(this,"FPS",0x990000,new RealFrameRate(),true));
-				var memory:INumberProvider = new MemoryUnitConverter(new MemoryUsage(),MemoryUnitConverter.BYTES,MemoryUnitConverter.MEGABYTES,true)
+				var memory:INumberProvider = new MemoryUnitConverter(new MemoryUsage(),MemoryUnitConverter.BYTES,MemoryUnitConverter.MEGABYTES)
 				DebugManager.addDebugNode(new GraphStatisticNode(this,"Mem",0x009900,memory,true));
+				
+				var fps:GraphStatisticNode = new GraphStatisticNode(this,"FPS",0x990000,new RealFrameRate(),true);
+				fps.maximumProvider = new IntendedFrameRate(this);
+				DebugManager.addDebugNode(fps);
+				DebugManager.addDebugNode(new DebugDataNode(this,new DebugData(new StringData("Garbage Collect"),new GarbageCollect())));
 			}
 		}
 		protected function removeMainDisplay():void{

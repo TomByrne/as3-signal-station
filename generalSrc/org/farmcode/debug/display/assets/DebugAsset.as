@@ -5,6 +5,7 @@ package org.farmcode.debug.display.assets
 	import flash.display.GraphicsSolidFill;
 	import flash.display.GraphicsStroke;
 	import flash.display.IGraphicsFill;
+	import flash.filters.DropShadowFilter;
 	import flash.filters.GlowFilter;
 	import flash.geom.Matrix;
 	import flash.text.TextFormat;
@@ -39,13 +40,16 @@ package org.farmcode.debug.display.assets
 			var buttonOverFill:IGraphicsFill = new GraphicsGradientFill(GradientType.LINEAR,[0xDFE1EE,0xCDCFDE,0x979AA8],[1,1,1],[0,0xe0,0xff],matrix);
 			
 			// cascading menu items
-			debugRectStyles.push(new RectangleStyle(".*/?childList/listItem/backing",null,buttonFill));
-			debugRectStyles.push(new RectangleStyle(".*/?childList/listItem/backing",Button.STATE_OVER,buttonOverFill));
+			const cascRegExp:String = ".*/?childList/listItem/backing";
+			debugRectStyles.push(new RectangleStyle(cascRegExp,null,buttonFill));
+			debugRectStyles.push(new RectangleStyle(cascRegExp,Button.STATE_OVER,buttonOverFill));
 			
 			// TextButtons
-			debugRectStyles.push(new RectangleStyle(".*/?listItem/backing",null,buttonFill,null,3));
-			debugRectStyles.push(new RectangleStyle(".*/?listItem/backing",Button.STATE_OVER,buttonOverFill,null,3));
-			debugRectStyles.push(new FilterStyle(".*/?listItem/backing",ToggleButton.STATE_SELECTED,[new GlowFilter(0x0033CC,0.5,2,2,2,1,true)]));
+			const buttonRegExp:String = ".*/?((listItem)|(\w*[Bb]utton))/backing";
+			debugRectStyles.push(new RectangleStyle(buttonRegExp,null,buttonFill,null,3));
+			debugRectStyles.push(new RectangleStyle(buttonRegExp,Button.STATE_OVER,buttonOverFill,null,3));
+			debugRectStyles.push(new FilterStyle(buttonRegExp,Button.STATE_DOWN,[new DropShadowFilter(2,45,0,0.5,1.5,1.5,1,1,true)]));
+			debugRectStyles.push(new FilterStyle(buttonRegExp,ToggleButton.STATE_SELECTED,[new GlowFilter(0x0033CC,0.5,2,2,2,1,true)]));
 			
 			// Container
 			debugRectStyles.push(new RectangleStyle(".*/?backing",null,

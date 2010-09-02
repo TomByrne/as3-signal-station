@@ -1,6 +1,7 @@
-package org.farmcode.debug.data.core
+package org.farmcode.debug.data.baseMetrics
 {
 	import flash.system.System;
+	import org.farmcode.debug.data.core.NumberMonitor;
 
 	public class MemoryUsage extends NumberMonitor
 	{

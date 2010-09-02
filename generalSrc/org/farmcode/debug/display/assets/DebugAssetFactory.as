@@ -19,6 +19,9 @@ package org.farmcode.debug.display.assets
 			ret.addChildren(attemptToCreateChildren(schema));
 			return ret;
 		}
+		override public function destroyAsset(asset:IAsset):void{
+			// ignore (till pooling is added)
+		}
 		
 		override protected function getAssetClass(from:AbstractSchemaBasedAsset):Class{
 			return DebugAsset;

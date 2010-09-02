@@ -60,8 +60,7 @@ package org.farmcode.display.assets.schema
 			
 			_addedToStage = new NativeAct(_displayObject, Event.ADDED_TO_STAGE, [this],false);
 			_addedToStage.addHandler(onAddedToStage);
-			_removedFromStage = new NativeAct(_displayObject, Event.REMOVED_FROM_STAGE, [this], false);
-			_removedFromStage.addHandler(onRemovedFromStage);
+			_displayObject.addEventListener(Event.REMOVED_FROM_STAGE,onRemovedFromStage);
 			
 			setupActBundles();
 		}
@@ -97,9 +96,13 @@ package org.farmcode.display.assets.schema
 		}
 		protected function onAddedToStage(from:AbstractDynamicAsset):void{
 			_isAddedToStage = true;
+			if(_stageChanged)_stageChanged.perform(this);
 		}
-		protected function onRemovedFromStage(from:AbstractDynamicAsset):void{
+		protected function onRemovedFromStage(e:Event=null):void{
+			if(_removedFromStage)_removedFromStage.perform(this);
 			_isAddedToStage = false;
+			_stage = null;
+			if(_stageChanged)_stageChanged.perform(this);
 		}
 		override protected function addSchema():void{
 			_displaySchema = schema as IDisplayAssetSchema;
@@ -108,6 +111,7 @@ package org.farmcode.display.assets.schema
 			var textSchema:ITextAssetSchema = schema as ITextAssetSchema;
 			if(textSchema){
 				_textField = new TextField();
+				_textField.selectable = false;
 				_textField.width = _naturalWidth = textSchema.width;
 				_textField.height = _naturalHeight = textSchema.height;
 				if(textSchema.initialText)_textField.htmlText = textSchema.initialText;
@@ -152,9 +156,6 @@ package org.farmcode.display.assets.schema
 			if(_addedToStage)
 				_addedToStage.eventDispatcher = _displayObject;
 			
-			if(_removedFromStage)
-				_removedFromStage.eventDispatcher = _displayObject;
-			
 			if(_added)
 				_added.eventDispatcher = _displayObject;
 			
@@ -179,10 +180,12 @@ package org.farmcode.display.assets.schema
 			_width = _displayObject.width;
 			_height = _displayObject.height;
 			
+			_displayObject.addEventListener(Event.REMOVED_FROM_STAGE,onRemovedFromStage);
 			DISPLAY_MAP[_displayObject] = _displayObject;
 		}
 		override protected function removeSchema():void{
 			_displaySchema = null;
+			_displayObject.removeEventListener(Event.REMOVED_FROM_STAGE,onRemovedFromStage);
 			
 			delete DISPLAY_MAP[_displayObject];
 			
@@ -191,9 +194,6 @@ package org.farmcode.display.assets.schema
 			
 			if(_addedToStage)
 				_addedToStage.eventDispatcher = null;
-			
-			if(_removedFromStage)
-				_removedFromStage.eventDispatcher = null;
 			
 			if(_added)
 				_added.eventDispatcher = null;
@@ -288,6 +288,8 @@ package org.farmcode.display.assets.schema
 		 * @inheritDoc
 		 */
 		public function get removedFromStage():IAct {
+			if(!_removedFromStage)
+				_removedFromStage = new Act();
 			return _removedFromStage;
 		}
 		/**
@@ -314,6 +316,13 @@ package org.farmcode.display.assets.schema
 				_enterFrame = new NativeAct(_displayObject, Event.ENTER_FRAME, [this]);
 			return _enterFrame;
 		}
+		/**
+		 * @inheritDoc
+		 */
+		public function get stageChanged():IAct{
+			if(!_stageChanged)_stageChanged = new Act();
+			return _stageChanged;
+		}
 		
 		protected var _x:Number;
 		protected var _y:Number;
@@ -325,10 +334,11 @@ package org.farmcode.display.assets.schema
 		protected var _parent:IContainerAsset;
 		protected var _stage:IStageAsset;
 		
+		protected var _stageChanged:Act;
 		protected var _enterFrame:NativeAct;
 		protected var _removed:NativeAct;
 		protected var _added:NativeAct;
-		protected var _removedFromStage:NativeAct;
+		protected var _removedFromStage:Act;
 		protected var _addedToStage:NativeAct;
 		
 		

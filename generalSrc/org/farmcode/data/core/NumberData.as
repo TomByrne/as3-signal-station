@@ -19,7 +19,7 @@ package org.farmcode.data.core
 				if(isNaN(value)){
 					super.stringValue = null;
 				}else{
-					super.stringValue = String(value);
+					super.stringValue = numToString(value);
 				}
 			}
 		}
@@ -48,6 +48,9 @@ package org.farmcode.data.core
 		public function NumberData(numericalValue:Number=NaN)
 		{
 			this.numericalValue = numericalValue;
+		}
+		protected function numToString(number:Number):String{
+			return String(number);
 		}
 		override public function toString():String{
 			return _numericalValue.toString()+" (0x"+_numericalValue.toString(16)+")";

@@ -74,6 +74,11 @@ package org.farmcode.display.assets.assetTypes
 		/**
 		 * handler(from:IAsset)
 		 */
+		function get stageChanged():IAct;
+		
+		/**
+		 * handler(from:IAsset)
+		 */
 		function get addedToStage():IAct;
 		/**
 		 * handler(from:IAsset)

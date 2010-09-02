@@ -1,29 +1,28 @@
 package org.farmcode.display.layout
 {
 	
-	import flash.display.DisplayObject;
 	import flash.geom.Point;
 	import flash.geom.Rectangle;
 	import flash.utils.Dictionary;
 	
 	import org.farmcode.acting.actTypes.IAct;
 	import org.farmcode.acting.acts.Act;
-	import org.farmcode.display.assets.assetTypes.IDisplayAsset;
+	import org.farmcode.binding.PropertyWatcher;
+	import org.farmcode.binding.Watchable;
 	import org.farmcode.display.core.IView;
-	import org.farmcode.display.core.View;
 	import org.farmcode.display.layout.core.ILayoutInfo;
 	import org.farmcode.display.validation.FrameValidationFlag;
 	import org.farmcode.display.validation.ValidationFlag;
 	
-	public class AbstractLayout implements ILayout, ILayoutSubject
+	public class AbstractLayout extends Watchable implements ILayout, ILayoutSubject
 	{
 		
-		public function get scopeView():IView{
-			return _drawFlag.view;
-		}
-		public function set scopeView(value:IView):void{
-			_drawFlag.view = value;
-		}
+		private const scopeView_name:String = "scopeView";
+		
+		public function get scopeView():IView{return _get(scopeView_name);}
+		public function set scopeView(value:IView):void{_set(scopeView_name,value);}
+		public function get scopeViewChanged():IAct{return _getAct(scopeView_name);}
+		
 		
 		
 		public function get layoutInfo():ILayoutInfo{
@@ -68,10 +67,16 @@ package org.farmcode.display.layout
 		private var _drawFlag:FrameValidationFlag;
 		
 		public function AbstractLayout(scopeView:IView){
+			super([scopeView_name]);
+			new PropertyWatcher(scopeView_name,setScopeView,null,null,this);
+			
 			_drawFlag = new FrameValidationFlag(null,draw,false);
 			this.scopeView = scopeView;
 			_measureFlag = new ValidationFlag(measure, false);
 			_measurements = new Point();
+		}
+		protected function setScopeView(value:IView):void{
+			_drawFlag.view = value;
 		}
 		/* If this returns true then the measure function must
 		be overrdien, if it returns false then the draw function must

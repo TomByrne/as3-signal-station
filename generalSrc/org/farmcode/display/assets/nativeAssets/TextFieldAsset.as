@@ -179,8 +179,8 @@ package org.farmcode.display.assets.nativeAssets
 			super.onAddedToStage(from);
 			enterFrame.addTempHandler(onFirstFrame);
 		}
-		override protected function onRemovedFromStage(from:DisplayObjectAsset):void{
-			super.onRemovedFromStage(from);
+		override protected function onRemovedFromStage(e:Event=null):void{
+			super.onRemovedFromStage(e);
 			enterFrame.removeHandler(onFirstFrame);
 		}
 		protected function onFirstFrame(e:Event, from:IDisplayAsset):void {

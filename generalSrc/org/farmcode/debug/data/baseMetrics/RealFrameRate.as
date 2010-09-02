@@ -1,8 +1,9 @@
-package org.farmcode.debug.data.core
+package org.farmcode.debug.data.baseMetrics
 {
 	import flash.utils.getTimer;
 	
 	import org.farmcode.display.assets.assetTypes.IStageAsset;
+	import org.farmcode.debug.data.core.NumberMonitor;
 
 	public class RealFrameRate extends NumberMonitor
 	{

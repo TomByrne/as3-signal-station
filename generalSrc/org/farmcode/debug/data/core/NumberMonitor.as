@@ -1,6 +1,5 @@
 package org.farmcode.debug.data.core
 {
-	import org.farmcode.actLibrary.application.states.reactors.PerformActReactor;
 	import org.farmcode.acting.actTypes.IAct;
 	import org.farmcode.acting.acts.Act;
 	import org.farmcode.core.EnterFrameHook;

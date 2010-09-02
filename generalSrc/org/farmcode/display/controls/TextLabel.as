@@ -128,21 +128,18 @@ package org.farmcode.display.controls
 			}
 			_assumedTextFormat = _labelField.defaultTextFormat;
 			if(_backing){
+				
+				var operableHeight:Number = _labelField.naturalHeight-TextFieldGutter.TEXT_FIELD_GUTTER*2;
+				var operableWidth:Number = _labelField.naturalWidth-TextFieldGutter.TEXT_FIELD_GUTTER*2;
+				
 				// some fonts have slightly different gutters, this will help us work it out.
-				
-				var operableHeight:Number;
-				if(_labelField.height<_labelField.textHeight+TextFieldGutter.TEXT_FIELD_GUTTER*2){
+				// This doesn't work for some dynamically created textfields (where autosizing isn't enfored at compile-time).
+				/*if(operableHeight<_labelField.textHeight){
 					operableHeight = _labelField.textHeight;
-				}else{
-					operableHeight = _labelField.height-TextFieldGutter.TEXT_FIELD_GUTTER*2;
 				}
-				
-				var operableWidth:Number;
-				if(_labelField.width<_labelField.textWidth+TextFieldGutter.TEXT_FIELD_GUTTER*2){
+				if(operableWidth<_labelField.textWidth){
 					operableWidth = _labelField.textWidth;
-				}else{
-					operableWidth = _labelField.width-TextFieldGutter.TEXT_FIELD_GUTTER*2;
-				}
+				}*/
 				
 				_assumedPaddingTop = (_labelField.y+TextFieldGutter.TEXT_FIELD_GUTTER)-_backing.y;
 				_assumedPaddingLeft = (_labelField.x+TextFieldGutter.TEXT_FIELD_GUTTER)-_backing.x;
@@ -193,11 +190,9 @@ package org.farmcode.display.controls
 					_measurements.x = _labelField.naturalWidth+paddingLeft+paddingRight;
 					_labelField.width = _labelField.naturalWidth;
 				}
-				if(measText!=textWas)_labelField.htmlText = measText;
-				
 				_measurements.y = _labelField.textHeight+paddingTop+paddingBottom;
-				_labelField.width = widthWas;
 				
+				_labelField.width = widthWas;
 				if(measText!=textWas)_labelField.htmlText = textWas;
 			}else{
 				_measureFlag.invalidate();

@@ -120,9 +120,8 @@ package org.farmcode.display.assets.stylable
 			return array;
 		}
 		override protected function sizeTextField(textField:TextField, width:Number, height:Number):void{
-			if(!_matchingTextStyles){
-				super.sizeTextField(textField, width, height);
-			}else{
+			super.sizeTextField(textField, width, height);
+			if(_matchingTextStyles){
 				applyAvailableStates();
 			}
 		}

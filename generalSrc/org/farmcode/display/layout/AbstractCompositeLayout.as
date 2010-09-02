@@ -1,5 +1,7 @@
 package org.farmcode.display.layout
 {
+	import flash.geom.Point;
+	
 	import org.farmcode.display.core.IView;
 	
 	public class AbstractCompositeLayout extends AbstractLayout
@@ -20,6 +22,10 @@ package org.farmcode.display.layout
 			if(doMeas && (_measurements.x!=oldMeasWidth || _measurements.y!=oldMeasHeight)){
 				_measurementsChanged.perform(this,oldMeasWidth,oldMeasHeight);
 			}
+		}
+		protected function get midDrawMeas() : Point{
+			if(drawToMeasure())return _measurements;
+			else return measurements;
 		}
 		protected function doLayout() : void{
 			// override me

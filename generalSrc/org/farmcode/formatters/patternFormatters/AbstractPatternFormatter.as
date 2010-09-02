@@ -70,8 +70,10 @@ package org.farmcode.formatters.patternFormatters
 		}
 		protected function _addToken(token:String, stringProvider:IStringProvider):void{
 			Config::DEBUG{
-				if(_tokens[token])throw new Error("This token has already been added");
 				if(!stringProvider)throw new Error("No IStringProvider provided");
+			}
+			if(_tokens[token]){
+				_removeToken(token);
 			}
 			_tokens[token] = stringProvider;
 			stringProvider.stringValueChanged.addHandler(onTokenChanged);

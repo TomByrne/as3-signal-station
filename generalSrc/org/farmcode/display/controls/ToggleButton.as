@@ -23,12 +23,15 @@ package org.farmcode.display.controls
 			return _selected;
 		}
 		public function set selected(value:Boolean):void{
+			if(_booleanConsumer && useDataForSelected){
+				_ignoreDataChanges = true;
+				_booleanConsumer.booleanValue = value;
+				value = _booleanProvider.booleanValue;
+				_ignoreDataChanges = false;
+			}
 			if(_selected!=value){
 				_selected = value;
 				_selectedState.selection = (_togglable?(_selected?0:1):-1);
-				if(_booleanConsumer && useDataForSelected){
-					_booleanConsumer.booleanValue = value;
-				}
 				if(_selectedChanged)_selectedChanged.perform(this);
 			}
 
@@ -99,6 +102,7 @@ package org.farmcode.display.controls
 		private var _selected:Boolean;
 		private var _togglable:Boolean = true;
 		private var _tabFocusable:InteractiveAssetFocusWrapper;
+		private var _ignoreDataChanges:Boolean;
 		
 		protected var _selectedState:StateDef = new StateDef([STATE_SELECTED,STATE_UNSELECTED],1);
 		
@@ -122,7 +126,7 @@ package org.farmcode.display.controls
 			super.unbindFromAsset();
 		}
 		private function onProviderChanged(from:IBooleanProvider):void{
-			if(useDataForSelected)this.selected = from.booleanValue;
+			if(useDataForSelected && !_ignoreDataChanges)this.selected = from.booleanValue;
 		}
 		private function onClick(from:Button):void{
 			if(_active){

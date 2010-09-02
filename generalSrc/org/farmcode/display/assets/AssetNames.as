@@ -26,6 +26,15 @@ package org.farmcode.display.assets
 			// DebugDisplay
 			public static const DEBUG_DISPLAY:String = "debugDisplay";
 			
+			// DebugDisplay
+			public static const DEBUG_GRAPH_DISPLAY:String = "graph";
+			
+			// DebugGraph
+			public static const DEBUG_GRAPH_UPPER_LABEL:String = "upperLabel";
+			
+			// DebugGraph
+			public static const DEBUG_GRAPH_COPY_BUTTON:String = "copyButton";
+			
 			// DebugItemRenderer
 			public static const DEBUG_ITEM_BITMAP:String = "bitmap";
 		}
