@@ -110,10 +110,12 @@ package org.farmcode.debug.display
 		}
 		override protected function bindToAsset() : void{
 			super.bindToAsset();
-			_bitmap = _containerAsset.takeAssetByName(AssetNames.DEBUG_ITEM_BITMAP,IBitmapAsset);
-			_bitmap.bitmapData = _bitmapData;
-			
-			_copyButton.asset = _containerAsset.takeAssetByName(AssetNames.DEBUG_GRAPH_COPY_BUTTON,IDisplayAsset);
+			Config::DEBUG{
+				_bitmap = _containerAsset.takeAssetByName(AssetNames.DEBUG_ITEM_BITMAP,IBitmapAsset);
+				_bitmap.bitmapData = _bitmapData;
+				
+				_copyButton.asset = _containerAsset.takeAssetByName(AssetNames.DEBUG_GRAPH_COPY_BUTTON,IDisplayAsset);
+			}
 		}
 		override protected function unbindFromAsset() : void{
 			_bitmap.bitmapData = null;
