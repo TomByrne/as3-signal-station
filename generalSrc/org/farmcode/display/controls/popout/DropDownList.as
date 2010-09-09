@@ -106,7 +106,7 @@ package org.farmcode.display.controls.popout {
 			_popoutDisplay.popoutShown = _textLabelButton.selected;
 		}
 		protected function onTextMeasureChange(from:ILayoutSubject, oldWidth:Number, oldHeight:Number):void{
-			dispatchMeasurementChange();
+			performMeasChanged();
 		}
 		/*override protected function getListAlignArea():void{
 			var labelMeas:Point = _textLabelButton.measurements;

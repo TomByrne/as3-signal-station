@@ -8,13 +8,16 @@ package org.farmcode.display.controls
 	import org.farmcode.display.assets.assetTypes.IDisplayAsset;
 	import org.farmcode.display.assets.assetTypes.IInteractiveObjectAsset;
 	import org.farmcode.display.constants.Direction;
+	import org.farmcode.display.utils.PaddingSizer;
 	
 	use namespace DisplayNamespace;
 	
+	//TODO: make this use proper data types (i.e. INumberProvider/INumberConsumer)
 	public class Slider extends Control
 	{
-		private static const TRACK:String = "track";
-		private static const THUMB:String = "thumb";
+		DisplayNamespace static const TRACK:String = "track";
+		DisplayNamespace static const PROGRESS_TRACK:String = "progressTrack";
+		DisplayNamespace static const THUMB:String = "thumb";
 		
 		
 		public function get direction():String{
@@ -72,19 +75,25 @@ package org.farmcode.display.controls
 				invalidate();
 			}
 		}
+		override public function set active(value:Boolean):void{
+			super.active = value;
+			_trackButton.active = value;
+			_thumb.active = value;
+			_progressTrack.active = value;
+		}
 		
 		
 		/**
 		 * handler(from:Slider, value:Number)
 		 */
-		public function get valueChange():IAct{
+		public function get valueChanged():IAct{
 			if(!_valueChange)_valueChange = new Act();
 			return _valueChange;
 		}
 		/**
 		 * handler(from:Slider, value:Number)
 		 */
-		public function get valueChangeByUser():IAct{
+		public function get valueChangedByUser():IAct{
 			if(!_valueChangeByUser)_valueChangeByUser = new Act();
 			return _valueChangeByUser;
 		}
@@ -98,14 +107,17 @@ package org.farmcode.display.controls
 		private var _direction:String;
 		private var _updateDuringDrag:Boolean = false;
 		
-		private var _trackButton:Button = new Button();
-		private var _thumb:Button = new Button();
+		private var _trackButton:Button;
+		private var _progressTrack:Button;
+		private var _thumb:Button;
 		private var _track:IDisplayAsset;
 		private var _ignoreThumb:Boolean;
 		
 		private var _assumedDirection:String;
 		private var _assumedThumbX:Number;
 		private var _assumedThumbY:Number;
+		
+		private var _trackPadding:PaddingSizer;
 		
 		private var _dragOffset:Number;
 		private var _dragStartValue:Number;
@@ -116,8 +128,17 @@ package org.farmcode.display.controls
 		}
 		override protected function init():void{
 			super.init();
+			_trackPadding = new PaddingSizer();
+			
+			_trackButton = new Button();
 			_trackButton.scaleAsset = true;
 			_trackButton.clicked.addHandler(onTrackClick);
+			
+			_progressTrack = new Button();
+			_progressTrack.scaleAsset = true;
+			_progressTrack.clicked.addHandler(onTrackClick);
+			
+			_thumb = new Button();
 			_thumb.mousePressed.addHandler(onThumbMouseDown);
 			_thumb.mouseReleased.addHandler(onThumbMouseUp);
 		}
@@ -127,20 +148,42 @@ package org.farmcode.display.controls
 			_track = _containerAsset.takeAssetByName(TRACK,IInteractiveObjectAsset);
 			_trackButton.asset = _track;
 			
+			_progressTrack.asset = _containerAsset.takeAssetByName(PROGRESS_TRACK,IInteractiveObjectAsset,false);
+			
 			_assumedDirection = (_track.width>_track.height?Direction.HORIZONTAL:Direction.VERTICAL);
 			
 			_thumb.asset = _containerAsset.takeAssetByName(THUMB,IInteractiveObjectAsset);
 			
 			_assumedThumbX = _thumb.asset.x;
 			_assumedThumbY = _thumb.asset.y;
+			
+			if(_backing){
+				_trackPadding.assumedPaddingTop = _track.y;
+				_trackPadding.assumedPaddingBottom = _backing.naturalHeight-(_track.y+_track.naturalHeight);
+				_trackPadding.assumedPaddingLeft = _track.x;
+				_trackPadding.assumedPaddingRight = _backing.naturalWidth-(_track.x+_track.naturalWidth);
+			}else{
+				_trackPadding.assumedPaddingTop = 0;
+				_trackPadding.assumedPaddingBottom = 0;
+				_trackPadding.assumedPaddingLeft = 0;
+				_trackPadding.assumedPaddingRight = 0;
+			}
 		}
 		override protected function unbindFromAsset() : void{
 			super.unbindFromAsset();
+			if(_progressTrack.asset){
+				_containerAsset.returnAsset(_progressTrack.asset);
+				_progressTrack.asset = null;
+			}
 			_containerAsset.returnAsset(_trackButton.asset);
 			_trackButton.asset = null;
+			_track = null;
+			
 			_containerAsset.returnAsset(_thumb.asset);
 			_thumb.asset = null;
-			_track = null;
+		}
+		override protected function measure():void{
+			super.measure();
 		}
 		override protected function draw() : void{
 			var dir:String = direction;
@@ -150,7 +193,21 @@ package org.farmcode.display.controls
 			_asset.scaleY = 1;
 			
 			var fract:Number = (value-_minimum)/(_maximum-_minimum);
-			_track.rotation = _thumb.asset.rotation = (dir!=_assumedDirection?90:0);
+			
+			var usableW:Number;
+			var usableH:Number;
+			
+			var pad:PaddingSizer = _trackPadding;
+			
+			if(dir==_assumedDirection){
+				_track.rotation = _thumb.asset.rotation = (dir!=_assumedDirection?90:0);
+				usableW = displayPosition.width-pad.paddingLeft-pad.paddingRight;
+				usableH = displayPosition.height-pad.paddingTop-pad.paddingBottom;
+			}else{
+				usableW = displayPosition.width-pad.paddingTop-pad.paddingBottom;
+				usableH = displayPosition.height-pad.paddingLeft-pad.paddingRight;
+			}
+			
 			
 			var thumbX:Number;
 			var thumbY:Number;
@@ -158,53 +215,70 @@ package org.farmcode.display.controls
 			var trackY:Number;
 			var trackWidth:Number;
 			var trackHeight:Number;
+			
+			var pTrackY:Number;
+			var pTrackWidth:Number;
+			var pTrackHeight:Number;
+			
 			if(dir==Direction.VERTICAL){
-				var natWidth:Number = _track.width/_track.scaleX;
-				if(natWidth<displayPosition.width){
+				var natWidth:Number = _track.naturalWidth;
+				if(natWidth<usableW){
 					trackWidth = natWidth;
-					trackX = (displayPosition.width-_track.width)/2;
+					trackX = (usableW-_track.width)/2;
 				}else{
-					trackWidth = displayPosition.width;
-					trackX = 0;
+					trackWidth = usableW;
+					trackX = pad.paddingLeft;
 				}
-				trackHeight = displayPosition.height;
-				trackY = 0;
+				trackHeight = usableH;
+				trackY = pad.paddingTop;
 				thumbX = _assumedThumbX;
-				thumbY = _track.y+(_track.height-_thumb.asset.height)*fract;
+				thumbY = _track.y+(_track.height-_thumb.asset.height)*(1-fract);
+				
+				pTrackY = thumbY+_thumb.asset.height/2;
+				pTrackWidth = trackWidth;
+				pTrackHeight = trackY+trackHeight-pTrackY;
 			}else{
-				var natHeight:Number = _track.height/_track.scaleY;
-				if(natHeight<displayPosition.height){
+				var natHeight:Number = _track.naturalHeight;
+				if(natHeight<usableH){
 					trackHeight = natHeight;
-					trackY = (displayPosition.height-_track.height)/2;
+					trackY = (usableH-_track.height)/2;
 				}else{
-					trackHeight = displayPosition.height;
-					trackY = 0;
+					trackHeight = usableH;
+					trackY = pad.paddingTop;
 				}
-				trackWidth = displayPosition.width;
-				trackX = 0;
+				trackWidth = usableW;
+				trackX = pad.paddingLeft;
 				thumbY = _assumedThumbY;
 				thumbX = trackX+(trackWidth-_thumb.asset.width)*fract;
+				
+				pTrackY = trackY;
+				pTrackWidth = thumbX+_thumb.asset.width/2;
+				pTrackHeight = trackHeight;
 			}
 			_thumb.setDisplayPosition(thumbX,thumbY,_thumb.asset.width,_thumb.asset.height);
 			_trackButton.setDisplayPosition(trackX,trackY,trackWidth,trackHeight);
+			_progressTrack.setDisplayPosition(trackX,pTrackY,pTrackWidth,pTrackHeight);
 		}
 		override public function setAssetAndPosition(asset:IDisplayAsset) : void{
 			super.setAssetAndPosition(asset);
 			checkIsBound();
 		}
 		protected function onTrackClick(from:Button):void{
-			_dragOffset = 0;
-			setValueToMouse();
+			if(_active){
+				_dragOffset = 0;
+				setValueToMouse();
+			}
 		}
 		protected function onThumbMouseDown(from:Button):void{
-			if(_ignoreThumb)return;
-			if(direction==Direction.VERTICAL){
-				_dragOffset = _thumb.asset.mouseY-_thumb.asset.height/2;
-			}else{
-				_dragOffset = _thumb.asset.mouseX-_thumb.asset.width/2;
+			if(_active && !_ignoreThumb){
+				if(direction==Direction.VERTICAL){
+					_dragOffset = _thumb.asset.mouseY-_thumb.asset.height/2;
+				}else{
+					_dragOffset = _thumb.asset.mouseX-_thumb.asset.width/2;
+				}
+				_dragStartValue = _value;
+				_dragDelay.begin();
 			}
-			_dragStartValue = _value;
-			_dragDelay.begin();
 		}
 		protected function doDrag():void{
 			setValueToMouse();
@@ -222,9 +296,9 @@ package org.farmcode.display.controls
 		protected function setValueToMouse():void{
 			var newVal:Number;
 			if(direction==Direction.VERTICAL){
-				newVal = (asset.mouseY-_dragOffset-_thumb.asset.height/2)/(_track.height-_thumb.asset.height)
+				newVal = 1-((asset.mouseY-_dragOffset-_thumb.asset.height/2)/(_track.height-_thumb.asset.height));
 			}else{
-				newVal = (asset.mouseX-_dragOffset-_thumb.asset.width/2)/(_track.width-_thumb.asset.width)
+				newVal = (asset.mouseX-_dragOffset-_thumb.asset.width/2)/(_track.width-_thumb.asset.width);
 			}
 			newVal = (newVal*(maximum-minimum))+minimum;
 			if(_value!=newVal){

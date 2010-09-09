@@ -19,10 +19,12 @@ package org.farmcode.acting.acts
 		
 		override public function perform(... params) : void{
 			super.perform.apply(null,params);
-			var stack:AsyncHandlerStack = AsyncHandlerStack.getNew(asyncHandlers, params);
-			stack.completeAct.addHandler(onStackFinish);
-			performingStacks.push(stack);
-			stack.begin();
+			if(asyncHandlers.length){
+				var stack:AsyncHandlerStack = AsyncHandlerStack.getNew(asyncHandlers, params);
+				stack.completeAct.addHandler(onStackFinish);
+				performingStacks.push(stack);
+				stack.begin();
+			}
 		}
 		protected function onStackFinish(stack:AsyncHandlerStack) : void{
 			var index:int = performingStacks.indexOf(stack);

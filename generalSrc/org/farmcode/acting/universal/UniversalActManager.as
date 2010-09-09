@@ -20,6 +20,11 @@ package org.farmcode.acting.universal
 		private static var managers:Dictionary = new Dictionary();
 		private static var actMap:Dictionary = new Dictionary();
 		private static var reactionMap:Dictionary = new Dictionary();
+		/*
+		mapped act > executor, this is kept static so that when acts get moved between managers
+		their executors can be accessed via the new manager.
+		*/		
+		private static var executors:Dictionary = new Dictionary();
 		
 		public static function addManager(scopeDisplay:IDisplayAsset=null):void{
 			if(managers[scopeDisplay]){
@@ -29,11 +34,20 @@ package org.farmcode.acting.universal
 				var manager:UniversalActManager = new UniversalActManager();
 				managers[scopeDisplay] = manager;
 				if(parent){
-					for each(var act:IUniversalAct in parent.acts){
+					for(var i:* in parent.acts){
+						var act:IUniversalAct = (i as IUniversalAct);
 						if(findManagerFor(act.scope,false)==manager){
 							parent.removeAct(act);
 							manager.addAct(act);
 							actMap[act] = manager;
+						}
+					}
+					for(i in parent.reactions){
+						var reaction:IActReaction = (i as IActReaction);
+						if(findManagerFor(reaction.asset,false)==manager){
+							parent.removeReaction(reaction);
+							manager.addReaction(reaction);
+							reactionMap[reaction] = manager;
 						}
 					}
 				}
@@ -48,10 +62,17 @@ package org.farmcode.acting.universal
 						delete managers[subject];
 						
 						var parent:UniversalActManager = findManagerFor(scopeDisplay,true);
-						for each(var act:IUniversalAct in manager.acts){
+						for(var i:* in manager.acts){
+							var act:IUniversalAct = (i as IUniversalAct);
 							manager.removeAct(act);
 							parent.addAct(act);
 							actMap[act] = parent;
+						}
+						for(i in manager.reactions){
+							var reaction:IActReaction = (i as IActReaction);
+							manager.removeReaction(reaction);
+							parent.addReaction(reaction);
+							reactionMap[reaction] = parent;
 						}
 						return;
 					}
@@ -62,6 +83,15 @@ package org.farmcode.acting.universal
 		}
 		public static function addAct(act:IUniversalAct):void{
 			if(!actMap[act]){
+				var executor:UniversalActExecutor = executors[act];
+				if(!executor){
+					executor = UniversalActExecutor.getNew();
+					executors[act] = executor;
+					executor.act = act;
+				}else{
+					executor.executionsCompleted.removeHandler(onExecutionsComplete);
+				}
+				
 				var manager:UniversalActManager = findManagerFor(act.scope,true);
 				manager.addAct(act);
 				act.scopeChanged.addHandler(onActScopeDisplayChange);
@@ -73,12 +103,24 @@ package org.farmcode.acting.universal
 		public static function removeAct(act:IUniversalAct):void{
 			var manager:UniversalActManager = actMap[act];
 			if(manager){
+				var executor:UniversalActExecutor = executors[act];
+				if(executor.executionCount==0){
+					executor.release();
+					delete executors[act];
+				}else{
+					executor.executionsCompleted.addTempHandler(onExecutionsComplete);
+				}
+				
 				manager.removeAct(act);
 				act.scopeChanged.removeHandler(onActScopeDisplayChange);
 				delete actMap[act];
 			}else{
 				throw new Error("act has not been added");
 			}
+		}
+		protected static function onExecutionsComplete(executor:UniversalActExecutor):void{
+			executor.release();
+			delete executors[executor.act];
 		}
 		public static function addReaction(reaction:IActReaction):void{
 			if(!reactionMap[reaction]){
@@ -110,14 +152,13 @@ package org.farmcode.acting.universal
 					subject = subject.parent;
 				}
 			}
-			if(createRoot){
+			if(createRoot && !managers[null]){
 				manager = new UniversalActManager();
 				managers[null] = manager;
-				return manager;
 			}
-			return null;
+			return managers[null];
 		}
-		private static function onActScopeDisplayChange(act:IUniversalAct):void{
+		private static function onActScopeDisplayChange(act:IUniversalAct, oldAsset:IDisplayAsset):void{
 			var oldManager:UniversalActManager = actMap[act];
 			var newManager:UniversalActManager = findManagerFor(act.scope, true);
 			if(oldManager!=newManager){
@@ -126,7 +167,7 @@ package org.farmcode.acting.universal
 				actMap[act] = newManager;
 			}
 		}
-		private static function onReactionScopeDisplayChange(reaction:IActReaction):void{
+		private static function onReactionScopeDisplayChange(reaction:IActReaction, oldAsset:IDisplayAsset):void{
 			var oldManager:UniversalActManager = reactionMap[reaction];
 			var newManager:UniversalActManager = findManagerFor(reaction.asset, true);
 			if(oldManager!=newManager){
@@ -148,53 +189,45 @@ package org.farmcode.acting.universal
 		}
 		internal var acts:Dictionary = new Dictionary();
 		internal var reactions:Dictionary = new Dictionary();
-		internal var pendingRemoveActs:Dictionary = new Dictionary();
 		
 		public function addAct(act:IUniversalAct):void{
-			var actExecutor:UniversalActExecutor = acts[act];
-			if(!actExecutor){
-				var executor:UniversalActExecutor = UniversalActExecutor.getNew();
-				executor.act = act;
-				for(var i:* in reactions){
-					var reaction:IActReaction = (i as IActReaction);
-					for each(var rule:IUniversalRule in reaction.universalRules){
-						tryAddReaction(executor, reaction, rule);
+			Config::DEBUG{
+				if(acts[act]){
+					throw new Error("This Act has already been added to this UniversalActManager");
+				}
+			}
+			var executor:UniversalActExecutor = executors[act];
+			for(var i:* in reactions){
+				var reaction:IActReaction = (i as IActReaction);
+				for each(var rule:IUniversalRule in reaction.universalRules){
+					if(tryAddReaction(executor, reaction, rule)){
+						break;
 					}
 				}
-				acts[act] = executor;
-			}else if(pendingRemoveActs[actExecutor]){
-				delete pendingRemoveActs[actExecutor];
-				actExecutor.executionsCompleted.removeHandler(onExecutorComplete);
-			}else{
-				throw new Error("This Act has already been added to this UniversalActManager");
 			}
+			acts[act] = true;
 		}
 		public function removeAct(act:IUniversalAct):void{
-			var actExecutor:UniversalActExecutor = acts[act];
-			if(actExecutor){
-				if(!pendingRemoveActs[actExecutor]){
-					if(!actExecutor.executionCount){
-						_removeAct(act, actExecutor);
-					}else{
-						pendingRemoveActs[actExecutor] = true;
-						actExecutor.executionsCompleted.addHandler(onExecutorComplete);
-					}
-				}else{
-					throw new Error("This act has already been scheduled to be removed");
+			Config::DEBUG{
+				if(!acts[act]){
+					throw new Error("This act doesn't exist within this UniversalActManager");
 				}
-			}else{
-				throw new Error("This act doesn't exist within this UniversalActManager");
 			}
-		}
-		protected function _removeAct(act:IUniversalAct, actExecutor:UniversalActExecutor):void{
-			actExecutor.release();
+			var executor:UniversalActExecutor = executors[act];
+			for(var i:* in reactions){
+				var reaction:IActReaction = (i as IActReaction);
+				executor.removeReaction(reaction);
+			}
 			delete acts[act];
 		}
 		public function addReaction(reaction:IActReaction):void{
 			if(!reactions[reaction]){
-				for each(var executor:UniversalActExecutor in acts){
+				for(var i:* in acts){
+					var executor:UniversalActExecutor = executors[i];
 					for each(var rule:IUniversalRule in reaction.universalRules){
-						tryAddReaction(executor, reaction, rule);
+						if(tryAddReaction(executor, reaction, rule)){
+							break;
+						}
 					}
 				}
 				reactions[reaction] = true;
@@ -206,7 +239,8 @@ package org.farmcode.acting.universal
 		}
 		public function removeReaction(reaction:IActReaction):void{
 			if(reactions[reaction]){
-				for each(var executor:UniversalActExecutor in acts){
+				for(var i:* in acts){
+					var executor:UniversalActExecutor = executors[i];
 					executor.removeReaction(reaction);
 				}
 				delete reactions[reaction];
@@ -216,23 +250,25 @@ package org.farmcode.acting.universal
 				throw new Error("This IActReaction has not been added to this UniversalActManager");
 			}
 		}
-		protected function onExecutorComplete(actExecutor:UniversalActExecutor):void{
-			_removeAct(actExecutor.act,actExecutor);
-		}
 		protected function onRuleAdded(reaction:IActReaction, rule:IUniversalRule):void{
-			for each(var executor:UniversalActExecutor in acts){
+			for(var i:* in acts){
+				var executor:UniversalActExecutor = executors[i];
 				tryAddReaction(executor, reaction, rule);
 			}
 		}
 		protected function onRuleRemoved(reaction:IActReaction, rule:IUniversalRule):void{
-			var childExecutor:UniversalActExecutor = acts[reaction];
-			for each(var executor:UniversalActExecutor in acts){
+			var childExecutor:UniversalActExecutor = executors[reaction];
+			for(var i:* in acts){
+				var executor:UniversalActExecutor = executors[i];
 				executor.removeReaction(reaction);
 			}
 		}
-		protected function tryAddReaction(executer:UniversalActExecutor, reaction:IActReaction, rule:IUniversalRule):void{
+		protected function tryAddReaction(executer:UniversalActExecutor, reaction:IActReaction, rule:IUniversalRule):Boolean{
 			if(rule.shouldReact(executer.act)){
 				executer.addReaction(reaction, rule);
+				return true;
+			}else{
+				return false;
 			}
 		}
 	}

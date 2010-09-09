@@ -1,7 +1,6 @@
 package org.farmcode.actLibrary.application
 {
 	import flash.events.KeyboardEvent;
-	import flash.geom.Point;
 	import flash.geom.Rectangle;
 	
 	import org.farmcode.actLibrary.display.visualSockets.VisualSocketActor;
@@ -15,7 +14,6 @@ package org.farmcode.actLibrary.application
 	import org.farmcode.acting.acts.Act;
 	import org.farmcode.acting.universal.UniversalActExecution;
 	import org.farmcode.display.assets.assetTypes.IContainerAsset;
-	import org.farmcode.display.assets.assetTypes.IDisplayAsset;
 	import org.farmcode.display.assets.assetTypes.IInteractiveObjectAsset;
 	
 	use namespace VisualSocketNamespace;
@@ -59,21 +57,13 @@ package org.farmcode.actLibrary.application
 		public function get socketPath():String{
 			return _proxiedDisplaySocket.socketPath;
 		}
-		override public function get measurementsChanged() : IAct{
-			return _proxiedDisplaySocket.measurementsChanged;
-		}
-		// TODO: fix this, it'll screw up the oldWidth & oldHeight values
-		override public function get measurements() : Point{
-			return _proxiedDisplaySocket.measurements;
-		}
 		
 		protected var _visSocketActor:VisualSocketActor;
 		protected var _config:IVisualSocketAppConfig;
 		protected var _proxiedDisplaySocket:DisplaySocket;
 		protected var _plugDisplayChanged:Act;
 		
-		public function VisualSocketApplication(asset:IDisplayAsset=null){
-			super(asset);
+		public function VisualSocketApplication(){
 			_proxiedDisplaySocket = new DisplaySocket("");
 			_proxiedDisplaySocket.displayDepth = 0;// forces app to lowest level, allowing debug bar to sit at top.
 			_proxiedDisplaySocket.plugDisplayChanged.addHandler(onPlugDisplayChanged);
@@ -82,12 +72,12 @@ package org.farmcode.actLibrary.application
 		protected function onPlugDisplayChanged(from:DisplaySocket):void{
 			_plugDisplayChanged.perform(this);
 		}
-		override protected function removeMainDisplay():void{
-			super.removeMainDisplay();
+		override protected function removeMainAsset():void{
+			super.removeMainAsset();
 			_proxiedDisplaySocket.container = null;
 		}
-		override protected function addMainDisplay():void{
-			super.addMainDisplay();
+		override protected function addMainAsset():void{
+			super.addMainAsset();
 			_proxiedDisplaySocket.container = _asset.parent;
 		}
 		override public function setDisplayPosition(x:Number, y:Number, width:Number, height:Number) : void{

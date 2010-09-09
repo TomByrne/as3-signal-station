@@ -102,7 +102,7 @@ package org.farmcode.display.containers.accordionGrid
 		
 		public function addCellRenderer(cellRenderer:ILayoutView, headerCell:Boolean):void{
 			invalidate();
-			dispatchMeasurementChange();
+			performMeasChanged();
 			if(headerCell){
 				_headerRenderers[cellRenderer] = true;
 				cellRenderer.positionChanged.addHandler(onHeaderPosChanged);
@@ -122,7 +122,7 @@ package org.farmcode.display.containers.accordionGrid
 		}
 		public function removeCellRenderer(cellRenderer:ILayoutView):void{
 			invalidate();
-			dispatchMeasurementChange();
+			performMeasChanged();
 			if(_headerRenderers[cellRenderer]){
 				delete _headerRenderers[cellRenderer];
 				cellRenderer.positionChanged.removeHandler(onHeaderPosChanged);
@@ -217,13 +217,13 @@ package org.farmcode.display.containers.accordionGrid
 		}
 		protected function onHeaderPosChanged(from:ILayoutView, oldX:Number, oldY:Number, oldWidth:Number, oldHeight:Number):void{
 			invalidate();
-			dispatchMeasurementChange();
+			performMeasChanged();
 			_minMeasurementsFlag.invalidate();
 			if(_minMeasurementsChanged)_minMeasurementsChanged.perform(this);
 		}
 		protected function onCellPosChanged(from:ILayoutView, oldX:Number, oldY:Number, oldWidth:Number, oldHeight:Number):void{
 			invalidate();
-			dispatchMeasurementChange();
+			performMeasChanged();
 			_containerMeasFlag.invalidate();
 		}
 		override protected function checkMinMeas():void{

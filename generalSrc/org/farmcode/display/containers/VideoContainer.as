@@ -1,5 +1,7 @@
 package org.farmcode.display.containers
 {
+	import fl.transitions.easing.Regular;
+	
 	import flash.events.Event;
 	import flash.events.KeyboardEvent;
 	import flash.events.TimerEvent;
@@ -12,6 +14,7 @@ package org.farmcode.display.containers
 	import org.farmcode.data.core.StringData;
 	import org.farmcode.display.DisplayNamespace;
 	import org.farmcode.display.actInfo.IMouseActInfo;
+	import org.farmcode.display.assets.assetTypes.IContainerAsset;
 	import org.farmcode.display.assets.assetTypes.IDisplayAsset;
 	import org.farmcode.display.assets.assetTypes.IInteractiveObjectAsset;
 	import org.farmcode.display.assets.assetTypes.ISpriteAsset;
@@ -22,18 +25,22 @@ package org.farmcode.display.containers
 	import org.farmcode.display.controls.SliderButton;
 	import org.farmcode.display.controls.TextLabel;
 	import org.farmcode.display.controls.ToggleButton;
+	import org.farmcode.display.core.LayoutView;
 	import org.farmcode.display.layout.canvas.CanvasLayout;
 	import org.farmcode.display.layout.canvas.CanvasLayoutInfo;
 	import org.farmcode.display.utils.FullscreenUtil;
 	import org.farmcode.formatters.patternFormatters.VideoProgressFormatter;
 	import org.farmcode.media.IMediaSource;
 	import org.farmcode.media.video.IVideoSource;
+	import org.farmcode.tweening.LooseTween;
+	import org.goasap.events.GoEvent;
 	
 	use namespace DisplayNamespace
 	
 	public class VideoContainer extends MediaContainer
 	{
 		// asset children
+		DisplayNamespace static const CONTROL_CONTAINER:String = "controlContainer";
 		DisplayNamespace static const PLAY_PAUSE_BUTTON:String = "playPauseButton";
 		DisplayNamespace static const STOP_BUTTON:String = "stopButton";
 		DisplayNamespace static const FULLSCREEN_BUTTON:String = "fullscreenButton";
@@ -44,7 +51,10 @@ package org.farmcode.display.containers
 		DisplayNamespace static const CENTERED_PAUSE_BUTTON:String = "centredPauseButton";
 		DisplayNamespace static const PROGRESS_LABEL:String = "progressLabel";
 		
+		
 		DisplayNamespace static const DEFAULT_DISABLE_TIME:Number = 1;
+		// the amount of time in seconds it takes the control container to move in or out.
+		private static const TRANS_DURATION:Number = 0.25;
 		
 		override public function set mediaSource(value:IMediaSource):void{
 			if(super.mediaSource != value){
@@ -58,6 +68,15 @@ package org.farmcode.display.containers
 					_videoSource.playingChanged.addHandler(onPlayingChange);
 					if(_videoProgressProvider)_videoProgressProvider.videoSource = _videoSource;
 					syncToData();
+					if(!_bound){
+						_openFract = 1;
+					}else if(_hasControlCont){
+						transTo(1);
+					}
+				}else if(!_bound){
+					_openFract = 0;
+				}else if(_hasControlCont){
+					transTo(0);
 				}
 			}
 		}
@@ -114,6 +133,12 @@ package org.farmcode.display.containers
 		private var _disableTime:Number = DEFAULT_DISABLE_TIME;
 		private var _disableTimer:Timer;
 		
+		private var _tweenRunning:Boolean;
+		private var _openTween:LooseTween;
+		private var _openFract:Number = 0;
+		private var _controlScrollRect:Rectangle;
+		private var _hasControlCont:Boolean;
+		
 		private var _playPauseButton:ToggleButton;
 		private var _stopButton:Button;
 		private var _fullscreenButton:ToggleButton;
@@ -124,16 +149,20 @@ package org.farmcode.display.containers
 		private var _bufferBar:BufferBar;
 		private var _progressLabel:TextLabel;
 		
+		private var _controlContainer:ContainerView;
+		
 		private var _videoProgressProvider:VideoProgressFormatter;
 		private var _videoProgressProviderPattern:StringData;
 		private var _assumedPattern:String;
 		
 		private var _mouseActive:Boolean = true;
 		private var _mouseOver:Boolean;
+		private var _mouseOverControls:Boolean;
 		
 		private var _progressLabelPattern:String;
 		private var _fullscreenUtil:FullscreenUtil;
-		private var _uiLayout:CanvasLayout;
+		private var _mainLayout:CanvasLayout;
+		private var _contLayout:CanvasLayout;
 		private var _videoCover:ISpriteAsset;
 		private var _videoSource:IVideoSource;
 		
@@ -142,15 +171,31 @@ package org.farmcode.display.containers
 		}
 		override protected function init() : void{
 			super.init();
-			_uiLayout = new CanvasLayout(this);
+			_mainLayout = new CanvasLayout(this);
+			_contLayout = new CanvasLayout();
 		}
 		override protected function bindToAsset() : void{
 			super.bindToAsset();
-			_playPauseButton = bindButton(_playPauseButton, ToggleButton, PLAY_PAUSE_BUTTON,onPlayPauseClick) as ToggleButton;
+			
+			_controlContainer = bindView(_controlContainer,ContainerView,CONTROL_CONTAINER,true);
+			_contLayout.scopeView = _controlContainer;
+			_hasControlCont = (_controlContainer && _controlContainer.asset);
+			if(_hasControlCont){
+				var interCont:IInteractiveObjectAsset = _controlContainer.asset as IInteractiveObjectAsset;
+				interCont.mousedOver.addHandler(onMousedOverCont);
+				interCont.mousedOut.addHandler(onMousedOutCont);
+			}
+			
+			_playPauseButton = bindButton(_playPauseButton, ToggleButton, PLAY_PAUSE_BUTTON,onPlayPauseClick);
 			_stopButton = bindButton(_stopButton, Button, STOP_BUTTON,onStopClick);
-			_fullscreenButton = bindButton(_fullscreenButton, ToggleButton,FULLSCREEN_BUTTON,onFullscreenClick) as ToggleButton;
+			_fullscreenButton = bindButton(_fullscreenButton, ToggleButton,FULLSCREEN_BUTTON,onFullscreenClick);
 			_rewindButton = bindButton(_rewindButton, Button,REWIND_BUTTON,onRewindClick);
-			_muteButton = bindButton(_muteButton, SliderButton,MUTE_BUTTON,onMuteClick) as SliderButton;
+			
+			var hadMuteButton:Boolean = (_muteButton!=null);
+			_muteButton = bindButton(_muteButton, SliderButton,MUTE_BUTTON,onMuteClick);
+			if(_muteButton && !hadMuteButton){
+				_muteButton.valueChangedByUser.addHandler(onVolumeSliderChange);
+			}
 			
 			var pauseAsset:IInteractiveObjectAsset = _containerAsset.takeAssetByName(CENTERED_PAUSE_BUTTON,IInteractiveObjectAsset,true);
 			if(pauseAsset){
@@ -165,16 +210,14 @@ package org.farmcode.display.containers
 			_interactiveObjectAsset.rolledOver.addHandler(onVideoMouse);
 			
 			var hadVolumeSlider:Boolean = (_volumeSlider!=null);
-			_volumeSlider = bindControl(_volumeSlider,Slider,VOLUME_SLIDER,false) as Slider;
-			if(_volumeSlider){
-				if(!hadVolumeSlider){
-					_volumeSlider.valueChange.addHandler(onVolumeSliderChange);
-				}
+			_volumeSlider = bindView(_volumeSlider,Slider,VOLUME_SLIDER,false) as Slider;
+			if(_volumeSlider && !hadVolumeSlider){
+				_volumeSlider.valueChangedByUser.addHandler(onVolumeSliderChange);
 			}
 			
-			_bufferBar = bindControl(_bufferBar,BufferBar,BUFFER_BAR,true) as BufferBar;
+			_bufferBar = bindView(_bufferBar,BufferBar,BUFFER_BAR,true) as BufferBar;
 			
-			_progressLabel = bindControl(_progressLabel,TextLabel,PROGRESS_LABEL,false) as TextLabel;
+			_progressLabel = bindView(_progressLabel,TextLabel,PROGRESS_LABEL,false) as TextLabel;
 			if(_progressLabel){
 				_assumedPattern = _progressLabel.data;
 				if(!_videoProgressProvider)_videoProgressProvider = new VideoProgressFormatter(_videoSource,_videoProgressProviderPattern = new StringData());
@@ -228,43 +271,59 @@ package org.farmcode.display.containers
 				assessPlaying();
 			}
 		}
-		protected function bindButton(control:Control, controlClass:Class, name:String, clickHandler:Function):Button{
-			var ret:Button = (bindControl(control, controlClass, name,false) as Button);
+		protected function bindButton(control:Control, controlClass:Class, name:String, clickHandler:Function):*{
+			var ret:Button = bindView(control, controlClass, name,false);
 			if(!control && ret)ret.clicked.addHandler(clickHandler);
 			return ret;
 		}
-		protected function bindControl(control:Control, controlClass:Class, name:String, bindBothSides:Boolean):Control{
-			var asset:IInteractiveObjectAsset = _containerAsset.takeAssetByName(name,IInteractiveObjectAsset,true);
-			if(asset){
-				if(!control){
-					control = new controlClass();
-					_uiLayout.addSubject(control);
+		protected function bindView(layoutView:LayoutView, controlClass:Class, name:String, bindBothSides:Boolean):*{
+			var asset:IDisplayAsset = _containerAsset.takeAssetByName(name,IDisplayAsset,true);
+			var layout:CanvasLayout = _mainLayout;
+			var parent:IContainerAsset = _containerAsset;
+			var parentMeas:Point;
+			if(!asset){
+				if(_controlContainer && _controlContainer.asset){
+					parent = (_controlContainer.asset as IContainerAsset);
+					asset = parent.takeAssetByName(name,IDisplayAsset,true);
+					layout = _contLayout;
+					parentMeas = _controlContainer.measurements;
 				}
-				control.setAssetAndPosition(asset);
-				var layout:CanvasLayoutInfo;
-				if(_backing){
-					var bounds:Rectangle = asset.getBounds(this.asset);
-					var meas:Point = control.measurements;
-					if(meas){
-						bounds.width = meas.x;
-						bounds.height = meas.y;
-					}
-					layout = _uiLayout.layoutInfo as CanvasLayoutInfo;
-					if(!layout){
-						layout = new CanvasLayoutInfo();
-					}
-					layout.bottom = _backing.height-bounds.bottom;
-					var atLeft:Boolean = (bounds.x+bounds.width/2<_backing.width/2);
-					if(atLeft || bindBothSides){
-						layout.left = bounds.x;
-					}
-					if(!atLeft || bindBothSides){
-						layout.right = _backing.width-bounds.right;
-					}
-				}
-				control.layoutInfo = layout;
+			}else{
+				parentMeas = new Point(_backing.width,_backing.height);
 			}
-			return control;
+			if(asset){
+				if(!layoutView){
+					layoutView = new controlClass();
+					layout.addSubject(layoutView);
+				}
+				var origX:Number = asset.x;
+				var origY:Number = asset.y;
+				layoutView.setAssetAndPosition(asset);
+				var layoutInfo:CanvasLayoutInfo;
+				
+				var bounds:Rectangle = asset.getBounds(parent);
+				var meas:Point = layoutView.measurements;
+				if(meas){
+					bounds.x = origX;
+					bounds.y = origY;
+					bounds.width = meas.x;
+					bounds.height = meas.y;
+				}
+				layoutInfo = layoutView.layoutInfo as CanvasLayoutInfo;
+				if(!layoutInfo){
+					layoutInfo = new CanvasLayoutInfo();
+				}
+				layoutInfo.bottom = parentMeas.y-bounds.bottom;
+				var atLeft:Boolean = (bounds.x+bounds.width/2<parentMeas.x/2);
+				if(atLeft || bindBothSides){
+					layoutInfo.left = bounds.x;
+				}
+				if(!atLeft || bindBothSides){
+					layoutInfo.right = parentMeas.x-bounds.right;
+				}
+				layoutView.layoutInfo = layoutInfo;
+			}
+			return layoutView;
 		}
 		// TODO: confirm that event handlers are being removed properly
 		override protected function unbindFromAsset() : void{
@@ -277,35 +336,93 @@ package org.farmcode.display.containers
 			
 			if(_playPauseButton){
 				(_playPauseButton.asset as IInteractiveObjectAsset).mouseMoved.removeHandler(onVideoMouse);
-				unbindControl(_playPauseButton);
+				unbindView(_playPauseButton);
 			}
-			unbindControl(_muteButton);
-			unbindControl(_stopButton);
-			unbindControl(_fullscreenButton);
-			unbindControl(_centredPauseButton);
-			unbindControl(_volumeSlider);
-			unbindControl(_bufferBar);
+			unbindView(_muteButton);
+			unbindView(_stopButton);
+			unbindView(_fullscreenButton);
+			unbindView(_centredPauseButton);
+			unbindView(_volumeSlider);
+			unbindView(_bufferBar);
 			
 			if(_progressLabel){
 				_progressLabel.data = _assumedPattern;
 			}
-			unbindControl(_progressLabel);
+			unbindView(_progressLabel);
+			
+			if(_hasControlCont){
+				var interCont:IInteractiveObjectAsset = _controlContainer.asset as IInteractiveObjectAsset;
+				interCont.mousedOver.addHandler(onMousedOverCont);
+				interCont.mousedOut.addHandler(onMousedOutCont);
+				unbindView(_controlContainer);
+			}
 		}
-		protected function unbindControl(control:Control):void{
-			if(control){
-				_containerAsset.returnAsset(control.asset);
-				control.asset = null;
+		protected function onMousedOverCont(from:IInteractiveObjectAsset, mouseActInfo:IMouseActInfo):void{
+			_mouseOverControls = true;
+		}
+		protected function onMousedOutCont(from:IInteractiveObjectAsset, mouseActInfo:IMouseActInfo):void{
+			_mouseOverControls = false;
+			if(!_mouseActive)transTo(0);
+		}
+		protected function unbindView(layoutView:LayoutView):void{
+			if(layoutView){
+				layoutView.asset.parent.returnAsset(layoutView.asset);
+				layoutView.asset = null;
 			}
 		}
 		override protected function draw() : void{
 			super.draw();
-			_uiLayout.setDisplayPosition(0,0,displayPosition.width,displayPosition.height);
+			_mainLayout.setDisplayPosition(0,0,displayPosition.width,displayPosition.height);
+			
 			if(_centredPauseButton){
-				var meas:Point = _centredPauseButton.measurements;
 				var align:Rectangle =_mediaContainer.scrollRect;
+				var meas:Point = _centredPauseButton.measurements;
 				_centredPauseButton.setDisplayPosition(align.x+(align.width-meas.x)/2,align.y+(align.height-meas.y)/2,meas.x,meas.y);
 			}
 			_videoCover.setSizeAndPos(_scrollRect.x,_scrollRect.y,_scrollRect.width,_scrollRect.height);
+			
+			if(_hasControlCont){
+				_mainLayout.validate();
+				var pos:Rectangle = _controlContainer.displayPosition;
+				_contLayout.setDisplayPosition(0,0,pos.width,pos.height);
+				drawControlScrollRect();
+			}
+		}
+		protected function drawControlScrollRect() : void{
+			if(_openFract==1){
+				_controlContainer.asset.scrollRect = null;
+			}else{
+				if(!_controlScrollRect)_controlScrollRect = new Rectangle();
+				var layout:CanvasLayoutInfo = (_controlContainer.layoutInfo as CanvasLayoutInfo);
+				
+				var hasTop:Boolean = (!isNaN(layout.top));
+				var hasLeft:Boolean = (!isNaN(layout.left));
+				var hasBottom:Boolean = (!isNaN(layout.bottom));
+				var hasRight:Boolean = (!isNaN(layout.right));
+				
+				var pos:Rectangle = _controlContainer.displayPosition;
+				
+				_controlScrollRect.width = pos.width;
+				_controlScrollRect.height = pos.height;
+				if(hasBottom && !hasTop){
+					// aligned to bottom
+					_controlScrollRect.x = 0;
+					_controlScrollRect.y = -pos.height*(1-_openFract);
+				}else if(!hasBottom && hasTop){
+					// aligned to top
+					_controlScrollRect.x = 0;
+					_controlScrollRect.y = pos.height*(1-_openFract);
+				}else if(!hasRight && hasLeft){
+					// aligned to left
+					_controlScrollRect.x = pos.width*(1-_openFract);
+					_controlScrollRect.y = 0;
+				}else if(hasRight && !hasLeft){
+					// aligned to right
+					_controlScrollRect.x = -pos.width*(1-_openFract);
+					_controlScrollRect.y = 0;
+				}
+				_controlContainer.asset.scrollRect = _controlScrollRect;
+			}
 		}
 		
 		protected function onPlayPauseClick(from:Button):void{
@@ -344,21 +461,20 @@ package org.farmcode.display.containers
 			assessPlaying();
 		}
 		protected function assessPlaying():void{
-			if(_videoSource){
-				if(_playPauseButton)_playPauseButton.selected = _videoSource.playing;
+			var isPlaying:Boolean = (_videoSource && _videoSource.playing);
+			if(_playPauseButton)_playPauseButton.selected = isPlaying;
 				
-				setControlsActive([_playPauseButton,_rewindButton,_muteButton,_stopButton,_fullscreenButton,_volumeSlider,_bufferBar,_progressLabel],!_videoSource.playing || _mouseActive);
+			setControlsActive([_playPauseButton,_rewindButton,_muteButton,_stopButton,_fullscreenButton,_volumeSlider,_bufferBar,_progressLabel],_videoSource && (!isPlaying || _mouseActive));
+			
+			if(_centredPauseButton){
+				_centredPauseButton.selected = isPlaying;
+				_centredPauseButton.active = (!isPlaying || (_mouseOver && _mouseActive));
 				
-				if(_centredPauseButton){
-					_centredPauseButton.selected = _videoSource.playing;
-					_centredPauseButton.active = (!_videoSource.playing || (_mouseOver && _mouseActive));
-					
-					if(_mouseOver){
-						if(_videoSource.playing && !_mouseActive){
-							Mouse.hide();
-						}else{
-							Mouse.show();
-						}
+				if(_mouseOver){
+					if(isPlaying && !_mouseActive){
+						Mouse.hide();
+					}else{
+						Mouse.show();
 					}
 				}
 			}
@@ -375,7 +491,7 @@ package org.farmcode.display.containers
 				if(_muteButton)_muteButton.selected = _videoSource.muted;
 			}
 		}
-		protected function onVolumeSliderChange(from:Slider, value:Number):void{
+		protected function onVolumeSliderChange(from:Control, value:Number):void{
 			if(_videoSource){
 				_videoSource.volume = value;
 			}
@@ -399,6 +515,7 @@ package org.farmcode.display.containers
 		}
 		protected function activateMouse():void{
 			_mouseActive = true;
+			if(_hasControlCont && _videoSource)transTo(1);
 			if(!isNaN(_disableTime)){
 				if(_disableTimer){
 					_disableTimer.stop();
@@ -417,6 +534,32 @@ package org.farmcode.display.containers
 		protected function onHideTimerComplete(e:Event):void{
 			_mouseActive = false;
 			assessPlaying();
+			if(_hasControlCont && !_mouseOverControls)transTo(0);
+		}
+		
+		protected function transTo(value:Number, delay:Number=0) : void{
+			if((!_tweenRunning && value!=_openFract) || (_tweenRunning && _openTween.destProps.value!=value)){
+				_tweenRunning = true;
+				if(_openTween){
+					_openTween.stop();
+				}else{
+					_openTween = new LooseTween({value:_openFract},null,null,TRANS_DURATION);
+					_openTween.addEventListener(GoEvent.UPDATE,onUpdate);
+					_openTween.addEventListener(GoEvent.COMPLETE,onComplete);
+				}
+				var easing:Function = (value==0?Regular.easeIn:(_openFract==0?Regular.easeOut:Regular.easeInOut));
+				_openTween.delay = delay;
+				_openTween.easing = easing;
+				_openTween.destProps = {value:value};
+				_openTween.start();
+			}
+		}
+		protected function onUpdate(e:GoEvent) : void{
+			_openFract = _openTween.target.value;
+			drawControlScrollRect();
+		}
+		protected function onComplete(e:GoEvent) : void{
+			_tweenRunning = false;
 		}
 	}
 }

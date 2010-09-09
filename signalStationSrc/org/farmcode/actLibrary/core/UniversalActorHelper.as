@@ -23,6 +23,9 @@ package org.farmcode.actLibrary.core
 				for each(var view:IScopedObject in _children){
 					view.scope = value;
 				}
+				if(_registered){
+					MetadataActorRegistry.changeActorDisplay(_metadataTarget,value);
+				}
 				super.asset = value;
 				assessMetadata();
 			}

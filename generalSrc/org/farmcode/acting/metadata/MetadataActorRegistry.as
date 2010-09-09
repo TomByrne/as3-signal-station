@@ -25,55 +25,86 @@ package org.farmcode.acting.metadata
 		private static var actMap:Dictionary = new Dictionary();
 		
 		public static function addActor(actor:Object, scopeDisplay:IDisplayAsset):void{
-			if(!actMap[actor]){
-				var classDesc: XML = ReflectionUtils.describeType(actor);
-				var memberList: XMLList = classDesc.descendants().(name()=="method"||name()=="variable"||name()=="accessor");
-				var acts:Array = [];
-				
-				var reaction:MethodReaction;
-				var rule:IUniversalRule;
-				for each(var memberNode:XML in memberList){
-					var metaDataXML: XMLList = memberNode.metadata;
-					var tot:Number = metaDataXML.length();
-					reaction = null;
-					
-					for(var i:int=0; i<tot; ++i){
-						var metaData:XML = metaDataXML[i];
-						var metaName:String = metaData.attribute("name");
-						switch(metaName){
-							case REQUIRED_META_TAGS[0]:
-								if(!reaction){
-									acts.push(reaction = createImplicitReaction(actor, memberNode, scopeDisplay));
-								}
-								reaction.addUniversalRule(createRule(metaData,memberNode,reaction.doAsynchronous,actor));
-								break;
-							case REQUIRED_META_TAGS[1]:
-								if(!reaction){
-									acts.push(reaction = createImplicitReaction(actor, memberNode, scopeDisplay));
-								}
-								var paramNodes:XMLList = metaData.arg;
-								var props:Dictionary;
-								for each(var paramNode: XML in paramNodes){
-									var key:String = paramNode.@key;
-									var value:String = paramNode.@value;
-									if(key!="" && value!=""){
-										if(!props)props = new Dictionary();
-										props[key] = value;
-									}
-								}
-								fillObject(reaction, actor, props);
-								break;
-						}
-					}
-					// add to manager AFTER adding all reactions/rules
-					if(reaction)reaction.asset = scopeDisplay;
+			Config::DEBUG{
+				if(actMap[actor]){
+					throw new Error("Actor already registered");
 				}
-				actMap[actor] = acts;
-			}else{
-				throw new Error("Actor already registered");
+			}
+			var classDesc: XML = ReflectionUtils.describeType(actor);
+			var memberList: XMLList = classDesc.descendants().(name()=="method"||name()=="variable"||name()=="accessor");
+			var scopedObjects:Array = [];
+			
+			var reaction:MethodReaction;
+			var rule:IUniversalRule;
+			for each(var memberNode:XML in memberList){
+				var metaDataXML: XMLList = memberNode.metadata;
+				var tot:Number = metaDataXML.length();
+				reaction = null;
+				
+				for(var i:int=0; i<tot; ++i){
+					var metaData:XML = metaDataXML[i];
+					var metaName:String = metaData.attribute("name");
+					switch(metaName){
+						case REQUIRED_META_TAGS[0]:
+							if(!reaction){
+								scopedObjects.push(reaction = createImplicitReaction(actor, memberNode, scopeDisplay));
+							}
+							reaction.addUniversalRule(createRule(metaData,memberNode,reaction.doAsynchronous,actor));
+							break;
+						case REQUIRED_META_TAGS[1]:
+							if(!reaction){
+								scopedObjects.push(reaction = createImplicitReaction(actor, memberNode, scopeDisplay));
+							}
+							var paramNodes:XMLList = metaData.arg;
+							var props:Dictionary;
+							for each(var paramNode: XML in paramNodes){
+								var key:String = paramNode.@key;
+								var value:String = paramNode.@value;
+								if(key!="" && value!=""){
+									if(!props)props = new Dictionary();
+									props[key] = value;
+								}
+							}
+							fillObject(reaction, actor, props);
+							break;
+					}
+				}
+				// add to manager AFTER adding all reactions/rules
+				if(reaction)reaction.asset = scopeDisplay;
+			}
+			actMap[actor] = scopedObjects;
+		}
+		public static function changeActorDisplay(actor:Object, scopeDisplay:IDisplayAsset):void{
+			var acts:Array = actMap[actor];
+			Config::DEBUG{
+				if(!acts){
+					throw new Error("Actor not registered");
+				}
+			}
+			var tot:int = acts.length;
+			for(var i:int=0; i<tot; ++i){
+				var act:MethodReaction = acts[i];
+				act.asset = scopeDisplay;
 			}
 		}
-		public static function createImplicitReaction(actor:Object, memberNode:XML, scopeDisplay:IDisplayAsset):MethodReaction{
+		public static function removeActor(actor:Object):void{
+			var acts:Array = actMap[actor];
+			Config::DEBUG{
+				if(!acts){
+					throw new Error("Actor not registered");
+				}
+			}
+			var tot:int = acts.length;
+			for(var i:int=0; i<tot; ++i){
+				var act:MethodReaction = acts[i];
+				act.asset = null;
+				act.removeAllUniversalRules();
+			}
+			delete actMap[actor];
+		}
+		
+		
+		protected static function createImplicitReaction(actor:Object, memberNode:XML, scopeDisplay:IDisplayAsset):MethodReaction{
 			var methodName:String = memberNode.@name;
 			var method:Function = actor[methodName];
 			if(method==null){
@@ -90,7 +121,7 @@ package org.farmcode.acting.metadata
 			}
 			return reaction;
 		}
-		public static function fillObject(dest:Object, source:Object, props:Dictionary):void{
+		protected static function fillObject(dest:Object, source:Object, props:Dictionary):void{
 			var value:*;
 			var key:String;
 			if(props){
@@ -104,20 +135,6 @@ package org.farmcode.acting.metadata
 					}
 					ObjectUtils.setProperty(dest,key,value);
 				}
-			}
-		}
-		public static function removeActor(actor:Object):void{
-			var acts:Array = actMap[actor];
-			if(acts){
-				var tot:int = acts.length;
-				for(var i:int=0; i<tot; ++i){
-					var act:MethodReaction = acts[i];
-					act.asset = null;
-					act.removeAllUniversalRules();
-				}
-				delete actMap[actor];
-			}else{
-				throw new Error("Actor not registered");
 			}
 		}
 		protected static function createRule(triggerDescription:XML, subjectDescription:XML, asynchronous:Boolean, actor:Object):IUniversalRule

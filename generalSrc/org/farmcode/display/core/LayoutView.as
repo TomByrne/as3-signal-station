@@ -14,6 +14,10 @@ package org.farmcode.display.core
 	
 	public class LayoutView extends DrawableView implements ILayoutView
 	{
+		override public function set asset(value:IDisplayAsset):void{
+			super.asset = value;
+			performMeasChanged();
+		}
 		public function get layoutInfo():ILayoutInfo{
 			return _layoutInfo;
 		}
@@ -120,7 +124,7 @@ package org.farmcode.display.core
 		protected function positionAsset():void{
 			asset.setPosition(_displayPosition.x,_displayPosition.y);
 		}
-		protected function dispatchMeasurementChange():void{
+		protected function performMeasChanged():void{
 			_measureFlag.invalidate();
 			if(_measurementsChanged)_measurementsChanged.perform(this, _measurements.x, _measurements.y);
 		}

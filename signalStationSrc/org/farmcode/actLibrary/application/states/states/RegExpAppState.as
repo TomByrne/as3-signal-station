@@ -25,6 +25,9 @@ package org.farmcode.actLibrary.application.states.states
 		private var _stripPattern:String;
 		private var _stripRegExp:RegExp;
 		
+		public function RegExpAppState(statePath:String=null){
+			path = statePath;
+		}
 		override public function match(path:String) : AppStateMatch{
 			if(_path){
 				validateStrip();

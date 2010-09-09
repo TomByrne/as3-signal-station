@@ -11,6 +11,7 @@ package org.farmcode.binding
 			if(_bindable!=value){
 				if(_bindable){
 					_bindable[_changeProp].removeHandler(onValueChanged);
+					setValue(null);
 				}
 				_bindable = value;
 				if(_bindable){

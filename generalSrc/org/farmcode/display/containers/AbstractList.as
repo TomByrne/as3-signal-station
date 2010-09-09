@@ -119,7 +119,7 @@ package org.farmcode.display.containers
 				var metrics:ScrollMetrics = _scrollBar.scrollSubject.getScrollMetrics(_scrollBar.direction);
 				var scrollBar:Boolean = (metrics.maximum>metrics.pageSize);
 				if(scrollBar!=_scrollBarShown){
-					dispatchMeasurementChange();
+					performMeasChanged();
 					invalidate();
 				}
 			}
@@ -177,7 +177,7 @@ package org.farmcode.display.containers
 			_container = null;
 		}
 		protected function onLayoutMeasChange(from:ILayoutSubject, oldWidth:Number, oldHeight:Number) : void{
-			dispatchMeasurementChange();
+			performMeasChanged();
 		}
 		protected function onAddRenderer(layout:RendererGridLayout, renderer:ILayoutView) : void{
 			var cast:View = (renderer as View);

@@ -31,7 +31,7 @@ package org.farmcode.display.assets.schema
 	{
 		private static var DISPLAY_MAP:Dictionary = new Dictionary();
 		
-		public function get forceTopLeft():Boolean {
+		/*public function get forceTopLeft():Boolean {
 			return _forceTopLeft;
 		}
 		public function set forceTopLeft(value:Boolean):void{
@@ -39,7 +39,7 @@ package org.farmcode.display.assets.schema
 				_forceTopLeft = value;
 				redrawSize();
 			}
-		}
+		}*/
 		
 		protected var _rect:Shape;
 		protected var _textField:TextField;
@@ -328,7 +328,7 @@ package org.farmcode.display.assets.schema
 		protected var _y:Number;
 		protected var _width:Number;
 		protected var _height:Number;
-		protected var _forceTopLeft:Boolean = true;
+		//protected var _forceTopLeft:Boolean = true;
 		
 		protected var _isAddedToStage:Boolean;
 		protected var _parent:IContainerAsset;

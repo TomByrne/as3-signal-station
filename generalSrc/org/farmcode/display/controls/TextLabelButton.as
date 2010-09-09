@@ -75,7 +75,7 @@ package org.farmcode.display.controls
 			_measurements = _textLabel.measurements;
 		}
 		protected function onMeasurementsChange(from:ILayoutSubject, oldWidth:Number, oldHeight:Number):void{
-			dispatchMeasurementChange();
+			performMeasChanged();
 		}
 	}
 }

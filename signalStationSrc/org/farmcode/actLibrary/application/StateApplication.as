@@ -32,9 +32,8 @@ package org.farmcode.actLibrary.application
 		private var _setSWFAddressAct:SetSWFAddressAct;
 		private var _setSerialisedStateAct:SetSerialisedStateAct;
 		
-		public function StateApplication(asset:IDisplayAsset=null)
+		public function StateApplication()
 		{
-			super(asset);
 			
 			_setSWFAddressAct = new SetSWFAddressAct();
 			_universalActorHelper.addChild(_setSWFAddressAct);
@@ -52,9 +51,9 @@ package org.farmcode.actLibrary.application
 			
 			super.setRootObject(execution, object);
 			
-			var setStates:IUniversalAct = new SetAppStatesAct(_stateAppConfig.appStates);
-			new SingleMethodReaction(asset,commitState,new ActInstanceRule(setStates,null,[AppStatePhases.SET_APP_STATES]),false);
-			temporaryPerformAct(setStates,execution);
+			if(_stateAppConfig.appStates && _stateAppConfig.appStates.length){
+				setStates(_stateAppConfig.appStates);
+			}
 			
 			
 			_swfAddressActor.rootPathAlias = _stateAppConfig.defaultAppStatePath;
@@ -64,9 +63,14 @@ package org.farmcode.actLibrary.application
 			
 			// we must set the initial page AFTER setting the rootPathAlias
 			var getCurrentPage:GetConfigParamAct = new GetConfigParamAct(CURRENT_PAGE_URL_PARAM);
-			var reaction:SingleMethodReaction = new SingleMethodReaction(asset,onCurrentPageRetrieved,new ActInstanceRule(getCurrentPage,null,[ConfigPhases.GET_PARAM]),true);
+			var reaction:SingleMethodReaction = new SingleMethodReaction(null,onCurrentPageRetrieved,new ActInstanceRule(getCurrentPage,null,[ConfigPhases.GET_PARAM]),true);
 			reaction.passAct = true;
 			temporaryPerformAct(getCurrentPage,execution);
+		}
+		protected function setStates(states:Array, execution:UniversalActExecution=null):void{
+			var setStates:IUniversalAct = new SetAppStatesAct(_stateAppConfig.appStates);
+			new SingleMethodReaction(null,commitState,new ActInstanceRule(setStates,null,[AppStatePhases.SET_APP_STATES]),false);
+			temporaryPerformAct(setStates,execution);
 		}
 		
 		

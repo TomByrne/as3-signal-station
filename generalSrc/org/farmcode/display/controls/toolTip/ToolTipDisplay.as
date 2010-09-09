@@ -83,7 +83,7 @@ package org.farmcode.display.controls.toolTip
 		override protected function bindToAsset() : void{
 			super.bindToAsset();
 			_arrow = _containerAsset.takeAssetByName(ARROW_ASSET,IDisplayAsset,true);
-			if(_arrow)_arrow.forceTopLeft = false;
+			//if(_arrow)_arrow.forceTopLeft = false;
 			
 			_spriteAsset.mouseChildren = false;
 			_spriteAsset.mouseEnabled = false;
@@ -246,7 +246,7 @@ package org.farmcode.display.controls.toolTip
 				if(errorText.length){
 					if(_labelField.htmlText != errorText){
 						_labelField.htmlText = errorText;
-						dispatchMeasurementChange();
+						performMeasChanged();
 					}
 					return;
 				}

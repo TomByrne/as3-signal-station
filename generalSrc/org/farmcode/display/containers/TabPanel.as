@@ -59,7 +59,7 @@ package org.farmcode.display.containers
 		public function set anchor(value:String):void{
 			if(_anchor!=value){
 				_anchor = value;
-				dispatchMeasurementChange();
+				performMeasChanged();
 				invalidate();
 			}
 		}
@@ -226,7 +226,7 @@ package org.farmcode.display.containers
 			}
 		}
 		protected function onPanelMeasChanged(from:ILayoutView, oldWidth:Number, oldHeight:Number):void{
-			dispatchMeasurementChange();
+			performMeasChanged();
 		}
 		protected function onPanelAssetChanged(from:ILayoutView, oldAsset:IAsset):void{
 			setPanelAsset(from.asset);
@@ -251,7 +251,7 @@ package org.farmcode.display.containers
 					_containerAsset.addAsset(_panelAsset);
 					_containerAsset.setAssetIndex(_container,_containerAsset.numChildren-1);
 				}
-				dispatchMeasurementChange();
+				performMeasChanged();
 			}
 		}
 		override protected function assumedRendererAssetName() : String{

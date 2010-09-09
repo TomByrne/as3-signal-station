@@ -5,6 +5,8 @@ package org.farmcode.display.controls
 	import flash.geom.Point;
 	import flash.geom.Rectangle;
 	
+	import org.farmcode.acting.actTypes.IAct;
+	import org.farmcode.acting.acts.Act;
 	import org.farmcode.display.actInfo.IMouseActInfo;
 	import org.farmcode.display.assets.assetTypes.IDisplayAsset;
 	import org.farmcode.display.assets.assetTypes.IInteractiveObjectAsset;
@@ -52,6 +54,24 @@ package org.farmcode.display.controls
 			}
 		}
 		
+		/**
+		 * handler(from:Slider, value:Number)
+		 */
+		public function get valueChanged():IAct{
+			if(!_valueChange)_valueChange = new Act();
+			return _valueChange;
+		}
+		/**
+		 * handler(from:Slider, value:Number)
+		 */
+		public function get valueChangedByUser():IAct{
+			if(!_valueChangeByUser)_valueChangeByUser = new Act();
+			return _valueChangeByUser;
+		}
+		
+		private var _valueChangeByUser:Act;
+		private var _valueChange:Act;
+		
 		private var _tweenRunning:Boolean;
 		private var _openTween:LooseTween;
 		private var _sliderAnchor:String;
@@ -69,7 +89,15 @@ package org.farmcode.display.controls
 			super.init();
 			_slider = new Slider();
 			_slider.measurementsChanged.addHandler(onSliderMeasChanged);
+			_slider.valueChanged.addHandler(onValueChanged);
+			_slider.valueChangedByUser.addHandler(onValueChangedByUser);
 			_scrollRect = new Rectangle();
+		}
+		protected function onValueChanged(from:Slider, value:Number):void{
+			if(_valueChange)_valueChange.perform(this,value);
+		}
+		protected function onValueChangedByUser(from:Slider, value:Number):void{
+			if(_valueChangeByUser)_valueChangeByUser.perform(this,value);
 		}
 		protected function onSliderMeasChanged(from:Slider, oldW:Number, oldH:Number):void{
 			invalidate();
@@ -151,8 +179,10 @@ package org.farmcode.display.controls
 		}
 		
 		protected function onMousedOver(from:IInteractiveObjectAsset, mouseActInfo:IMouseActInfo) : void{
-			transTo(1);
-			_mouseOver = true;
+			if(_active){
+				transTo(1);
+				_mouseOver = true;
+			}
 		}
 		protected function onMousedOut(from:IInteractiveObjectAsset, mouseActInfo:IMouseActInfo) : void{
 			transTo(0,HIDE_DELAY);

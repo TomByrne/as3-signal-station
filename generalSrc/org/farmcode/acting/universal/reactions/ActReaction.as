@@ -10,7 +10,6 @@ package org.farmcode.acting.universal.reactions
 
 	public class ActReaction extends ScopedObject implements IActReaction
 	{
-		
 		public function get phases():Array{
 			return _phases;
 		}

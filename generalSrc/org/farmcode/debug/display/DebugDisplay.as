@@ -80,6 +80,7 @@ package org.farmcode.debug.display
 			_layout.marginBottom = 2;
 		}
 		public function addDebugNode(descendant:IDebugNode):void{
+			attemptInit();
 			var graphNode:IGraphStatisticNode = (descendant as IGraphStatisticNode);
 			if(graphNode){
 				_graph.addStatistic(graphNode.statisticProvider, graphNode.maximumProvider,graphNode.colour,graphNode.name);

@@ -5,6 +5,9 @@ package org.farmcode.actLibrary.application.states.states
 
 	public class AppState extends RegExpAppState
 	{
+		public function AppState(statePath:String=null){
+			super(statePath);
+		}
 		override protected function getStripPattern(path:String) : String{
 			var regExpStr:String = super.getStripPattern(path);
 			regExpStr = regExpStr.replace(AppStateConstants.STAR_MATCHER,AppStateConstants.STAR_REPLACE);

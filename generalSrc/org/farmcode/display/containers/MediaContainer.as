@@ -71,7 +71,7 @@ package org.farmcode.display.containers
 			_layout.measurementsChanged.addHandler(onLayoutMeasChange);
 		}
 		protected function onLayoutMeasChange(from:ILayoutSubject, oldWidth:Number, oldHeight:Number):void{
-			dispatchMeasurementChange();
+			performMeasChanged();
 		}
 		override protected function bindToAsset() : void{
 			super.bindToAsset()

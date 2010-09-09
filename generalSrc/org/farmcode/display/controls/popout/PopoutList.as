@@ -206,7 +206,7 @@ package org.farmcode.display.controls.popout {
 				case Anchor.TOP:
 				case Anchor.CENTER:
 				case Anchor.BOTTOM:
-					dispatchMeasurementChange();
+					performMeasChanged();
 					break;
 			}
 		}

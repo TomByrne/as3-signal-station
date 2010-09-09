@@ -98,7 +98,7 @@ package org.farmcode.display.containers
 		public function set direction(value:String):void{
 			if(_layout.flowDirection!=value){
 				_layout.flowDirection = value;
-				dispatchMeasurementChange();
+				performMeasChanged();
 				invalidate();
 			}
 		}

@@ -15,6 +15,7 @@ package org.farmcode.actLibrary.application
 	import org.farmcode.acting.universal.UniversalActExecution;
 	import org.farmcode.acting.universal.UniversalActManager;
 	import org.farmcode.core.Application;
+	import org.farmcode.core.EnterFrameHook;
 	import org.farmcode.display.assets.assetTypes.IContainerAsset;
 	import org.farmcode.display.assets.assetTypes.IDisplayAsset;
 	import org.farmcode.display.core.IScopedObject;
@@ -45,19 +46,8 @@ package org.farmcode.actLibrary.application
 			}
 		}
 		override public function set container(value:IContainerAsset):void{
+			if(!_scopeDisplay)setScopeDisplay(value);
 			super.container = value;
-			if(value)checkScopeDisplay();
-		}
-		
-		/**
-		 * This is used so that apps can get SignalStation running
-		 * before they get an asset.
-		 */
-		protected function get scopeDisplay():IDisplayAsset{
-			if(!_scopeDisplay){
-				_scopeDisplay = (asset || _container);
-			}
-			return _scopeDisplay;
 		}
 		
 		protected var _scopeDisplay:IDisplayAsset;
@@ -72,12 +62,7 @@ package org.farmcode.actLibrary.application
 		
 		private var _actors:Array = [];
 		
-		Config::DEBUG{
-			protected var _debugArea:Sprite;
-		}
-		
-		public function ConfiguredApplication(asset:IDisplayAsset=null){
-			super(asset);
+		public function ConfiguredApplication(){
 			_universalActorHelper.metadataTarget = this;
 			_universalActorHelper.addChild(retrieveConfigUrlAct);
 			_universalActorHelper.addChild(retrieveConfigAct);
@@ -90,7 +75,7 @@ package org.farmcode.actLibrary.application
 			addActor(_swfAddressActor);
 			
 			_configActor = new ConfigActor();
-			setDefaultConfig("configURL","xml/config.xml");
+			setDefaultConfig(CONFIG_URL_PARAM,"xml/config.xml");
 			setDefaultConfig("baseDataURL","");
 			setDefaultConfig("baseClassURL","");
 			addActor(_configActor);
@@ -99,7 +84,8 @@ package org.farmcode.actLibrary.application
 			addActor(errorActor);
 		}
 		protected function onAdded(from:UniversalActorHelper) : void{
-			attemptInit();
+			// we delay for a frame to make sure all Universal stuff is ready 
+			EnterFrameHook.getAct().addTempHandler(attemptInit);
 		}
 		override protected function commitStage() : void{
 			super.commitStage();
@@ -107,20 +93,20 @@ package org.farmcode.actLibrary.application
 				AbstractThread.intendedFPS = _lastStage.frameRate;
 			}
 		}
-		protected function checkScopeDisplay():void{
-			if(!_universalActorHelper.asset){
-				UniversalActManager.addManager(scopeDisplay);
-				_universalActorHelper.asset = scopeDisplay;
-			}
-		}
 		override protected function init():void{
 			super.init();
 			
+			Config::DEBUG{
+				if(!_scopeDisplay || !_universalActorHelper.added){
+					throw new Error("Cannot init before the container has been set");
+				}
+			}
+			
 			var act:SetPropertyConfigParamAct = new SetPropertyConfigParamAct(_siteStreamActor,"baseDataURL","baseDataURL");
-			act.temporaryPerform(scopeDisplay);
+			act.temporaryPerform(_scopeDisplay);
 			
 			act = new SetPropertyConfigParamAct(_siteStreamActor,"baseClassURL","baseClassURL");
-			act.temporaryPerform(scopeDisplay);
+			act.temporaryPerform(_scopeDisplay);
 			
 			if(configURL){
 				configUrlRetrieved();
@@ -140,13 +126,22 @@ package org.farmcode.actLibrary.application
 		protected function addActor(actor:IScopedObject) : void{
 			_universalActorHelper.addChild(actor);
 		}
-		override protected function unbindFromAsset() : void{
-			super.unbindFromAsset();
-			
-			if(!_scopeDisplay!=container){
-				_universalActorHelper.asset = null;
-				UniversalActManager.removeManager(_scopeDisplay);
-				_scopeDisplay = null;
+		override protected function setAsset(value:IDisplayAsset) : void{
+			if(_scopeDisplay==_asset)setScopeDisplay(null);
+			super.setAsset(value);
+			if(value)setScopeDisplay(value);
+			else if(!_scopeDisplay)setScopeDisplay(_container);
+		}
+		protected function setScopeDisplay(value:IDisplayAsset) : void{
+			if(_scopeDisplay!=value){
+				if(_scopeDisplay){
+					UniversalActManager.removeManager(_scopeDisplay);
+				}
+				_scopeDisplay = value;
+				if(value){
+					UniversalActManager.addManager(value);
+				}
+				_universalActorHelper.asset = value;
 			}
 		}
 		
@@ -165,8 +160,8 @@ package org.farmcode.actLibrary.application
 		protected function setRootObject(execution:UniversalActExecution, object:Object):void{
 			_appConfig = (object as IAppConfig);
 			
-			if(!asset && _appConfig.assetFactory){
-				asset = _appConfig.assetFactory.getCoreSkin(getCoreSkinName()) as IDisplayAsset;
+			if(!_asset && _castMainView && _appConfig.assetFactory){
+				_castMainView.asset = _appConfig.assetFactory.getCoreSkin(getCoreSkinName()) as IDisplayAsset;
 			}
 			
 			var act:IUniversalAct;
@@ -181,7 +176,7 @@ package org.farmcode.actLibrary.application
 			throw new Error("getCoreSkinName should be overriden");
 		}
 		protected function temporaryPerformAct(act:IUniversalAct, execution:UniversalActExecution):void{
-			act.scope = asset;
+			act.scope = _asset;
 			act.perform(execution);
 			act.scope = null;
 		}

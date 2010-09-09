@@ -145,7 +145,7 @@ package org.farmcode.display.layout
 			_drawFlag.invalidate();
 		}
 		public function validate(forceDraw: Boolean = false): void{
-			if(forceDraw)invalidate();
+			//if(forceDraw)invalidate();
 			_drawFlag.validate(forceDraw);
 		}
 		

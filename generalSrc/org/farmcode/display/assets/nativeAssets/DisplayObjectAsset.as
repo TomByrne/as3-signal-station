@@ -116,9 +116,9 @@ package org.farmcode.display.assets.nativeAssets {
 		protected var _innerBounds:Rectangle;
 		protected var _origScaleX:Number;
 		protected var _origScaleY:Number;
-		private var _x:Number;
-		private var _y:Number;
-		private var _forceTopLeft:Boolean = true;
+		//private var _x:Number;
+		//private var _y:Number;
+		//private var _forceTopLeft:Boolean = true;
 		
 		protected var _isAddedToStage:Boolean;
 		protected var _parent:IContainerAsset;
@@ -143,7 +143,7 @@ package org.farmcode.display.assets.nativeAssets {
 		}
 		
 		
-		public function get forceTopLeft():Boolean {
+		/*public function get forceTopLeft():Boolean {
 			return _forceTopLeft;
 		}
 		public function set forceTopLeft(value:Boolean):void{
@@ -152,7 +152,7 @@ package org.farmcode.display.assets.nativeAssets {
 				applyX();
 				applyY();
 			}
-		}
+		}*/
 		public function get naturalWidth():Number {
 			checkInnerBounds();
 			return _innerBounds.width*_origScaleX;
@@ -194,25 +194,29 @@ package org.farmcode.display.assets.nativeAssets {
 			return _displayObject.blendMode;
 		}
 		public function set x(value:Number):void {
-			_x = value;
-			applyX();
+			_displayObject.x = value;
+			//_x = value;
+			//applyX();
 		}
 		public function get x():Number {
-			takeX();
-			return _x;
+			//takeX();
+			//return _x;
+			return _displayObject.x;
 		}
 		public function set y(value:Number):void {
-			_y = value;
-			applyY();
+			//_y = value;
+			//applyY();
+			_displayObject.y = value;
 		}
 		public function get y():Number {
-			takeY();
-			return _y;
+			//takeY();
+			//return _y;
+			return _displayObject.y;
 		}
 		public function set scrollRect(value:Rectangle):void {
 			_displayObject.scrollRect = value;
-			applyX();
-			applyY();
+			//applyX();
+			//applyY();
 		}
 		public function get scrollRect():Rectangle {
 			return _displayObject.scrollRect;
@@ -223,21 +227,21 @@ package org.farmcode.display.assets.nativeAssets {
 			} else {
 				_displayObject.scaleX = 1;
 			}
-			applyX();
+			//applyX();
 		}
 		public function get width():Number {
 			return _displayObject.width;
 		}
 		public function set scaleX(value:Number):void {
 			_displayObject.scaleX = value;
-			applyX();
+			//applyX();
 		}
 		public function get scaleX():Number {
 			return _displayObject.scaleX;
 		}
 		public function set scaleY(value:Number):void {
 			_displayObject.scaleY = value;
-			applyX();
+			//applyX();
 		}
 		public function get scaleY():Number {
 			return _displayObject.scaleY;
@@ -262,7 +266,7 @@ package org.farmcode.display.assets.nativeAssets {
 			} else {
 				_displayObject.scaleY = 1;
 			}
-			applyY();
+			//applyY();
 		}
 		
 		
@@ -303,14 +307,14 @@ package org.farmcode.display.assets.nativeAssets {
 				_innerBounds = _displayObject.getBounds(_displayObject);
 				_origScaleX = _displayObject.scaleX;
 				_origScaleY = _displayObject.scaleY;
-				takeX();
-				takeY();
+				//takeX();
+				//takeY();
 				return true;
 			}else{
 				return false;
 			}
 		}
-		protected function takeX():void {
+		/*protected function takeX():void {
 			if(checkInnerBounds()){
 				_x = _displayObject.x+_innerBounds.x*_displayObject.scaleX;
 			}else{
@@ -345,7 +349,7 @@ package org.farmcode.display.assets.nativeAssets {
 			}else{
 				_displayObject.y = _y;
 			}
-		}
+		}*/
 		
 		
 		public function setPosition(x:Number, y:Number):void {
@@ -376,7 +380,7 @@ package org.farmcode.display.assets.nativeAssets {
 			return _nativeFactory.getCloneFactory(this);
 		}
 		override public function reset():void {
-			_forceTopLeft = true;
+			//_forceTopLeft = true;
 			super.reset();
 		}
 	}

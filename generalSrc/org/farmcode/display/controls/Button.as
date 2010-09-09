@@ -55,7 +55,7 @@ package org.farmcode.display.controls
 		
 		override public function set asset(value:IDisplayAsset) : void{
 			super.asset = value;
-			dispatchMeasurementChange();
+			performMeasChanged();
 		}
 		
 		/**

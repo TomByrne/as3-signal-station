@@ -61,9 +61,6 @@ package org.farmcode.display.assets.assetTypes
 		function set scrollRect(value:Rectangle):void;
 		function get scrollRect():Rectangle;
 		
-		function set forceTopLeft(value:Boolean):void;
-		function get forceTopLeft():Boolean;
-		
 		function set parent(value:IContainerAsset):void;
 		function get parent():IContainerAsset;
 		

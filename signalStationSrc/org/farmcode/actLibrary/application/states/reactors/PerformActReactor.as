@@ -34,6 +34,10 @@ package org.farmcode.actLibrary.application.states.reactors
 		private var _revertableAct:IRevertableAct;
 		private var lastPropValues:Dictionary;
 		
+		public function PerformActReactor(act:IAct=null, actProps:Dictionary=null){
+			this.act = act;
+			this.actProps = actProps;
+		}
 		public function enable(newMatch:AppStateMatch, oldMatch:AppStateMatch):IAct{
 			if(_actProps){
 				for(var destProp:String in _actProps){

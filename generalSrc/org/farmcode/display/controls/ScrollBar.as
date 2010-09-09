@@ -83,7 +83,7 @@ package org.farmcode.display.controls
 			if(_direction != to){
 				_direction = to;
 				if(_scrollSubject)_scrollMetrics = _scrollSubject.getScrollMetrics(_direction);
-				dispatchMeasurementChange();
+				performMeasChanged();
 				invalidate();
 			}
 		}

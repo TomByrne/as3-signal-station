@@ -215,7 +215,7 @@ package org.farmcode.debug.display
 				
 				if(_displayChanged)_displayChanged.perform(this);
 				redrawAll(false);
-				dispatchMeasurementChange();
+				performMeasChanged();
 			}
 		}
 		public function addStatistic(statisticProvider:INumberProvider, maxProvider:INumberProvider, colour:Number, name:String):void{

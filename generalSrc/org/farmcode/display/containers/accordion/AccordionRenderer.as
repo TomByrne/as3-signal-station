@@ -101,7 +101,7 @@ package org.farmcode.display.containers.accordion
 		public function set labelPosition(value:String):void{
 			if(_labelPosition!=value){
 				_labelPosition = value;
-				dispatchMeasurementChange();
+				performMeasChanged();
 				invalidate();
 			}
 		}
@@ -404,7 +404,7 @@ package org.farmcode.display.containers.accordion
 			_labelMeas = _label.measurements || new Point();
 			_minMeasurementsFlag.invalidate();
 			if(_minMeasurementsChanged)_minMeasurementsChanged.perform(this);
-			dispatchMeasurementChange();
+			performMeasChanged();
 		}
 		protected function checkMinMeas():void{
 			_minMeasurements.x = _labelMeas.x;

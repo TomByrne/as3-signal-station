@@ -26,7 +26,7 @@ package org.farmcode.debug.display
 				if(_bitmapDataProvider){
 					_bitmapDataProvider.bitmapDataChanged.addHandler(onBitmapChanged);
 					if(_bitmap)_bitmap.bitmapData = _bitmapDataProvider.bitmapData;
-					dispatchMeasurementChange();
+					performMeasChanged();
 				}else if(_bitmap){
 					_bitmap.bitmapData = null;
 				}
@@ -74,7 +74,7 @@ package org.farmcode.debug.display
 			if(_layoutViewAsset){
 				_containerAsset.addAsset(_layoutViewAsset);
 			}
-			dispatchMeasurementChange();
+			performMeasChanged();
 		}
 		override protected function unbindFromAsset() : void{
 			super.unbindFromAsset();
@@ -136,7 +136,7 @@ package org.farmcode.debug.display
 		
 		protected function onBitmapChanged(from:IBitmapDataProvider) : void{
 			if(_bitmap)_bitmap.bitmapData = _bitmapDataProvider.bitmapData;
-			dispatchMeasurementChange();
+			performMeasChanged();
 		}
 		protected function onViewChanged(from:ILayoutViewProvider) : void{
 			setLayoutView(_layoutViewProvider.layoutView);
@@ -153,7 +153,7 @@ package org.farmcode.debug.display
 				}else{
 					setViewAsset(null);
 				}
-				dispatchMeasurementChange();
+				performMeasChanged();
 				invalidate();
 			}
 		}

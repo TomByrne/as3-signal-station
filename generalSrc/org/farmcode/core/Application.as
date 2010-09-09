@@ -2,6 +2,7 @@ package org.farmcode.core
 {
 	import flash.geom.Rectangle;
 	
+	import org.farmcode.binding.PropertyWatcher;
 	import org.farmcode.data.core.StringData;
 	import org.farmcode.data.dataTypes.INumberProvider;
 	import org.farmcode.debug.DebugManager;
@@ -15,52 +16,48 @@ package org.farmcode.core
 	import org.farmcode.display.assets.assetTypes.IContainerAsset;
 	import org.farmcode.display.assets.assetTypes.IDisplayAsset;
 	import org.farmcode.display.assets.assetTypes.IStageAsset;
+	import org.farmcode.display.core.ILayoutView;
 	import org.farmcode.display.core.LayoutView;
+	import org.farmcode.display.core.ScopedObject;
 	import org.farmcode.math.units.MemoryUnitConverter;
 	
 	/**
 	 * Application adds the core abstract implementation of the IApplication
 	 * interface.
 	 */
-	// TODO: remove LayoutView inheritance?
-	public class Application extends LayoutView implements IApplication
+	public class Application implements IApplication
 	{
 		public function get container():IContainerAsset{
 			return _container;
 		}
 		public function set container(value:IContainerAsset):void{
 			if(_container!=value){
-				removeMainDisplay();
+				removeMainAsset();
 				_container = value;
-				
-				if(value){
-					setStage(_container.stage);
-				}else{
-					setStage(null);
-				}
-				addMainDisplay();
-			}
-		}
-		override public function set asset(value:IDisplayAsset):void{
-			if(super.asset!=value){
-				removeMainDisplay();
-				super.asset = value;
-				addMainDisplay();
+				if(_stageWatcher)_stageWatcher.bindable = value;
+				addMainAsset();
 			}
 		}
 		
-		public function get mainView():LayoutView{
+		public function get mainView():ILayoutView{
 			return _mainView;
 		}
-		public function set mainView(value:LayoutView):void{
+		public function set mainView(value:ILayoutView):void{
 			if(_mainView!=value){
 				if(_mainView){
-					if(_mainView.asset==asset)_mainView.asset = null;
+					if(_assumedMainAsset){
+						_castMainView.asset = null;
+						_assumedMainAsset = false;
+					}
+					removeMainAsset();
 				}
 				_mainView = value;
+				_assetWatcher.bindable = value;
+				_castMainView = (value as LayoutView);
+				
 				if(_mainView){
-					if(!_mainView.asset)_mainView.asset = asset;
-					invalidate()
+					attemptSetAssumedAsset();
+					addMainAsset();
 				}
 			}
 		}
@@ -71,55 +68,87 @@ package org.farmcode.core
 		public function set applicationScale(value:Number):void{
 			if(_applicationScale!=value){
 				_applicationScale = value;
-				invalidate();
+				if(_asset)setMainViewSize();
 			}
 		}
 		
 		private var _applicationScale:Number = 1;
-		private var _mainView:LayoutView;
+		
+		protected var _mainView:ILayoutView;
+		protected var _castMainView:LayoutView;
+		protected var _asset:IDisplayAsset;
 		protected var _container:IContainerAsset;
 		protected var _lastStage:IStageAsset;
+		protected var _inited:Boolean;
+		protected var _displayPosition:Rectangle;
+		protected var _assumedMainAsset:Boolean;
+		protected var _assetWatcher:PropertyWatcher;
+		protected var _stageWatcher:PropertyWatcher;
+		protected var _scopedObject:ScopedObject;
 		
-		public function Application(asset:IDisplayAsset=null){
-			super(asset);
+		public function Application(){
+			super();
+			_displayPosition = new Rectangle();
 		}
-		override protected function init():void{
-			super.init();
+		final protected function attemptInit() : void{
+			if(!_inited){
+				_inited = true;
+				init();
+			}
+		}
+		protected function init():void{
+			_assetWatcher = new PropertyWatcher("asset",setAsset);
+			_stageWatcher = new PropertyWatcher("stage",setStage,null,null,_container);
+			_scopedObject = new ScopedObject();
+			
 			Config::DEBUG{
 				var memory:INumberProvider = new MemoryUnitConverter(new MemoryUsage(),MemoryUnitConverter.BYTES,MemoryUnitConverter.MEGABYTES)
-				DebugManager.addDebugNode(new GraphStatisticNode(this,"Mem",0x009900,memory,true));
+				DebugManager.addDebugNode(new GraphStatisticNode(_scopedObject,"Mem",0x009900,memory,true));
 				
-				var fps:GraphStatisticNode = new GraphStatisticNode(this,"FPS",0x990000,new RealFrameRate(),true);
-				fps.maximumProvider = new IntendedFrameRate(this);
+				var fps:GraphStatisticNode = new GraphStatisticNode(_scopedObject,"FPS",0x990000,new RealFrameRate(),true);
+				fps.maximumProvider = new IntendedFrameRate(_scopedObject);
 				DebugManager.addDebugNode(fps);
-				DebugManager.addDebugNode(new DebugDataNode(this,new DebugData(new StringData("Garbage Collect"),new GarbageCollect())));
+				DebugManager.addDebugNode(new DebugDataNode(_scopedObject,new DebugData(new StringData("Garbage Collect"),new GarbageCollect())));
 			}
 		}
-		protected function removeMainDisplay():void{
-			if(asset && _container){
-				_container.removeAsset(asset);
+		public function setDisplayPosition(x:Number, y:Number, width:Number, height:Number):void{
+			_displayPosition.x = x;
+			_displayPosition.y = y;
+			_displayPosition.width = width;
+			_displayPosition.height = height;
+			if(_asset)setMainViewSize();
+		}
+		protected function attemptSetAssumedAsset():void{
+			if(_castMainView && !_castMainView.asset){
+				var asset:IDisplayAsset = getAssumedAsset();
+				if(asset){
+					_assumedMainAsset = true;
+					_castMainView.asset = asset;
+				}
 			}
 		}
-		protected function addMainDisplay():void{
-			if(asset && _container){
-				_container.addAsset(asset);
+		protected function getAssumedAsset():IDisplayAsset{
+			// override me
+			return null;
+		}
+		protected function removeMainAsset():void{
+			if(_container && _asset){
+				_container.removeAsset(_asset);
 			}
 		}
-		override protected function bindToAsset() : void{
-			setStage(asset.stage);
-			if(_mainView && !_mainView.asset){
-				_mainView.asset = asset;
+		protected function addMainAsset():void{
+			if(_container && _asset){
+				_container.addAsset(_asset);
+				if(_displayPosition)setMainViewSize();
 			}
-			super.bindToAsset();
 		}
-		override protected function unbindFromAsset() : void{
-			super.unbindFromAsset();
-			if(_mainView && _mainView.asset==asset){
-				_mainView.asset = null;
-			}
-			setStage(null);
+		protected function setAsset(value:IDisplayAsset) : void{
+			removeMainAsset();
+			_asset = value;
+			_scopedObject.asset = value;
+			addMainAsset();
 		}
-		protected function setStage(value:IStageAsset) : void{
+		private function setStage(value:IStageAsset) : void{
 			if(_lastStage!=value){
 				_lastStage = value;
 				commitStage();
@@ -128,14 +157,14 @@ package org.farmcode.core
 		protected function commitStage() : void{
 			// override me
 		}
-		override protected function draw() : void{
+		protected function setMainViewSize() : void{
 			// If FullscreenUtil is being used then this will be skipped
-			if(_mainView && _mainView.asset.parent==_container){
+			if(_asset.parent==_container){
 				var scale:Number = (isNaN(_applicationScale) || _applicationScale<=0?1:_applicationScale);
-				var pos:Rectangle = displayPosition;
+				var pos:Rectangle = _displayPosition;
 				_mainView.setDisplayPosition(pos.x,pos.y,pos.width*(1/scale),pos.height*(1/scale));
-				asset.scaleX = scale;
-				asset.scaleY = scale;
+				_asset.scaleX = scale;
+				_asset.scaleY = scale;
 			}
 		}
 	}

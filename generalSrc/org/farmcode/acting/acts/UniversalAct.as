@@ -45,7 +45,7 @@ package org.farmcode.acting.acts
 			}
 		}
 		private function onScopeChanged(from:ScopedObject, oldAsset:IDisplayAsset):void{
-			if(_scopeChanged)_scopeChanged.perform(this);
+			if(_scopeChanged)_scopeChanged.perform(this, oldAsset);
 		}
 		
 		public function temporaryPerform(scope:IDisplayAsset, ... params):void{
@@ -54,8 +54,10 @@ package org.farmcode.acting.acts
 			this.scope = null;
 		}
 		override public function perform(...params):void{
-			if(!_scopedObject.asset){
-				trace("WARNING: UniversalAct being performed without scopeDisplay (it will not act universally)");
+			Config::DEBUG{
+				if(!_scopedObject.asset){
+					trace("WARNING: UniversalAct being performed without scopeDisplay (it will not act universally)");
+				}
 			}
 			super.perform.apply(null,params);
 		}
