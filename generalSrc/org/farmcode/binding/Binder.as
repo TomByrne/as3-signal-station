@@ -42,6 +42,7 @@ package org.farmcode.binding
 		
 		public function Binder(destObject:Object=null, destProp:String=null, srcBindable:Object=null, srcProp:String=null){
 			_propWatcher = new PropertyWatcher(srcProp,setValue,null,null,srcBindable);
+			this.destObject = destObject;
 			this.destProperty = destProp;
 		}
 		protected function setValue(value:*):void{

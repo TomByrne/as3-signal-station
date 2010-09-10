@@ -1,8 +1,5 @@
 package org.farmcode.display.containers
 {
-	import flash.display.DisplayObject;
-	import flash.display.DisplayObjectContainer;
-	import flash.display.Sprite;
 	import flash.geom.Point;
 	import flash.geom.Rectangle;
 	import flash.utils.Dictionary;
@@ -12,7 +9,6 @@ package org.farmcode.display.containers
 	import org.farmcode.display.DisplayNamespace;
 	import org.farmcode.display.actInfo.IMouseActInfo;
 	import org.farmcode.display.assets.AssetNames;
-	import org.farmcode.display.assets.assetTypes.IAsset;
 	import org.farmcode.display.assets.assetTypes.IContainerAsset;
 	import org.farmcode.display.assets.assetTypes.IDisplayAsset;
 	import org.farmcode.display.assets.assetTypes.IInteractiveObjectAsset;
@@ -21,7 +17,6 @@ package org.farmcode.display.containers
 	import org.farmcode.display.controls.TextLabelButton;
 	import org.farmcode.display.core.DrawableView;
 	import org.farmcode.display.core.ILayoutView;
-	import org.farmcode.display.core.IView;
 	import org.farmcode.display.core.View;
 	import org.farmcode.display.layout.ILayoutSubject;
 	import org.farmcode.display.layout.grid.RendererGridLayout;

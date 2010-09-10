@@ -79,6 +79,10 @@ package org.farmcode.display.assets.nativeAssets {
 		public function set displayObject(value:DisplayObject):void {
 			if(_displayObject!=value) {
 				if(_displayObject) {
+					if(_isAddedToStage){
+						_isAddedToStage = false;
+						if(_removedFromStage)_removedFromStage.perform(this);
+					}
 					_innerBounds = null;
 					_displayObject.scaleX = _origScaleX;
 					_displayObject.scaleY = _origScaleY;
@@ -99,6 +103,10 @@ package org.farmcode.display.assets.nativeAssets {
 				
 				if(_displayObject){
 					_displayObject.addEventListener(Event.REMOVED_FROM_STAGE,onRemovedFromStage);
+					if(_displayObject.stage){
+						_isAddedToStage = true;
+						if(_addedToStage)_addedToStage.perform(this);
+					}
 				}
 			}
 		}
@@ -116,9 +124,6 @@ package org.farmcode.display.assets.nativeAssets {
 		protected var _innerBounds:Rectangle;
 		protected var _origScaleX:Number;
 		protected var _origScaleY:Number;
-		//private var _x:Number;
-		//private var _y:Number;
-		//private var _forceTopLeft:Boolean = true;
 		
 		protected var _isAddedToStage:Boolean;
 		protected var _parent:IContainerAsset;
@@ -143,16 +148,6 @@ package org.farmcode.display.assets.nativeAssets {
 		}
 		
 		
-		/*public function get forceTopLeft():Boolean {
-			return _forceTopLeft;
-		}
-		public function set forceTopLeft(value:Boolean):void{
-			if(_forceTopLeft!=value){
-				_forceTopLeft = value;
-				applyX();
-				applyY();
-			}
-		}*/
 		public function get naturalWidth():Number {
 			checkInnerBounds();
 			return _innerBounds.width*_origScaleX;
@@ -303,54 +298,15 @@ package org.farmcode.display.assets.nativeAssets {
 			if(_innerBounds){
 				return true;
 			}
-			if(_displayObject && _displayObject.width && _displayObject.height) {
+			if(_displayObject) {
 				_innerBounds = _displayObject.getBounds(_displayObject);
 				_origScaleX = _displayObject.scaleX;
 				_origScaleY = _displayObject.scaleY;
-				//takeX();
-				//takeY();
 				return true;
 			}else{
 				return false;
 			}
 		}
-		/*protected function takeX():void {
-			if(checkInnerBounds()){
-				_x = _displayObject.x+_innerBounds.x*_displayObject.scaleX;
-			}else{
-				_x = _displayObject.x;
-			}
-		}
-		protected function takeY():void {
-			if(checkInnerBounds()){
-				_y = _displayObject.y+_innerBounds.y*_displayObject.scaleY;
-			}else{
-				_y = _displayObject.y;
-			}
-		}
-		
-		
-		protected function applyX():void {
-			if(_displayObject.scrollRect || !_forceTopLeft){
-				_displayObject.x = _x;
-			}else if(checkInnerBounds()){
-				_displayObject.x = _x-_innerBounds.x*_displayObject.scaleX;
-			}else{
-				_displayObject.x = _x;
-			}
-		}
-		
-		
-		protected function applyY():void {
-			if(_displayObject.scrollRect || !_forceTopLeft){
-				_displayObject.y = _y;
-			}else if(checkInnerBounds()){
-				_displayObject.y = _y-_innerBounds.y*_displayObject.scaleY;
-			}else{
-				_displayObject.y = _y;
-			}
-		}*/
-		
 		
 		public function setPosition(x:Number, y:Number):void {
 			this.x = x;

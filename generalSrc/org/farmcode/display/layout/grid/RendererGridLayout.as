@@ -456,11 +456,9 @@ package org.farmcode.display.layout.grid
 			var breadthRange:int = (maxBreadth-minBreadth);
 			
 			var totRend:int = _renderers.length;
-			var remove:Boolean;
 			for(var i:int=0; i<totRend; ++i){
 				var renderer:ILayoutSubject = _renderers[i];
 				if(renderer){
-					remove = false;
 					var breadth:int = i%breadthRange;
 					var length:int = ((i-breadth)/breadthRange)+minLength;
 					breadth += minBreadth;
@@ -583,23 +581,35 @@ package org.farmcode.display.layout.grid
 				var total:Number = 0;
 				var foundPixMax:Boolean;
 				var scrollValue:int = Math.round(scrollMetrics.value);
+				
+				/*
+				when we're scrolling with pixel values, it's better to act as if we're scrolled right to the bottom/right
+				of the first visible renderer, this means that (when cells are about the same) we avoid removing and
+				re-adding the last renderer everytime a renderer scrolls out of view.
+				*/
+				var comparePixScroll:Number;
+				
 				for(var i:int=0; i<axis.maxCellSizes.length; i++){
 					var measurement:Number = axis.maxCellSizes[i];
 					if(axis.scrollByLine){
 						if(i==scrollValue){
 							pixScroll = stack;
+							comparePixScroll = stack;
 							newIndex = i;
 						}
 					}else if(stack+measurement>scrollMetrics.value && isNaN(pixScroll)){
 						pixScroll = scrollMetrics.value;
+						comparePixScroll = stack+measurement;
 						newIndex = i;
 					}
 					stack += measurement;
-					if(!isNaN(pixScroll) && newIndexMax==-1 && stack>realDim+pixScroll){
+					if(!isNaN(pixScroll) && newIndexMax==-1 && stack>realDim+comparePixScroll){
+						// find the last visible row
 						newIndexMax = i+1;
 						if(foundPixMax)break;
 					}
 					if(!foundPixMax && (stack>pixScrollMax || i==axis.maxCellSizes.length-1)){
+						// find the first visible row
 						foundPixMax = true;
 						if(axis.scrollByLine){
 							scrollMetrics.pageSize = axis.maxCellSizes.length-i;
@@ -610,6 +620,7 @@ package org.farmcode.display.layout.grid
 						}
 						if(isNaN(pixScroll)){
 							pixScroll = pixScrollMax;
+							comparePixScroll = pixScrollMax;
 						}
 						if(newIndexMax!=-1)break;
 					}

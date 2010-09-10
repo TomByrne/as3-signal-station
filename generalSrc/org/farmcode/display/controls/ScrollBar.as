@@ -32,7 +32,7 @@ package org.farmcode.display.controls
 		private static const FORE_BUTTON_CHILD:String = "foreButton";
 		private static const AFT_BUTTON_CHILD:String = "aftButton";
 		
-		private static const EMPTY_POINT:Point = new Point();
+		protected static const EMPTY_POINT:Point = new Point();
 		
 		public function set scrollSubject(to:IScrollable):void{
 			if(_scrollSubject != to){
@@ -157,24 +157,24 @@ package org.farmcode.display.controls
 		
 		protected var _scroll:Act;
 		
-		private var _hideWhenUnusable:Boolean = true;
-		private var _isUsable:Boolean = true;
-		private var _sizeThumbToContent:Boolean = true;
-		private var _scrollMetrics:ScrollMetrics = new ScrollMetrics(0,0,0);
-		private var _scrollSubject:IScrollable;
-		private var _dragOffset:Number;
-		private var _scrollLines:Number = 1;
-		private var _scrollIncrement:Number;
-		private var _scrollInterval:Number;
-		private var _useHandCursor:Boolean = false;
-		private var _direction:String = Direction.VERTICAL;
-		private var _rotateForHorizontal:Boolean = true;
-		private var _scrollTimer:Timer;
+		protected var _hideWhenUnusable:Boolean = true;
+		protected var _isUsable:Boolean = true;
+		protected var _sizeThumbToContent:Boolean = true;
+		protected var _scrollMetrics:ScrollMetrics = new ScrollMetrics(0,0,0);
+		protected var _scrollSubject:IScrollable;
+		protected var _dragOffset:Number;
+		protected var _scrollLines:Number = 1;
+		protected var _scrollIncrement:Number;
+		protected var _scrollInterval:Number;
+		protected var _useHandCursor:Boolean = false;
+		protected var _direction:String = Direction.VERTICAL;
+		protected var _rotateForHorizontal:Boolean = true;
+		protected var _scrollTimer:Timer;
 		
-		private var _track:Button = new Button();
-		private var _scrollThumb:Button = new Button();
-		private var _foreButton:Button = new Button();
-		private var _aftButton:Button = new Button();
+		protected var _track:Button = new Button();
+		protected var _scrollThumb:Button = new Button();
+		protected var _foreButton:Button = new Button();
+		protected var _aftButton:Button = new Button();
 		
 		public function ScrollBar(asset:IDisplayAsset=null){
 			super(asset);
@@ -340,7 +340,7 @@ package org.farmcode.display.controls
 					}else{
 						thumbHeight = thumbMeas.y;
 					}
-					thumbY = ((trackHeight-thumbHeight)*ratio)+foreMeas.y;
+					thumbY = ((trackHeight-thumbHeight)*ratio)+trackY;
 				}
 				
 				if(trackMeas.x<width){
@@ -391,7 +391,7 @@ package org.farmcode.display.controls
 					}else{
 						thumbWidth = thumbMeas.x;
 					}
-					thumbX = ((trackWidth-thumbWidth)*ratio)+foreMeas.x;
+					thumbX = ((trackWidth-thumbWidth)*ratio)+trackX;
 				}
 				
 				
@@ -428,13 +428,6 @@ package org.farmcode.display.controls
 			_scrollThumb.setDisplayPosition(thumbX,thumbY,thumbWidth,thumbHeight);
 			_foreButton.setDisplayPosition(foreX,foreY,foreWidth,foreHeight);
 			_aftButton.setDisplayPosition(aftX,aftY,aftWidth,aftHeight);
-			
-			// TODO: fix this. Not working properly when call setToMinimum; ratios are =, not sure how supposed to function
-			/*if(ratio!=rawRatio){
-				trace((ratio*scope)+_scrollMetrics.minimum,_scrollMetrics.minimum,_scrollMetrics.maximum,_scrollMetrics.pageSize);
-				_scrollMetrics.value = (ratio*scope)+_scrollMetrics.minimum;
-				this.commitScrollMetrics();
-			}*/
 		}
 		protected function scrollToMouse(... params):void{
 			var offset:Number;

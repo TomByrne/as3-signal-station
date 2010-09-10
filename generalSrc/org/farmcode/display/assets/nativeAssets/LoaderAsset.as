@@ -20,6 +20,7 @@ package org.farmcode.display.assets.nativeAssets
 		}
 		
 		private var _loader:Loader;
+		private var _content:IDisplayAsset;
 		
 		
 		public function LoaderAsset(factory:NativeAssetFactory=null){
@@ -27,7 +28,10 @@ package org.farmcode.display.assets.nativeAssets
 		}
 		
 		public function get content():IDisplayAsset{
-			return _nativeFactory.getNew(_loader.content);
+			if(!_content && _loader.content){
+				_content = _nativeFactory.getNew(_loader.content);;
+			}
+			return _content;
 		}
 		public function get contentLoaderInfo():LoaderInfo{
 			return _loader.contentLoaderInfo;
@@ -37,6 +41,7 @@ package org.farmcode.display.assets.nativeAssets
 		}
 		public function unload():void{
 			_loader.unload();
+			_content = null;
 		}
 	}
 }

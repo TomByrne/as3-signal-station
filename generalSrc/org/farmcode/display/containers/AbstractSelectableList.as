@@ -234,7 +234,7 @@ package org.farmcode.display.containers
 					selected = false;
 				}
 			}else{
-				if(_selectedCount>=_minSelected){
+				if(_selectedCount>_minSelected){
 					change = true;
 					_selectedIndices.splice(selIndex,1);
 					delete _selectedData[dataIndex];

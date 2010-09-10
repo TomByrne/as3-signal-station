@@ -95,24 +95,16 @@ package org.farmcode.display.controls
 			if(_bufferedBar){
 				_slider.validate(); // this forces _track & _thumb to have the correct sizes
 				
-				var playedFract:Number;
+				var loadFract:Number;
 				if(_videoSource){
-					var total:Number = _videoSource.totalTime.numericalValue;
-					var progress:Number = _videoSource.currentTime.numericalValue;
-					if(total>0){
-						playedFract = (progress<total)?progress/total:1;
+					if(_videoSource.loadTotal.numericalValue>0){
+						loadFract = _videoSource.loadProgress.numericalValue/_videoSource.loadTotal.numericalValue;
 					}else{
-						playedFract = 0;
+						loadFract = 0;
 					}
 				}else{
-					playedFract = 0;
+					loadFract = 0;
 				}
-				if(_videoSource && total>0){
-					playedFract = (progress<total)?progress/total:1;
-				}else{
-					playedFract = 0;
-				}
-				var loadFract:Number = (_videoSource?_videoSource.loadProgress.numericalValue/_videoSource.loadTotal.numericalValue:0);
 				
 				
 				var bufferX:Number;
