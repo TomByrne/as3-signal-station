@@ -146,7 +146,7 @@ package org.farmcode.display.controls
 		}
 		protected function onTimeChange(from:INumberProvider):void{
 			_slider.maximum = _videoSource.totalTime.numericalValue;
-			_slider.value = _videoSource.currentTime.numericalValue
+			_slider.value = _videoSource.currentTime.numericalValue;
 			invalidate();
 		}
 		protected function onPlayheadChange(from:Slider, value:Number):void{

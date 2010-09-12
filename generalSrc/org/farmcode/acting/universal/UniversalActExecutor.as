@@ -14,7 +14,7 @@ package org.farmcode.acting.universal
 	
 	use namespace ActingNamspace;
 
-	public class UniversalActExecutor
+	public class UniversalActExecutor extends UniversalReactionSorter
 	{
 		private static var pool:Array = new Array();
 		
@@ -27,16 +27,41 @@ package org.farmcode.acting.universal
 		}
 		
 		
+		public function get executionsFrozen():Boolean{
+			return _executionsFrozen;
+		}
+		public function set executionsFrozen(value:Boolean):void{
+			if(_executionsFrozen!=value){
+				_executionsFrozen = value;
+				if(_executionsFrozen){
+					_execReators = _reactors.concat();
+					_execRules = copyDictionary(_rules);
+				}else{
+					_execReators = _reactors;
+					_execRules = _rules;
+				}
+				setExecutionReactors();
+			}
+		}
+		
+		
+		
 		public function UniversalActExecutor(){
 			_reactors = new Array();
 			_executions = new Dictionary();
 			_executionCount = 0;
 			_rules = new Dictionary();
+			_execReators = _reactors;
+			_execRules = _rules;
 		}
+		private var _executionsFrozen:Boolean;
+		private var _execReators:Array;
+		private var _execRules:Dictionary;
 		
-		private var _act:IUniversalAct
 		private var _reactors:Array;
 		private var _rules:Dictionary;
+		
+		private var _act:IUniversalAct
 		private var _executions:Dictionary;
 		private var _executionCount:int;
 		private var _executionsCompleted:Act;
@@ -86,9 +111,12 @@ package org.farmcode.acting.universal
 		}
 		protected function invalidateReactors():void{
 			_reactorsValid.invalidate();
+			setExecutionReactors();
+		}
+		protected function setExecutionReactors():void{
 			for(var i:* in _executions){
 				var execution:UniversalActExecution = (i as UniversalActExecution);
-				execution.reactorsChanged();
+				execution.setReactors(_execReators,_execRules);
 			}
 		}
 		ActingNamspace function removeReaction(reaction:IActReaction):void{
@@ -109,87 +137,28 @@ package org.farmcode.acting.universal
 		}
 		protected function onActTrigger(endHandler:Function, parentExecution:UniversalActExecution=null, ... params):void{
 			_reactorsValid.validate();
-			var execution:UniversalActExecution = UniversalActExecution.getNew(_reactors,parentExecution,this,endHandler,params);
+			var execution:UniversalActExecution = UniversalActExecution.getNew(parentExecution,this,endHandler,params);
+			execution.setReactors(_execReators,_execRules);
 			execution.completeAct.addHandler(onExecutionComplete);
 			_executions[execution] = true;
 			++_executionCount;
 			if(parentExecution){
-				//TODO: Shouldn't this only be added to the parentExecution (and not the parentExecutor)?
-				parentExecution.actExecutor.addReaction(new NestedExecutionReaction(execution),new ImmediateActRule());
+				var reaction:NestedExecutionReaction = new NestedExecutionReaction(execution);
+				parentExecution.addReaction(reaction,reaction.immediateRule);
 			}else{
 				execution.begin();
 			}
 		}
 		private function validateReactors():void{
-			if(_reactors.length){
-				var newList:Array = [_reactors[0]];
-				var newListCount:int = 1;
-				var takenList:Array = [0];
-				var index:int = 0;
-				var taken:Boolean = false;
-				while(takenList.length<_reactors.length){
-					
-					var search:Boolean = false;
-					while(takenList.indexOf(index)!=-1 || !search){
-						search = true;
-						++index;
-						if(index==_reactors.length){
-							if(!taken){
-								throw new Error("This list of IActReactions can not be ordered");
-							}
-							index = 0;
-							taken = false;
-						}
-					}
-					var reaction1:IActReaction = _reactors[index];
-					
-					var particlePositions:Dictionary = new Dictionary();
-					
-					var particleIndex:int = -1;
-					for(var i:int=0; i<newListCount; i++){
-						var reaction2:IActReaction = newList[i];
-						if(shouldReactBefore(reaction1,reaction2)){
-							if(particleIndex==-1){
-								particleIndex = i;
-							}else{
-								throw new Error("IActReaction has a conflicting position in list.");
-							}
-						}
-						if(shouldReactBefore(reaction2,reaction1)){
-							if(particleIndex==-1){
-								particleIndex = i+1;
-							}else{
-								throw new Error("IActReaction has a conflicting position in list.");
-							}
-						}
-					}
-					if(particleIndex!=-1){
-						taken = true;
-						newList.splice(particleIndex,0,reaction1);
-						takenList.push(index);
-						++newListCount;
-					}
-				}
-				_reactors = newList;
-			}
-		}
-		private function shouldReactBefore(reaction1:IActReaction, reaction2:IActReaction):Boolean{
-			var rule:IUniversalRule;
-			var rule1:IUniversalRule = _rules[reaction1];
-			if(rule1.shouldReactBefore(act,reaction2)){
-				return true;
-			}
-			var rule2:IUniversalRule = _rules[reaction2];
-			if(rule2.shouldReactAfter(act,reaction1)){
-				return true;
-			}
-			return false;
+			_reactors = sortReactors(act,_reactors,_rules);
 		}
 		ActingNamspace function release():void{
 			_reactors = new Array();
 			_executions = new Dictionary();
 			_rules = new Dictionary();
 			_executionCount = 0;
+			_execReators = _reactors;
+			_execRules = _rules;
 			pool.push(this);
 		}
 	}

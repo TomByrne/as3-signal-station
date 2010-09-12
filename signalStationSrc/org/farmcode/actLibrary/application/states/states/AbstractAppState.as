@@ -22,6 +22,9 @@ package org.farmcode.actLibrary.application.states.states
 		private var _id:String;
 		private var _reactors:Array;
 		
+		public function AbstractAppState(stateId:String=null){
+			id = stateId;
+		}
 		public function match(path:String):AppStateMatch{
 			return null;
 		}

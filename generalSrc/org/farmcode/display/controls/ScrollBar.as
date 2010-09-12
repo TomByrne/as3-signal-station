@@ -146,6 +146,20 @@ package org.farmcode.display.controls
 			return _isUsable;
 		}
 		
+		/**
+		 * Setting groupButtons to true makes the fore and aft buttons
+		 * to sit next to each other at the end of the track (as opposed
+		 * to sitting either side of the track).
+		 */
+		public function get groupButtons():Boolean{
+			return _groupButtons;
+		}
+		public function set groupButtons(value:Boolean):void{
+			if(_groupButtons!=value){
+				_groupButtons = value;
+			}
+		}
+		
 		
 		/**
 		 * handler(from:ScrollBar, scrollMetrics:ScrollMetrics)
@@ -157,6 +171,7 @@ package org.farmcode.display.controls
 		
 		protected var _scroll:Act;
 		
+		private var _groupButtons:Boolean;
 		protected var _hideWhenUnusable:Boolean = true;
 		protected var _isUsable:Boolean = true;
 		protected var _sizeThumbToContent:Boolean = true;
@@ -321,7 +336,6 @@ package org.farmcode.display.controls
 					width = displayPosition.height;
 				}
 				
-				foreY = 0;
 				var buttonHeight:Number = foreMeas.y+aftMeas.y;
 				if(height<buttonHeight){
 					aftHeight = height*(aftMeas.y/buttonHeight);
@@ -330,9 +344,17 @@ package org.farmcode.display.controls
 					aftHeight = aftMeas.y;
 					foreHeight = foreMeas.y;
 				}
-				trackHeight = height-foreHeight-aftHeight;
-				trackY = foreHeight;
-				aftY = trackY+trackHeight;
+				if(_groupButtons){
+					trackHeight = height-foreHeight-aftHeight;
+					trackY = 0;
+					foreY = trackHeight;
+					aftY = foreY+foreHeight;
+				}else{
+					foreY = 0;
+					trackHeight = height-foreHeight-aftHeight;
+					trackY = foreHeight;
+					aftY = trackY+trackHeight;
+				}
 				
 				if(_scrollThumb && _track){
 					if (_sizeThumbToContent) {
@@ -372,7 +394,6 @@ package org.farmcode.display.controls
 					aftX = 0;
 				}
 			}else{
-				foreX = 0;
 				var buttonWidth:Number = foreMeas.x+aftMeas.x;
 				if(displayPosition.width<buttonWidth){
 					aftWidth = displayPosition.width*(aftMeas.x/buttonWidth);
@@ -381,9 +402,18 @@ package org.farmcode.display.controls
 					aftWidth = aftMeas.x;
 					foreWidth = foreMeas.x;
 				}
-				trackWidth = displayPosition.width-foreHeight-aftWidth;
-				trackX = foreWidth;
-				aftX = trackX+trackWidth;
+				
+				if(_groupButtons){
+					trackWidth = displayPosition.width-foreHeight-aftWidth;
+					trackX = 0;
+					foreX = trackWidth;
+					aftX = foreX+foreWidth;
+				}else{
+					foreX = 0;
+					trackWidth = displayPosition.width-foreHeight-aftWidth;
+					trackX = foreWidth;
+					aftX = trackX+trackWidth;
+				}
 				
 				if(_scrollThumb && _track){
 					if (sizeThumbToContent){

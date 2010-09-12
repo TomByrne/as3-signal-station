@@ -26,6 +26,9 @@ package org.farmcode.actLibrary.external.config
 		public function ConfigActor(){
 			metadataTarget = this;
 		}
+		public function getParam(paramName:String):void{
+			
+		}
 		
 		public var getParamPhases:Array = [ConfigPhases.GET_PARAM];
 		public var getParamBeforePhases:Array = [ObjectPhases.REFERENCE_RESOLVED];

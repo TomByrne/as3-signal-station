@@ -25,7 +25,8 @@ package org.farmcode.actLibrary.application.states.states
 		private var _stripPattern:String;
 		private var _stripRegExp:RegExp;
 		
-		public function RegExpAppState(statePath:String=null){
+		public function RegExpAppState(stateId:String=null, statePath:String=null){
+			super(stateId);
 			path = statePath;
 		}
 		override public function match(path:String) : AppStateMatch{

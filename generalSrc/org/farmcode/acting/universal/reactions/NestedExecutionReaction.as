@@ -8,12 +8,18 @@ package org.farmcode.acting.universal.reactions
 
 	public class NestedExecutionReaction extends ActReaction
 	{
+		public function get immediateRule():ImmediateActRule{
+			return _immediateRule;
+		}
+		
+		private var _immediateRule:ImmediateActRule;
 		private var _execution:UniversalActExecution;
 		
 		public function NestedExecutionReaction(execution:UniversalActExecution){
 			super();
 			_execution = execution;
-			addUniversalRule(new ImmediateActRule());
+			_immediateRule = new ImmediateActRule();
+			addUniversalRule(_immediateRule);
 		}
 		
 		override public function execute(from:UniversalActExecution, params:Array):void{

@@ -238,6 +238,7 @@ package org.farmcode.media.video
 				if(_netStream){
 					_streamStarted = true;
 					_streamPlaying = true;
+					_pendingSeek = false;
 					
 					_videoStreamProxy = new VideoStreamProxy();
 					_videoStreamProxy.metadataChanged.addHandler(onMetadata);

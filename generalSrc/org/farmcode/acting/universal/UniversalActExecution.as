@@ -8,19 +8,22 @@ package org.farmcode.acting.universal
 	import org.farmcode.acting.acts.Act;
 	import org.farmcode.acting.universal.UniversalActExecutor;
 	import org.farmcode.acting.universal.reactions.IActReaction;
+	import org.farmcode.acting.universal.ruleTypes.IUniversalRule;
+	import org.farmcode.collections.DictionaryUtils;
 	
 	use namespace ActingNamspace;
 	
-	public class UniversalActExecution{
+	public class UniversalActExecution extends UniversalReactionSorter
+	{
 		private static var pool:Array = new Array();
 		
-		ActingNamspace static function getNew(reactors:Array, parentExecution:UniversalActExecution, actExecutor:UniversalActExecutor, endHandler:Function, params:Array):UniversalActExecution{
+		ActingNamspace static function getNew(parentExecution:UniversalActExecution, actExecutor:UniversalActExecutor, endHandler:Function, params:Array):UniversalActExecution{
 			if(pool.length){
 				var ret:UniversalActExecution = pool.shift();
-				ret.init(reactors, parentExecution, actExecutor, endHandler, params);
+				ret.init(parentExecution, actExecutor, endHandler, params);
 				return ret;
 			}else{
-				return new UniversalActExecution(reactors, parentExecution, actExecutor, endHandler, params);
+				return new UniversalActExecution(parentExecution, actExecutor, endHandler, params);
 			}
 		}
 		
@@ -75,20 +78,23 @@ package org.farmcode.acting.universal
 		private var _reactionCount:int;
 		private var _waiting:Boolean;
 		private var _executed:Dictionary;
-		private var _reactors:Array;
 		private var _nestedEndHandler:Function;
 		
-		public function UniversalActExecution(reactors:Array, parentExecution:UniversalActExecution, actExecutor:UniversalActExecutor, endHandler:Function, params:Array){
-			init(reactors, parentExecution, actExecutor, endHandler, params);
+		private var _rules:Dictionary;
+		private var _reactors:Array;
+		private var _extraRules:Dictionary;
+		private var _extraReactors:Array;
+		private var _compiledRules:Dictionary;
+		private var _compiledReactors:Array;
+		
+		public function UniversalActExecution(parentExecution:UniversalActExecution, actExecutor:UniversalActExecutor, endHandler:Function, params:Array){
+			init(parentExecution, actExecutor, endHandler, params);
 		}
-		ActingNamspace function init(reactors:Array, parentExecution:UniversalActExecution, actExecutor:UniversalActExecutor, endHandler:Function, params:Array):void{
-			_reactors = reactors;
+		ActingNamspace function init(parentExecution:UniversalActExecution, actExecutor:UniversalActExecutor, endHandler:Function, params:Array):void{
 			_parentExecution = parentExecution;
 			_actExecutor = actExecutor;
 			_endHandler = endHandler;
 			_params = params;
-			_reactionCount = reactors.length;
-			if(_reactionCountChanged)_reactionCountChanged.perform(this);
 			_executed = new Dictionary();
 		}
 		ActingNamspace function begin(nestedEndHandler:Function=null):void{
@@ -96,6 +102,15 @@ package org.farmcode.acting.universal
 			if(_indexChanged)_indexChanged.perform(this);
 			_nestedEndHandler = nestedEndHandler;
 			executeNext();
+		}
+		ActingNamspace function addReaction(reaction:IActReaction, rule:IUniversalRule):void{
+			if(!_extraRules){
+				_extraRules = new Dictionary();
+				_extraReactors = [];
+			}
+			_extraRules[reaction] = rule;
+			_extraReactors.push(reaction);
+			compileExtraReactors();
 		}
 		public function continueExecution():void{
 			if(_waiting){
@@ -107,7 +122,7 @@ package org.farmcode.acting.universal
 		}
 		protected function executeNext():void{
 			while(_index<_reactionCount){
-				if(_executed[_reactors[_index]]){
+				if(_executed[_compiledReactors[_index]]){
 					++_index;
 					if(_indexChanged)_indexChanged.perform(this);
 				}else{
@@ -115,7 +130,7 @@ package org.farmcode.acting.universal
 				}
 			}
 			if(_index<_reactionCount){
-				var reaction:IActReaction = _reactors[_index];
+				var reaction:IActReaction = _compiledReactors[_index];
 				_waiting = true;
 				_executed[reaction] = true;
 				reaction.execute(this,_params);
@@ -125,11 +140,41 @@ package org.farmcode.acting.universal
 				completeAct.perform(this);
 			}
 		}
-		ActingNamspace function reactorsChanged():void{
-			_index = 0;
-			if(_indexChanged)_indexChanged.perform(this);
-			_reactionCount = _reactors.length;
-			if(_reactionCountChanged)_reactionCountChanged.perform(this);
+		ActingNamspace function setReactors(reactors:Array, rules:Dictionary):void{
+			_reactors = reactors;
+			_rules = rules;
+			if(_extraReactors){
+				compileExtraReactors();
+			}else{
+				if(_index){
+					_index = 0;
+					if(_indexChanged)_indexChanged.perform(this);
+				}
+				_compiledReactors = _reactors;
+				_compiledRules = _rules;
+				if(_reactionCount!=_compiledReactors.length){
+					_reactionCount = _compiledReactors.length;
+					if(_reactionCountChanged)_reactionCountChanged.perform(this);
+				}
+			}
+		}
+		protected function compileExtraReactors():void{
+			_compiledReactors = _reactors.concat();
+			_compiledRules = copyDictionary(_rules);
+			for each(var reactor:IActReaction in _extraReactors){
+				_compiledReactors.push(reactor);
+				_compiledRules[reactor] = _extraRules[reactor];
+			}
+			_compiledReactors = sortReactors(act, _compiledReactors,_compiledRules);
+			
+			if(_index){
+				_index = 0;
+				if(_indexChanged)_indexChanged.perform(this);
+			}
+			if(_reactionCount!=_compiledReactors.length){
+				_reactionCount = _compiledReactors.length;
+				if(_reactionCountChanged)_reactionCountChanged.perform(this);
+			}
 		}
 		ActingNamspace function release():void{
 			if(_indexChanged){
@@ -146,6 +191,9 @@ package org.farmcode.acting.universal
 			_nestedEndHandler = null;
 			_parentExecution = null;
 			_executed = null;
+			_rules = null;
+			_extraReactors = null;
+			_extraRules = null;
 			pool.push(this);
 		}
 	}

@@ -16,6 +16,9 @@ package org.farmcode.actLibrary.application
 	import org.farmcode.acting.universal.UniversalActManager;
 	import org.farmcode.core.Application;
 	import org.farmcode.core.EnterFrameHook;
+	import org.farmcode.debug.DebugManager;
+	import org.farmcode.debug.data.core.DebugData;
+	import org.farmcode.debug.nodes.DebugDataNode;
 	import org.farmcode.display.assets.assetTypes.IContainerAsset;
 	import org.farmcode.display.assets.assetTypes.IDisplayAsset;
 	import org.farmcode.display.core.IScopedObject;
@@ -100,6 +103,7 @@ package org.farmcode.actLibrary.application
 				if(!_scopeDisplay || !_universalActorHelper.added){
 					throw new Error("Cannot init before the container has been set");
 				}
+				DebugManager.addDebugNode(new DebugDataNode(_scopedObject,new DebugData(_swfAddressActor.currentPath)));
 			}
 			
 			var act:SetPropertyConfigParamAct = new SetPropertyConfigParamAct(_siteStreamActor,"baseDataURL","baseDataURL");

@@ -300,7 +300,10 @@ package org.farmcode.display.controls
 			}else{
 				newVal = (asset.mouseX-_dragOffset-_thumb.asset.width/2)/(_track.width-_thumb.asset.width);
 			}
-			newVal = (newVal*(maximum-minimum))+minimum;
+			if(newVal<0)newVal = minimum;
+			else if(newVal>1)newVal = maximum;
+			else newVal = (newVal*(maximum-minimum))+minimum;
+			
 			if(_value!=newVal){
 				_value = newVal;
 				_ignoreThumb = true;

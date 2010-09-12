@@ -68,7 +68,7 @@ package org.farmcode.actLibrary.application
 			temporaryPerformAct(getCurrentPage,execution);
 		}
 		protected function setStates(states:Array, execution:UniversalActExecution=null):void{
-			var setStates:IUniversalAct = new SetAppStatesAct(_stateAppConfig.appStates);
+			var setStates:IUniversalAct = new SetAppStatesAct(states);
 			new SingleMethodReaction(null,commitState,new ActInstanceRule(setStates,null,[AppStatePhases.SET_APP_STATES]),false);
 			temporaryPerformAct(setStates,execution);
 		}

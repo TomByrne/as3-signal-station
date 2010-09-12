@@ -104,21 +104,26 @@ package org.farmcode.acting.universal
 			var manager:UniversalActManager = actMap[act];
 			if(manager){
 				var executor:UniversalActExecutor = executors[act];
-				if(executor.executionCount==0){
-					executor.release();
-					delete executors[act];
-				}else{
+				var doRemove:Boolean = (executor.executionCount==0);
+				if(!doRemove){
+					executor.executionsFrozen = true;
 					executor.executionsCompleted.addTempHandler(onExecutionsComplete);
 				}
 				
 				manager.removeAct(act);
 				act.scopeChanged.removeHandler(onActScopeDisplayChange);
 				delete actMap[act];
+				
+				if(doRemove){
+					executor.release();
+					delete executors[act];
+				}
 			}else{
 				throw new Error("act has not been added");
 			}
 		}
 		protected static function onExecutionsComplete(executor:UniversalActExecutor):void{
+			executor.executionsFrozen = false;
 			executor.release();
 			delete executors[executor.act];
 		}

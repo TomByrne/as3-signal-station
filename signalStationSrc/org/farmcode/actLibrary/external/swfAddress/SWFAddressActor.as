@@ -9,6 +9,8 @@ package org.farmcode.actLibrary.external.swfAddress
 	import org.farmcode.actLibrary.external.swfAddress.acts.*;
 	import org.farmcode.acting.ActingNamspace;
 	import org.farmcode.acting.universal.UniversalActExecution;
+	import org.farmcode.data.core.StringData;
+	import org.farmcode.data.dataTypes.IStringProvider;
 	
 	
 	use namespace ActingNamspace;
@@ -40,10 +42,14 @@ package org.farmcode.actLibrary.external.swfAddress
 				}
 			}
 		}
+		public function get currentPath():IStringProvider{
+			return _currentPath;
+		}
 		
 		private var _rootPathAlias:String;
 		private var _strictRootPathAlias:String;
 		protected var _swfAddress:String;
+		protected var _currentPath:StringData = new StringData();
 		protected var _pageTitle:String;
 		protected var pendingExecutions:Dictionary = new Dictionary();
 		
@@ -61,15 +67,16 @@ package org.farmcode.actLibrary.external.swfAddress
 			_pageTitle = SWFAddress.getTitle();
 		}
 		protected function onSWFAddressChange(e:SWFAddressEvent):void{
-			var oldValue:String = _swfAddress;
-			_swfAddress = e.value;
+			var oldValue:String = _currentPath.stringValue;
+			var newValue:String = e.value;
 			
-			var execution:UniversalActExecution = pendingExecutions[_swfAddress];
+			var execution:UniversalActExecution = pendingExecutions[newValue];
 			if(execution){
-				delete pendingExecutions[_swfAddress];
+				_currentPath.stringValue = newValue;
+				delete pendingExecutions[newValue];
 				execution.continueExecution();
-			}else if(_swfAddress!=oldValue){
-				_setSWFAddressAct.swfAddress = _swfAddress;
+			}else if(newValue!=oldValue){
+				_setSWFAddressAct.swfAddress = newValue;
 				_setSWFAddressAct.perform();
 			}
 		}
@@ -90,7 +97,8 @@ package org.farmcode.actLibrary.external.swfAddress
 		public function setSWFAddress(execution:UniversalActExecution, cause:ISetSWFAddressAct):void{
 			var cast:IGetSWFAddressAct = (cause as IGetSWFAddressAct);
 			if(cause!=_setSWFAddressAct){
-				var notSet:Boolean = (!_swfAddress || _swfAddress=="" || _swfAddress=="/");
+				var oldValue:String = _currentPath.stringValue;
+				var notSet:Boolean = (!oldValue || oldValue=="" || oldValue=="/");
 				if(notSet || !cause.onlyIfNotSet){
 					var newValue:String = cause.swfAddress;
 					newValue = SWFAddressUtilities.strictCheck(newValue?newValue:"", true, true);
@@ -98,8 +106,8 @@ package org.farmcode.actLibrary.external.swfAddress
 						newValue = "/";
 					}
 					// For some reason, SWFAddress always returning a strict path
-					if(newValue!=_swfAddress){
-						_swfAddress = newValue;
+					if(newValue!=oldValue){
+						_currentPath.stringValue = newValue;
 						if(cast){
 							fillGetSWFAddress(cast);
 						}
@@ -116,7 +124,7 @@ package org.farmcode.actLibrary.external.swfAddress
 			if(_strictRootPathAlias && (_swfAddress=="" || _swfAddress=="/")){
 				act.swfAddress = _strictRootPathAlias;
 			}else{
-				act.swfAddress = _swfAddress;
+				act.swfAddress = _currentPath.stringValue;
 			}
 		}
 		

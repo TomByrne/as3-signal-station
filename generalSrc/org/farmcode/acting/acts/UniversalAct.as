@@ -30,6 +30,7 @@ package org.farmcode.acting.acts
 			return _scopeChanged;
 		}
 		
+		protected var _isAdded:Boolean;
 		protected var _scopeChanged:Act;
 		private var _scopedObject:ScopedObject = new ScopedObject();
 		
@@ -38,14 +39,24 @@ package org.farmcode.acting.acts
 			_scopedObject.assetChanged.addHandler(onScopeChanged);
 		}
 		private function onAddedChanged(from:ScopedObject):void{
-			if(_scopedObject.added){
-				UniversalActManager.addAct(this);
-			}else{
-				UniversalActManager.removeAct(this);
-			}
+			addedToManager(_scopedObject.added);
 		}
 		private function onScopeChanged(from:ScopedObject, oldAsset:IDisplayAsset):void{
-			if(_scopeChanged)_scopeChanged.perform(this, oldAsset);
+			if(_scopedObject.asset){
+				if(_scopeChanged)_scopeChanged.perform(this, oldAsset);
+			}else{
+				addedToManager(false);
+			}
+		}
+		private function addedToManager(value:Boolean):void{
+			if(_isAdded!=value){
+				_isAdded = value;
+				if(_isAdded){
+					UniversalActManager.addAct(this);
+				}else{
+					UniversalActManager.removeAct(this);
+				}
+			}
 		}
 		
 		public function temporaryPerform(scope:IDisplayAsset, ... params):void{

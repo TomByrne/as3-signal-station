@@ -32,6 +32,7 @@ package org.farmcode.display.containers
 	import org.farmcode.formatters.patternFormatters.VideoProgressFormatter;
 	import org.farmcode.media.IMediaSource;
 	import org.farmcode.media.video.IVideoSource;
+	import org.farmcode.media.video.VolumeMemory;
 	import org.farmcode.tweening.LooseTween;
 	import org.goasap.events.GoEvent;
 	
@@ -59,13 +60,18 @@ package org.farmcode.display.containers
 		override public function set mediaSource(value:IMediaSource):void{
 			if(super.mediaSource != value){
 				if(_videoSource){
-					_videoSource.playingChanged.removeHandler(onPlayingChange);
+					_videoSource.playingChanged.removeHandler(onPlayingChanged);
+					_videoSource.volumeChanged.removeHandler(onDataChanged);
+					_videoSource.mutedChanged.removeHandler(onDataChanged);
 					if(_videoProgressProvider)_videoProgressProvider.videoSource = null;
 				}
 				super.mediaSource = value;
 				_videoSource = (value as IVideoSource);
+				_volumeMemory.videoSource = _videoSource;
 				if(_videoSource){
-					_videoSource.playingChanged.addHandler(onPlayingChange);
+					_videoSource.playingChanged.addHandler(onPlayingChanged);
+					_videoSource.volumeChanged.addHandler(onDataChanged);
+					_videoSource.mutedChanged.addHandler(onDataChanged);
 					if(_videoProgressProvider)_videoProgressProvider.videoSource = _videoSource;
 					syncToData();
 					if(!_bound){
@@ -166,11 +172,14 @@ package org.farmcode.display.containers
 		private var _videoCover:ISpriteAsset;
 		private var _videoSource:IVideoSource;
 		
+		private var _volumeMemory:VolumeMemory;
+		
 		public function VideoContainer(asset:IDisplayAsset=null){
 			super(asset);
 		}
 		override protected function init() : void{
 			super.init();
+			_volumeMemory = new VolumeMemory();
 			_mainLayout = new CanvasLayout(this);
 			_contLayout = new CanvasLayout();
 		}
@@ -262,11 +271,9 @@ package org.farmcode.display.containers
 				if(_volumeSlider){
 					_volumeSlider.value = _videoSource.volume;
 				}
-				if(_playPauseButton){
-					_playPauseButton.selected = _videoSource.playing;
-				}
 				if(_muteButton){
 					_muteButton.selected = _videoSource.muted;
+					_muteButton.value = _videoSource.volume;
 				}
 				assessPlaying();
 			}
@@ -457,8 +464,11 @@ package org.farmcode.display.containers
 				_videoSource.currentTime.numericalValue = 0;
 			}
 		}
-		protected function onPlayingChange(from:IVideoSource):void{
+		protected function onPlayingChanged(from:IVideoSource):void{
 			assessPlaying();
+		}
+		protected function onDataChanged(from:IVideoSource):void{
+			syncToData();
 		}
 		protected function assessPlaying():void{
 			var isPlaying:Boolean = (_videoSource && _videoSource.playing);
@@ -493,13 +503,20 @@ package org.farmcode.display.containers
 		}
 		protected function onVolumeSliderChange(from:Control, value:Number):void{
 			if(_videoSource){
-				_videoSource.volume = value;
+				if(value || _videoSource.muted){
+					_videoSource.volume = value;
+				}else{
+					_videoSource.muted = true;
+				}
 			}
 		}
 		protected function onMuteClick(from:ToggleButton):void{
 			if(_videoSource){
 				_videoSource.muted = !_videoSource.muted;
 				_muteButton.selected = _videoSource.muted;
+				if(!_videoSource.muted && _videoSource.volume<=0){
+					_videoSource.volume = 1;
+				}
 			}
 		}
 		protected function onVideoMouseOut(from:IInteractiveObjectAsset, mouseInfo:IMouseActInfo):void{
