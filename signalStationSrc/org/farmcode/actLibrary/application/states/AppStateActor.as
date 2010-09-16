@@ -96,7 +96,6 @@ package org.farmcode.actLibrary.application.states
 				var oldReactors:Array = _currentState?_currentState.reactors:[];
 				var reactor:IAppStateReactor;
 				for each(reactor in newReactors){
-					var act:IAct;
 					if(oldReactors.indexOf(reactor)==-1){
 						performAct(reactor.enable(cause.appStateMatch, _currentStateMatch),execution);
 					}else{

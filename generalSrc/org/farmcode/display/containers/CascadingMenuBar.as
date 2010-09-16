@@ -7,7 +7,6 @@ package org.farmcode.display.containers
 	import org.farmcode.display.assets.assetTypes.IDisplayAsset;
 	import org.farmcode.display.constants.Anchor;
 	import org.farmcode.display.constants.Direction;
-	import org.farmcode.display.layout.relative.RelativeLayout;
 	import org.farmcode.instanceFactory.IInstanceFactory;
 	import org.farmcode.instanceFactory.SimpleInstanceFactory;
 	
@@ -115,12 +114,13 @@ import flash.utils.Dictionary;
 import org.farmcode.data.dataTypes.IDataProvider;
 import org.farmcode.display.DisplayNamespace;
 import org.farmcode.display.constants.Anchor;
+import org.farmcode.display.constants.Direction;
 import org.farmcode.display.containers.AbstractSelectableList;
 import org.farmcode.display.controls.popout.PopoutDisplay;
 import org.farmcode.display.core.ILayoutView;
 import org.farmcode.display.layout.ILayoutSubject;
 import org.farmcode.display.layout.grid.RendererGridLayout;
-import org.farmcode.display.scrolling.ScrollMetrics;
+import org.farmcode.display.scrolling.IScrollMetrics;
 import org.farmcode.instanceFactory.IInstanceFactory;
 
 use namespace DisplayNamespace;
@@ -135,7 +135,8 @@ class ListWatcher{
 				
 				_parentList.selectionChangeAct.removeHandler(onSelectionChange);
 				_parentList.layout.positionChanged.removeHandler(onListPosChanged);
-				_parentList.scrollMetricsChanged.removeHandler(onListScroll);
+				_parentList.getScrollMetrics(Direction.HORIZONTAL).scrollMetricsChanged.removeHandler(onListScroll);
+				_parentList.getScrollMetrics(Direction.VERTICAL).scrollMetricsChanged.removeHandler(onListScroll);
 			}
 			_parentList = value;
 			if(_parentList){
@@ -143,7 +144,8 @@ class ListWatcher{
 				
 				_parentList.selectionChangeAct.addHandler(onSelectionChange);
 				_parentList.layout.positionChanged.addHandler(onListPosChanged);
-				_parentList.scrollMetricsChanged.addHandler(onListScroll);
+				_parentList.getScrollMetrics(Direction.HORIZONTAL).scrollMetricsChanged.addHandler(onListScroll);
+				_parentList.getScrollMetrics(Direction.VERTICAL).scrollMetricsChanged.addHandler(onListScroll);
 				
 				_childDataIndex = _parentList.selectedIndex;
 				
@@ -205,7 +207,7 @@ class ListWatcher{
 	protected function onListPosChanged(layout:RendererGridLayout, oldX:Number, oldY:Number, oldWidth:Number, oldHeight:Number) : void{
 		assessRelative();
 	}
-	protected function onListScroll(listBox:AbstractSelectableList, direction:String, metrics:ScrollMetrics) : void{
+	protected function onListScroll(from:IScrollMetrics) : void{
 		assessRelative();
 	}
 	protected function onSelectionChange(listBox:AbstractSelectableList, selectedIndices:Array, selectedData:Dictionary) : void{

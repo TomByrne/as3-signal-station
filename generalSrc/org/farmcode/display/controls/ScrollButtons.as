@@ -11,6 +11,7 @@ package org.farmcode.display.controls
 	import org.farmcode.display.assets.assetTypes.IDisplayAsset;
 	import org.farmcode.display.constants.Direction;
 	import org.farmcode.display.core.LayoutView;
+	import org.farmcode.display.scrolling.IScrollMetrics;
 	import org.farmcode.display.scrolling.IScrollable;
 	import org.farmcode.display.scrolling.ScrollMetrics;
 	
@@ -138,24 +139,24 @@ package org.farmcode.display.controls
 			if(!_scrollMetrics){
 				_scrollMetrics = new ScrollMetrics();
 			}
-			var metrics:ScrollMetrics = _scrollable.getScrollMetrics(_scrollDirection);
+			var metrics:IScrollMetrics = _scrollable.getScrollMetrics(_scrollDirection);
 			_scrollMetrics.maximum = metrics.maximum;
 			_scrollMetrics.minimum = metrics.minimum;
 			_scrollMetrics.pageSize = metrics.pageSize;
-			_scrollMetrics.value = metrics.value+offset;
-			if(_scrollMetrics.value<0)_scrollMetrics.value = 0;
-			else if(_scrollMetrics.value>_scrollMetrics.maximum-_scrollMetrics.pageSize)_scrollMetrics.value = _scrollMetrics.maximum-_scrollMetrics.pageSize;
+			_scrollMetrics.scrollValue = metrics.scrollValue+offset;
+			if(_scrollMetrics.scrollValue<0)_scrollMetrics.scrollValue = 0;
+			else if(_scrollMetrics.scrollValue>_scrollMetrics.maximum-_scrollMetrics.pageSize)_scrollMetrics.scrollValue = _scrollMetrics.maximum-_scrollMetrics.pageSize;
 			_scrollable.setScrollMetrics(_scrollDirection,_scrollMetrics);
 			validateScroll(_scrollMetrics);
 		}
-		protected function onScrollMetricsChanged(from:IScrollable, direction:String, metrics:ScrollMetrics):void{
+		protected function onScrollMetricsChanged(from:IScrollable, direction:String, metrics:IScrollMetrics):void{
 			validateScroll();
 		}
 		protected function validateScroll(metrics:ScrollMetrics=null):void{
 			if(_scrollable){
 				if(!metrics)metrics = _scrollable.getScrollMetrics(_scrollDirection);
-				_foreButton.active = metrics.value>0;
-				_aftButton.active = metrics.value<(metrics.maximum-metrics.pageSize);
+				_foreButton.active = metrics.scrollValue>0;
+				_aftButton.active = metrics.scrollValue<(metrics.maximum-metrics.pageSize);
 			}else{
 				_foreButton.active = false;
 				_aftButton.active = false;

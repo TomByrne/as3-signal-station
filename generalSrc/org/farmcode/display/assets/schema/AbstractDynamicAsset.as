@@ -842,8 +842,8 @@ package org.farmcode.display.assets.schema
 		
 		public function get bitmapData():BitmapData{return _bitmap.bitmapData}
 		public function set bitmapData(value:BitmapData):void{_bitmap.bitmapData = value}
-		public function get pixelSnapping():String{return _bitmap.pixelSnapping}
-		public function set pixelSnapping(value:String):void{_bitmap.pixelSnapping = value}
+		public function get bitmapPixelSnapping():String{return _bitmap.pixelSnapping}
+		public function set bitmapPixelSnapping(value:String):void{_bitmap.pixelSnapping = value}
 		public function get smoothing():Boolean{return _bitmap.smoothing}
 		public function set smoothing(value:Boolean):void{_bitmap.smoothing = value}
 	}

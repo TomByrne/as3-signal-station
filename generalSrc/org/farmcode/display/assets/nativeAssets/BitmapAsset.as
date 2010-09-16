@@ -32,10 +32,10 @@ package org.farmcode.display.assets.nativeAssets
 			_bitmap.bitmapData = value;
 		}
 		
-		public function get pixelSnapping():String{
+		public function get bitmapPixelSnapping():String{
 			return _bitmap.pixelSnapping;
 		}
-		public function set pixelSnapping(value:String):void{
+		public function set bitmapPixelSnapping(value:String):void{
 			_bitmap.pixelSnapping = value;
 		}
 		

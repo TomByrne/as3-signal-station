@@ -3,7 +3,6 @@ package org.farmcode.display.controls
 	import flash.events.Event;
 	import flash.events.TimerEvent;
 	import flash.geom.Point;
-	import flash.geom.Rectangle;
 	import flash.utils.Timer;
 	
 	import org.farmcode.acting.actTypes.IAct;
@@ -15,6 +14,7 @@ package org.farmcode.display.controls
 	import org.farmcode.display.assets.assetTypes.ISpriteAsset;
 	import org.farmcode.display.constants.Direction;
 	import org.farmcode.display.core.LayoutView;
+	import org.farmcode.display.scrolling.IScrollMetrics;
 	import org.farmcode.display.scrolling.IScrollable;
 	import org.farmcode.display.scrolling.ScrollMetrics;
 	
@@ -36,41 +36,30 @@ package org.farmcode.display.controls
 		
 		public function set scrollSubject(to:IScrollable):void{
 			if(_scrollSubject != to){
-				if(_scrollSubject){
-					_scrollSubject.mouseWheel.removeHandler(onSubjectMouseWheel);
-					_scrollSubject.scrollMetricsChanged.removeHandler(getSubjectMetrics);
-				}
 				_scrollSubject = to;
 				if (_scrollSubject) {
-					_scrollSubject.scrollMetricsChanged.addHandler(getSubjectMetrics);
-					if(_scrollSubject.addScrollWheelListener(_direction)){
-						_scrollSubject.mouseWheel.addHandler(onSubjectMouseWheel);
-					}
 					scrollMetrics = _scrollSubject.getScrollMetrics(_direction);
+				}else{
+					scrollMetrics = null;
 				}
 			}
 		}
 		public function get scrollSubject():IScrollable{
 			return _scrollSubject;
 		}
-		public function set scrollMetrics(value:ScrollMetrics):void{
-			if((_scrollMetrics == null && value != null) ||
-				(_scrollMetrics != null && value == null) ||
-				!_scrollMetrics.equals(value)
-			)
-			{
-				if(value){
-					_scrollMetrics.maximum = value.maximum;
-					_scrollMetrics.minimum = value.minimum;
-					_scrollMetrics.pageSize = value.pageSize;
-					_scrollMetrics.value = value.value;
-				}else{
-					_scrollMetrics.value = NaN;
+		public function set scrollMetrics(value:IScrollMetrics):void{
+			if(_scrollMetrics !=value){
+				if(_scrollMetrics){
+					_scrollMetrics.scrollMetricsChanged.removeHandler(onScrollMetricsChanged);
+				}
+				_scrollMetrics = value;
+				if(_scrollMetrics){
+					_scrollMetrics.scrollMetricsChanged.addHandler(onScrollMetricsChanged);
 				}
 				invalidate();
 			}
 		}
-		public function get scrollMetrics():ScrollMetrics{
+		public function get scrollMetrics():IScrollMetrics{
 			return _scrollMetrics;
 		}
 		public function set scrollLines(to:Number):void{
@@ -82,7 +71,7 @@ package org.farmcode.display.controls
 		public function set direction(to:String):void{
 			if(_direction != to){
 				_direction = to;
-				if(_scrollSubject)_scrollMetrics = _scrollSubject.getScrollMetrics(_direction);
+				if(_scrollSubject)scrollMetrics = _scrollSubject.getScrollMetrics(_direction);
 				performMeasChanged();
 				invalidate();
 			}
@@ -175,7 +164,7 @@ package org.farmcode.display.controls
 		protected var _hideWhenUnusable:Boolean = true;
 		protected var _isUsable:Boolean = true;
 		protected var _sizeThumbToContent:Boolean = true;
-		protected var _scrollMetrics:ScrollMetrics = new ScrollMetrics(0,0,0);
+		protected var _scrollMetrics:IScrollMetrics;
 		protected var _scrollSubject:IScrollable;
 		protected var _dragOffset:Number;
 		protected var _scrollLines:Number = 1;
@@ -196,8 +185,6 @@ package org.farmcode.display.controls
 		}
 		override protected function init(): void{
 			super.init();
-			_scrollMetrics = new ScrollMetrics(0,1,1);
-			_scrollMetrics.value = 0;
 			
 			_track.clicked.addHandler(scrollToMouse);
 			_scrollThumb.mousePressed.addHandler(beginDrag);
@@ -211,15 +198,12 @@ package org.farmcode.display.controls
 		}
 		
 		override protected function bindToAsset(): void{
-			_interactiveObjectAsset.mouseWheel.addHandler(onMouseWheel);
-			
 			_track.setAssetAndPosition(_containerAsset.takeAssetByName(TRACK_CHILD,ISpriteAsset));
 			_scrollThumb.setAssetAndPosition(_containerAsset.takeAssetByName(SCROLL_THUMB_CHILD,ISpriteAsset));
 			_foreButton.setAssetAndPosition(_containerAsset.takeAssetByName(FORE_BUTTON_CHILD,ISpriteAsset,true));
 			_aftButton.setAssetAndPosition(_containerAsset.takeAssetByName(AFT_BUTTON_CHILD,ISpriteAsset,true));
 		}
 		override protected function unbindFromAsset(): void{
-			_interactiveObjectAsset.mouseWheel.removeHandler(onMouseWheel);
 			
 			var asset:IDisplayAsset = _track.asset;
 			_track.asset = null;
@@ -257,8 +241,8 @@ package org.farmcode.display.controls
 		
 		public function setToMinimum(): void {
 			if (this._scrollMetrics != null) {
-				this._scrollMetrics.value = this._scrollMetrics.minimum;
-				this.commitScrollMetrics(true);
+				this._scrollMetrics.scrollValue = this._scrollMetrics.minimum;
+				this.dispatchScroll();
 			}
 		}
 		override protected function positionAsset():void{
@@ -283,7 +267,7 @@ package org.farmcode.display.controls
 					asset.visible = false
 				}
 			}else{
-				rawRatio = (_scrollMetrics.value-_scrollMetrics.minimum)/scope;
+				rawRatio = (_scrollMetrics.scrollValue-_scrollMetrics.minimum)/scope;
 				ratio = (scope?Math.min(Math.max(rawRatio,0),1):0);
 				// Only change the visibility if the user has asked us to manage the visibility
 				if (this.hideWhenUnusable)
@@ -469,8 +453,8 @@ package org.farmcode.display.controls
 				offset = (!isNaN(_dragOffset)?_dragOffset:(_scrollThumb?_scrollThumb.displayPosition.width/2:0));
 				ratio = Math.max(Math.min((asset.mouseX-offset-_track.displayPosition.x)/(_track.displayPosition.width-_scrollThumb.displayPosition.width),1),0);
 			}
-			_scrollMetrics.value = Math.round((ratio*(_scrollMetrics.maximum-_scrollMetrics.pageSize-_scrollMetrics.minimum))+_scrollMetrics.minimum);
-			this.commitScrollMetrics(true);
+			_scrollMetrics.scrollValue = Math.round((ratio*(_scrollMetrics.maximum-_scrollMetrics.pageSize-_scrollMetrics.minimum))+_scrollMetrics.minimum);
+			this.dispatchScroll();
 		}
 		
 		protected function beginDrag(... params):void{
@@ -497,10 +481,6 @@ package org.farmcode.display.controls
 		protected function beginScroll(from:Button):void{
 			_scrollIncrement = (from==_foreButton?-scrollLines:(from==_aftButton?scrollLines:NaN));
 			if(!isNaN(_scrollIncrement)){
-				if(_scrollSubject){
-					var subjMultiplier:Number = _scrollSubject.getScrollMultiplier(_direction);
-					if(!isNaN(subjMultiplier))_scrollIncrement *= subjMultiplier;
-				}
 				doScroll();
 				_scrollTimer = new Timer(SCROLL_DELAY*1000,1);
 				_scrollTimer.addEventListener(TimerEvent.TIMER_COMPLETE,beginFrameScroll);
@@ -515,21 +495,13 @@ package org.farmcode.display.controls
 			_scrollTimer.start();
 		}
 		protected function doScroll(e:Event=null):void{
-			_scrollMetrics.value = Math.min(Math.max(_scrollMetrics.value+_scrollIncrement,_scrollMetrics.minimum),_scrollMetrics.maximum-_scrollMetrics.pageSize);
-			this.commitScrollMetrics(true);
+			_scrollMetrics.scrollValue = Math.min(Math.max(_scrollMetrics.scrollValue+_scrollIncrement,_scrollMetrics.minimum),_scrollMetrics.maximum-_scrollMetrics.pageSize);
+			this.dispatchScroll();
 		}
 		
-		private function commitScrollMetrics(validateNow: Boolean = false): void
-		{
-			if(_scrollSubject)
-			{
-				_scrollSubject.setScrollMetrics(_direction,_scrollMetrics);
-			}
+		private function dispatchScroll(): void{
 			if(_scroll)_scroll.perform(this,_scrollMetrics);
-			if (validateNow)
-			{
-				this.validate(true);
-			}
+			validate();
 		}
 		
 		protected function endScroll(from:IInteractiveObjectAsset, info:IMouseActInfo):void{
@@ -539,28 +511,15 @@ package org.farmcode.display.controls
 			}
 			asset.stage.mousePressed.removeHandler(endScroll);
 		}
-		protected function onSubjectMouseWheel(from:IScrollable, delta:int):void{
-			doMouseWheel(delta);
+		protected function onScrollMetricsChanged(from:IScrollMetrics):void{
+			invalidate();
 		}
-		protected function onMouseWheel(from:IInteractiveObjectAsset, mouseActInfo:IMouseActInfo, delta:int):void{
-			doMouseWheel(delta);
-		}
-		protected function doMouseWheel(delta:int):void{
-			if(_scrollMetrics.pageSize>_scrollMetrics.maximum-_scrollMetrics.minimum){
-				_scrollMetrics.value = 0;
+		protected function scrollMetricsEqual(scrollMatricsA:IScrollMetrics, scrollMatricsB:IScrollMetrics):Boolean{
+			if((scrollMatricsA.scrollValue != scrollMatricsB.scrollValue) || (scrollMatricsA.pageSize != scrollMatricsB.pageSize) ||
+				(scrollMatricsA.minimum != scrollMatricsB.minimum) || (scrollMatricsA.maximum != scrollMatricsB.maximum)){
+				return false;
 			}else{
-				var dist:Number = delta;
-				if(_scrollSubject){
-					var subjMultiplier:Number = _scrollSubject.getScrollMultiplier(_direction);
-					if(!isNaN(subjMultiplier))dist *= subjMultiplier;
-				}
-				_scrollMetrics.value = Math.min(Math.max(_scrollMetrics.value-dist*scrollLines,_scrollMetrics.minimum),_scrollMetrics.maximum-_scrollMetrics.pageSize);
-			}
-			this.commitScrollMetrics(true);
-		}
-		protected function getSubjectMetrics(from:IScrollable, direction:String, metrics:ScrollMetrics):void{
-			if(direction==_direction){
-				scrollMetrics = _scrollSubject.getScrollMetrics(_direction);
+				return true;
 			}
 		}
 	}

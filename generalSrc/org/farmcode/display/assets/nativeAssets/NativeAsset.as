@@ -20,6 +20,17 @@ package org.farmcode.display.assets.nativeAssets
 		}
 		
 		
+		public function get pixelSnapping():Boolean{
+			return _pixelSnapping;
+		}
+		public function set pixelSnapping(value:Boolean):void{
+			if(_pixelSnapping!=value){
+				_pixelSnapping = value;
+			}
+		}
+		
+		private var _pixelSnapping:Boolean;
+		
 		protected var _nativeFactory:NativeAssetFactory;
 		
 		public function NativeAsset(factory:IAssetFactory){

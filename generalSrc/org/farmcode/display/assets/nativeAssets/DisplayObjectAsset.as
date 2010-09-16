@@ -111,7 +111,6 @@ package org.farmcode.display.assets.nativeAssets {
 			}
 		}
 		
-		
 		private var _stageChanged:Act;
 		private var _addedToStage:NativeAct;
 		private var _removedFromStage:Act;
@@ -189,54 +188,54 @@ package org.farmcode.display.assets.nativeAssets {
 			return _displayObject.blendMode;
 		}
 		public function set x(value:Number):void {
-			_displayObject.x = value;
-			//_x = value;
-			//applyX();
+			_displayObject.x = int(value+0.5);
 		}
 		public function get x():Number {
-			//takeX();
-			//return _x;
 			return _displayObject.x;
 		}
 		public function set y(value:Number):void {
-			//_y = value;
-			//applyY();
-			_displayObject.y = value;
+			_displayObject.y = int(value+0.5);
 		}
 		public function get y():Number {
-			//takeY();
-			//return _y;
 			return _displayObject.y;
 		}
 		public function set scrollRect(value:Rectangle):void {
+			if(pixelSnapping && value){
+				value.x = int(value.x+0.5);
+				value.y = int(value.y+0.5);
+				value.width = int(value.width+0.5);
+				value.height = int(value.height+0.5);
+			}
 			_displayObject.scrollRect = value;
-			//applyX();
-			//applyY();
 		}
 		public function get scrollRect():Rectangle {
 			return _displayObject.scrollRect;
 		}
 		public function set width(value:Number):void {
 			if(checkInnerBounds()) {
+				if(pixelSnapping)value = int(value+0.5);
 				_displayObject.width = value;
 			} else {
 				_displayObject.scaleX = 1;
 			}
-			//applyX();
 		}
 		public function get width():Number {
 			return _displayObject.width;
 		}
 		public function set scaleX(value:Number):void {
 			_displayObject.scaleX = value;
-			//applyX();
+			if(pixelSnapping && _displayObject.width%1){
+				_displayObject.width = int(_displayObject.width+0.5);
+			}
 		}
 		public function get scaleX():Number {
 			return _displayObject.scaleX;
 		}
 		public function set scaleY(value:Number):void {
 			_displayObject.scaleY = value;
-			//applyX();
+			if(pixelSnapping && _displayObject.height%1){
+				_displayObject.height = int(_displayObject.height+0.5);
+			}
 		}
 		public function get scaleY():Number {
 			return _displayObject.scaleY;
@@ -257,11 +256,11 @@ package org.farmcode.display.assets.nativeAssets {
 		
 		public function set height(value:Number):void {
 			if(checkInnerBounds()) {
+				if(pixelSnapping)value = int(value+0.5);
 				_displayObject.height = value;
 			} else {
 				_displayObject.scaleY = 1;
 			}
-			//applyY();
 		}
 		
 		

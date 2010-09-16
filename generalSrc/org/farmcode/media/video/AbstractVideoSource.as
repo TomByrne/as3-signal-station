@@ -77,8 +77,8 @@ package org.farmcode.media.video
 						if(_buffered){
 							_streamPlaying = true;
 							_netStream.resume();
-							if(_netStream.time==totalTime){
-								setCurrentTime(0);
+							if(_netStream.time>=totalTime.numericalValue){
+								_currentTime.numericalValue = 0;
 							}
 						}
 					}else if(_videoStreamProxy.metadataReceived){
@@ -269,6 +269,10 @@ package org.farmcode.media.video
 						_netStream.pause();
 					}
 					break;
+				case NetStreamCodes.PLAY_STOP:
+					setBuffered(true);
+					playing = false;
+					break;
 				case NetStreamCodes.SEEK_FAILED:
 				case NetStreamCodes.SEEK_NOTIFY:
 				case NetStreamCodes.SEEK_INVALID_TIME:
@@ -322,7 +326,7 @@ package org.farmcode.media.video
 				}
 			}
 			// NetStream doesn't dispatch the Buffer Full event when it is paused
-			if(_playing && !_streamPlaying && _netStream.bufferLength>=_netStream.bufferTime){
+			if(_playing && !_streamPlaying && _netStream.bufferLength+_netStream.time>=_netStream.bufferTime){
 				setBuffered(true);
 				_streamPlaying = true;
 				_netStream.resume();
@@ -375,7 +379,7 @@ package org.farmcode.media.video
 					}
 				}
 				if(!isNaN(bufTime) && _netStream.bufferTime != bufTime){
-					if(bufLength<bufTime){
+					if(bufLength+_netStream.time<bufTime){
 						setBuffered(false);
 					}
 					_netStream.bufferTime = (bufLength>bufTime?bufLength:bufTime);

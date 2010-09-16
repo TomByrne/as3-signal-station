@@ -124,8 +124,8 @@ package org.farmcode.acting.universal
 		}
 		protected static function onExecutionsComplete(executor:UniversalActExecutor):void{
 			executor.executionsFrozen = false;
-			executor.release();
 			delete executors[executor.act];
+			executor.release();
 		}
 		public static function addReaction(reaction:IActReaction):void{
 			if(!reactionMap[reaction]){
@@ -219,10 +219,11 @@ package org.farmcode.acting.universal
 				}
 			}
 			var executor:UniversalActExecutor = executors[act];
-			for(var i:* in reactions){
+			/*for(var i:* in reactions){
 				var reaction:IActReaction = (i as IActReaction);
 				executor.removeReaction(reaction);
-			}
+			}*/
+			executor.removeAllReactions();
 			delete acts[act];
 		}
 		public function addReaction(reaction:IActReaction):void{

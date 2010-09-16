@@ -9,20 +9,6 @@ package org.farmcode.display.scrolling
 	 */
 	public interface IScrollable
 	{
-		function addScrollWheelListener(direction:String):Boolean;
-		function getScrollMetrics(direction:String):ScrollMetrics;
-		function setScrollMetrics(direction:String, metrics:ScrollMetrics):void;
-		function getScrollMultiplier(direction:String):Number;
-		
-		
-		/**
-		 * handler(from:IScrollable, direction:String, metrics:ScrollMetrics)
-		 */
-		function get scrollMetricsChanged():IAct;
-		
-		/**
-		 * handler(from:IScrollable, delta:int)
-		 */
-		function get mouseWheel():IAct;
+		function getScrollMetrics(direction:String):IScrollMetrics;
 	}
 }

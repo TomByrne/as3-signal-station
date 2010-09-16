@@ -5,7 +5,7 @@ package org.farmcode.display.progress
 	public class SimpleSWFPreloaderFrame extends SWFPreloaderFrame
 	{
 		public function SimpleSWFPreloaderFrame(){
-			super(null,new SimpleProgressDisplay(nativeFactory.getNewByType(ISpriteAsset)),false);
+			super(null,new SimpleProgressDisplay(nativeFactory.createContainer()),false);
 		}
 	}
 }

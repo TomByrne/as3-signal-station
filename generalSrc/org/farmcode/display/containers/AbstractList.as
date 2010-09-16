@@ -20,8 +20,10 @@ package org.farmcode.display.containers
 	import org.farmcode.display.core.View;
 	import org.farmcode.display.layout.ILayoutSubject;
 	import org.farmcode.display.layout.grid.RendererGridLayout;
+	import org.farmcode.display.scrolling.IScrollMetrics;
 	import org.farmcode.display.scrolling.IScrollable;
-	import org.farmcode.display.scrolling.ScrollMetrics;
+	import org.farmcode.display.scrolling.ScrollMultiplier;
+	import org.farmcode.display.scrolling.ScrollWheelScroller;
 	import org.farmcode.instanceFactory.IInstanceFactory;
 	import org.farmcode.instanceFactory.SimpleInstanceFactory;
 	
@@ -51,14 +53,6 @@ package org.farmcode.display.containers
 		/**
 		 * @inheritDoc
 		 */
-		public function get scrollMetricsChanged():IAct{
-			if(!_scrollMetricsChanged)_scrollMetricsChanged = new Act();
-			return _scrollMetricsChanged;
-		}
-		
-		/**
-		 * @inheritDoc
-		 */
 		public function get mouseWheel():IAct{
 			if(!_mouseWheel)_mouseWheel = new Act();
 			return _mouseWheel;
@@ -78,7 +72,6 @@ package org.farmcode.display.containers
 		
 		
 		protected var _mouseWheel:Act;
-		protected var _scrollMetricsChanged:Act;
 		
 		protected var _hideScrollBarWhenUnusable:Boolean = true;
 		protected var _dataField:String;
@@ -92,6 +85,11 @@ package org.farmcode.display.containers
 		protected var _assumedAssetFactory:IInstanceFactory;
 		protected var _assumedRendererFactory:SimpleInstanceFactory;
 		protected var _scrollRect:Rectangle = new Rectangle();
+		protected var _scrollMetrics:IScrollMetrics;
+		protected var _mouseWheelScroller:ScrollWheelScroller;
+		
+		private var _horScrollMetrics:IScrollMetrics;
+		private var _verScrollMetrics:IScrollMetrics;
 		
 		protected var _renderers:Array = [];
 		
@@ -102,23 +100,14 @@ package org.farmcode.display.containers
 			super.init();
 			createLayout();
 			_layout.measurementsChanged.addHandler(onLayoutMeasChange);
-			_layout.scrollMetricsChanged.addHandler(onLayoutScroll);
 			_layout.addRendererAct.addHandler(onAddRenderer);
 			_layout.removeRendererAct.addHandler(onRemoveRenderer);
+			
+			_mouseWheelScroller = new ScrollWheelScroller();
+			_mouseWheelScroller.multiplier = 10;
 		}
 		protected function createLayout() : void{
 			_layout = new RendererGridLayout(this);
-		}
-		protected function onLayoutScroll(from:RendererGridLayout, direction:String, metrics:ScrollMetrics) : void{
-			if(_scrollBar && _scrollBar.direction==direction){
-				var metrics:ScrollMetrics = _scrollBar.scrollSubject.getScrollMetrics(_scrollBar.direction);
-				var scrollBar:Boolean = (metrics.maximum>metrics.pageSize);
-				if(scrollBar!=_scrollBarShown){
-					performMeasChanged();
-					invalidate();
-				}
-			}
-			if(_scrollMetricsChanged)_scrollMetricsChanged.perform(this,direction,metrics);
 		}
 		protected function onMouseWheel(from:IInteractiveObjectAsset, actInfo:IMouseActInfo, delta:int) : void{
 			if(_mouseWheel)_mouseWheel.perform(this,delta);
@@ -134,6 +123,7 @@ package org.farmcode.display.containers
 				}
 				_scrollBar.asset = scrollBarAsset;
 				_scrollBar.scrollSubject = this;
+				setScrollBarMetrics(_layout.getScrollMetrics(_scrollBar.direction));
 			}
 			_assumedRendererAsset = _containerAsset.takeAssetByName(assumedRendererAssetName(),IDisplayAsset,true);
 			if(_assumedRendererAsset){
@@ -142,6 +132,26 @@ package org.farmcode.display.containers
 			}
 			_container = _containerAsset.factory.createContainer();
 			_containerAsset.addAsset(_container);
+			
+			_mouseWheelScroller.scrollMetrics = _layout.getScrollMetrics(_layout.flowDirection);
+			_mouseWheelScroller.display = _interactiveObjectAsset;
+		}
+		protected function setScrollBarMetrics(scrollMetrics:IScrollMetrics):void{
+			if(_scrollMetrics!=scrollMetrics){
+				if(_scrollMetrics){
+					_scrollMetrics.scrollMetricsChanged.removeHandler(onScrollMetricsChanged);
+				}
+				_scrollMetrics = scrollMetrics;
+				if(_scrollMetrics){
+					_scrollMetrics.scrollMetricsChanged.addHandler(onScrollMetricsChanged);
+				}
+				performMeasChanged();
+				invalidate();
+			}
+		}
+		protected function onScrollMetricsChanged(from:IScrollMetrics) : void{
+			performMeasChanged();
+			invalidate();
 		}
 		protected function assumedRendererAssetName() : String{
 			return AssetNames.LIST_ITEM;
@@ -170,6 +180,8 @@ package org.farmcode.display.containers
 			_containerAsset.removeAsset(_container);
 			_containerAsset.factory.destroyAsset(_container);
 			_container = null;
+			
+			_mouseWheelScroller.display = null;
 		}
 		protected function onLayoutMeasChange(from:ILayoutSubject, oldWidth:Number, oldHeight:Number) : void{
 			performMeasChanged();
@@ -202,7 +214,7 @@ package org.farmcode.display.containers
 			_measurements.x = layoutMeas.x;
 			_measurements.y = layoutMeas.y;
 			if(_scrollBar){
-				var metrics:ScrollMetrics = _scrollBar.scrollSubject.getScrollMetrics(_scrollBar.direction);
+				var metrics:IScrollMetrics = _scrollBar.scrollSubject.getScrollMetrics(_scrollBar.direction);
 				var scrollBar:Boolean = (metrics.maximum>metrics.pageSize && metrics.pageSize) || (!_scrollBar.hideWhenUnusable);
 				if(scrollBar){
 					var meas:Point = _scrollBar.measurements;
@@ -225,7 +237,7 @@ package org.farmcode.display.containers
 			var layoutHeight:Number = height;
 			if(_scrollBar){
 				var meas:Point = _scrollBar.measurements;
-				var metrics:ScrollMetrics = _scrollBar.scrollSubject.getScrollMetrics(_scrollBar.direction);
+				var metrics:IScrollMetrics = _scrollBar.scrollSubject.getScrollMetrics(_scrollBar.direction);
 				_scrollBarShown = (metrics.maximum>metrics.pageSize || !_scrollBar.hideWhenUnusable);
 				if(_scrollBar.direction==Direction.VERTICAL){
 					_scrollBar.setDisplayPosition(width-meas.x-_layout.marginRight,_layout.marginTop,meas.x,height-_layout.marginTop-_layout.marginBottom);
@@ -300,21 +312,14 @@ package org.farmcode.display.containers
 			_layout.rendererFactory = factory;
 			_layout.dataField = dataField;
 		}
-		public function addScrollWheelListener(direction:String):Boolean{
-			return true;
-		}
-		public function getScrollMetrics(direction:String):ScrollMetrics{
-			return _layout.getScrollMetrics(direction);
-		}
-		public function setScrollMetrics(direction:String,metrics:ScrollMetrics):void{
-			_layout.setScrollMetrics(direction,metrics);
-		}
-		public function getScrollMultiplier(direction:String):Number{
-			if((direction==Direction.VERTICAL && _layout.verticalScrollByLine) || 
-				(direction==Direction.HORIZONTAL && _layout.horizontalScrollByLine)){
-				return 1;
+		
+		public function getScrollMetrics(direction:String):IScrollMetrics{
+			if(direction==Direction.HORIZONTAL){
+				if(!_horScrollMetrics)_horScrollMetrics = new ScrollMultiplier(10,_layout.getScrollMetrics(direction));
+				return _horScrollMetrics;
 			}else{
-				return 10;
+				if(!_verScrollMetrics)_verScrollMetrics = new ScrollMultiplier(10,_layout.getScrollMetrics(direction));
+				return _verScrollMetrics;
 			}
 		}
 	}
