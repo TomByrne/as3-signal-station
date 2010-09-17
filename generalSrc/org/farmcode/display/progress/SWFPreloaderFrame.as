@@ -155,6 +155,7 @@ package org.farmcode.display.progress
 			Config::DEBUG{
 				_application = DebugManager.addApplication(_application);
 			}
+			applySizeToApplication();
 			
 			if(_progressDisplayAnim){
 				var timer:Timer = new Timer(_progressDisplayAnim.showOutro()*1000,1);
@@ -172,7 +173,6 @@ package org.farmcode.display.progress
 		protected function addAppToStage():void{
 			_nativeAsset.removeAsset(_progressDisplay.display);
 			_application.container = _nativeAsset;
-			applySizeToApplication();
 		}
 		private function guessClassName():String{
 			var results:Object = CLASS_FILENAME_PATTERN.exec(unescape(stage.loaderInfo.url));
