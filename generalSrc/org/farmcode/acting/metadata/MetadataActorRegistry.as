@@ -1,6 +1,5 @@
 package org.farmcode.acting.metadata
 {
-	import flash.display.DisplayObject;
 	import flash.utils.Dictionary;
 	
 	import org.farmcode.acting.ActingNamspace;
@@ -193,4 +192,6 @@ class MetadataTest
 {
 	[ActRule]
 	public var act: String;
+	[ActReaction]
+	public var actReaction: String;
 }

@@ -566,7 +566,7 @@ package org.farmcode.display.layout.grid
 			}
 		}
 		override protected function validateScroll(scrollMetrics:ScrollMetrics, axis:GridAxis) : void{
-			if(scrollMetrics.value<0 || isNaN(scrollMetrics.value))scrollMetrics.value = 0;
+			if(scrollMetrics.scrollValue<0 || isNaN(scrollMetrics.scrollValue))scrollMetrics.scrollValue = 0;
 			var pixScroll:Number;
 			var pixScrollMax:Number;
 			var realDim:Number = _displayPosition[axis.dimRef];
@@ -580,7 +580,7 @@ package org.farmcode.display.layout.grid
 				var stack:Number = axis.foreMargin;
 				var total:Number = 0;
 				var foundPixMax:Boolean;
-				var scrollValue:int = Math.round(scrollMetrics.value);
+				var scrollValue:int = Math.round(scrollMetrics.scrollValue);
 				
 				/*
 				when we're scrolling with pixel values, it's better to act as if we're scrolled right to the bottom/right
@@ -597,8 +597,8 @@ package org.farmcode.display.layout.grid
 							comparePixScroll = stack;
 							newIndex = i;
 						}
-					}else if(stack+measurement>scrollMetrics.value && isNaN(pixScroll)){
-						pixScroll = scrollMetrics.value;
+					}else if(stack+measurement>scrollMetrics.scrollValue && isNaN(pixScroll)){
+						pixScroll = scrollMetrics.scrollValue;
 						comparePixScroll = stack+measurement;
 						newIndex = i;
 					}
@@ -659,12 +659,12 @@ package org.farmcode.display.layout.grid
 			castAxis.dimIndex = newIndex;
 			castAxis.dimIndexMax = newIndexMax;
 			
-			if(axis.pixScrollMetrics.maximum != realMeas || axis.pixScrollMetrics.pageSize != realDim || axis.pixScrollMetrics.value != pixScroll){
+			if(axis.pixScrollMetrics.maximum != realMeas || axis.pixScrollMetrics.pageSize != realDim || axis.pixScrollMetrics.scrollValue != pixScroll){
 				axis.pixScrollMetrics.maximum = realMeas;
 				axis.pixScrollMetrics.pageSize = realDim;
-				axis.pixScrollMetrics.value = pixScroll;
-				var dir:String = (scrollMetrics==_horizontalAxis.scrollMetrics)?Direction.HORIZONTAL:Direction.VERTICAL;
-				if(_scrollMetricsChanged)_scrollMetricsChanged.perform(this, dir, axis.pixScrollMetrics);
+				axis.pixScrollMetrics.scrollValue = pixScroll;
+				/*var dir:String = (scrollMetrics==_horizontalAxis.scrollMetrics)?Direction.HORIZONTAL:Direction.VERTICAL;
+				if(_scrollMetricsChanged)_scrollMetricsChanged.perform(this, dir, axis.pixScrollMetrics);*/
 			}
 		}
 		protected function removeAllRenderers():void{

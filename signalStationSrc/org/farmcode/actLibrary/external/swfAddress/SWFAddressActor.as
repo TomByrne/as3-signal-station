@@ -63,12 +63,19 @@ package org.farmcode.actLibrary.external.swfAddress
 			
 			metadataTarget = this;
 		}
+		override protected function setAdded(value:Boolean):void{
+			super.setAdded(value);
+			if(value)checkAddress();
+		}
 		protected function onSWFAddressInit(event:SWFAddressEvent):void{
 			_pageTitle = SWFAddress.getTitle();
 		}
 		protected function onSWFAddressChange(e:SWFAddressEvent):void{
+			if(added)checkAddress();
+		}
+		protected function checkAddress():void{
 			var oldValue:String = _currentPath.stringValue;
-			var newValue:String = e.value;
+			var newValue:String = SWFAddress.getValue();
 			
 			var execution:UniversalActExecution = pendingExecutions[newValue];
 			if(execution){

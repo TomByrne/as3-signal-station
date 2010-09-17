@@ -13,6 +13,7 @@
 	import org.farmcode.debug.data.core.DebugData;
 	import org.farmcode.debug.nodes.DebugDataNode;
 	import org.farmcode.debug.nodes.GraphStatisticNode;
+	import org.farmcode.display.assets.assetTypes.IAsset;
 	import org.farmcode.display.assets.assetTypes.IContainerAsset;
 	import org.farmcode.display.assets.assetTypes.IDisplayAsset;
 	import org.farmcode.display.assets.assetTypes.IStageAsset;
@@ -143,10 +144,20 @@
 			}
 		}
 		protected function setAsset(value:IDisplayAsset) : void{
-			removeMainAsset();
+			if(_asset){
+				removeMainAsset();
+				_asset.addedToStage.removeHandler(onAddedToStage);
+			}
 			_asset = value;
 			_scopedObject.asset = value;
-			addMainAsset();
+			if(_asset){
+				_asset.addedToStage.addHandler(onAddedToStage);
+				addMainAsset();
+			}
+		}
+		private function onAddedToStage(from:IAsset) : void{
+			// after fullscreen is exited this will occur
+			setMainViewSize();
 		}
 		private function setStage(value:IStageAsset) : void{
 			if(_lastStage!=value){

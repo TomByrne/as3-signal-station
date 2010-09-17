@@ -25,6 +25,8 @@ package org.farmcode.display.assets.nativeAssets
 		private var _skinContainer:DisplayObjectContainer;
 		private var bundles:Array;
 		
+		public var pixelSnapping:Boolean;
+		
 		public function NativeAssetFactory(skinContainer:DisplayObjectContainer=null){
 			this.skinContainer = skinContainer;
 		}
@@ -44,6 +46,7 @@ package org.farmcode.display.assets.nativeAssets
 		}
 		public function createHitArea():ISpriteAsset{
 			var ret:SpriteAsset = getNewByType(ISpriteAsset);
+			ret.pixelSnapping = pixelSnapping;
 			var sprite:Sprite = ret.displayObject as Sprite;
 			sprite.graphics.beginFill(0,0);
 			sprite.graphics.drawRect(0,0,10,10);
@@ -93,6 +96,7 @@ package org.farmcode.display.assets.nativeAssets
 						cast.parent = getNew(displayObject.parent); // this provides the entire app with a reference to the IStageAsset
 					}
 				}
+				ret.pixelSnapping = pixelSnapping;
 				return ret;
 			}else{
 				return null;
@@ -113,6 +117,7 @@ package org.farmcode.display.assets.nativeAssets
 			var ret:NativeAsset = takeFrom(bundle.pool, bundle.assetClass);
 			var display:* = new bundle.displayClass();
 			ret.display = display;
+			ret.pixelSnapping = pixelSnapping;
 			cache[display] = ret;
 			return ret;
 		}
@@ -130,6 +135,7 @@ package org.farmcode.display.assets.nativeAssets
 			}
 			var lateProps:Dictionary = new Dictionary();
 			lateProps["displayObject"] = new MultiInstanceFactory(displayClass);
+			lateProps["pixelSnapping"] = pixelSnapping;
 			ret.addProperties(lateProps);
 			
 			ret.useChildFactories = true;

@@ -72,16 +72,17 @@ package org.farmcode.display.utils
 		private var _oldParent:IContainerAsset;
 		private var _oldDepth:int;
 		private var _lastStage:IStageAsset;
-		
+
 		public function FullscreenUtil(view:ILayoutView=null){
 			this.view = view;
 		}
 		protected function addFullscreen():void{
+			_lastStage = (stage?stage:_view.asset.stage);
 			_oldParent = _view.asset.parent;
 			if(_oldParent){
 				_oldDepth = _oldParent.getAssetIndex(_view.asset);
+				_oldParent.removeAsset(_view.asset);
 			}
-			_lastStage = (stage?stage:_view.asset.stage);
 			TopLayerManager.add(_view.asset,_lastStage);
 			checkSize();
 			
@@ -94,6 +95,7 @@ package org.farmcode.display.utils
 			_lastStage.fullScreen.removeHandler(onFullScreen);
 			
 			_lastStage.displayState = StageDisplayState.NORMAL;
+			
 			_lastStage = null;
 			TopLayerManager.remove(_view.asset);
 			if(_oldParent){
@@ -110,7 +112,7 @@ package org.farmcode.display.utils
 			_view.asset.scaleY = _fullScreenScale;
 		}
 		protected function onFullScreen(e:Event, from:IStageAsset):void{
-			active = false;
+			active = (from.displayState==StageDisplayState.FULL_SCREEN);
 		}
 	}
 }

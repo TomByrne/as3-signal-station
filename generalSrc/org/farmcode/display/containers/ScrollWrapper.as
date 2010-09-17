@@ -12,6 +12,7 @@ package org.farmcode.display.containers
 	import org.farmcode.display.core.IView;
 	import org.farmcode.display.layout.ILayoutSubject;
 	import org.farmcode.display.layout.ProxyLayoutSubject;
+	import org.farmcode.display.scrolling.IScrollMetrics;
 	import org.farmcode.display.scrolling.IScrollable;
 	import org.farmcode.display.scrolling.ScrollMetrics;
 	
@@ -57,10 +58,10 @@ package org.farmcode.display.containers
 		/**
 		 * @inheritDoc
 		 */
-		public function get scrollMetricsChanged():IAct{
+		/*public function get scrollMetricsChanged():IAct{
 			if(!_scrollMetricsChanged)_scrollMetricsChanged = new Act();
 			return _scrollMetricsChanged;
-		}
+		}*/
 		
 		/**
 		 * @inheritDoc
@@ -71,7 +72,7 @@ package org.farmcode.display.containers
 		}
 		
 		protected var _mouseWheel:Act;
-		protected var _scrollMetricsChanged:Act;
+		//protected var _scrollMetricsChanged:Act;
 		
 		private var _allowHorizontalScroll:Boolean = true;
 		private var _allowVerticalScroll:Boolean = true;
@@ -86,11 +87,11 @@ package org.farmcode.display.containers
 		
 		public function ScrollWrapper(target:ILayoutSubject=null){
 			this.target = target;
-			_vScrollMetrics.value = 0;
-			_hScrollMetrics.value = 0;
+			_vScrollMetrics.scrollValue = 0;
+			_hScrollMetrics.scrollValue = 0;
 		}
 		
-		public function addScrollWheelListener(direction:String):Boolean{
+		/*public function addScrollWheelListener(direction:String):Boolean{
 			return true;
 		}
 		public function setScrollMultiplier(direction:String, multiplier:Number):void{
@@ -106,15 +107,15 @@ package org.farmcode.display.containers
 			}else{
 				return _verticalMultiplier;
 			}
-		}
-		public function getScrollMetrics(direction:String):ScrollMetrics{
+		}*/
+		public function getScrollMetrics(direction:String):IScrollMetrics{
 			if(direction==Direction.VERTICAL){
 				return _vScrollMetrics;
 			}else{
 				return _hScrollMetrics;
 			}
 		}
-		public function setScrollMetrics(direction:String,metrics:ScrollMetrics):void{
+		/*public function setScrollMetrics(direction:String,metrics:IScrollMetrics):void{
 			var dest:ScrollMetrics;
 			if(direction==Direction.VERTICAL){
 				dest = _vScrollMetrics;
@@ -124,11 +125,11 @@ package org.farmcode.display.containers
 			dest.maximum = metrics.maximum;
 			dest.minimum = metrics.minimum;
 			dest.pageSize = metrics.pageSize;
-			dest.value = metrics.value;
-			_scrollRect.y = _vScrollMetrics.value;
-			_scrollRect.x = _hScrollMetrics.value;
+			dest.scrollValue = metrics.scrollValue;
+			_scrollRect.y = _vScrollMetrics.scrollValue;
+			_scrollRect.x = _hScrollMetrics.scrollValue;
 			checkScrolling(false);
-		}
+		}*/
 		override public function setDisplayPosition(x:Number, y:Number, width:Number, height:Number):void{
 			_displayPosition.x = x;
 			_displayPosition.y = y;
@@ -137,11 +138,11 @@ package org.farmcode.display.containers
 			
 			if(_vScrollMetrics.pageSize!=height){
 				_vScrollMetrics.pageSize = height;
-				_scrollMetricsChanged.perform(this,Direction.VERTICAL,_vScrollMetrics);
+				//_scrollMetricsChanged.perform(this,Direction.VERTICAL,_vScrollMetrics);
 			}
 			if(_hScrollMetrics.pageSize!=width){
 				_hScrollMetrics.pageSize = width;
-				_scrollMetricsChanged.perform(this,Direction.HORIZONTAL,_hScrollMetrics);
+				//_scrollMetricsChanged.perform(this,Direction.HORIZONTAL,_hScrollMetrics);
 			}
 			
 			_scrollRect.width = width;
@@ -187,14 +188,14 @@ package org.farmcode.display.containers
 				hChange = vChange = true;
 				setScrollRect(null);
 			}
-			if(performAct && _scrollMetricsChanged){
+			/*if(performAct && _scrollMetricsChanged){
 				if(vChange){
 					_scrollMetricsChanged.perform(this,Direction.VERTICAL,_vScrollMetrics);
 				}
 				if(hChange){
 					_scrollMetricsChanged.perform(this,Direction.HORIZONTAL,_hScrollMetrics);
 				}
-			}
+			}*/
 		}
 		protected function setScrollRect(rect:Rectangle):void{
 			if(_targetView){

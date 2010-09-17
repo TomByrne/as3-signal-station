@@ -35,6 +35,7 @@ package org.farmcode.display.assets.nativeAssets {
 		private var _movieClip:MovieClip;
 		private var _mainAnalysis:MovieClipFrameAnalysis = new MovieClipFrameAnalysis();
 		private var _childClips:Dictionary = new Dictionary(true);
+		private var _toRemove:Array;
 		
 		public function MovieClipAsset(factory:NativeAssetFactory=null){
 			super(factory);
@@ -55,7 +56,13 @@ package org.farmcode.display.assets.nativeAssets {
 		}
 		protected function applyChildStates():void{
 			for(var i:* in _childClips){
-				setAllStateListsIn(_childClips[i]);
+				setAllStateListsIn(_childClips[i],true);
+			}
+			if(_toRemove){
+				for(var j:int=_toRemove.length-1; j>=0; --j){
+					removeChild(_toRemove[j]);
+				}
+				_toRemove = null;
 			}
 		}
 		
@@ -71,9 +78,9 @@ package org.farmcode.display.assets.nativeAssets {
 				var thisRet:int = _mainAnalysis.playFrameLabel(stateName);
 				var stage:Stage = _movieClip.stage;
 				if(stage && thisRet!=-1) {
-					return(thisRet/stage.frameRate);
+					thisRet = (thisRet/stage.frameRate);
+					if(thisRet>ret)ret = thisRet;
 				}
-				if(thisRet>ret)ret = thisRet;
 			}
 			return ret;
 		}
@@ -115,7 +122,7 @@ package org.farmcode.display.assets.nativeAssets {
 				var frameAnalysis:MovieClipFrameAnalysis = MovieClipFrameAnalysis.getNew(target);
 				_childClips[target] = frameAnalysis;
 				addChildren(target);
-				if(stage)setAllStateListsIn(frameAnalysis);
+				if(stage)setAllStateListsIn(frameAnalysis,false);
 			}
 		}
 		protected function addChildren(parent:MovieClip):void{
@@ -126,21 +133,32 @@ package org.farmcode.display.assets.nativeAssets {
 				}
 			}
 		}
-		protected function setAllStateListsIn(frameAnalysis:MovieClipFrameAnalysis):void{
+		protected function setAllStateListsIn(frameAnalysis:MovieClipFrameAnalysis, checkIfTaken:Boolean):void{
+			if(checkIfTaken){
+				// we check the movieclip to see if something has taken it as an asset after we stored it.
+				var asset:IMovieClipAsset = _nativeFactory.getExisting(frameAnalysis.movieClip);
+				if(asset){
+					if(!_toRemove)_toRemove = [];
+					_toRemove.push(frameAnalysis.movieClip);
+					return;
+				}
+			}
 			for each(var stateList:Array in _stateLists){
 				for each(var state:IStateDef in stateList){
 					if(state.selection!=-1){
 						var stateName:String = state.options[state.selection];
-						var duration:int = frameAnalysis.playFrameLabel(stateName);
-						if(duration!=-1){
-							var stage:Stage = frameAnalysis.movieClip.stage;
-							if(stage) {
-								var time:Number = (duration/stage.frameRate);
-								if(state.stateChangeDuration<time){
-									state.stateChangeDuration = time;
+						if(stateName){ //  some dynamic assets use null states to allow default styles
+							var duration:int = frameAnalysis.playFrameLabel(stateName);
+							if(duration!=-1){
+								var stage:Stage = frameAnalysis.movieClip.stage;
+								if(stage) {
+									var time:Number = (duration/stage.frameRate);
+									if(state.stateChangeDuration<time){
+										state.stateChangeDuration = time;
+									}
 								}
+								return;
 							}
-							return;
 						}
 					}
 				}

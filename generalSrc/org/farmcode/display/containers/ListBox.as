@@ -1,19 +1,6 @@
 package org.farmcode.display.containers
 {
-	import flash.geom.Point;
-	import flash.geom.Rectangle;
-	import flash.utils.Dictionary;
-	
-	import org.farmcode.acting.actTypes.IAct;
-	import org.farmcode.acting.acts.Act;
-	import org.farmcode.data.dataTypes.IBooleanConsumer;
-	import org.farmcode.data.dataTypes.IBooleanProvider;
 	import org.farmcode.display.assets.assetTypes.IDisplayAsset;
-	import org.farmcode.display.constants.Direction;
-	import org.farmcode.display.core.ILayoutView;
-	import org.farmcode.display.layout.grid.RendererGridLayout;
-	import org.farmcode.display.layout.list.ListLayoutInfo;
-	import org.farmcode.display.scrolling.ScrollMetrics;
 	import org.farmcode.instanceFactory.IInstanceFactory;
 	
 	public class ListBox extends AbstractSelectableList

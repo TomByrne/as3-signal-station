@@ -126,8 +126,8 @@ package org.farmcode.display.assets.nativeAssets
 		}
 		public function addAssetAt(asset:IDisplayAsset, index:int):IDisplayAsset{
 			var cast:DisplayObjectAsset = (asset as DisplayObjectAsset);
+			storeChildAsset(cast,cast.displayObject); //  this must happen before actual adding so that parent ref. exists for event handlers
 			_displayObjectContainer.addChildAt(cast.displayObject,index);
-			storeChildAsset(cast,cast.displayObject);
 			return asset;
 		}
 		public function getAssetAt(index:int):IDisplayAsset{
