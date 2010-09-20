@@ -20,14 +20,14 @@ package org.farmcode.actLibrary.core
 		
 		override public function set asset(value:IDisplayAsset):void{
 			if(super.asset!=value){
-				for each(var view:IScopedObject in _children){
-					view.scope = value;
-				}
 				if(_registered){
 					MetadataActorRegistry.changeActorDisplay(_metadataTarget,value);
 				}
+				assessMetadata(value);
+				for each(var view:IScopedObject in _children){
+					view.scope = value;
+				}
 				super.asset = value;
-				assessMetadata();
 			}
 		}
 		
@@ -71,15 +71,16 @@ package org.farmcode.actLibrary.core
 				throw new Error("act hasn't been added");
 			}
 		}
-		public function assessMetadata():void{
+		public function assessMetadata(asset:IDisplayAsset=null):void{
+			if(!asset)asset = _asset;
 			if(_registered){
-				if(!_metadataTarget || !_asset){
+				if(!_metadataTarget || !asset){
 					_registered = false;
 					MetadataActorRegistry.removeActor(_metadataTarget);
 				}
-			}else if(_metadataTarget && _asset){
+			}else if(_metadataTarget && asset){
 				_registered = true;
-				MetadataActorRegistry.addActor(_metadataTarget,_asset);
+				MetadataActorRegistry.addActor(_metadataTarget,asset);
 			}
 		}
 	}

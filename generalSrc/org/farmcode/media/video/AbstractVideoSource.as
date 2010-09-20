@@ -142,7 +142,7 @@ package org.farmcode.media.video
 		protected var _muted:Boolean;
 		protected var _buffered:Boolean;
 		protected var _playing:Boolean;
-		protected var _useTotalForProgress:Boolean;
+		protected var _useTotalForProgress:Boolean = true;
 		protected var _smallBuffer:Number;
 		protected var _displaysTaken:int = 0;
 		

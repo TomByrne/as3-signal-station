@@ -58,6 +58,14 @@ package org.farmcode.display.progress
 			_foregroundColour = value;
 			drawForeground();
 		}
+		public function get backgroundColour():Number{
+			return _backgroundColour;
+		}
+		public function set backgroundColour(value:Number):void{
+			attemptInit();
+			_backgroundColour = value;
+			drawBackground();
+		}
 		
 		public function get doInvertBlend():Boolean{
 			return _doInvertBlend;
@@ -71,6 +79,7 @@ package org.farmcode.display.progress
 		
 		private var _doInvertBlend:Boolean = true;
 		private var _foregroundColour:Number = 0;
+		private var _backgroundColour:Number = 0;
 		private var _backgroundAlpha:Number;
 		private var _showMessage:Boolean = false;
 		private var _detailsFormat:String;
@@ -103,8 +112,7 @@ package org.farmcode.display.progress
 			_container.blendMode = _doInvertBlend?BlendMode.INVERT:BlendMode.NORMAL;
 			
 			_background = new Shape();
-			_background.graphics.beginFill(0,1);
-			_background.graphics.drawRect(0,0,10,10);
+			drawBackground();
 			_background.alpha = _backgroundAlpha;
 			_container.addChild(_background);
 			
@@ -123,19 +131,26 @@ package org.farmcode.display.progress
 			_messageField.type = TextFieldType.DYNAMIC;
 			_centerContainer.addChild(_messageField);
 			
+			_border = new Shape();
+			_bar = new Shape();
 			drawForeground();
+			_centerContainer.addChild(_border);
+			_centerContainer.addChild(_bar);
 			
 		}
+		protected function drawBackground() : void{
+			_background.graphics.clear();
+			_background.graphics.beginFill(_backgroundColour,1);
+			_background.graphics.drawRect(0,0,10,10);
+		}
 		protected function drawForeground() : void{
-			_border = new Shape();
+			_border.graphics.clear();
 			_border.graphics.lineStyle(0,_foregroundColour,1,true,LineScaleMode.NONE,CapsStyle.SQUARE,JointStyle.MITER);
 			_border.graphics.drawRect(0,0,BAR_WIDTH,BAR_HEIGHT);
-			_centerContainer.addChild(_border);
 			
-			_bar = new Shape();
+			_bar.graphics.clear();
 			_bar.graphics.beginFill(_foregroundColour,1);
 			_bar.graphics.drawRect(0,0,BAR_WIDTH,BAR_HEIGHT);
-			_centerContainer.addChild(_bar);
 			invalidate();
 		}
 		override protected function doShowIntro() : void{

@@ -81,8 +81,18 @@ package org.farmcode.acting.acts
 				handlers.push(ret);
 				setHandlerCount(++_handlerCount);
 			}else{
-				Config::DEBUG{
-					trace("WARNING: attempting to add handler twice (Act._addHandler())");
+				if(_removeAll){
+					_removeAll = false;
+					_toRemove = [];
+					for each(var actHandler:ActHandler in _handlers){
+						_toRemove.push(actHandler.handler);
+					}
+				}else{
+					var removeIndex:int = _toRemove.indexOf(handler);
+					if(removeIndex!=-1)_toRemove.splice(index,1);
+					Config::DEBUG{
+						if(removeIndex==-1)trace("WARNING: attempting to add handler twice (Act._addHandler())");
+					}
 				}
 				var index:int = handlerIndices[handler];
 				ret = handlers[index];

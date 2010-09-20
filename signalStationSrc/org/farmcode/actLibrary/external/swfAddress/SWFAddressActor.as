@@ -11,13 +11,13 @@ package org.farmcode.actLibrary.external.swfAddress
 	import org.farmcode.acting.universal.UniversalActExecution;
 	import org.farmcode.data.core.StringData;
 	import org.farmcode.data.dataTypes.IStringProvider;
+	import org.farmcode.display.assets.assetTypes.IDisplayAsset;
 	
 	
 	use namespace ActingNamspace;
 	
 	public class SWFAddressActor extends UniversalActorHelper
 	{
-		
 		public function get rootPathAlias():String{
 			return _rootPathAlias;
 		}
@@ -102,8 +102,8 @@ package org.farmcode.actLibrary.external.swfAddress
 		[ActRule(ActClassRule)]
 		[ActReaction(phases="{setSWFAddressPhases}")]
 		public function setSWFAddress(execution:UniversalActExecution, cause:ISetSWFAddressAct):void{
-			var cast:IGetSWFAddressAct = (cause as IGetSWFAddressAct);
 			if(cause!=_setSWFAddressAct){
+				var cast:IGetSWFAddressAct = (cause as IGetSWFAddressAct);
 				var oldValue:String = _currentPath.stringValue;
 				var notSet:Boolean = (!oldValue || oldValue=="" || oldValue=="/");
 				if(notSet || !cause.onlyIfNotSet){
@@ -123,8 +123,8 @@ package org.farmcode.actLibrary.external.swfAddress
 						return;
 					}
 				}
+				if(cast)fillGetSWFAddress(cast);
 			}
-			if(cast)fillGetSWFAddress(cast);
 			execution.continueExecution();
 		}
 		public function fillGetSWFAddress(act:IGetSWFAddressAct):void{

@@ -53,10 +53,10 @@ package org.farmcode.display.containers
 		/**
 		 * @inheritDoc
 		 */
-		public function get mouseWheel():IAct{
+		/*public function get mouseWheel():IAct{
 			if(!_mouseWheel)_mouseWheel = new Act();
 			return _mouseWheel;
-		}
+		}*/
 		
 		public function get hideScrollBarWhenUnusable():Boolean{
 			return _hideScrollBarWhenUnusable;
@@ -71,7 +71,7 @@ package org.farmcode.display.containers
 		}
 		
 		
-		protected var _mouseWheel:Act;
+		//protected var _mouseWheel:Act;
 		
 		protected var _hideScrollBarWhenUnusable:Boolean = true;
 		protected var _dataField:String;
@@ -104,17 +104,16 @@ package org.farmcode.display.containers
 			_layout.removeRendererAct.addHandler(onRemoveRenderer);
 			
 			_mouseWheelScroller = new ScrollWheelScroller();
-			_mouseWheelScroller.multiplier = 10;
 		}
 		protected function createLayout() : void{
 			_layout = new RendererGridLayout(this);
 		}
-		protected function onMouseWheel(from:IInteractiveObjectAsset, actInfo:IMouseActInfo, delta:int) : void{
+		/*protected function onMouseWheel(from:IInteractiveObjectAsset, actInfo:IMouseActInfo, delta:int) : void{
 			if(_mouseWheel)_mouseWheel.perform(this,delta);
-		}
+		}*/
 		override protected function bindToAsset() : void{
 			super.bindToAsset();
-			_interactiveObjectAsset.mouseWheel.addHandler(onMouseWheel);
+			//_interactiveObjectAsset.mouseWheel.addHandler(onMouseWheel);
 			var scrollBarAsset:IDisplayAsset = _containerAsset.takeAssetByName(AssetNames.SCROLL_BAR,IDisplayAsset,true);
 			if(scrollBarAsset){
 				if(!_scrollBar){
@@ -133,7 +132,7 @@ package org.farmcode.display.containers
 			_container = _containerAsset.factory.createContainer();
 			_containerAsset.addAsset(_container);
 			
-			_mouseWheelScroller.scrollMetrics = _layout.getScrollMetrics(_layout.flowDirection);
+			_mouseWheelScroller.scrollMetrics = getScrollMetrics(_layout.flowDirection);
 			_mouseWheelScroller.display = _interactiveObjectAsset;
 		}
 		protected function setScrollBarMetrics(scrollMetrics:IScrollMetrics):void{
@@ -158,7 +157,7 @@ package org.farmcode.display.containers
 		}
 		override protected function unbindFromAsset() : void{
 			super.unbindFromAsset();
-			_interactiveObjectAsset.mouseWheel.removeHandler(onMouseWheel);
+			//_interactiveObjectAsset.mouseWheel.removeHandler(onMouseWheel);
 			if(_scrollBar && _scrollBar.asset){
 				_containerAsset.returnAsset(_scrollBar.asset);
 				_scrollBar.asset = null;

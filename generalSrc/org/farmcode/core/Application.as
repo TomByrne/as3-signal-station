@@ -86,6 +86,7 @@ package org.farmcode.core
 		protected var _assetWatcher:PropertyWatcher;
 		protected var _stageWatcher:PropertyWatcher;
 		protected var _scopedObject:ScopedObject;
+		protected var _mainAssetAdded:Boolean;
 		
 		public function Application(){
 			super();
@@ -133,12 +134,14 @@ package org.farmcode.core
 			return null;
 		}
 		protected function removeMainAsset():void{
-			if(_container && _asset){
+			if(_mainAssetAdded && _container && _asset){
+				_mainAssetAdded = false;
 				_container.removeAsset(_asset);
 			}
 		}
 		protected function addMainAsset():void{
-			if(_container && _asset){
+			if(!_mainAssetAdded && _container && _asset){
+				_mainAssetAdded = true;
 				_container.addAsset(_asset);
 				if(_displayPosition)setMainViewSize();
 			}

@@ -679,6 +679,9 @@ package org.farmcode.display.assets.schema
 		}
 		
 		public function addAsset(asset:IDisplayAsset):void{
+			Config::DEBUG{
+				if(_children[asset.displayObject])trace("WARNING: asset already added (AbstractDynamicAsset.addAsset).");
+			}
 			asset.parent = this;
 			_sprite.addChild(asset.displayObject);
 			_children[asset.displayObject] = asset;
