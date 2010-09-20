@@ -1,4 +1,4 @@
-package org.farmcode.core
+﻿package org.farmcode.core
 {
 	import flash.geom.Rectangle;
 	
@@ -90,7 +90,6 @@ package org.farmcode.core
 		
 		public function Application(){
 			super();
-			_displayPosition = new Rectangle();
 		}
 		final protected function attemptInit() : void{
 			if(!_inited){
@@ -114,6 +113,7 @@ package org.farmcode.core
 			}
 		}
 		public function setDisplayPosition(x:Number, y:Number, width:Number, height:Number):void{
+			if(!_displayPosition)_displayPosition = new Rectangle();
 			_displayPosition.x = x;
 			_displayPosition.y = y;
 			_displayPosition.width = width;
@@ -143,7 +143,7 @@ package org.farmcode.core
 			if(!_mainAssetAdded && _container && _asset){
 				_mainAssetAdded = true;
 				_container.addAsset(_asset);
-				if(_displayPosition)setMainViewSize();
+				setMainViewSize();
 			}
 		}
 		protected function setAsset(value:IDisplayAsset) : void{
@@ -173,9 +173,9 @@ package org.farmcode.core
 		}
 		protected function setMainViewSize() : void{
 			// If FullscreenUtil is being used then this will be skipped
-			if(_asset.parent==_container){
+			var pos:Rectangle = _displayPosition;
+			if(pos && _asset.parent==_container){
 				var scale:Number = (isNaN(_applicationScale) || _applicationScale<=0?1:_applicationScale);
-				var pos:Rectangle = _displayPosition;
 				_mainView.setDisplayPosition(pos.x,pos.y,pos.width*(1/scale),pos.height*(1/scale));
 				_asset.scaleX = scale;
 				_asset.scaleY = scale;
