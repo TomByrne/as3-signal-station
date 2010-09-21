@@ -28,6 +28,7 @@ package org.farmcode.display.controls
 		public function set scrollDirection(value:String):void{
 			if(_scrollDirection!=value){
 				_scrollDirection = value;
+				if(_scrollable)setScrollMetrics(_scrollable.getScrollMetrics(_scrollDirection));
 				validateScroll();
 			}
 		}
@@ -38,13 +39,13 @@ package org.farmcode.display.controls
 		public function set scrollable(value:IScrollable):void{
 			if(_scrollable!=value){
 				_scrollable = value;
-				_scrollable.scrollMetricsChanged.addHandler(onScrollMetricsChanged);
+				if(_scrollDirection)setScrollMetrics(_scrollable.getScrollMetrics(_scrollDirection));
 				validateScroll();
 			}
 		}
 		
 		private var _scrollable:IScrollable;
-		private var _scrollDirection:String;
+		private var _scrollDirection:String = Direction.VERTICAL;
 		private var _foreButton:Button;
 		private var _aftButton:Button;
 		
@@ -53,7 +54,7 @@ package org.farmcode.display.controls
 		private var _lastHoldTime:Number;
 		private var _holdTimer:Timer;
 		
-		private var _scrollMetrics:ScrollMetrics = new ScrollMetrics();
+		private var _scrollMetrics:IScrollMetrics;
 		
 		public function ScrollButtons(asset:IDisplayAsset=null){
 			_foreButton = new Button();
@@ -68,6 +69,17 @@ package org.farmcode.display.controls
 			scrollDirection = Direction.VERTICAL;
 			
 			_holdTimer = new Timer(DEF_INITIAL_HOLD_DELAY,1);
+		}
+		protected function setScrollMetrics(scrollMetrics:IScrollMetrics) : void{
+			if(_scrollMetrics!=scrollMetrics){
+				if(_scrollMetrics){
+					_scrollMetrics.scrollMetricsChanged.removeHandler(onScrollMetricsChanged);
+				}
+				_scrollMetrics = scrollMetrics;
+				if(_scrollMetrics){
+					_scrollMetrics.scrollMetricsChanged.addHandler(onScrollMetricsChanged);
+				}
+			}
 		}
 		override protected function bindToAsset() : void{
 			super.bindToAsset();
@@ -99,16 +111,14 @@ package org.farmcode.display.controls
 		protected function onForeDown(from:Button) : void{
 			_direction = -1;
 			_holdStart = _lastHoldTime = getTimer();
-			var multi:Number = _scrollable.getScrollMultiplier(_scrollDirection);
-			_holdTimer.delay = DEF_INITIAL_HOLD_DELAY/multi;
+			_holdTimer.delay = DEF_INITIAL_HOLD_DELAY;
 			_holdTimer.addEventListener(TimerEvent.TIMER, onTick);
 			_holdTimer.start();
 		}
 		protected function onAftDown(from:Button) : void{
 			_direction = 1;
 			_holdStart = _lastHoldTime = getTimer();
-			var multi:Number = _scrollable.getScrollMultiplier(_scrollDirection);
-			_holdTimer.delay = DEF_INITIAL_HOLD_DELAY/multi;
+			_holdTimer.delay = DEF_INITIAL_HOLD_DELAY;
 			_holdTimer.addEventListener(TimerEvent.TIMER, onTick);
 			_holdTimer.start();
 		}
@@ -117,46 +127,36 @@ package org.farmcode.display.controls
 			var scrollMulti:Number = (newTime-_lastHoldTime)/_holdTimer.delay;
 			_lastHoldTime = newTime;
 			scroll(_direction*scrollMulti);
-			var multi:Number = _scrollable.getScrollMultiplier(_scrollDirection);
 			var newDelay:Number = _holdTimer.delay*DEF_HOLD_DELAY_ACCEL;
-			if(newDelay>DEF_MIN_HOLD_DELAY/multi){
+			if(newDelay>DEF_MIN_HOLD_DELAY){
 				_holdTimer.delay = newDelay;
 			}else{
-				_holdTimer.delay = DEF_MIN_HOLD_DELAY/multi;
+				_holdTimer.delay = DEF_MIN_HOLD_DELAY;
 			}
 			_holdTimer.reset();
 			_holdTimer.start();
 		}
 		protected function onButtonUp(from:Button) : void{
 			if(getTimer()-_holdStart<DEF_INITIAL_HOLD_DELAY){
-				var multi:Number = _scrollable.getScrollMultiplier(_scrollDirection);
-				scroll(_direction*multi);
+				scroll(_direction);
 			}
 			_holdTimer.stop();
 			_holdTimer.reset();
 		}
 		protected function scroll(offset:Number):void{
-			if(!_scrollMetrics){
-				_scrollMetrics = new ScrollMetrics();
-			}
-			var metrics:IScrollMetrics = _scrollable.getScrollMetrics(_scrollDirection);
-			_scrollMetrics.maximum = metrics.maximum;
-			_scrollMetrics.minimum = metrics.minimum;
-			_scrollMetrics.pageSize = metrics.pageSize;
-			_scrollMetrics.scrollValue = metrics.scrollValue+offset;
-			if(_scrollMetrics.scrollValue<0)_scrollMetrics.scrollValue = 0;
-			else if(_scrollMetrics.scrollValue>_scrollMetrics.maximum-_scrollMetrics.pageSize)_scrollMetrics.scrollValue = _scrollMetrics.maximum-_scrollMetrics.pageSize;
-			_scrollable.setScrollMetrics(_scrollDirection,_scrollMetrics);
-			validateScroll(_scrollMetrics);
+			var newValue:Number = _scrollMetrics.scrollValue + offset;
+			if(newValue<0)newValue = 0;
+			else if(newValue>_scrollMetrics.maximum-_scrollMetrics.pageSize)newValue = _scrollMetrics.maximum-_scrollMetrics.pageSize;
+			
+			_scrollMetrics.scrollValue = newValue;
 		}
-		protected function onScrollMetricsChanged(from:IScrollable, direction:String, metrics:IScrollMetrics):void{
+		protected function onScrollMetricsChanged(from:IScrollMetrics):void{
 			validateScroll();
 		}
 		protected function validateScroll(metrics:ScrollMetrics=null):void{
-			if(_scrollable){
-				if(!metrics)metrics = _scrollable.getScrollMetrics(_scrollDirection);
-				_foreButton.active = metrics.scrollValue>0;
-				_aftButton.active = metrics.scrollValue<(metrics.maximum-metrics.pageSize);
+			if(_scrollMetrics){
+				_foreButton.active = _scrollMetrics.scrollValue>0;
+				_aftButton.active = _scrollMetrics.scrollValue<(_scrollMetrics.maximum-_scrollMetrics.pageSize);
 			}else{
 				_foreButton.active = false;
 				_aftButton.active = false;

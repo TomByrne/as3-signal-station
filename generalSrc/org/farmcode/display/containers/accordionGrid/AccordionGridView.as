@@ -158,7 +158,7 @@ package org.farmcode.display.containers.accordionGrid
 			super();
 			createGridLayout();
 			_gridLayout.measurementsChanged.addHandler(onGridMeasChange);
-			_gridLayout.scrollMetricsChanged.addHandler(onLayoutScroll);
+			//_gridLayout.scrollMetricsChanged.addHandler(onLayoutScroll);
 			_gridLayout.setRendererDataAct.addHandler(onSetGridRendererData);
 			_gridLayout.removeRendererAct.addHandler(onRemoveGridRenderer);
 			_layout.setRendererDataAct.addHandler(onSetAccordionRendererData);
