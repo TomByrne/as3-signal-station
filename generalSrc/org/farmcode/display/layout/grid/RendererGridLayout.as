@@ -11,6 +11,7 @@ package org.farmcode.display.layout.grid
 	import org.farmcode.collections.IIterator;
 	import org.farmcode.collections.IIterator2D;
 	import org.farmcode.collections.linkedList.LinkedListConverter;
+	import org.farmcode.debug.logging.Log;
 	import org.farmcode.display.DisplayNamespace;
 	import org.farmcode.display.constants.Direction;
 	import org.farmcode.display.core.IView;
@@ -360,7 +361,7 @@ package org.farmcode.display.layout.grid
 				_cellMeasFlag.invalidate();
 				invalidate();
 			}else{
-				trace("WARNING: RendererGridLayout.onRendMeasChanged() data couldn't be found");
+				Log.log(Log.ERROR,"RendererGridLayout.onRendMeasChanged() data couldn't be found");
 			}
 		}
 		override protected function remeasureChild(key:*) : Boolean{
@@ -398,35 +399,6 @@ package org.farmcode.display.layout.grid
 			if(!_getRendererPoint)_getRendererPoint = new Point();
 			getDataCoords(dataIndex,_getRendererPoint);
 			return getChildRenderer(dataIndex,_getRendererPoint[_lengthAxis.coordRef],_getRendererPoint[_breadthAxis.coordRef]);
-		}
-		override protected function getChildRenderer(key:*,length:int,breadth:int):ILayoutSubject{
-			var minLength:int = _lengthRendAxis.dimIndex;
-			var maxLength:int = _lengthRendAxis.dimIndexMax;
-			var minBreadth:int = _breadthRendAxis.dimIndex;
-			var maxBreadth:int = _breadthRendAxis.dimIndexMax;
-			var renderIndex:int = ((maxBreadth-minBreadth)*(length-minLength))+(breadth-minBreadth);
-			var renderer:ILayoutSubject = _renderers[renderIndex];
-			if(length>=minLength && length<maxLength && breadth>=minBreadth && breadth<maxBreadth && (key<_dataCount || _renderEmptyCells)){
-				var data:* = _dataMap[key];
-				if(!renderer){
-					renderer = _rendererFactory.createInstance();
-					_renderers[renderIndex] = renderer;
-					rendererAdded(renderer);
-					_cullRenderersFlag.invalidate();
-				}
-				if(renderer[_dataField] != data){
-					renderer[_dataField] = data;
-					if(_setRendererDataAct)_setRendererDataAct.perform(this,renderer,data,_dataField);
-				}
-				_dataToRenderers[data] = renderer;
-				return renderer;
-			}else{
-				if(renderer){
-					delete _renderers[renderIndex];
-					rendererRemoved(renderer);
-				}
-				return null;
-			}
 		}
 		protected function rendererAdded(renderer:ILayoutSubject):void{
 			renderer.measurementsChanged.addHandler(onRendMeasChanged);
@@ -474,11 +446,7 @@ package org.farmcode.display.layout.grid
 			}
 		}
 		protected function calcRange(index:int, indexMax:int):int{
-			if(indexMax==index+1){
-				return 1;
-			}else{
-				return indexMax-index-1;
-			}
+			return indexMax-index;
 		}
 		override protected function validateAllScrolling():void{
 			if(!_breadthScrollFlag.valid || !_lengthScrollFlag.valid){
@@ -525,35 +493,52 @@ package org.farmcode.display.layout.grid
 					if(_pixelFlow){
 						rangeDif = (oldBreadthRange-breadthRange);
 					}
-					for(var length:int=0; length<=oldLengthRange; length++){
-						for(var breadth:int=0; breadth<=oldBreadthRange; breadth++){
-							var oldRenderIndex:int = ((oldBreadthRange+1)*length)+breadth;
+					for(var length:int=0; length<oldLengthRange; length++){
+						for(var breadth:int=0; breadth<oldBreadthRange; breadth++){
+							var oldRenderIndex:int = ((oldBreadthRange)*length)+breadth;
 							var renderer:ILayoutSubject = _renderers[oldRenderIndex];
 							if(renderer){
 								var newLength:int = length;
 								var newBreadth:int = breadth;
 								if(_pixelFlow && rangeDif){
 									// adjust indices to reflect changes in breadthRange
-									var renderIndex:int = ((breadthRange+1)*newLength)+newBreadth;
+									var renderIndex:int = ((breadthRange)*newLength)+newBreadth;
 									renderIndex += rangeDif*length;
-									newLength = Math.floor(renderIndex/(breadthRange+1));
-									newBreadth = renderIndex%(breadthRange+1);
+									newLength = Math.floor(renderIndex/(breadthRange));
+									newBreadth = renderIndex%(breadthRange);
 								}
 								// shift cells if scrolling has occured (so that dataProviders stay the same)
+								
+								var dataChanged:Boolean = false;
+								
 								if(shiftLength){
-									newLength = (length+shiftLength)%(lengthRange+1);
-									while(newLength<0)newLength += (lengthRange+1);
+									newLength = (length+shiftLength);
+									while(newLength>=lengthRange){
+										dataChanged = true;
+										newLength -= lengthRange;
+									}
+									while(newLength<0){
+										dataChanged = true;
+										newLength += lengthRange;
+									}
 								}
 								
 								if(shiftBreadth){
-									newBreadth = (breadth+shiftBreadth)%(breadthRange+1);
-									while(newBreadth<0)newBreadth += (breadthRange+1);
+									newBreadth = (length+shiftBreadth);
+									while(newBreadth>=breadthRange){
+										dataChanged = true;
+										newBreadth -= breadthRange;
+									}
+									while(newBreadth<0){
+										dataChanged = true;
+										newBreadth += breadthRange;
+									}
 								}
 								
 								// test whether the renderer is still needed
-								renderIndex = ((breadthRange+1)*newLength)+newBreadth;
-								if(renderIndex<=_fitRenderers && !newRenderers[renderIndex]){
-									delete _dataToRenderers[renderer[_dataField]];
+								renderIndex = (breadthRange*newLength)+newBreadth;
+								if(renderIndex<_fitRenderers && !newRenderers[renderIndex]){
+									if(dataChanged)delete _dataToRenderers[renderer[_dataField]];
 									newRenderers[renderIndex] = renderer;
 								}else{
 									rendererRemoved(renderer);
@@ -566,7 +551,6 @@ package org.farmcode.display.layout.grid
 			}
 		}
 		override protected function validateScroll(scrollMetrics:ScrollMetrics, axis:GridAxis) : void{
-			if(scrollMetrics.scrollValue<0 || isNaN(scrollMetrics.scrollValue))scrollMetrics.scrollValue = 0;
 			var pixScroll:Number;
 			var pixScrollMax:Number;
 			var realDim:Number = _displayPosition[axis.dimRef];
@@ -580,7 +564,12 @@ package org.farmcode.display.layout.grid
 				var stack:Number = axis.foreMargin;
 				var total:Number = 0;
 				var foundPixMax:Boolean;
-				var scrollValue:int = Math.round(scrollMetrics.scrollValue);
+				
+				var scrollByPxValue:int = scrollMetrics.scrollValue;
+				if(scrollByPxValue<scrollMetrics.minimum || isNaN(scrollByPxValue))scrollByPxValue = scrollMetrics.minimum;
+				else if(scrollByPxValue>scrollMetrics.maximum-scrollMetrics.pageSize)scrollByPxValue = scrollMetrics.maximum-scrollMetrics.pageSize;
+				var scrollByLineValue:int = Math.round(scrollByPxValue);
+				
 				
 				/*
 				when we're scrolling with pixel values, it's better to act as if we're scrolled right to the bottom/right
@@ -588,24 +577,23 @@ package org.farmcode.display.layout.grid
 				re-adding the last renderer everytime a renderer scrolls out of view.
 				*/
 				var comparePixScroll:Number;
-				
 				for(var i:int=0; i<axis.maxCellSizes.length; i++){
 					var measurement:Number = axis.maxCellSizes[i];
 					if(axis.scrollByLine){
-						if(i==scrollValue){
+						if(i==scrollByLineValue){
 							pixScroll = stack;
 							comparePixScroll = stack;
 							newIndex = i;
 						}
-					}else if(stack+measurement>scrollMetrics.scrollValue && isNaN(pixScroll)){
-						pixScroll = scrollMetrics.scrollValue;
+					}else if(stack+measurement>scrollByPxValue && isNaN(pixScroll)){
+						pixScroll = scrollByPxValue;
 						comparePixScroll = stack+measurement;
 						newIndex = i;
 					}
 					stack += measurement;
 					if(!isNaN(pixScroll) && newIndexMax==-1 && stack>realDim+comparePixScroll){
 						// find the last visible row
-						newIndexMax = i+1;
+						newIndexMax = i;
 						if(foundPixMax)break;
 					}
 					if(!foundPixMax && (stack>pixScrollMax || i==axis.maxCellSizes.length-1)){
@@ -663,8 +651,6 @@ package org.farmcode.display.layout.grid
 				axis.pixScrollMetrics.maximum = realMeas;
 				axis.pixScrollMetrics.pageSize = realDim;
 				axis.pixScrollMetrics.scrollValue = pixScroll;
-				/*var dir:String = (scrollMetrics==_horizontalAxis.scrollMetrics)?Direction.HORIZONTAL:Direction.VERTICAL;
-				if(_scrollMetricsChanged)_scrollMetricsChanged.perform(this, dir, axis.pixScrollMetrics);*/
 			}
 		}
 		protected function removeAllRenderers():void{
@@ -689,6 +675,37 @@ package org.farmcode.display.layout.grid
 			var coIndex:int = (key as int)*int(2);
 			_coordCache[coIndex] = length;
 			_coordCache[coIndex+1] = breadth;
+		}
+		// TODO: use _dataToRenderers to optimise the lookup in this method
+		override protected function getChildRenderer(key:*,length:int,breadth:int):ILayoutSubject{
+			var minLength:int = _lengthRendAxis.dimIndex;
+			var maxLength:int = _lengthRendAxis.dimIndexMax;
+			var minBreadth:int = _breadthRendAxis.dimIndex;
+			var maxBreadth:int = _breadthRendAxis.dimIndexMax;
+			var renderIndex:int = ((maxBreadth-minBreadth)*(length-minLength))+(breadth-minBreadth);
+			var renderer:ILayoutSubject = _renderers[renderIndex];
+			if(length>=minLength && length<maxLength && breadth>=minBreadth && breadth<maxBreadth && (key<_dataCount || _renderEmptyCells)){
+				var data:* = _dataMap[key];
+				var addRenderer:Boolean = (renderer==null);
+				if(addRenderer){
+					renderer = _rendererFactory.createInstance();
+					_renderers[renderIndex] = renderer;
+					_cullRenderersFlag.invalidate();
+				}
+				if(renderer[_dataField] != data){
+					renderer[_dataField] = data;
+					if(addRenderer)rendererAdded(renderer);
+					if(_setRendererDataAct)_setRendererDataAct.perform(this,renderer,data,_dataField);
+				}
+				_dataToRenderers[data] = renderer;
+				return renderer;
+			}else{
+				if(renderer){
+					delete _renderers[renderIndex];
+					rendererRemoved(renderer);
+				}
+				return null;
+			}
 		}
 	}
 }

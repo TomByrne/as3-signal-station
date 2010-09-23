@@ -52,6 +52,12 @@ package org.farmcode.instanceFactory
 		override public function matchesType(object:*):Boolean{
 			return (object is _instanceClass);
 		}
+		public function hasProperty(name:String):Boolean{
+			for each(var propDict:Dictionary in _propertyDicts){
+				if(propDict[name]!=null)return true;
+			}
+			return false;
+		}
 		public function addProperties(properties:Dictionary):void{
 			_propertyDicts.push(properties);
 		}

@@ -85,8 +85,8 @@ package org.farmcode.display.assets.nativeAssets {
 			}
 			return ret;
 		}
-		override protected function onAddedToStage(from:DisplayObjectAsset):void{
-			super.onAddedToStage(from);
+		override protected function onAddedToStage():void{
+			super.onAddedToStage();
 			applyAvailableStates();
 		}
 		protected function onAdded(e:Event, from:IAsset):void{

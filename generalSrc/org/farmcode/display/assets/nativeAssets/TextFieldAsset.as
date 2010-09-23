@@ -9,6 +9,7 @@ package org.farmcode.display.assets.nativeAssets
 	
 	import org.farmcode.acting.actTypes.IAct;
 	import org.farmcode.acting.acts.NativeAct;
+	import org.farmcode.debug.logging.Log;
 	import org.farmcode.display.assets.assetTypes.IDisplayAsset;
 	import org.farmcode.display.assets.assetTypes.ITextFieldAsset;
 	import org.farmcode.display.assets.states.IStateDef;
@@ -43,7 +44,7 @@ package org.farmcode.display.assets.nativeAssets
 					_defaultState = _textField.defaultTextFormat;
 					Config::DEBUG{
 						if(!_textField.embedFonts){
-							trace("WARNING: TextField with embedFonts set to false");
+							Log.log(Log.SUSPICIOUS_IMPLEMENTATION,"TextField with embedFonts set to false");
 						}
 					}
 				}else{
@@ -175,12 +176,12 @@ package org.farmcode.display.assets.nativeAssets
 		public function TextFieldAsset(factory:NativeAssetFactory=null){
 			super(factory);
 		}
-		override protected function onAddedToStage(from:DisplayObjectAsset):void{
-			super.onAddedToStage(from);
+		override protected function onAddedToStage():void{
+			super.onAddedToStage();
 			enterFrame.addTempHandler(onFirstFrame);
 		}
-		override protected function onRemovedFromStage(e:Event=null):void{
-			super.onRemovedFromStage(e);
+		override protected function onRemovedFromStage():void{
+			super.onRemovedFromStage();
 			enterFrame.removeHandler(onFirstFrame);
 		}
 		protected function onFirstFrame(e:Event, from:IDisplayAsset):void {

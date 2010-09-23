@@ -99,7 +99,7 @@ package org.farmcode.display.core
 		public function setAssetAndPosition(asset:IDisplayAsset):void{
 			this.asset = asset;
 			if(asset){
-				_measureFlag.validate();
+				//_measureFlag.validate();
 				//setDisplayPosition(asset.x,asset.y,_measurements.x,_measurements.y);
 				setDisplayPosition(asset.x,asset.y,asset.naturalWidth,asset.naturalHeight);
 			}

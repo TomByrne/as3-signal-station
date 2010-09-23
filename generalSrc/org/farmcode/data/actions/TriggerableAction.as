@@ -4,6 +4,7 @@ package org.farmcode.data.actions
 	
 	import org.farmcode.acting.actTypes.IAct;
 	import org.farmcode.data.dataTypes.ITriggerableAction;
+	import org.farmcode.debug.logging.Log;
 	import org.farmcode.display.assets.assetTypes.IDisplayAsset;
 	
 	public class TriggerableAction implements ITriggerableAction
@@ -18,7 +19,7 @@ package org.farmcode.data.actions
 				var params:Array = getParams();
 				act.perform(params);
 			}else{
-				trace("WARNING: no IAct associated with TriggerableAction");
+				Log.log(Log.SUSPICIOUS_IMPLEMENTATION,"no IAct associated with TriggerableAction");
 			}
 		}
 		protected function getAct():IAct{

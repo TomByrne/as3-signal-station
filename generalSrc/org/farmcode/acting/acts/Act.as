@@ -3,6 +3,7 @@ package org.farmcode.acting.acts
 	import flash.utils.Dictionary;
 	
 	import org.farmcode.acting.actTypes.IAct;
+	import org.farmcode.debug.logging.Log;
 	import org.farmcode.hoborg.IPoolable;
 	import org.farmcode.hoborg.ObjectPool;
 	
@@ -91,7 +92,7 @@ package org.farmcode.acting.acts
 					var removeIndex:int = _toRemove.indexOf(handler);
 					if(removeIndex!=-1)_toRemove.splice(index,1);
 					Config::DEBUG{
-						if(removeIndex==-1)trace("WARNING: attempting to add handler twice (Act._addHandler())");
+						if(removeIndex==-1)Log.log(Log.PERFORMANCE,"attempting to add handler twice (Act._addHandler())");
 					}
 				}
 				var index:int = handlerIndices[handler];

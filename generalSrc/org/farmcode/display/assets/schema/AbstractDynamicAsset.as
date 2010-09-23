@@ -21,6 +21,7 @@ package org.farmcode.display.assets.schema
 	import org.farmcode.acting.actTypes.IAct;
 	import org.farmcode.acting.acts.Act;
 	import org.farmcode.acting.acts.NativeAct;
+	import org.farmcode.debug.logging.Log;
 	import org.farmcode.display.actInfo.IMouseActInfo;
 	import org.farmcode.display.assets.IAssetFactory;
 	import org.farmcode.display.assets.assetTypes.*;
@@ -680,7 +681,7 @@ package org.farmcode.display.assets.schema
 		
 		public function addAsset(asset:IDisplayAsset):void{
 			Config::DEBUG{
-				if(_children[asset.displayObject])trace("WARNING: asset already added (AbstractDynamicAsset.addAsset).");
+				if(_children[asset.displayObject])Log.log(Log.ERROR,"asset already added (AbstractDynamicAsset.addAsset).");
 			}
 			asset.parent = this;
 			_sprite.addChild(asset.displayObject);

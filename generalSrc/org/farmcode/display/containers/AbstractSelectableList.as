@@ -8,6 +8,7 @@ package org.farmcode.display.containers
 	import org.farmcode.acting.acts.Act;
 	import org.farmcode.data.dataTypes.IBooleanConsumer;
 	import org.farmcode.data.dataTypes.IBooleanProvider;
+	import org.farmcode.debug.logging.Log;
 	import org.farmcode.display.assets.assetTypes.IDisplayAsset;
 	import org.farmcode.display.constants.Direction;
 	import org.farmcode.display.core.ILayoutView;
@@ -222,7 +223,7 @@ package org.farmcode.display.containers
 							if(otherData){
 								otherData.booleanValue = false;
 							}else{
-								trace("WARNING: Data cannot be deselected as it does not implement IBooleanConsumer");
+								Log.log(Log.SUSPICIOUS_IMPLEMENTATION,"Data cannot be deselected as it does not implement IBooleanConsumer");
 							}
 							delete _selectedData[otherDataIndex];
 							--_selectedCount;

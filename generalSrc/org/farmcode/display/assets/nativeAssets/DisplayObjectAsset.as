@@ -20,6 +20,8 @@ package org.farmcode.display.assets.nativeAssets {
 		 * @inheritDoc
 		 */
 		public function get addedToStage():IAct {
+			if(!_addedToStage)
+				_addedToStage = new Act();
 			return _addedToStage;
 		}
 		/**
@@ -79,18 +81,14 @@ package org.farmcode.display.assets.nativeAssets {
 		public function set displayObject(value:DisplayObject):void {
 			if(_displayObject!=value) {
 				if(_displayObject) {
-					if(_isAddedToStage){
-						_isAddedToStage = false;
-						if(_removedFromStage)_removedFromStage.perform(this);
-					}
+					setAddedToStage(false);
 					_innerBounds = null;
 					_displayObject.scaleX = _origScaleX;
 					_displayObject.scaleY = _origScaleY;
-					_displayObject.removeEventListener(Event.REMOVED_FROM_STAGE,onRemovedFromStage);
+					_displayObject.removeEventListener(Event.ADDED_TO_STAGE,handleAddedToStage);
+					_displayObject.removeEventListener(Event.REMOVED_FROM_STAGE,handleRemovedToStage);
 				}
 				_displayObject = value;
-				if(_addedToStage)
-					_addedToStage.eventDispatcher = value;
 				
 				if(_added)
 					_added.eventDispatcher = value;
@@ -102,18 +100,19 @@ package org.farmcode.display.assets.nativeAssets {
 					_enterFrame.eventDispatcher = value;
 				
 				if(_displayObject){
-					_displayObject.addEventListener(Event.REMOVED_FROM_STAGE,onRemovedFromStage);
+					_displayObject.addEventListener(Event.ADDED_TO_STAGE,handleAddedToStage);
+					_displayObject.addEventListener(Event.REMOVED_FROM_STAGE,handleRemovedToStage);
 					if(_displayObject.stage){
-						_isAddedToStage = true;
-						if(_addedToStage)_addedToStage.perform(this);
+						setAddedToStage(true);
 					}
 				}
 			}
 		}
 		
 		private var _stageChanged:Act;
-		private var _addedToStage:NativeAct;
+		private var _addedToStage:Act;
 		private var _removedFromStage:Act;
+		
 		private var _added:NativeAct;
 		private var _removed:NativeAct;
 		private var _enterFrame:NativeAct;
@@ -131,19 +130,36 @@ package org.farmcode.display.assets.nativeAssets {
 		
 		public function DisplayObjectAsset(factory:NativeAssetFactory=null){
 			super(factory);
-			
-			_addedToStage = new NativeAct(null, Event.ADDED_TO_STAGE, [this],false);
-			_addedToStage.addHandler(onAddedToStage);
 		}
-		protected function onAddedToStage(from:DisplayObjectAsset):void{
+		private function handleAddedToStage(e:Event=null):void{
+			setAddedToStage(true);
+		}
+		private function handleRemovedToStage(e:Event=null):void{
+			setAddedToStage(false);
+		}
+		protected function setAddedToStage(value:Boolean):void{
+			if(_isAddedToStage!=value){
+				_isAddedToStage = value;
+				if(value){
+					onAddedToStage();
+					if(_stageChanged)_stageChanged.perform(this);
+					if(_addedToStage)_addedToStage.perform(this);
+				}else{
+					onRemovedFromStage();
+					if(_stageChanged)_stageChanged.perform(this);
+					if(_removedFromStage)_removedFromStage.perform(this);
+				}
+			}
+		}
+		
+		
+		protected function onAddedToStage():void{
 			_isAddedToStage = true;
-			if(_stageChanged)_stageChanged.perform(this);
 		}
-		protected function onRemovedFromStage(e:Event=null):void{
+		protected function onRemovedFromStage():void{
 			if(_removedFromStage)_removedFromStage.perform(this);
 			_isAddedToStage = false;
 			_stageAsset = null;
-			if(_stageChanged)_stageChanged.perform(this);
 		}
 		
 		
@@ -275,20 +291,22 @@ package org.farmcode.display.assets.nativeAssets {
 		public function set parent(value:IContainerAsset):void {
 			_parent = value;
 			if(!value){
-				if(_addedToStage)onRemovedFromStage();
+				setAddedToStage(false);
 			}else{
-				if(_parent.stage){
-					if(!_addedToStage)onAddedToStage(this);
-				}else if(_addedToStage)onRemovedFromStage();
+				if(_parent.stage) setAddedToStage(true);
+				else setAddedToStage(false);
 			}
 		}
 		public function get stage():IStageAsset {
-			if(_parent && !_stageAsset && _isAddedToStage){
-				var topParent:IContainerAsset = _parent;
-				while(topParent.parent){
-					topParent = topParent.parent;
+			if(_isAddedToStage && !_stageAsset){
+				var thisStage:IStageAsset = (this as IStageAsset);
+				if(thisStage){
+					_stageAsset = thisStage;
+				}else if(_parent){
+					_stageAsset = _parent.stage;
+				}else{
+					_stageAsset = _nativeFactory.getNew(_displayObject.stage);
 				}
-				_stageAsset = (topParent as IStageAsset);
 			}
 			return _stageAsset;
 		}

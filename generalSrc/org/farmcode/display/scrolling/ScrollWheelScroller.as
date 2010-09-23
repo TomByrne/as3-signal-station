@@ -21,7 +21,6 @@ package org.farmcode.display.scrolling
 		}
 		
 		public var scrollMetrics:IScrollMetrics;
-		public var multiplier:Number=1;
 		
 		private var _display:IInteractiveObjectAsset;
 		
@@ -31,9 +30,12 @@ package org.farmcode.display.scrolling
 		}
 		protected function onMouseWheel(from:IInteractiveObjectAsset, mouseActInfo:IMouseActInfo, delta:int):void{
 			if(scrollMetrics){
-				var newValue:Number = scrollMetrics.scrollValue-delta*multiplier;
+				// delta values vary great by browser/wmode, I prefer to use this mechanism, this means there will be no native acceleration.
+				delta = (delta>0?1:-1);
+				
+				var newValue:Number = scrollMetrics.scrollValue-delta;
 				if(newValue<scrollMetrics.minimum)newValue = scrollMetrics.minimum;
-				if(newValue>scrollMetrics.maximum)newValue = scrollMetrics.maximum;
+				if(newValue>scrollMetrics.maximum-scrollMetrics.pageSize)newValue = scrollMetrics.maximum-scrollMetrics.pageSize;
 				scrollMetrics.scrollValue = newValue;
 			}
 		}

@@ -376,7 +376,7 @@ package org.farmcode.display.containers.accordionGrid
 			_gridLayout.rendererFactory = factory;
 			_gridLayout.dataField = dataField;
 		}
-		override protected function createAssumedFactory(asset:IDisplayAsset):SimpleInstanceFactory{
+		override protected function createAssumedFactory():SimpleInstanceFactory{
 			_assumedRendererFactory = new SimpleInstanceFactory(AccordionGridRenderer);
 			_assumedRendererFactory.useChildFactories = true;
 			_assumedRendererFactory.instanceProperties = new Dictionary();

@@ -14,6 +14,8 @@ package org.farmcode.display.containers
 	import org.farmcode.display.layout.grid.RendererGridLayout;
 	import org.farmcode.display.layout.list.ListLayoutInfo;
 	
+	
+	// TODO: assess the value of this class, should it inherit from AbstractSelectableList?
 	public class ToggleButtonList extends AbstractList
 	{
 		private static const TOGGLE_BUTTON:String = "toggleButton";
@@ -113,7 +115,7 @@ package org.farmcode.display.containers
 		}
 		
 		/**
-		 * handler(from:TabBar)
+		 * handler(from:ToggleButtonList)
 		 */
 		public function get selectedIndexChanged():IAct{
 			if(!_selectedIndexChanged)_selectedIndexChanged = new Act();

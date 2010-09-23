@@ -4,20 +4,15 @@ package org.farmcode.display.containers
 	import flash.geom.Rectangle;
 	import flash.utils.Dictionary;
 	
-	import org.farmcode.acting.actTypes.IAct;
-	import org.farmcode.acting.acts.Act;
 	import org.farmcode.display.DisplayNamespace;
-	import org.farmcode.display.actInfo.IMouseActInfo;
 	import org.farmcode.display.assets.AssetNames;
 	import org.farmcode.display.assets.assetTypes.IContainerAsset;
 	import org.farmcode.display.assets.assetTypes.IDisplayAsset;
-	import org.farmcode.display.assets.assetTypes.IInteractiveObjectAsset;
 	import org.farmcode.display.constants.Direction;
 	import org.farmcode.display.controls.ScrollBar;
 	import org.farmcode.display.controls.TextLabelButton;
 	import org.farmcode.display.core.DrawableView;
 	import org.farmcode.display.core.ILayoutView;
-	import org.farmcode.display.core.View;
 	import org.farmcode.display.layout.ILayoutSubject;
 	import org.farmcode.display.layout.grid.RendererGridLayout;
 	import org.farmcode.display.scrolling.IScrollMetrics;
@@ -25,6 +20,7 @@ package org.farmcode.display.containers
 	import org.farmcode.display.scrolling.ScrollMultiplier;
 	import org.farmcode.display.scrolling.ScrollWheelScroller;
 	import org.farmcode.instanceFactory.IInstanceFactory;
+	import org.farmcode.instanceFactory.MultiInstanceFactory;
 	import org.farmcode.instanceFactory.SimpleInstanceFactory;
 	
 	use namespace DisplayNamespace;
@@ -45,18 +41,14 @@ package org.farmcode.display.containers
 		}
 		public function set rendererFactory(value:IInstanceFactory):void{
 			if(_rendererFactory != value){
+				if(_factoryAssumedAssetSet){
+					(_rendererFactory as MultiInstanceFactory).removeProperties(_factoryAssumedAssetProps);
+					_factoryAssumedAssetSet = false;
+				}
 				_rendererFactory = value;
 				assessFactory();
 			}
 		}
-		
-		/**
-		 * @inheritDoc
-		 */
-		/*public function get mouseWheel():IAct{
-			if(!_mouseWheel)_mouseWheel = new Act();
-			return _mouseWheel;
-		}*/
 		
 		public function get hideScrollBarWhenUnusable():Boolean{
 			return _hideScrollBarWhenUnusable;
@@ -69,9 +61,6 @@ package org.farmcode.display.containers
 				}
 			}
 		}
-		
-		
-		//protected var _mouseWheel:Act;
 		
 		protected var _hideScrollBarWhenUnusable:Boolean = true;
 		protected var _dataField:String;
@@ -87,6 +76,9 @@ package org.farmcode.display.containers
 		protected var _scrollRect:Rectangle = new Rectangle();
 		protected var _scrollMetrics:IScrollMetrics;
 		protected var _mouseWheelScroller:ScrollWheelScroller;
+		
+		protected var _factoryAssumedAssetSet:Boolean;
+		protected var _factoryAssumedAssetProps:Dictionary;
 		
 		private var _horScrollMetrics:IScrollMetrics;
 		private var _verScrollMetrics:IScrollMetrics;
@@ -108,12 +100,8 @@ package org.farmcode.display.containers
 		protected function createLayout() : void{
 			_layout = new RendererGridLayout(this);
 		}
-		/*protected function onMouseWheel(from:IInteractiveObjectAsset, actInfo:IMouseActInfo, delta:int) : void{
-			if(_mouseWheel)_mouseWheel.perform(this,delta);
-		}*/
 		override protected function bindToAsset() : void{
 			super.bindToAsset();
-			//_interactiveObjectAsset.mouseWheel.addHandler(onMouseWheel);
 			var scrollBarAsset:IDisplayAsset = _containerAsset.takeAssetByName(AssetNames.SCROLL_BAR,IDisplayAsset,true);
 			if(scrollBarAsset){
 				if(!_scrollBar){
@@ -132,7 +120,15 @@ package org.farmcode.display.containers
 			_container = _containerAsset.factory.createContainer();
 			_containerAsset.addAsset(_container);
 			
-			_mouseWheelScroller.scrollMetrics = getScrollMetrics(_layout.flowDirection);
+			var wheelDirection:String;
+			if(scrollBarAsset){
+				wheelDirection = _scrollBar.direction;
+			}else if(_layout.pixelFlow){
+				wheelDirection = (_layout.flowDirection==Direction.HORIZONTAL?Direction.VERTICAL:Direction.VERTICAL);
+			}else{
+				wheelDirection = _layout.flowDirection;
+			}
+			_mouseWheelScroller.scrollMetrics = getScrollMetrics(wheelDirection);
 			_mouseWheelScroller.display = _interactiveObjectAsset;
 		}
 		protected function setScrollBarMetrics(scrollMetrics:IScrollMetrics):void{
@@ -157,7 +153,6 @@ package org.farmcode.display.containers
 		}
 		override protected function unbindFromAsset() : void{
 			super.unbindFromAsset();
-			//_interactiveObjectAsset.mouseWheel.removeHandler(onMouseWheel);
 			if(_scrollBar && _scrollBar.asset){
 				_containerAsset.returnAsset(_scrollBar.asset);
 				_scrollBar.asset = null;
@@ -186,11 +181,6 @@ package org.farmcode.display.containers
 			performMeasChanged();
 		}
 		protected function onAddRenderer(layout:RendererGridLayout, renderer:ILayoutView) : void{
-			var cast:View = (renderer as View);
-			if(cast && !cast.asset){
-				checkAssetFactory();
-				cast.asset = _assumedAssetFactory.createInstance();
-			}
 			_renderers.push(renderer.asset);
 			if(_container){
 				_container.addAsset(renderer.asset);
@@ -202,7 +192,7 @@ package org.farmcode.display.containers
 			if(_container){
 				_container.removeAsset(renderer.asset);
 			}
-			// TODO: this functionality should really be part of some factory.destory() method or something
+			// TODO: this functionality should really be part of some factory.destory(item) method or something
 			var view:DrawableView = (renderer as DrawableView);
 			if(view)view.asset = null;
 		}
@@ -276,9 +266,19 @@ package org.farmcode.display.containers
 			if(_rendererFactory){
 				factory = _rendererFactory;
 				dataField = _dataField || ASSUMED_DATA_FIELD;
+				
+				var castFactory:MultiInstanceFactory = (factory as MultiInstanceFactory);
+				if(castFactory && !castFactory.hasProperty("asset") && castFactory.useChildFactories && _assumedRendererAsset){
+					if(!_factoryAssumedAssetProps){
+						_factoryAssumedAssetProps = new Dictionary();
+					}
+					checkAssetFactory();
+					castFactory.addProperties(_factoryAssumedAssetProps);
+					_factoryAssumedAssetSet = true;
+				}
 			}else if(_assumedRendererAsset){
 				if(!_assumedRendererFactory){
-					_assumedRendererFactory = createAssumedFactory(_assumedRendererAsset);
+					_assumedRendererFactory = createAssumedFactory();
 				}
 				factory = _assumedRendererFactory;
 				dataField = ASSUMED_DATA_FIELD;
@@ -290,7 +290,7 @@ package org.farmcode.display.containers
 				updateFactory(factory,dataField);
 			}
 		}
-		protected function createAssumedFactory(asset:IDisplayAsset):SimpleInstanceFactory{
+		protected function createAssumedFactory():SimpleInstanceFactory{
 			var factory:SimpleInstanceFactory = new SimpleInstanceFactory(TextLabelButton);
 			factory.useChildFactories = true;
 			factory.instanceProperties = new Dictionary();
@@ -302,6 +302,9 @@ package org.farmcode.display.containers
 		protected function checkAssetFactory():void{
 			if(!_assumedAssetFactory && _assumedRendererAsset){
 				_assumedAssetFactory = createAssumedAssetFactory(_assumedRendererAsset);
+				if(_factoryAssumedAssetProps){
+					_factoryAssumedAssetProps["asset"] = _assumedAssetFactory;
+				}
 			}
 		}
 		protected function createAssumedAssetFactory(asset:IDisplayAsset):IInstanceFactory{
@@ -314,12 +317,15 @@ package org.farmcode.display.containers
 		
 		public function getScrollMetrics(direction:String):IScrollMetrics{
 			if(direction==Direction.HORIZONTAL){
-				if(!_horScrollMetrics)_horScrollMetrics = new ScrollMultiplier(10,_layout.getScrollMetrics(direction));
+				if(!_horScrollMetrics)_horScrollMetrics = new ScrollMultiplier(scrollSpeed(direction),_layout.getScrollMetrics(direction));
 				return _horScrollMetrics;
 			}else{
-				if(!_verScrollMetrics)_verScrollMetrics = new ScrollMultiplier(10,_layout.getScrollMetrics(direction));
+				if(!_verScrollMetrics)_verScrollMetrics = new ScrollMultiplier(scrollSpeed(direction),_layout.getScrollMetrics(direction));
 				return _verScrollMetrics;
 			}
+		}
+		protected function scrollSpeed(direction:String):Number{
+			return 30;
 		}
 	}
 }
