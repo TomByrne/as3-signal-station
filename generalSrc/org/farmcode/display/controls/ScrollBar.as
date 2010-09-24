@@ -256,10 +256,15 @@ package org.farmcode.display.controls
 		}
 		override protected function draw():void{
 			positionAsset();
-			var scope:Number = (_scrollMetrics.maximum-_scrollMetrics.pageSize-_scrollMetrics.minimum);
+			
+			var minimum:Number = _scrollMetrics.minimum;
+			var maximum:Number = _scrollMetrics.maximum;
+			var pageSize:Number = _scrollMetrics.pageSize;
+			
+			var scope:Number = (maximum-pageSize-minimum);
 			var rawRatio:Number;
 			var ratio:Number;
-			_isUsable = (_scrollMetrics.pageSize<_scrollMetrics.maximum-_scrollMetrics.minimum);
+			_isUsable = (pageSize<maximum-minimum);
 			if(!_isUsable){
 				rawRatio = ratio = 0;
 				// Only change the visibility if the user has asked us to manage the visibility
@@ -267,7 +272,7 @@ package org.farmcode.display.controls
 					asset.visible = false
 				}
 			}else{
-				rawRatio = (_scrollMetrics.scrollValue-_scrollMetrics.minimum)/scope;
+				rawRatio = (_scrollMetrics.scrollValue-minimum)/scope;
 				ratio = (scope?Math.min(Math.max(rawRatio,0),1):0);
 				// Only change the visibility if the user has asked us to manage the visibility
 				if (this.hideWhenUnusable)
@@ -275,7 +280,7 @@ package org.farmcode.display.controls
 					asset.visible = true;
 				}
 			}
-			var sizeFraction:Number = (_scrollMetrics.maximum>_scrollMetrics.minimum?_scrollMetrics.pageSize/(_scrollMetrics.maximum-_scrollMetrics.minimum):1);
+			var sizeFraction:Number = (maximum>minimum?pageSize/(maximum-minimum):1);
 			
 			_track.active = _isUsable;
 			_scrollThumb.active = _isUsable;
@@ -453,7 +458,7 @@ package org.farmcode.display.controls
 				offset = (!isNaN(_dragOffset)?_dragOffset:(_scrollThumb?_scrollThumb.displayPosition.width/2:0));
 				ratio = Math.max(Math.min((asset.mouseX-offset-_track.displayPosition.x)/(_track.displayPosition.width-_scrollThumb.displayPosition.width),1),0);
 			}
-			_scrollMetrics.scrollValue = Math.round((ratio*(_scrollMetrics.maximum-_scrollMetrics.pageSize-_scrollMetrics.minimum))+_scrollMetrics.minimum);
+			_scrollMetrics.scrollValue = (ratio*(_scrollMetrics.maximum-_scrollMetrics.pageSize-_scrollMetrics.minimum))+_scrollMetrics.minimum;
 			this.dispatchScroll();
 		}
 		

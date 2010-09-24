@@ -204,13 +204,21 @@ package org.farmcode.display.assets.nativeAssets {
 			return _displayObject.blendMode;
 		}
 		public function set x(value:Number):void {
-			_displayObject.x = int(value+0.5);
+			if(pixelSnapping){
+				_displayObject.x = int(value+0.5);
+			}else{
+				_displayObject.x = value;
+			}
 		}
 		public function get x():Number {
 			return _displayObject.x;
 		}
 		public function set y(value:Number):void {
-			_displayObject.y = int(value+0.5);
+			if(pixelSnapping){
+				_displayObject.y = int(value+0.5);
+			}else{
+				_displayObject.y = value;
+			}
 		}
 		public function get y():Number {
 			return _displayObject.y;
