@@ -812,6 +812,9 @@ package org.farmcode.display.assets.schema
 		public function get selectionBeginIndex():int{return _textField.selectionBeginIndex}
 		public function get selectionEndIndex():int{return _textField.selectionEndIndex}
 		
+		public function set embedFonts(value:Boolean):void{_textField.embedFonts = value}
+		public function get embedFonts():Boolean{return _textField.embedFonts}
+		
 		public function get textWidth():Number{return _textField.textWidth}
 		public function get textHeight():Number{return _textField.textHeight}
 		public function get maxScrollV():int{return _textField.maxScrollV}

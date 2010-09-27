@@ -109,6 +109,12 @@ package org.farmcode.display.assets.nativeAssets
 				_textField.setTextFormat(_lastFormat);
 			}
 		}
+		public function get embedFonts():Boolean{
+			return _textField.embedFonts;
+		}
+		public function set embedFonts(value:Boolean):void{
+			_textField.embedFonts = value;
+		}
 		public function get multiline():Boolean{
 			return _textField.multiline;
 		}
