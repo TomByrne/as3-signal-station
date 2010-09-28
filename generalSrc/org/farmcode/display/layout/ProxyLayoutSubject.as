@@ -49,11 +49,10 @@ package org.farmcode.display.layout
 				}
 				_target = value;
 				if(_target){
+					_target.setDisplayPosition(_displayPosition.x,_displayPosition.y,_displayPosition.width,_displayPosition.height);
 					_target.measurementsChanged.addHandler(onMeasurementsChanged);
 					if(!_forceMeasurements && (!oldMeas || !_target.measurements.equals(oldMeas))){
 						checkMeasurements();
-					}else{
-						_target.setDisplayPosition(_displayPosition.x,_displayPosition.y,_displayPosition.width,_displayPosition.height);
 					}
 				}
 			}
