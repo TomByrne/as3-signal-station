@@ -80,7 +80,6 @@ package org.farmcode.display.assets.nativeAssets {
 		}
 		override protected function applyState(state:IStateDef, stateName:String, appliedStates:Array):Number{
 			var ret:Number = super.applyState(state, stateName, appliedStates);
-			trace("applyState: "+stateName);
 			if(!appliedStates.length){
 				var thisRet:int = _mainAnalysis.playFrameLabel(stateName);
 				var stage:Stage = _movieClip.stage;

@@ -8,16 +8,24 @@ package org.farmcode.debug.logging
 		public static const SUSPICIOUS_IMPLEMENTATION:int	= 1;
 		public static const ERROR:int						= 0;
 		
-		public static var logger:ILogger = new NativeLogger();
+		private static var _logger:ILogger;
+		private static var _visibility:int = -1;
+		{
+			Config::DEBUG{
+				_logger = new NativeLogger();
+			}
+		}
 		
 		public static function setLogger(logger:ILogger):void{
-			Log.logger = logger;
+			_logger = logger;
+			if(_logger)_logger.setVisibility(_visibility);
 		}
 		public static function log(level:int, ... params):void{
-			logger.log(level,params);
+			if(_logger)_logger.log(level,params);
 		}
 		public static function setVisibility(level:int):void{
-			logger.setVisibility(level);
+			_visibility = level;
+			if(_logger)_logger.setVisibility(_visibility);
 		}
 		
 		// Shortcuts
