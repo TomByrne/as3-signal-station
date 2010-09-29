@@ -348,6 +348,7 @@ package org.farmcode.display.layout.grid
 			_dataLayouts = new Dictionary();
 			_dataMap = new Dictionary();
 			_dataIndices = new Dictionary();
+			_cullRenderersFlag.invalidate();
 		}
 		protected function onRendMeasChanged(from:ILayoutSubject, oldWidth:Number, oldHeight:Number):void{
 			var data:* = from[_dataField];

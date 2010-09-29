@@ -52,7 +52,12 @@ package org.farmcode.display.assets.nativeAssets {
 			applyChildStates();
 		}
 		override protected function onStateSelChanged(state:IStateDef):void{
-			super.onStateSelChanged(state);
+			for each(var stateName:String in state.options){
+				if(isStateNameAvailable(stateName)){
+					super.onStateSelChanged(state);
+					break;
+				}
+			}
 			applyChildStates();
 		}
 		protected function applyChildStates():void{
@@ -75,6 +80,7 @@ package org.farmcode.display.assets.nativeAssets {
 		}
 		override protected function applyState(state:IStateDef, stateName:String, appliedStates:Array):Number{
 			var ret:Number = super.applyState(state, stateName, appliedStates);
+			trace("applyState: "+stateName);
 			if(!appliedStates.length){
 				var thisRet:int = _mainAnalysis.playFrameLabel(stateName);
 				var stage:Stage = _movieClip.stage;
