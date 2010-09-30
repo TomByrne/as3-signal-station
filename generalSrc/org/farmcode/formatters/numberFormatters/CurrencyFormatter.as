@@ -58,7 +58,7 @@ package org.farmcode.formatters.numberFormatters
 			//_ignoreProviderChanges = false;
 			return decimalFormatter.numericalValue;
 		}
-		protected function onStringChange(from:IStringProvider):void{
+		protected function onStringChange(from:StringWrapFormatter):void{
 			if(!_ignoreProviderChanges)invalidateString();
 		}
 	}
