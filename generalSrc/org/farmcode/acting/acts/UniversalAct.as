@@ -3,6 +3,7 @@ package org.farmcode.acting.acts
 	import org.farmcode.acting.actTypes.IAct;
 	import org.farmcode.acting.actTypes.IUniversalAct;
 	import org.farmcode.acting.universal.UniversalActManager;
+	import org.farmcode.debug.logging.Log;
 	import org.farmcode.display.assets.assetTypes.IDisplayAsset;
 	import org.farmcode.display.core.ScopedObject;
 	
@@ -67,7 +68,7 @@ package org.farmcode.acting.acts
 		override public function perform(...params):void{
 			CONFIG::debug{
 				if(!_scopedObject.asset){
-					trace("WARNING: UniversalAct being performed without scopeDisplay (it will not act universally)");
+					Log.log(Log.SUSPICIOUS_IMPLEMENTATION,"UniversalAct being performed without scopeDisplay (it will not act universally)");
 				}
 			}
 			super.perform.apply(null,params);

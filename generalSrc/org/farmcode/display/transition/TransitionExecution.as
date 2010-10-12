@@ -149,7 +149,7 @@ package org.farmcode.display.transition
 				var bitmapData:BitmapData = new BitmapData(Math.max(bounds.width,1),Math.max(bounds.height,1),true,0);
 				//_renderArea = new Bitmap(bitmapData,PixelSnapping.NEVER,smoothing);
 				_renderArea = _startDisplay.factory.createBitmap();
-				_renderArea.pixelSnapping = PixelSnapping.NEVER;
+				_renderArea.bitmapPixelSnapping = PixelSnapping.NEVER;
 				_renderArea.smoothing = smoothing;
 				_renderArea.setPosition(bounds.x,bounds.y);
 				parent.addAssetAt(_renderArea,depth);

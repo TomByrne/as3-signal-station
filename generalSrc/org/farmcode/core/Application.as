@@ -1,4 +1,4 @@
-﻿package org.farmcode.core
+package org.farmcode.core
 {
 	import flash.geom.Rectangle;
 	
@@ -13,6 +13,7 @@
 	import org.farmcode.debug.data.core.DebugData;
 	import org.farmcode.debug.nodes.DebugDataNode;
 	import org.farmcode.debug.nodes.GraphStatisticNode;
+	import org.farmcode.display.assets.assetTypes.IAsset;
 	import org.farmcode.display.assets.assetTypes.IContainerAsset;
 	import org.farmcode.display.assets.assetTypes.IDisplayAsset;
 	import org.farmcode.display.assets.assetTypes.IStageAsset;
@@ -87,6 +88,7 @@
 		protected var _assetWatcher:PropertyWatcher;
 		protected var _stageWatcher:PropertyWatcher;
 		protected var _scopedObject:ScopedObject;
+		protected var _mainAssetAdded:Boolean;
 		
 		public function Application(){
 			super();
@@ -134,21 +136,33 @@
 			return null;
 		}
 		protected function removeMainAsset():void{
-			if(_container && _asset){
+			if(_mainAssetAdded && _container && _asset){
+				_mainAssetAdded = false;
 				_container.removeAsset(_asset);
 			}
 		}
 		protected function addMainAsset():void{
-			if(_container && _asset){
+			if(!_mainAssetAdded && _container && _asset){
+				_mainAssetAdded = true;
 				_container.addAsset(_asset);
 				setMainViewSize();
 			}
 		}
 		protected function setAsset(value:IDisplayAsset) : void{
-			removeMainAsset();
+			if(_asset){
+				removeMainAsset();
+				_asset.addedToStage.removeHandler(onAddedToStage);
+			}
 			_asset = value;
 			_scopedObject.asset = value;
-			addMainAsset();
+			if(_asset){
+				_asset.addedToStage.addHandler(onAddedToStage);
+				addMainAsset();
+			}
+		}
+		private function onAddedToStage(from:IAsset) : void{
+			// after fullscreen is exited this will occur
+			setMainViewSize();
 		}
 		private function setStage(value:IStageAsset) : void{
 			if(_lastStage!=value){
@@ -161,9 +175,9 @@
 		}
 		protected function setMainViewSize() : void{
 			// If FullscreenUtil is being used then this will be skipped
-			if(_displayPosition && _asset.parent==_container){
+			var pos:Rectangle = _displayPosition;
+			if(pos && _asset.parent==_container){
 				var scale:Number = (isNaN(_applicationScale) || _applicationScale<=0?1:_applicationScale);
-				var pos:Rectangle = _displayPosition;
 				_mainView.setDisplayPosition(pos.x,pos.y,pos.width*(1/scale),pos.height*(1/scale));
 				_asset.scaleX = scale;
 				_asset.scaleY = scale;

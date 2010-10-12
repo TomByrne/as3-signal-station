@@ -64,16 +64,14 @@ package org.farmcode.display.assets
 			}
 		}
 		protected function _addStateList(stateList:Array):void{
-			_stateLists.push(stateList);
-			var change:Boolean;
-			for each(var state:IStateDef in stateList){
-				if(isStateAvailable(state,_availableStates)){
-					_availableStates.push(state);
-					state.selectionChanged.addHandler(onStateSelChanged);
-					change = true;
+			Config::DEBUG{
+				if(_stateLists.indexOf(stateList)!=-1){
+					throw new Error("This state list has already been added");
 				}
 			}
-			if(change)findAvailableStates();
+			_stateLists.push(stateList);
+			
+			findAvailableStates();
 		}
 		final public function removeStateList(stateList:Array):void{
 			var index:int = _parentStateLists.indexOf(stateList);
@@ -87,17 +85,7 @@ package org.farmcode.display.assets
 			var index:int = _stateLists.indexOf(stateList);
 			_stateLists.splice(index,1);
 			
-			
-			var change:Boolean;
-			for each(var state:IStateDef in stateList){
-				index = _availableStates.indexOf(state);
-				if(index!=-1){
-					state.selectionChanged.removeHandler(onStateSelChanged);
-					_availableStates.splice(index,1);
-					change = true;
-				}
-			}
-			if(change)findAvailableStates();
+			findAvailableStates();
 		}
 		public function conformsToType(type:Class):Boolean{
 			return (this is type);

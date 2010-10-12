@@ -9,7 +9,6 @@ package org.farmcode.acting.universal
 	import org.farmcode.acting.universal.reactions.IActReaction;
 	import org.farmcode.acting.universal.reactions.NestedExecutionReaction;
 	import org.farmcode.acting.universal.ruleTypes.IUniversalRule;
-	import org.farmcode.acting.universal.rules.ImmediateActRule;
 	import org.farmcode.display.validation.ValidationFlag;
 	
 	use namespace ActingNamspace;
@@ -127,6 +126,11 @@ package org.farmcode.acting.universal
 				invalidateReactors();
 			}
 		}
+		ActingNamspace function removeAllReactions():void{
+			_rules = new Dictionary();
+			_reactors = [];
+			invalidateReactors();
+		}
 		
 		protected function onExecutionComplete(execution:UniversalActExecution):void{
 			execution.completeAct.removeHandler(onExecutionComplete);
@@ -151,9 +155,11 @@ package org.farmcode.acting.universal
 		}
 		private function validateReactors():void{
 			_reactors = sortReactors(act,_reactors,_rules);
+			if(!_executionsFrozen)_execReators = _reactors;
 		}
 		ActingNamspace function release():void{
-			_reactors = new Array();
+			act = null;
+			_reactors = [];
 			_executions = new Dictionary();
 			_rules = new Dictionary();
 			_executionCount = 0;

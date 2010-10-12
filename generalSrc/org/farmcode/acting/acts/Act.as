@@ -3,6 +3,7 @@ package org.farmcode.acting.acts
 	import flash.utils.Dictionary;
 	
 	import org.farmcode.acting.actTypes.IAct;
+	import org.farmcode.debug.logging.Log;
 	import org.farmcode.hoborg.IPoolable;
 	import org.farmcode.hoborg.ObjectPool;
 	
@@ -81,8 +82,18 @@ package org.farmcode.acting.acts
 				handlers.push(ret);
 				setHandlerCount(++_handlerCount);
 			}else{
-				CONFIG::debug{
-					trace("WARNING: attempting to add handler twice (Act._addHandler())");
+				if(_removeAll){
+					_removeAll = false;
+					_toRemove = [];
+					for each(var actHandler:ActHandler in _handlers){
+						_toRemove.push(actHandler.handler);
+					}
+				}else{
+					var removeIndex:int = _toRemove.indexOf(handler);
+					if(removeIndex!=-1)_toRemove.splice(index,1);
+					CONFIG::debug{
+						if(removeIndex==-1)Log.log(Log.PERFORMANCE,"attempting to add handler twice (Act._addHandler())");
+					}
 				}
 				var index:int = handlerIndices[handler];
 				ret = handlers[index];

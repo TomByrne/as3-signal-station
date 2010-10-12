@@ -16,6 +16,9 @@ package org.farmcode.display.assets
 		public static const SCROLL_BAR:String = "scrollBar";
 		public static const LIST_ITEM:String = "listItem";
 		
+		// GridView
+		public static const CELL_RENDERER:String = "cellRenderer";
+		
 		// VideoContainer
 		public static const VIDEO_CONTAINER:String = "videoContainer";
 		

@@ -75,7 +75,6 @@ package org.farmcode.actLibrary.application
 			addActor(_siteStreamActor);
 			
 			_swfAddressActor = new SWFAddressActor();
-			addActor(_swfAddressActor);
 			
 			_configActor = new ConfigActor();
 			setDefaultConfig(CONFIG_URL_PARAM,"xml/config.xml");
@@ -97,6 +96,7 @@ package org.farmcode.actLibrary.application
 			}
 		}
 		override protected function init():void{
+			addActor(_swfAddressActor);
 			super.init();
 			
 			CONFIG::debug{

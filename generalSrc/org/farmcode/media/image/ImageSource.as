@@ -2,11 +2,14 @@ package org.farmcode.media.image
 {
 	import flash.display.Loader;
 	import flash.events.Event;
+	import flash.events.IOErrorEvent;
 	import flash.events.ProgressEvent;
+	import flash.events.SecurityErrorEvent;
 	import flash.net.URLLoader;
 	import flash.net.URLLoaderDataFormat;
 	import flash.net.URLRequest;
 	
+	import org.farmcode.debug.logging.Log;
 	import org.farmcode.display.assets.assetTypes.ILoaderAsset;
 	import org.farmcode.display.assets.nativeAssets.NativeAssetFactory;
 	import org.farmcode.display.core.ILayoutView;
@@ -68,6 +71,8 @@ package org.farmcode.media.image
 			_urlLoader.dataFormat = URLLoaderDataFormat.BINARY;
 			_urlLoader.addEventListener(Event.COMPLETE, onLoadComplete);
 			_urlLoader.addEventListener(ProgressEvent.PROGRESS, onLoadProgress);
+			_urlLoader.addEventListener(IOErrorEvent.IO_ERROR, onError);
+			_urlLoader.addEventListener(SecurityErrorEvent.SECURITY_ERROR, onError);
 			this.imageUrl = url;
 			_nativeFactory = new NativeAssetFactory();
 		}
@@ -82,6 +87,9 @@ package org.farmcode.media.image
 		}
 		protected function onLoadProgress(e:Event):void{
 			setMemoryLoadProps(_urlLoader.bytesLoaded, _urlLoader.bytesTotal);
+		}
+		protected function onError(e:Event):void{
+			Log.log(Log.ERROR,e);
 		}
 		override public function takeMediaDisplay():ILayoutView{
 			_displaysTaken++;

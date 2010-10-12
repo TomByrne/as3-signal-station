@@ -11,6 +11,7 @@ package org.farmcode.display.layout.grid
 	import org.farmcode.display.layout.ILayoutSubject;
 	import org.farmcode.display.layout.core.ILayoutInfo;
 	import org.farmcode.display.layout.list.IListLayoutInfo;
+	import org.farmcode.display.scrolling.IScrollMetrics;
 	import org.farmcode.display.scrolling.IScrollable;
 	import org.farmcode.display.scrolling.ScrollMetrics;
 	import org.farmcode.display.validation.ValidationFlag;
@@ -157,17 +158,11 @@ package org.farmcode.display.layout.grid
 		}
 		
 		protected function get _horizontalScroll():Number{
-			return _horizontalAxis.scrollMetrics.value;
+			return _horizontalAxis.scrollMetrics.scrollValue;
 		}
 		protected function set _horizontalScroll(value:Number):void{
-			if(_horizontalAxis.scrollMetrics.value!=value){
-				_horizontalAxis.scrollMetrics.value = value;
-				if(_isVertical){
-					_lengthScrollFlag.invalidate();
-				}else{
-					_breadthScrollFlag.invalidate();
-				}
-				invalidate();
+			if(_horizontalAxis.scrollMetrics.scrollValue!=value){
+				_horizontalAxis.scrollMetrics.scrollValue = value;
 			}
 		}
 		protected function get _horizontalScrollByLine():Boolean{
@@ -186,17 +181,11 @@ package org.farmcode.display.layout.grid
 		}
 		
 		protected function get _verticalScroll():Number{
-			return _verticalAxis.scrollMetrics.value;
+			return _verticalAxis.scrollMetrics.scrollValue;
 		}
 		protected function set _verticalScroll(value:Number):void{
-			if(_verticalAxis.scrollMetrics.value!=value){
-				_verticalAxis.scrollMetrics.value = value;
-				if(_isVertical){
-					_breadthScrollFlag.invalidate();
-				}else{
-					_lengthScrollFlag.invalidate();
-				}
-				invalidate();
+			if(_verticalAxis.scrollMetrics.scrollValue!=value){
+				_verticalAxis.scrollMetrics.scrollValue = value;
 			}
 		}
 		protected function get _verticalScrollByLine():Boolean{
@@ -253,15 +242,6 @@ package org.farmcode.display.layout.grid
 			}
 		}
 		
-		
-		/**
-		 * @inheritDoc
-		 */
-		public function get scrollMetricsChanged():IAct{
-			if(!_scrollMetricsChanged)_scrollMetricsChanged = new Act();
-			return _scrollMetricsChanged;
-		}
-		
 		/**
 		 * @inheritDoc
 		 */
@@ -271,7 +251,6 @@ package org.farmcode.display.layout.grid
 		}
 		
 		protected var _mouseWheel:Act;
-		protected var _scrollMetricsChanged:Act;
 		
 		protected var __pixelFlow:Boolean;
 		
@@ -280,6 +259,7 @@ package org.farmcode.display.layout.grid
 		
 		protected var __flowDirection:String = Direction.VERTICAL;
 		protected var _isVertical:Boolean = true;
+		protected var _ignoreScrollChanges:Boolean;
 		
 		protected var _propsFlag:ValidationFlag = new ValidationFlag(validateProps,false);
 		protected var _cellMappingFlag:ValidationFlag = new ValidationFlag(validateCellMapping,false);
@@ -299,6 +279,8 @@ package org.farmcode.display.layout.grid
 		public function AbstractGridLayout(scopeView:IView=null){
 			super(scopeView);
 			createAxes();
+			_horizontalAxis.scrollMetrics.scrollMetricsChanged.addHandler(onHScrollMetricsChanged);
+			_verticalAxis.scrollMetrics.scrollMetricsChanged.addHandler(onVScrollMetricsChanged);
 			positionChanged.addHandler(onPosChanged);
 		}
 		protected function onPosChanged(from:AbstractGridLayout, oldX:Number, oldY:Number, oldWidth:Number, oldHeight:Number): void{
@@ -589,8 +571,10 @@ package org.farmcode.display.layout.grid
 			_cellPosFlag.invalidate();
 		}
 		protected function validateAllScrolling():void{
+			_ignoreScrollChanges = true;
 			_breadthScrollFlag.validate();
 			_lengthScrollFlag.validate();
+			_ignoreScrollChanges = false;
 		}
 		protected function validateBreadthScroll():void{
 			validateScroll(_breadthAxis.scrollMetrics,_breadthAxis);
@@ -605,7 +589,7 @@ package org.farmcode.display.layout.grid
 		 * (to be used by validateCellPos).
 		 */
 		protected function validateScroll(scrollMetrics:ScrollMetrics, axis:GridAxis):void{
-			if(scrollMetrics.value<0 || isNaN(scrollMetrics.value))scrollMetrics.value = 0;
+			if(scrollMetrics.scrollValue<0 || isNaN(scrollMetrics.scrollValue))scrollMetrics.scrollValue = 0;
 			
 			var pixScroll:Number;
 			var pixScrollMax:Number;
@@ -614,7 +598,7 @@ package org.farmcode.display.layout.grid
 			if(realMeas>realDim){
 				pixScrollMax = realMeas-realDim;
 				if(axis.scrollByLine){
-					var scrollValue:int = Math.round(scrollMetrics.value);
+					var scrollValue:int = Math.round(scrollMetrics.scrollValue);
 					var stack:Number = axis.foreMargin;
 					var total:Number = 0;
 					scrollMetrics.maximum = axis.maxCellSizes.length;
@@ -635,19 +619,17 @@ package org.farmcode.display.layout.grid
 				}else{
 					scrollMetrics.pageSize = realDim
 					scrollMetrics.maximum = realMeas;
-					pixScroll = scrollMetrics.value;
+					pixScroll = scrollMetrics.scrollValue;
 					if(pixScroll>pixScrollMax)pixScroll = pixScrollMax;
 				}
 			}else{
 				pixScroll = 0;
 				pixScrollMax = 0;
 			}
-			if(axis.pixScrollMetrics.maximum != realMeas || axis.pixScrollMetrics.pageSize != realDim || axis.pixScrollMetrics.value != pixScroll){
+			if(axis.pixScrollMetrics.maximum != realMeas || axis.pixScrollMetrics.pageSize != realDim || axis.pixScrollMetrics.scrollValue != pixScroll){
 				axis.pixScrollMetrics.maximum = realMeas;
 				axis.pixScrollMetrics.pageSize = realDim;
-				axis.pixScrollMetrics.value = pixScroll;
-				var dir:String = (scrollMetrics==_horizontalAxis.scrollMetrics)?Direction.HORIZONTAL:Direction.VERTICAL;
-				if(_scrollMetricsChanged)_scrollMetricsChanged.perform(this, dir, axis.pixScrollMetrics);
+				axis.pixScrollMetrics.scrollValue = pixScroll;
 			}
 		}
 		protected function validateCellPos():void{
@@ -655,41 +637,46 @@ package org.farmcode.display.layout.grid
 			var equaliseBreadths:Boolean = _breadthAxis.equaliseCells;
 			var lengthStack:Number = _lengthAxis.foreMargin;
 			var lengthCount:int=  _cellPosCache.length;
+			
+			var lengthScroll:Number = _lengthAxis.pixScrollMetrics.scrollValue;
+			var breadthScroll:Number = _breadthAxis.pixScrollMetrics.scrollValue;
+			
+			var breadthCount:int = _breadthAxis.maxCellSizes.length;
+			
 			for(var i:int=0; i<lengthCount; i++){
 				var breadthIndices:Array = _cellPosCache[i];
 				var length:Number = _lengthAxis.maxCellSizes[i];
 				if(breadthIndices){
 					var breadthStack:Number = _breadthAxis.foreMargin;
 					
-					var breadthCount:int = breadthIndices.length;
 					for(var j:int=0; j<breadthCount; j++){
 						var key:* = breadthIndices[j];
 						var subMeas:Point = _cellMeasCache[key];
-						if(subMeas){
-							var subBreadthDim:Number;
-							if(equaliseBreadths){
-								subBreadthDim = _breadthAxis.maxCellSizes[j];
-							}else{
-								subBreadthDim = subMeas[_breadthAxis.coordRef];
-							}
-							
-							var subLengthDim:Number;
-							if(equaliseLengths){
-								subLengthDim = length;
-							}else{
-								subLengthDim = subMeas[_lengthAxis.coordRef];
-							}
-							if(_isVertical){
-								positionRenderer(key,i,j,
-									_displayPosition.x+lengthStack-_lengthAxis.pixScrollMetrics.value,_displayPosition.y+breadthStack-_breadthAxis.pixScrollMetrics.value,
-									subLengthDim,subBreadthDim);
-							}else{
-								positionRenderer(key,i,j,
-									_displayPosition.x+breadthStack-_breadthAxis.pixScrollMetrics.value,_displayPosition.y+lengthStack-_lengthAxis.pixScrollMetrics.value,
-									subBreadthDim,subLengthDim);
-							}
-							breadthStack += subBreadthDim+_breadthAxis.gap;
+						
+						var subBreadthDim:Number;
+						if(equaliseBreadths || !subMeas){
+							subBreadthDim = _breadthAxis.maxCellSizes[j];
+						}else{
+							subBreadthDim = subMeas[_breadthAxis.coordRef];
 						}
+						
+						var subLengthDim:Number;
+						if(equaliseLengths || !subMeas){
+							subLengthDim = length;
+						}else{
+							subLengthDim = subMeas[_lengthAxis.coordRef];
+						}
+						
+						if(_isVertical){
+							positionRenderer(key,i,j,
+								_displayPosition.x+lengthStack-lengthScroll,_displayPosition.y+breadthStack-breadthScroll,
+								subLengthDim,subBreadthDim);
+						}else{
+							positionRenderer(key,i,j,
+								_displayPosition.x+breadthStack-breadthScroll,_displayPosition.y+lengthStack-lengthScroll,
+								subBreadthDim,subLengthDim);
+						}
+						breadthStack += subBreadthDim+_breadthAxis.gap;
 					}
 				}
 				lengthStack += length+_lengthAxis.gap;
@@ -707,32 +694,34 @@ package org.farmcode.display.layout.grid
 		}
 		
 		// IScrollable implementation
-		public function addScrollWheelListener(direction:String):Boolean{
-			return false;
-		}
-		public function getScrollMetrics(direction:String):ScrollMetrics{
+		public function getScrollMetrics(direction:String):IScrollMetrics{
 			if(direction==Direction.HORIZONTAL){
 				return _horizontalAxis.scrollMetrics;
 			}else{
 				return _verticalAxis.scrollMetrics;
 			}
 		}
-		public function setScrollMetrics(direction:String,metrics:ScrollMetrics):void{
-			validateProps();
-			_propsFlag.validate();
-			var fillMetrics:ScrollMetrics;
-			if(direction==this._flowDirection){
-				_breadthScrollFlag.invalidate()
-				fillMetrics = _breadthAxis.scrollMetrics;
-			}else{
-				_lengthScrollFlag.invalidate();
-				fillMetrics = _lengthAxis.scrollMetrics;
+		public function onVScrollMetricsChanged(from:IScrollMetrics):void{
+			if(!_ignoreScrollChanges){
+				_propsFlag.validate();
+				if(_isVertical){
+					_breadthScrollFlag.invalidate()
+				}else{
+					_lengthScrollFlag.invalidate();
+				}
+				validate(true);
 			}
-			fillMetrics.value = metrics.value;
-			invalidate();
 		}
-		public function getScrollMultiplier(direction:String):Number{
-			return 1;
+		public function onHScrollMetricsChanged(from:IScrollMetrics):void{
+			if(!_ignoreScrollChanges){
+				_propsFlag.validate();
+				if(!_isVertical){
+					_breadthScrollFlag.invalidate()
+				}else{
+					_lengthScrollFlag.invalidate();
+				}
+				validate(true);
+			}
 		}
 	}
 }

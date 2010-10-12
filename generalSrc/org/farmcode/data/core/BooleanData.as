@@ -39,7 +39,8 @@ package org.farmcode.data.core
 		protected var _booleanValueChanged:Act;
 		private var _booleanValue:Boolean;
 		
-		public function BooleanData(){
+		public function BooleanData(booleanValue:Boolean=false){
+			this.booleanValue = booleanValue;
 		}
 	}
 }

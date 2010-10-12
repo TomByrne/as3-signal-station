@@ -36,13 +36,13 @@ package org.farmcode.actLibrary.application
 		{
 			
 			_setSWFAddressAct = new SetSWFAddressAct();
-			_universalActorHelper.addChild(_setSWFAddressAct);
 			
 			_setSerialisedStateAct = new SetSerialisedStateAct();
-			_universalActorHelper.addChild(_setSerialisedStateAct);
 		}
 		override protected function init():void{
 			super.init();
+			_universalActorHelper.addChild(_setSerialisedStateAct);
+			_universalActorHelper.addChild(_setSWFAddressAct);
 			var appStateActor:AppStateActor = new AppStateActor();
 			addActor(appStateActor);
 		}

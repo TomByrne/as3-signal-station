@@ -26,8 +26,12 @@ package org.farmcode.actLibrary.external.config
 		public function ConfigActor(){
 			metadataTarget = this;
 		}
-		public function getParam(paramName:String):void{
-			
+		public function getParam(paramName:String):*{
+			var value:* = loaderInfo.parameters[paramName];
+			if(!value){
+				value = defaultConfigs[paramName];
+			}
+			return value;
 		}
 		
 		public var getParamPhases:Array = [ConfigPhases.GET_PARAM];
@@ -35,13 +39,8 @@ package org.farmcode.actLibrary.external.config
 		[ActRule(ActClassRule,beforePhases="{getParamBeforePhases}")]
 		[ActReaction(phases="{getParamPhases}")]
 		public function onGetParam(execution:UniversalActExecution, cause:IGetConfigParamAct):void{
-			
 			if(loaderInfo){
-				var value:* = loaderInfo.parameters[cause.paramName];
-				if(!value){
-					value = defaultConfigs[cause.paramName];
-				}
-				cause.value = value;
+				cause.value = getParam(cause.paramName);;
 				execution.continueExecution();
 			}else{
 				pendingCalls.addMethodCall([execution,cause],onGetParam);

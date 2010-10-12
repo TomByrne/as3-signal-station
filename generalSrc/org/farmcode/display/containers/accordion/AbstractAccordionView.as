@@ -48,7 +48,7 @@ package org.farmcode.display.containers.accordion
 			_dataField = "data";
 		}
 		
-		override protected function createAssumedFactory(asset:IDisplayAsset):SimpleInstanceFactory{
+		override protected function createAssumedFactory():SimpleInstanceFactory{
 			_assumedRendererFactory = new SimpleInstanceFactory(AccordionRenderer);
 			_assumedRendererFactory.useChildFactories = true;
 			_assumedRendererFactory.instanceProperties = new Dictionary();

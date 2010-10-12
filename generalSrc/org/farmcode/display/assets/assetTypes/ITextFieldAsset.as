@@ -36,6 +36,9 @@ package org.farmcode.display.assets.assetTypes
 		function set border(value:Boolean):void;
 		function get border():Boolean;
 		
+		function set embedFonts(value:Boolean):void;
+		function get embedFonts():Boolean;
+		
 		function set autoSize(value:String):void;
 		function get autoSize():String;
 		

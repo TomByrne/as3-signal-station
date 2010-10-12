@@ -1,5 +1,7 @@
 package org.farmcode.display.containers.grid
 {
+	import org.farmcode.display.assets.AssetNames;
+	import org.farmcode.display.constants.Direction;
 	import org.farmcode.display.containers.AbstractList;
 	import org.farmcode.instanceFactory.IInstanceFactory;
 
@@ -10,6 +12,7 @@ package org.farmcode.display.containers.grid
 		}
 		public function set dataProvider(value:*):void{
 			if(_dataProvider!=value){
+				attemptInit();
 				_dataProvider = value;
 				_layout.dataProvider = value;
 			}
@@ -78,20 +81,21 @@ package org.farmcode.display.containers.grid
 		private var _dataProvider:*;
 		
 		
-		public function GridView()
-		{
+		public function GridView(){
+			
 		}
 		override protected function createLayout():void{
 			super.createLayout();
 			_layout.equaliseCellHeights = true;
 			_layout.equaliseCellWidths = true;
+			_layout.flowDirection = Direction.HORIZONTAL;
 		}
 		override protected function setLayoutDimensions(width:Number, height:Number):void{
 			_layout.setDisplayPosition(0,0,width,height);
 		}
 		
 		override protected function assumedRendererAssetName() : String{
-			return "cellRenderer";
+			return AssetNames.CELL_RENDERER;
 		}
 	}
 }

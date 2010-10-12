@@ -8,12 +8,13 @@ package org.farmcode.display.containers
 	import org.farmcode.acting.acts.Act;
 	import org.farmcode.data.dataTypes.IBooleanConsumer;
 	import org.farmcode.data.dataTypes.IBooleanProvider;
+	import org.farmcode.debug.logging.Log;
 	import org.farmcode.display.assets.assetTypes.IDisplayAsset;
 	import org.farmcode.display.constants.Direction;
 	import org.farmcode.display.core.ILayoutView;
 	import org.farmcode.display.layout.grid.RendererGridLayout;
 	import org.farmcode.display.layout.list.ListLayoutInfo;
-	import org.farmcode.display.scrolling.ScrollMetrics;
+	import org.farmcode.display.scrolling.IScrollMetrics;
 	
 	public class AbstractSelectableList extends AbstractList
 	{
@@ -222,7 +223,7 @@ package org.farmcode.display.containers
 							if(otherData){
 								otherData.booleanValue = false;
 							}else{
-								trace("WARNING: Data cannot be deselected as it does not implement IBooleanConsumer");
+								Log.log(Log.SUSPICIOUS_IMPLEMENTATION,"Data cannot be deselected as it does not implement IBooleanConsumer");
 							}
 							delete _selectedData[otherDataIndex];
 							--_selectedCount;
@@ -303,7 +304,7 @@ package org.farmcode.display.containers
 		protected function checkAutoScroll():void{
 			if(_autoScrollToSelection && _selectedIndices.length){
 				_selectedIndices.sort();
-				var metrics:ScrollMetrics = getScrollMetrics(_layout.flowDirection);
+				var metrics:IScrollMetrics = getScrollMetrics(_layout.flowDirection);
 				var changed:Boolean;
 				var isVert:Boolean = (_layout.flowDirection==Direction.VERTICAL);
 				var i:int;
@@ -319,16 +320,16 @@ package org.farmcode.display.containers
 						}else{
 							value = autoScrollPoint.x;
 						}
-						if(value<metrics.value){
-							metrics.value = value;
+						if(value<metrics.scrollValue){
+							metrics.scrollValue = value;
 							changed = true;
 							break;
-						}else if(value>metrics.value+(metrics.pageSize-1)){
+						}else if(value>metrics.scrollValue+(metrics.pageSize-1)){
 							newValue = value-(metrics.pageSize-1);
 							if(!isNaN(minValue) && newValue>minValue){
-								metrics.value = minValue;
+								metrics.scrollValue = minValue;
 							}else{
-								metrics.value = newValue;
+								metrics.scrollValue = newValue;
 							}
 							changed = true;
 							break;
@@ -350,15 +351,15 @@ package org.farmcode.display.containers
 							endValue = autoScrollRect.right;
 						}
 						if(value<0){
-							metrics.value += value;
+							metrics.scrollValue += value;
 							changed = true;
 							break;
 						}else if(endValue>metrics.pageSize){
-							newValue = metrics.value+endValue-metrics.pageSize;
+							newValue = metrics.scrollValue+endValue-metrics.pageSize;
 							if(!isNaN(minValue) && newValue>minValue){
-								metrics.value = minValue;
+								metrics.scrollValue = minValue;
 							}else{
-								metrics.value = newValue;
+								metrics.scrollValue = newValue;
 							}
 							changed = true;
 							break;
@@ -367,9 +368,9 @@ package org.farmcode.display.containers
 						}
 					}
 				}
-				if(changed){
+				/*if(changed){
 					_layout.setScrollMetrics(_layout.flowDirection,metrics);
-				}
+				}*/
 			}
 		}
 	}

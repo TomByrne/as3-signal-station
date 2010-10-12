@@ -133,7 +133,6 @@ package org.farmcode.debug.display
 		}
 		
 		
-		
 		protected function onBitmapChanged(from:IBitmapDataProvider) : void{
 			if(_bitmap)_bitmap.bitmapData = _bitmapDataProvider.bitmapData;
 			performMeasChanged();

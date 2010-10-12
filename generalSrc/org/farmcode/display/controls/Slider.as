@@ -258,6 +258,7 @@ package org.farmcode.display.controls
 			_thumb.setDisplayPosition(thumbX,thumbY,_thumb.asset.width,_thumb.asset.height);
 			_trackButton.setDisplayPosition(trackX,trackY,trackWidth,trackHeight);
 			_progressTrack.setDisplayPosition(trackX,pTrackY,pTrackWidth,pTrackHeight);
+			_progressTrack.validate();
 		}
 		override public function setAssetAndPosition(asset:IDisplayAsset) : void{
 			super.setAssetAndPosition(asset);

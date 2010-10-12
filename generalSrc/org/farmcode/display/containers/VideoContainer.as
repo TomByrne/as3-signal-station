@@ -145,15 +145,15 @@ package org.farmcode.display.containers
 		private var _controlScrollRect:Rectangle;
 		private var _hasControlCont:Boolean;
 		
-		private var _playPauseButton:ToggleButton;
-		private var _stopButton:Button;
-		private var _fullscreenButton:ToggleButton;
-		private var _rewindButton:Button;
-		private var _centredPauseButton:ToggleButton;
-		private var _muteButton:SliderButton;
-		private var _volumeSlider:Slider;
-		private var _bufferBar:BufferBar;
-		private var _progressLabel:TextLabel;
+		protected var _playPauseButton:ToggleButton;
+		protected var _stopButton:Button;
+		protected var _fullscreenButton:ToggleButton;
+		protected var _rewindButton:Button;
+		protected var _centredPauseButton:ToggleButton;
+		protected var _muteButton:SliderButton;
+		protected var _volumeSlider:Slider;
+		protected var _bufferBar:BufferBar;
+		protected var _progressLabel:TextLabel;
 		
 		private var _controlContainer:ContainerView;
 		
@@ -166,7 +166,7 @@ package org.farmcode.display.containers
 		private var _mouseOverControls:Boolean;
 		
 		private var _progressLabelPattern:String;
-		private var _fullscreenUtil:FullscreenUtil;
+		protected var _fullscreenUtil:FullscreenUtil;
 		private var _mainLayout:CanvasLayout;
 		private var _contLayout:CanvasLayout;
 		private var _videoCover:ISpriteAsset;
@@ -235,7 +235,7 @@ package org.farmcode.display.containers
 			}
 			
 			_videoCover = asset.factory.createHitArea();
-			_videoCover.doubleClicked.addHandler(onFullscreenClick);
+			_videoCover.doubleClicked.addHandler(onFullscreenToggle);
 			_videoCover.doubleClickEnabled = true;
 			_videoCover.buttonMode = true;
 			_videoCover.useHandCursor = false;
@@ -336,7 +336,7 @@ package org.farmcode.display.containers
 		override protected function unbindFromAsset() : void{
 			super.unbindFromAsset();
 			
-			_videoCover.doubleClicked.removeHandler(onFullscreenClick);
+			_videoCover.doubleClicked.removeHandler(onFullscreenToggle);
 			_videoCover.keyUp.removeHandler(onKeyUp);
 			_containerAsset.removeAsset(_videoCover);
 			asset.factory.destroyAsset(_videoCover);
@@ -443,12 +443,14 @@ package org.farmcode.display.containers
 				_videoSource.playing = false;
 			}
 		}
-		protected function onFullscreenClick(... params):void{
-			if(_videoSource){
-				checkFullScreenUtil();
-				_fullscreenUtil.active = !_fullscreenUtil.active;
-				_fullscreenButton.selected = _fullscreenUtil.active;
-			}
+		protected function onFullscreenToggle(from:IInteractiveObjectAsset, mouseActInfo:IMouseActInfo):void{
+			checkFullScreenUtil();
+			_fullscreenUtil.active = !_fullscreenUtil.active;
+			if(_fullscreenButton)_fullscreenButton.selected = _fullscreenUtil.active;
+		}
+		protected function onFullscreenClick(from:ToggleButton):void{
+			checkFullScreenUtil();
+			_fullscreenUtil.active = from.selected;
 		}
 		protected function checkFullScreenUtil():void{
 			if(!_fullscreenUtil){
@@ -457,7 +459,7 @@ package org.farmcode.display.containers
 			}
 		}
 		protected function onFullscreenChange(from:FullscreenUtil, active:Boolean):void{
-			_fullscreenButton.selected = active;
+			if(_fullscreenButton)_fullscreenButton.selected = active;
 		}
 		protected function onRewindClick(from:Button):void{
 			if(_videoSource){

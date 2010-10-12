@@ -21,6 +21,7 @@ package org.farmcode.display.assets.schema
 	import org.farmcode.acting.actTypes.IAct;
 	import org.farmcode.acting.acts.Act;
 	import org.farmcode.acting.acts.NativeAct;
+	import org.farmcode.debug.logging.Log;
 	import org.farmcode.display.actInfo.IMouseActInfo;
 	import org.farmcode.display.assets.IAssetFactory;
 	import org.farmcode.display.assets.assetTypes.*;
@@ -679,6 +680,9 @@ package org.farmcode.display.assets.schema
 		}
 		
 		public function addAsset(asset:IDisplayAsset):void{
+			Config::DEBUG{
+				if(_children[asset.displayObject])Log.log(Log.ERROR,"asset already added (AbstractDynamicAsset.addAsset).");
+			}
 			asset.parent = this;
 			_sprite.addChild(asset.displayObject);
 			_children[asset.displayObject] = asset;
@@ -808,6 +812,9 @@ package org.farmcode.display.assets.schema
 		public function get selectionBeginIndex():int{return _textField.selectionBeginIndex}
 		public function get selectionEndIndex():int{return _textField.selectionEndIndex}
 		
+		public function set embedFonts(value:Boolean):void{_textField.embedFonts = value}
+		public function get embedFonts():Boolean{return _textField.embedFonts}
+		
 		public function get textWidth():Number{return _textField.textWidth}
 		public function get textHeight():Number{return _textField.textHeight}
 		public function get maxScrollV():int{return _textField.maxScrollV}
@@ -842,8 +849,8 @@ package org.farmcode.display.assets.schema
 		
 		public function get bitmapData():BitmapData{return _bitmap.bitmapData}
 		public function set bitmapData(value:BitmapData):void{_bitmap.bitmapData = value}
-		public function get pixelSnapping():String{return _bitmap.pixelSnapping}
-		public function set pixelSnapping(value:String):void{_bitmap.pixelSnapping = value}
+		public function get bitmapPixelSnapping():String{return _bitmap.pixelSnapping}
+		public function set bitmapPixelSnapping(value:String):void{_bitmap.pixelSnapping = value}
 		public function get smoothing():Boolean{return _bitmap.smoothing}
 		public function set smoothing(value:Boolean):void{_bitmap.smoothing = value}
 	}

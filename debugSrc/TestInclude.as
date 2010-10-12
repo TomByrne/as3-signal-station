@@ -33,7 +33,6 @@ package
 	import org.farmcode.display.containers.accordionGrid.AccordionGridView;
 	import org.farmcode.display.controls.ScrollButtons;
 	import org.farmcode.display.controls.TextInput;
-	import org.farmcode.display.controls.TextInput_old;
 	import org.farmcode.display.controls.TextLabelButton;
 	import org.farmcode.display.controls.popout.DropDownList;
 	import org.farmcode.display.controls.popout.PopoutDisplay;
@@ -150,7 +149,6 @@ package
 			MediaProgressDisplayAdaptor;
 			NumberRange;
 			DateFormat;
-			TextInput_old;
 			DebugManager;
 			DebugItemRenderer;
 		}
