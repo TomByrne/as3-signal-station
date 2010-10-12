@@ -1,4 +1,4 @@
-package org.farmcode.core
+﻿package org.farmcode.core
 {
 	import flash.geom.Rectangle;
 	
@@ -25,6 +25,8 @@ package org.farmcode.core
 	 * Application adds the core abstract implementation of the IApplication
 	 * interface.
 	 */
+	/*[SWF(width=1000, height=750, frameRate=30, backgroundColor="#ffffff")]
+	[Frame(factoryClass="org.farmcode.display.progress.SimpleSWFPreloaderFrame")] */ // this must be on subclass
 	public class Application implements IApplication
 	{
 		public function get container():IContainerAsset{
@@ -88,7 +90,6 @@ package org.farmcode.core
 		
 		public function Application(){
 			super();
-			_displayPosition = new Rectangle();
 		}
 		final protected function attemptInit() : void{
 			if(!_inited){
@@ -101,7 +102,7 @@ package org.farmcode.core
 			_stageWatcher = new PropertyWatcher("stage",setStage,null,null,_container);
 			_scopedObject = new ScopedObject();
 			
-			Config::DEBUG{
+			CONFIG::debug{
 				var memory:INumberProvider = new MemoryUnitConverter(new MemoryUsage(),MemoryUnitConverter.BYTES,MemoryUnitConverter.MEGABYTES)
 				DebugManager.addDebugNode(new GraphStatisticNode(_scopedObject,"Mem",0x009900,memory,true));
 				
@@ -112,6 +113,7 @@ package org.farmcode.core
 			}
 		}
 		public function setDisplayPosition(x:Number, y:Number, width:Number, height:Number):void{
+			if(!_displayPosition)_displayPosition = new Rectangle();
 			_displayPosition.x = x;
 			_displayPosition.y = y;
 			_displayPosition.width = width;
@@ -139,7 +141,7 @@ package org.farmcode.core
 		protected function addMainAsset():void{
 			if(_container && _asset){
 				_container.addAsset(_asset);
-				if(_displayPosition)setMainViewSize();
+				setMainViewSize();
 			}
 		}
 		protected function setAsset(value:IDisplayAsset) : void{
@@ -159,7 +161,7 @@ package org.farmcode.core
 		}
 		protected function setMainViewSize() : void{
 			// If FullscreenUtil is being used then this will be skipped
-			if(_asset.parent==_container){
+			if(_displayPosition && _asset.parent==_container){
 				var scale:Number = (isNaN(_applicationScale) || _applicationScale<=0?1:_applicationScale);
 				var pos:Rectangle = _displayPosition;
 				_mainView.setDisplayPosition(pos.x,pos.y,pos.width*(1/scale),pos.height*(1/scale));

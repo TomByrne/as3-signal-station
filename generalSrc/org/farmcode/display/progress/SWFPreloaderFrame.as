@@ -152,7 +152,7 @@ package org.farmcode.display.progress
 			var mainClass:Class = getDefinitionByName(className) as Class;
 			_application = new mainClass();
 			
-			Config::DEBUG{
+			CONFIG::debug{
 				_application = DebugManager.addApplication(_application);
 			}
 			

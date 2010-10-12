@@ -25,7 +25,7 @@ package org.farmcode.acting.metadata
 		private static var actMap:Dictionary = new Dictionary();
 		
 		public static function addActor(actor:Object, scopeDisplay:IDisplayAsset):void{
-			Config::DEBUG{
+			CONFIG::debug{
 				if(actMap[actor]){
 					throw new Error("Actor already registered");
 				}
@@ -76,7 +76,7 @@ package org.farmcode.acting.metadata
 		}
 		public static function changeActorDisplay(actor:Object, scopeDisplay:IDisplayAsset):void{
 			var acts:Array = actMap[actor];
-			Config::DEBUG{
+			CONFIG::debug{
 				if(!acts){
 					throw new Error("Actor not registered");
 				}
@@ -89,7 +89,7 @@ package org.farmcode.acting.metadata
 		}
 		public static function removeActor(actor:Object):void{
 			var acts:Array = actMap[actor];
-			Config::DEBUG{
+			CONFIG::debug{
 				if(!acts){
 					throw new Error("Actor not registered");
 				}

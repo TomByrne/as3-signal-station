@@ -31,7 +31,7 @@ package org.farmcode.display.assets.nativeAssets
 		public function getCoreSkin(coreSkinLabel:String):IAsset{
 			var ret:DisplayObject = _skinContainer.getChildByName(coreSkinLabel);
 			var type:Class = ret["constructor"];
-			Config::DEBUG{
+			CONFIG::debug{
 				checkFactoryType(type);
 			}
 			return getNew(new type());
@@ -57,7 +57,7 @@ package org.farmcode.display.assets.nativeAssets
 			returnTo(getBundleByAsset(asset).pool, cast);
 		}
 		
-		Config::DEBUG{
+		CONFIG::debug{
 			protected function checkFactoryType(type:Class):void{
 				if(type==MovieClip || type==Shape || type==Sprite || type==SimpleButton){
 					throw new Error("Flash assets must be 'Exported for Actionscript' to be clonable");
@@ -125,7 +125,7 @@ package org.farmcode.display.assets.nativeAssets
 			ret.addProperties(earlyProps);
 			
 			var displayClass:Class = from.displayObject["constructor"];
-			Config::DEBUG{
+			CONFIG::debug{
 				checkFactoryType(displayClass);
 			}
 			var lateProps:Dictionary = new Dictionary();

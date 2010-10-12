@@ -22,7 +22,7 @@ package org.farmcode.display.assets
 		// CascadingMenuBar
 		public static const CHILD_LIST:String = "childList";
 		
-		Config::DEBUG{
+		CONFIG::debug{
 			// DebugDisplay
 			public static const DEBUG_DISPLAY:String = "debugDisplay";
 			

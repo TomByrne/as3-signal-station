@@ -15,16 +15,16 @@ package org.farmcode.siteStream
 	[Event(name="resolved",type="org.farmcode.siteStream.SiteStreamEvent")]
 	public class SiteStreamNode extends PropertySetter
 	{
-		/*Config::DEBUG{
+		/*CONFIG::debug{
 			private static var gettingNew:Boolean;
 		}*/
 		private static const pool:ObjectPool = new ObjectPool(SiteStreamNode);
 		public static function getNew(siteStreamItem:ISiteStreamParser, propertyInfo:IPropertyInfo=null):SiteStreamNode{
-			/*Config::DEBUG{
+			/*CONFIG::debug{
 				gettingNew = true;
 			}*/
 			var ret:SiteStreamNode = pool.takeObject();
-			/*Config::DEBUG{
+			/*CONFIG::debug{
 				gettingNew = false;
 			}*/
 			ret.siteStreamItem = siteStreamItem;
@@ -82,7 +82,7 @@ package org.farmcode.siteStream
 		
 		public function SiteStreamNode(siteStreamItem:ISiteStreamParser=null, propertyInfo:IPropertyInfo=null){
 			super(siteStreamItem, propertyInfo);
-			/*Config::DEBUG{
+			/*CONFIG::debug{
 				if(!gettingNew)throw new Error("WARNING: SiteStreamNode should be created via SiteStreamNode.getNew()");
 			}*/
 			this.addEventListener(SiteStreamEvent.PARSED,checkResolved,false,0,true);

@@ -137,7 +137,7 @@ package org.farmcode.debug.display
 			super.bindToAsset();
 			if(_application)_application.container = _containerAsset;
 			
-			Config::DEBUG{
+			CONFIG::debug{
 				_graph.asset = _containerAsset.takeAssetByName(AssetNames.DEBUG_GRAPH_DISPLAY,IContainerAsset);
 			}
 			_containerAsset.removeAsset(_graph.asset);

@@ -41,7 +41,7 @@ package org.farmcode.display.assets.nativeAssets
 				if(value){
 					_textField = value as TextField;
 					_defaultState = _textField.defaultTextFormat;
-					Config::DEBUG{
+					CONFIG::debug{
 						if(!_textField.embedFonts){
 							trace("WARNING: TextField with embedFonts set to false");
 						}

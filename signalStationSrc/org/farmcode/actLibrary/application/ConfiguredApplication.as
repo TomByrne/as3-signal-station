@@ -99,7 +99,7 @@ package org.farmcode.actLibrary.application
 		override protected function init():void{
 			super.init();
 			
-			Config::DEBUG{
+			CONFIG::debug{
 				if(!_scopeDisplay || !_universalActorHelper.added){
 					throw new Error("Cannot init before the container has been set");
 				}

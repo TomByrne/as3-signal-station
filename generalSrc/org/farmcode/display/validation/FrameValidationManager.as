@@ -38,7 +38,7 @@ package org.farmcode.display.validation
 		}
 		public function validate(flag:IFrameValidationFlag):void{
 			assessAllFlags();
-			Config::DEBUG{
+			CONFIG::debug{
 				if(!flag.asset){
 					throw new Error("Trying to validate flag with no asset");
 				}
@@ -48,7 +48,7 @@ package org.farmcode.display.validation
 			}
 		}
 		public function addFrameValFlag(flag:IFrameValidationFlag):void{
-			Config::DEBUG{
+			CONFIG::debug{
 				if(flags[flag]){
 					throw new Error("Trying to add flag twice");
 				}
@@ -61,7 +61,7 @@ package org.farmcode.display.validation
 			}
 		}
 		public function removeFrameValFlag(flag:IFrameValidationFlag):void{
-			Config::DEBUG{
+			CONFIG::debug{
 				if(!flags[flag]){
 					throw new Error("Trying to remove a non-added flag");
 				}
@@ -360,7 +360,7 @@ class AssetBundle implements IPoolable{
 		_assetPosChanged.perform(this);
 	}
 	public function addChild(bundle:AssetBundle):void{
-		Config::DEBUG{
+		CONFIG::debug{
 			if(children.indexOf(bundle)!=-1){
 				throw new Error("child already added");
 			}
@@ -370,7 +370,7 @@ class AssetBundle implements IPoolable{
 	}
 	public function removeChild(bundle:AssetBundle):void{
 		var index:int = children.indexOf(bundle);
-		Config::DEBUG{
+		CONFIG::debug{
 			if(index==-1){
 				throw new Error("child not added");
 			}
@@ -380,7 +380,7 @@ class AssetBundle implements IPoolable{
 	}
 	
 	public function addValidationFlag(validationFlag:IFrameValidationFlag):void{
-		Config::DEBUG{
+		CONFIG::debug{
 			if(validationFlags.indexOf(validationFlag)!=-1){
 				throw new Error("flag already added");
 			}
@@ -389,7 +389,7 @@ class AssetBundle implements IPoolable{
 	}
 	public function removeValidationFlag(validationFlag:IFrameValidationFlag):void{
 		var index:int = validationFlags.indexOf(validationFlag);
-		Config::DEBUG{
+		CONFIG::debug{
 			if(index==-1){
 				throw new Error("flag not added");
 			}
@@ -428,7 +428,7 @@ class DrawRun implements IPoolable{
 	// THIS NEEDS TO ADD TO THE CORRECT POSITION.
 	// after currentIndex but before any descendents
 	public function addPending(flag:IFrameValidationFlag):void{
-		Config::DEBUG{
+		CONFIG::debug{
 			if(pendingDraws.indexOf(flag)!=-1){
 				throw new Error("Trying to add already added flag");
 			}

@@ -6,16 +6,16 @@ package org.farmcode.queueing.queueItems.functional
 
 	public class MethodCallQI extends PendingResultQueueItem implements IPoolable
 	{
-		/*Config::DEBUG{
+		/*CONFIG::debug{
 			private static var gettingNew:Boolean;
 		}*/
 		private static const pool:ObjectPool = new ObjectPool(MethodCallQI);
 		public static function getNew(func:Function=null, parameters:Array=null):MethodCallQI{
-			/*Config::DEBUG{
+			/*CONFIG::debug{
 				gettingNew = true;
 			}*/
 			var ret:MethodCallQI = pool.takeObject();
-			/*Config::DEBUG{
+			/*CONFIG::debug{
 				gettingNew = false;
 			}*/
 			ret.func = func;
@@ -37,7 +37,7 @@ package org.farmcode.queueing.queueItems.functional
 		private var _calledTimes:uint = 0;
 		
 		public function MethodCallQI(func:Function=null, parameters:Array=null){
-			/*Config::DEBUG{
+			/*CONFIG::debug{
 				if(!gettingNew)throw new Error("WARNING: MethodCallQI should be created via MethodCallQI.getNew()");
 			}*/
 			this.func = func;

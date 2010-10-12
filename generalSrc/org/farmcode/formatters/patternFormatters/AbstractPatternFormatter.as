@@ -69,7 +69,7 @@ package org.farmcode.formatters.patternFormatters
 			_tokens = new Dictionary();
 		}
 		protected function _addToken(token:String, stringProvider:IStringProvider):void{
-			Config::DEBUG{
+			CONFIG::debug{
 				if(!stringProvider)throw new Error("No IStringProvider provided");
 			}
 			if(_tokens[token]){
@@ -80,7 +80,7 @@ package org.farmcode.formatters.patternFormatters
 			doStringChanged();
 		}
 		protected function _removeToken(token:String):void{
-			Config::DEBUG{
+			CONFIG::debug{
 				if(!_tokens[token])throw new Error("This token hasn't been added");
 			}
 			var stringProvider:IStringProvider = _tokens[token];

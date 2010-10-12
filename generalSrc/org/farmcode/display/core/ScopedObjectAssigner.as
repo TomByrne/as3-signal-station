@@ -30,7 +30,7 @@ package org.farmcode.display.core
 		private static var managerLists:Dictionary = new Dictionary();
 		
 		public function addManager(manager:IScopedObjectRoot):void{
-			Config::DEBUG{
+			CONFIG::debug{
 				if(managers[manager]){
 					throw new Error("Manager already added");
 				}
@@ -43,7 +43,7 @@ package org.farmcode.display.core
 			}
 		}
 		public function removeManager(manager:IScopedObjectRoot):void{
-			Config::DEBUG{
+			CONFIG::debug{
 				if(!managers[manager]){
 					throw new Error("Manager hasn't been added");
 				}
@@ -56,7 +56,7 @@ package org.farmcode.display.core
 			}
 		}
 		public function addScopedObject(scopedObject:IScopedObject):void{
-			Config::DEBUG{
+			CONFIG::debug{
 				if(scopedObjectMap[scopedObject]){
 					throw new Error("scopedObject already added");
 				}
@@ -70,7 +70,7 @@ package org.farmcode.display.core
 		}
 		public function removeScopedObject(scopedObject:IScopedObject):void{
 			var bundle:ScopedObjectBundle = scopedObjects[scopedObject];
-			Config::DEBUG{
+			CONFIG::debug{
 				if(!bundle){
 					throw new Error("scopedObject has not been added");
 				}

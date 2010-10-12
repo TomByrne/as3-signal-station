@@ -23,19 +23,19 @@
     <target name="SWC Packager" description="Package up code used.">
     	<swcPackager projectPath="${basedir}" includeMainSource="false" sourceExceptions=""
     		swcOutput="${basedir}/bin/all.swc" compiler="${FLEX_HOME}\bin\compc.exe"
-    		frameworkDirectory="${FRAMEWORKS}" additionalArgs="-define=Config::DEBUG,false" verbose="false"/>
+    		frameworkDirectory="${FRAMEWORKS}" additionalArgs="-define=CONFIG::debug,false" verbose="false"/>
 
     	<swcPackager projectPath="${basedir}" includeMainSource="false" sourceExceptions="signalStationSrc,siteStreamSrc"
     		swcOutput="${basedir}/bin/general.swc" compiler="${FLEX_HOME}\bin\compc.exe"
-    		frameworkDirectory="${FRAMEWORKS}" additionalArgs="-define=Config::DEBUG,false" verbose="false"/>
+    		frameworkDirectory="${FRAMEWORKS}" additionalArgs="-define=CONFIG::debug,false" verbose="false"/>
 
 	<swcPackager projectPath="${basedir}" includeMainSource="false" sourceExceptions="generalSrc,siteStreamSrc"
 		swcOutput="${basedir}/bin/signalStation.swc" compiler="${FLEX_HOME}\bin\compc.exe"
-		frameworkDirectory="${FRAMEWORKS}" additionalArgs="-define=Config::DEBUG,false" verbose="false"/>
+		frameworkDirectory="${FRAMEWORKS}" additionalArgs="-define=CONFIG::debug,false" verbose="false"/>
 
 	<swcPackager projectPath="${basedir}" includeMainSource="false" sourceExceptions="signalStationSrc,generalSrc"
 		swcOutput="${basedir}/bin/siteStream.swc" compiler="${FLEX_HOME}\bin\compc.exe"
-		frameworkDirectory="${FRAMEWORKS}" additionalArgs="-define=Config::DEBUG,false" verbose="false"/>
+		frameworkDirectory="${FRAMEWORKS}" additionalArgs="-define=CONFIG::debug,false" verbose="false"/>
     </target>
 
 
@@ -56,7 +56,7 @@
     		<param name="debug" value="false"/>
     	</antcall>
 
-    	<swcPackager projectPath="${basedir}" includeMainSource="false" sourceExceptions="" swcOutput="${basedir}/build/externals.swc" compiler="${FLEX_HOME}\bin\compc.exe" manifestOutput="${basedir}/build/externals_manifest.xml" frameworkDirectory="${FRAMEWORKS}" additionalArgs="-define=Config::DEBUG,false" verbose="false"/>
+    	<swcPackager projectPath="${basedir}" includeMainSource="false" sourceExceptions="" swcOutput="${basedir}/build/externals.swc" compiler="${FLEX_HOME}\bin\compc.exe" manifestOutput="${basedir}/build/externals_manifest.xml" frameworkDirectory="${FRAMEWORKS}" additionalArgs="-define=CONFIG::debug,false" verbose="false"/>
     </target>-->
 	
 
@@ -83,7 +83,7 @@
             <load-config filename="${FLEX_HOME}/frameworks/flex-config.xml"/>
             <load-config filename="flexConfig.xml"/>
         	
-    		<define name="Config::DEBUG" value="false"/>
+    		<define name="CONFIG::debug" value="false"/>
     		
             <source-path path-element="${basedir}\src"/>
             <source-path path-element="${basedir}\sodality.ext"/>

@@ -2,11 +2,7 @@ package org.farmcode.display.assets.stylable.styles
 {
 	import flash.display.DisplayObject;
 	import flash.display.Shape;
-	import flash.filters.BitmapFilter;
-	import flash.filters.BlurFilter;
 	import flash.text.TextField;
-	
-	import org.farmcode.actLibrary.display.visualSockets.actTypes.IFillSocketAct;
 	
 	public class FilterStyle extends AbstractStyle implements ITextStyle, IRectangleStyle
 	{

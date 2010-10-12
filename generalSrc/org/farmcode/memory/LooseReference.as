@@ -7,16 +7,16 @@ package org.farmcode.memory
 	
 	public class LooseReference implements IPoolable
 	{
-		/*Config::DEBUG{
+		/*CONFIG::debug{
 			private static var gettingNew:Boolean;
 		}*/
 		private static const pool:ObjectPool = new ObjectPool(LooseReference);
 		public static function getNew(object:Object=null):LooseReference{
-			/*Config::DEBUG{
+			/*CONFIG::debug{
 				gettingNew = true;
 			}*/
 			var ret:LooseReference = pool.takeObject();
-			/*Config::DEBUG{
+			/*CONFIG::debug{
 				gettingNew = false;
 			}*/
 			ret.object = object;
@@ -72,7 +72,7 @@ package org.farmcode.memory
 		private var lockedReference: Object;
 		
 		public function LooseReference(object:Object=null){
-			/*Config::DEBUG{
+			/*CONFIG::debug{
 				if(!gettingNew)throw new Error("WARNING: LooseReference should be created via LooseReference.getNew()");
 			}*/
 			this.lockedReference = null;

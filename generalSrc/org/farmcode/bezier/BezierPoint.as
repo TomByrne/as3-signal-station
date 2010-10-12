@@ -11,12 +11,12 @@ package org.farmcode.bezier
 	
 	public class BezierPoint implements IPoolable
 	{
-		/*Config::DEBUG{
+		/*CONFIG::debug{
 			private static var gettingNew:Boolean;
 		}*/
 		private static const pool:ObjectPool = new ObjectPool(BezierPoint);
 		public static function getNew(x:Number=0, y:Number=0, angle:Number=NaN, distance:Number=NaN):BezierPoint{
-			/*Config::DEBUG{
+			/*CONFIG::debug{
 				gettingNew = true;
 			}*/
 			var ret:BezierPoint = pool.takeObject();
@@ -24,7 +24,7 @@ package org.farmcode.bezier
 			ret.y = y;
 			ret.angle = angle;
 			ret.distance = distance;
-			/*Config::DEBUG{
+			/*CONFIG::debug{
 				gettingNew = false;
 			}*/
 			return ret;
@@ -337,7 +337,7 @@ package org.farmcode.bezier
 		private var _numbersInvalid:Boolean = false;
 		
 		public function BezierPoint(x:Number=0, y:Number=0, angle:Number=NaN, distance:Number=NaN){
-			/*Config::DEBUG{
+			/*CONFIG::debug{
 				if(!gettingNew && this["constructor"]==BezierPoint)trace("WARNING: BezierPoint should be created via BezierPoint.getNew()");
 			}*/
 			this.x = x;

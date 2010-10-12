@@ -8,7 +8,7 @@
 			<name>Property</name>
 		</keep-as3-metadata>
 		<define>
-        	<name>Config::DEBUG</name>
+        	<name>CONFIG::debug</name>
         	<value>false</value>
     	</define>
 	 </compiler>

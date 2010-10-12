@@ -17,14 +17,14 @@ package org.farmcode.display.assets.schema
 		public function StandardAssetSchema(){
 			_childSchemas = [];
 			
-			Config::DEBUG{
+			CONFIG::debug{
 				var debugDisplay:ContainerAssetSchema = createDebugList(AssetNames.DEBUG_DISPLAY,0,0,100,20,true);
 				debugDisplay.childSchemas.push(createDebugList(AssetNames.CHILD_LIST,0,0,100,20,false));
 				_childSchemas.push(debugDisplay);
 			}
 		}
 		
-		Config::DEBUG{
+		CONFIG::debug{
 			protected function createDebugList(assetName:String, x:Number, y:Number, width:Number, height:Number, incGraph:Boolean):ContainerAssetSchema{
 				var listBacking:RectangleAssetSchema = new RectangleAssetSchema(AssetNames.BACKING,0,0,width,height);
 				var listChildren:Array = [listBacking,createDebugLabel(AssetNames.LIST_ITEM,0,0,width,height)];

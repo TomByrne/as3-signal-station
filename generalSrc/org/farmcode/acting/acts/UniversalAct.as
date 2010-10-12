@@ -65,7 +65,7 @@ package org.farmcode.acting.acts
 			this.scope = null;
 		}
 		override public function perform(...params):void{
-			Config::DEBUG{
+			CONFIG::debug{
 				if(!_scopedObject.asset){
 					trace("WARNING: UniversalAct being performed without scopeDisplay (it will not act universally)");
 				}

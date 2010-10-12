@@ -28,7 +28,7 @@ package org.farmcode.debug
 		
 		public static function addApplication(app:IApplication):IApplication{
 			var manager:DebugManager;
-			Config::DEBUG{
+			CONFIG::debug{
 				manager = new DebugManager(_assetFactory.getCoreSkin(AssetNames.DEBUG_DISPLAY),app);
 			}
 			_managers[app] = manager;

@@ -196,7 +196,7 @@ package org.farmcode.acting.universal
 		internal var reactions:Dictionary = new Dictionary();
 		
 		public function addAct(act:IUniversalAct):void{
-			Config::DEBUG{
+			CONFIG::debug{
 				if(acts[act]){
 					throw new Error("This Act has already been added to this UniversalActManager");
 				}
@@ -213,7 +213,7 @@ package org.farmcode.acting.universal
 			acts[act] = true;
 		}
 		public function removeAct(act:IUniversalAct):void{
-			Config::DEBUG{
+			CONFIG::debug{
 				if(!acts[act]){
 					throw new Error("This act doesn't exist within this UniversalActManager");
 				}

@@ -44,7 +44,7 @@
 				pool[object] = true;
 				_size++;
 			}/*else{
-				Config::DEBUG{
+				CONFIG::debug{
 					throw new Error("Object has already been released");
 				}
 			}*/

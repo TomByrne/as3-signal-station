@@ -94,7 +94,7 @@ package org.farmcode.actLibrary.application
 			var browserActor:BrowserActor = new BrowserActor();
 			_universalActorHelper.addChild(browserActor);
 			
-			Config::DEBUG
+			CONFIG::debug
 			{
 				var onKeyDown:Function = function(e:KeyboardEvent, from:IInteractiveObjectAsset):void{
 					if(e.ctrlKey && e.altKey){

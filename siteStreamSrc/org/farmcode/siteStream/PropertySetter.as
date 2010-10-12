@@ -12,16 +12,16 @@ package org.farmcode.siteStream
 	[Event(name="parsed",type="org.farmcode.siteStream.SiteStreamEvent")]
 	public class PropertySetter extends EventDispatcher implements IPropertySetter, IPoolable
 	{
-		/*Config::DEBUG{
+		/*CONFIG::debug{
 			private static var gettingNew:Boolean;
 		}*/
 		private static const pool:ObjectPool = new ObjectPool(PropertySetter);
 		public static function getNew(siteStreamItem:ISiteStreamParser, propertyInfo:IPropertyInfo):PropertySetter{
-			/*Config::DEBUG{
+			/*CONFIG::debug{
 				gettingNew = true;
 			}*/
 			var ret:PropertySetter = pool.takeObject();
-			/*Config::DEBUG{
+			/*CONFIG::debug{
 				gettingNew = false;
 			}*/
 			ret.siteStreamItem = siteStreamItem;
@@ -75,7 +75,7 @@ package org.farmcode.siteStream
 		protected var pendingRefChildren:Dictionary = new Dictionary();
 		
 		public function PropertySetter(siteStreamItem:ISiteStreamParser=null, propertyInfo:IPropertyInfo=null){
-			/*Config::DEBUG{
+			/*CONFIG::debug{
 				if(!gettingNew && this["constructor"]==PropertySetter)throw new Error("WARNING: BezierPoint should be created via BezierPoint.getNew()");
 			}*/
 			this._siteStreamItem = siteStreamItem;

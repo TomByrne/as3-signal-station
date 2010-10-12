@@ -40,7 +40,7 @@ package org.farmcode.binding
 		}
 		
 		protected function addWatchableProps(propName:String):void{
-			Config::DEBUG{
+			CONFIG::debug{
 				if(_watchableProps[propName])throw new Error("This property has already been added");
 			}
 			if(!_watchablePropNames)_watchablePropNames = [];

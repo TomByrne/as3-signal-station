@@ -110,7 +110,7 @@ package org.farmcode.debug.display
 		}
 		override protected function bindToAsset() : void{
 			super.bindToAsset();
-			Config::DEBUG{
+			CONFIG::debug{
 				_bitmap = _containerAsset.takeAssetByName(AssetNames.DEBUG_ITEM_BITMAP,IBitmapAsset);
 				_bitmap.bitmapData = _bitmapData;
 				
