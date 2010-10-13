@@ -1,0 +1,33 @@
+package org.tbyrne.display.controls.toolTip
+{
+	import org.tbyrne.acting.actTypes.IAct;
+	import org.tbyrne.display.core.ILayoutView;
+
+	public interface IToolTipTrigger
+	{
+		/**
+		 * handler(from:IToolTipTrigger)
+		 */
+		function get activeChanged():IAct;
+		function get active():Boolean;
+		
+		/**
+		 * handler(from:IToolTipTrigger)
+		 */
+		function get dataAnchorChanged():IAct;
+		function get anchorView():ILayoutView;
+		function get anchor():String;
+		function get data():*;
+		
+		/**
+		 * Should match a value from ToolTipTypes
+		 */
+		function get tipType():String;
+		
+		/**
+		 * Some IToolTipManagers use a legend to relate triggers with a legend.
+		 * This allows the IToolTipManager to tell the trigger which key has been used.
+		 */
+		function set annotationKey(value:*):void;
+	}
+}
