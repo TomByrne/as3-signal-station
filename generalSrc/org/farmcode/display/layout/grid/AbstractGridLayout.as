@@ -37,7 +37,7 @@ package org.farmcode.display.layout.grid
 			if(_verticalAxis.foreMargin!=value){
 				_verticalAxis.foreMargin = value;
 				invalidateGapsAndMargins();
-				invalidate();
+				invalidateSize();
 			}
 		}
 		
@@ -48,7 +48,7 @@ package org.farmcode.display.layout.grid
 			if(_horizontalAxis.foreMargin!=value){
 				_horizontalAxis.foreMargin = value;
 				invalidateGapsAndMargins();
-				invalidate();
+				invalidateSize();
 			}
 		}
 		
@@ -59,7 +59,7 @@ package org.farmcode.display.layout.grid
 			if(_horizontalAxis.aftMargin!=value){
 				_horizontalAxis.aftMargin = value;
 				invalidateGapsAndMargins();
-				invalidate();
+				invalidateSize();
 			}
 		}
 		
@@ -70,7 +70,7 @@ package org.farmcode.display.layout.grid
 			if(_verticalAxis.aftMargin!=value){
 				_verticalAxis.aftMargin = value;
 				invalidateGapsAndMargins();
-				invalidate();
+				invalidateSize();
 			}
 		}
 		
@@ -81,7 +81,7 @@ package org.farmcode.display.layout.grid
 			if(_horizontalAxis.gap!=value){
 				_horizontalAxis.gap = value;
 				invalidateGapsAndMargins();
-				invalidate();
+				invalidateSize();
 			}
 		}
 		
@@ -92,7 +92,7 @@ package org.farmcode.display.layout.grid
 			if(_verticalAxis.gap!=value){
 				_verticalAxis.gap = value;
 				invalidateGapsAndMargins();
-				invalidate();
+				invalidateSize();
 			}
 		}
 		
@@ -104,7 +104,7 @@ package org.farmcode.display.layout.grid
 				_horizontalAxis.maxCount = value;
 				_horizontalAxis.hasMaxCount = (value!=-1);
 				_cellMappingFlag.invalidate();
-				invalidate();
+				invalidateSize();
 			}
 		}
 		protected function get _maxRows():int{
@@ -115,7 +115,7 @@ package org.farmcode.display.layout.grid
 				_verticalAxis.maxCount = value;
 				_verticalAxis.hasMaxCount = (value!=-1);
 				_cellMappingFlag.invalidate();
-				invalidate();
+				invalidateSize();
 			}
 		}
 		
@@ -127,7 +127,7 @@ package org.farmcode.display.layout.grid
 				__flowDirection = value;
 				_isVertical = (value==Direction.VERTICAL);
 				_propsFlag.invalidate();
-				invalidate();
+				invalidateSize();
 			}
 		}
 		
@@ -140,7 +140,7 @@ package org.farmcode.display.layout.grid
 				_horizontalAxis.cellSizesCount = (value?value.length:0);
 				_horizontalAxis.hasCellSizes = _horizontalAxis.cellSizesCount>0;
 				_cellMappingFlag.invalidate();
-				invalidate();
+				invalidateSize();
 			}
 		}
 		
@@ -153,7 +153,7 @@ package org.farmcode.display.layout.grid
 				_verticalAxis.cellSizesCount = (value?value.length:0);
 				_verticalAxis.hasCellSizes = _verticalAxis.cellSizesCount>0;
 				_cellMappingFlag.invalidate();
-				invalidate();
+				invalidateSize();
 			}
 		}
 		
@@ -176,7 +176,7 @@ package org.farmcode.display.layout.grid
 				}else{
 					_breadthScrollFlag.invalidate();
 				}
-				invalidate();
+				invalidateSize();
 			}
 		}
 		
@@ -199,7 +199,7 @@ package org.farmcode.display.layout.grid
 				}else{
 					_lengthScrollFlag.invalidate();
 				}
-				invalidate();
+				invalidateSize();
 			}
 		}
 		
@@ -218,7 +218,7 @@ package org.farmcode.display.layout.grid
 			if(_verticalAxis.equaliseCells!=value){
 				_verticalAxis.equaliseCells = value;
 				_cellPosFlag.invalidate();
-				invalidate();
+				invalidateSize();
 			}
 		}
 		protected function get _equaliseCellWidths():Boolean{
@@ -228,7 +228,7 @@ package org.farmcode.display.layout.grid
 			if(_horizontalAxis.equaliseCells!=value){
 				_horizontalAxis.equaliseCells = value;
 				_cellPosFlag.invalidate();
-				invalidate();
+				invalidateSize();
 			}
 		}
 		protected function get _pixelFlow():Boolean{
@@ -238,7 +238,7 @@ package org.farmcode.display.layout.grid
 			if(__pixelFlow!=value){
 				__pixelFlow = value;
 				_cellPosFlag.invalidate();
-				invalidate();
+				invalidateSize();
 			}
 		}
 		
@@ -281,9 +281,9 @@ package org.farmcode.display.layout.grid
 			createAxes();
 			_horizontalAxis.scrollMetrics.scrollMetricsChanged.addHandler(onHScrollMetricsChanged);
 			_verticalAxis.scrollMetrics.scrollMetricsChanged.addHandler(onVScrollMetricsChanged);
-			positionChanged.addHandler(onPosChanged);
+			sizeChanged.addHandler(onSizeChanged);
 		}
-		protected function onPosChanged(from:AbstractGridLayout, oldX:Number, oldY:Number, oldWidth:Number, oldHeight:Number): void{
+		protected function onSizeChanged(from:AbstractGridLayout, oldWidth:Number, oldHeight:Number): void{
 			_cellMappingFlag.invalidate();
 		}
 		override protected function onSubjectMeasChanged(from:ILayoutSubject, oldWidth:Number, oldHeight:Number): void{
@@ -292,8 +292,8 @@ package org.farmcode.display.layout.grid
 			super.onSubjectMeasChanged(from, oldWidth, oldHeight);
 		}
 		protected function createAxes():void{
-			_horizontalAxis = new GridAxis("x","width","columnIndex");
-			_verticalAxis = new GridAxis("y","height","rowIndex");
+			_horizontalAxis = new GridAxis("x"/*,"width"*/,"columnIndex");
+			_verticalAxis = new GridAxis("y"/*,"height"*/,"rowIndex");
 		}
 		
 		override public function removeSubject(subject:ILayoutSubject):Boolean{
@@ -401,7 +401,7 @@ package org.farmcode.display.layout.grid
 			
 			var breadthStackMax:Number;
 			if(_pixelFlow){
-				breadthStackMax = _displayPosition[_breadthAxis.dimRef]-_breadthAxis.foreMargin-_breadthAxis.aftMargin+_breadthAxis.gap;
+				breadthStackMax = _size[_breadthAxis.coordRef]-_breadthAxis.foreMargin-_breadthAxis.aftMargin+_breadthAxis.gap;
 			}
 			
 			var keys:Dictionary = getChildKeys();
@@ -593,7 +593,7 @@ package org.farmcode.display.layout.grid
 			
 			var pixScroll:Number;
 			var pixScrollMax:Number;
-			var realDim:Number = _displayPosition[axis.dimRef];
+			var realDim:Number = _size[axis.coordRef];
 			var realMeas:Number = midDrawMeas[axis.coordRef];
 			if(realMeas>realDim){
 				pixScrollMax = realMeas-realDim;
@@ -669,11 +669,11 @@ package org.farmcode.display.layout.grid
 						
 						if(_isVertical){
 							positionRenderer(key,i,j,
-								_displayPosition.x+lengthStack-lengthScroll,_displayPosition.y+breadthStack-breadthScroll,
+								_position.x+lengthStack-lengthScroll,_position.y+breadthStack-breadthScroll,
 								subLengthDim,subBreadthDim);
 						}else{
 							positionRenderer(key,i,j,
-								_displayPosition.x+breadthStack-breadthScroll,_displayPosition.y+lengthStack-lengthScroll,
+								_position.x+breadthStack-breadthScroll,_position.y+lengthStack-lengthScroll,
 								subBreadthDim,subLengthDim);
 						}
 						breadthStack += subBreadthDim+_breadthAxis.gap;
@@ -690,7 +690,10 @@ package org.farmcode.display.layout.grid
 				cast[_lengthAxis.indexRef] = length;
 				cast[_breadthAxis.indexRef] = breadth;
 			}
-			if(renderer)renderer.setDisplayPosition(x,y,width,height);
+			if(renderer){
+				renderer.setPosition(x,y);
+				renderer.setSize(width,height);
+			}
 		}
 		
 		// IScrollable implementation

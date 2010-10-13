@@ -39,7 +39,7 @@ package org.farmcode.display.core
 					_interactiveObjectAsset = null;
 					_spriteAsset = null;
 				}
-				invalidate();
+				invalidateAll();
 			}
 		}
 		public function get scope():IDisplayAsset{
@@ -75,12 +75,19 @@ package org.farmcode.display.core
 		protected var _drawFlag:FrameValidationFlag;
 		protected var _revertParentStateLists:Boolean;
 		
+		protected var _childDrawFlags:Vector.<FrameValidationFlag>;
+		
 		private var _transState:StateDef = new StateDef([INTRO_FRAME_LABEL,OUTRO_FRAME_LABEL]);
 		
 		public function DrawableView(asset:IDisplayAsset=null){
-			_drawFlag = new FrameValidationFlag(this,commitDraw,false);
+			_drawFlag = new FrameValidationFlag(this,validateAll,false);
 			super(asset);
 		}
+		protected function addDrawFlag(frameValidationFlag:FrameValidationFlag):void{
+			if(!_childDrawFlags)_childDrawFlags = new Vector.<FrameValidationFlag>();
+			_childDrawFlags.push(frameValidationFlag);
+		}
+		
 		final protected function attemptInit() : void{
 			if(!_inited){
 				_inited = true;
@@ -134,7 +141,7 @@ package org.farmcode.display.core
 		 * 
 		 * @see validate
 		 */
-		protected function invalidate(): void{
+		protected function invalidateAll(): void{
 			_drawFlag.invalidate();
 		}
 		
@@ -145,25 +152,11 @@ package org.farmcode.display.core
 			_drawFlag.validate(forceDraw);
 		}
 		
-		/**
-		 * @inheritDoc
-		 */
-		final public function commitDraw(): void{
+		protected function validateAll():void{
 			checkIsBound();
-			if(asset)this.draw();
-		}
-		
-		/**
-		 * The draw method should be overridden within subclasses of the DelayedDrawSprite class, 
-		 * it should contain all logic for visual layout and drawing. Conventionally, if the draw 
-		 * method becomes very large, it will be broken down into several parts, with boolean flags 
-		 * indicating which parts are invalid. This means that when <code>invalidate()</code> gets 
-		 * called, the appropriate boolean will be flagged and the draw method will contain an 
-		 * <code>if</code> statement testing that boolean, executing if the boolean is flagged, and			
-		 * finally resetting the boolean.
-		 */
-		protected function draw():void{
-			
+			for each(var frameValidationFlag:FrameValidationFlag in _childDrawFlags){
+				frameValidationFlag.validate();
+			}
 		}
 		protected function bindToAsset():void{
 			attemptInit();
@@ -187,7 +180,6 @@ package org.farmcode.display.core
 			if(_bound){
 				unbindFromAsset();
 				_bound = false;
-				invalidate();
 			}
 		}
 		protected function onAddedToStage(from:IAsset):void{

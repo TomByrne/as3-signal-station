@@ -30,7 +30,7 @@ package org.farmcode.media.image
 			this.smoothing = smoothing;
 		}
 		protected function onLoaderComplete(e:Event):void{
-			invalidate();
+			invalidateSize();
 			applySmoothing();
 		}
 		protected function applySmoothing():void{

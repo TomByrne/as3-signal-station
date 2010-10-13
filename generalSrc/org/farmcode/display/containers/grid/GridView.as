@@ -91,7 +91,7 @@ package org.farmcode.display.containers.grid
 			_layout.flowDirection = Direction.HORIZONTAL;
 		}
 		override protected function setLayoutDimensions(width:Number, height:Number):void{
-			_layout.setDisplayPosition(0,0,width,height);
+			_layout.setSize(width,height);
 		}
 		
 		override protected function assumedRendererAssetName() : String{

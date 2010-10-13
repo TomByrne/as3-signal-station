@@ -28,7 +28,7 @@ package org.farmcode.display.progress
 		public function set detailsFormat(value:String):void{
 			if(_detailsFormat!=value){
 				_detailsFormat = value;
-				invalidate();
+				invalidateSize();
 			}
 		}
 		
@@ -38,7 +38,7 @@ package org.farmcode.display.progress
 		public function set showMessage(value:Boolean):void{
 			if(_showMessage!=value){
 				_showMessage = value;
-				invalidate();
+				invalidateSize();
 			}
 		}
 		
@@ -151,7 +151,7 @@ package org.farmcode.display.progress
 			_bar.graphics.clear();
 			_bar.graphics.beginFill(_foregroundColour,1);
 			_bar.graphics.drawRect(0,0,BAR_WIDTH,BAR_HEIGHT);
-			invalidate();
+			invalidateSize();
 		}
 		override protected function doShowIntro() : void{
 			super.doShowIntro();
@@ -226,14 +226,13 @@ package org.farmcode.display.progress
 		protected function get shouldShow() : Boolean{
 			return (!measurable || (!isNaN(progress) && !isNaN(total) && progress<total));
 		}
-		override protected function draw() : void{
-			positionAsset();
+		override protected function validateSize():void{
 			
-			_background.width = displayPosition.width;
-			_background.height = displayPosition.height;
+			_background.width = position.x;
+			_background.height = position.y;
 			
 			
-			var width:Number = Math.min(displayPosition.width,BAR_WIDTH);
+			var width:Number = Math.min(size.x,BAR_WIDTH);
 			var shouldShow:Boolean = this.shouldShow;
 			if(shouldShow){
 				if(_container.alpha<1 && !_transInRunning){
@@ -272,8 +271,8 @@ package org.farmcode.display.progress
 				_bar.x = 0;
 			}
 			
-			_centerContainer.x = (displayPosition.width-width)/2;
-			_centerContainer.y = displayPosition.height/2;
+			_centerContainer.x = (position.x-width)/2;
+			_centerContainer.y = position.y/2;
 		}
 	}
 }

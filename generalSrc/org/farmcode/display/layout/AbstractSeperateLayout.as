@@ -58,7 +58,10 @@ package org.farmcode.display.layout
 			}
 			return false;
 		}
-		override protected function draw():void{
+		override protected function validatePosition():void{
+			invalidateSize();
+		}
+		override protected function validateSize():void{
 			for each(var valFlag:FrameValidationFlag in _subjectFlags){
 				valFlag.validate(true);
 			}
@@ -87,7 +90,7 @@ package org.farmcode.display.layout
 					valFlag.invalidate();
 				}
 				_invalidMeas[subject] = true;
-				doMeasurementsChanged();
+				invalidateMeasurements();
 			}
 		}
 		override protected function measure() : void{

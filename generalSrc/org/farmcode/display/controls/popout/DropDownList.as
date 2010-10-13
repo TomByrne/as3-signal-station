@@ -98,15 +98,19 @@ package org.farmcode.display.controls.popout {
 			super.unbindFromAsset();
 			_textLabelButton.asset=null;
 		}
-		override public function setDisplayPosition(x:Number, y:Number, width:Number, height:Number) : void{
-			super.setDisplayPosition(x,y,width,height);
-			_textLabelButton.setDisplayPosition(x,y,width,height);
+		override public function setPosition(x:Number, y:Number) : void{
+			super.setPosition(x,y);
+			_textLabelButton.setPosition(x,y);
+		}
+		override public function setSize(width:Number, height:Number) : void{
+			super.setSize(width,height);
+			_textLabelButton.setSize(width,height);
 		}
 		protected function onButtonClicked(from:TextLabelButton):void {
 			_popoutDisplay.popoutShown = _textLabelButton.selected;
 		}
 		protected function onTextMeasureChange(from:ILayoutSubject, oldWidth:Number, oldHeight:Number):void{
-			performMeasChanged();
+			invalidateMeasurements();
 		}
 		/*override protected function getListAlignArea():void{
 			var labelMeas:Point = _textLabelButton.measurements;

@@ -56,7 +56,7 @@ package org.farmcode.display.controls
 				if(_scrollMetrics){
 					_scrollMetrics.scrollMetricsChanged.addHandler(onScrollMetricsChanged);
 				}
-				invalidate();
+				invalidateSize();
 			}
 		}
 		public function get scrollMetrics():IScrollMetrics{
@@ -72,8 +72,8 @@ package org.farmcode.display.controls
 			if(_direction != to){
 				_direction = to;
 				if(_scrollSubject)scrollMetrics = _scrollSubject.getScrollMetrics(_direction);
-				performMeasChanged();
-				invalidate();
+				invalidateMeasurements();
+				invalidateSize();
 			}
 		}
 		public function get direction():String{
@@ -88,7 +88,7 @@ package org.farmcode.display.controls
 		public function set sizeThumbToContent(to:Boolean):void{
 			if(_sizeThumbToContent != to){
 				_sizeThumbToContent = to;
-				invalidate();
+				invalidateSize();
 			}
 		}
 		public function get sizeThumbToContent():Boolean{
@@ -101,7 +101,8 @@ package org.farmcode.display.controls
 		public function set rotateForHorizontal(to:Boolean):void{
 			if(_rotateForHorizontal != to){
 				_rotateForHorizontal = to;
-				invalidate();
+				invalidateSize();
+				invalidatePos();
 			}
 		}
 		public function get rotateForHorizontal():Boolean{
@@ -120,11 +121,10 @@ package org.farmcode.display.controls
 			return _useHandCursor;
 		}
 		
-		[Inspectable(defaultValue=true, type="Boolean")]
 		public function set hideWhenUnusable(to:Boolean):void{
 			if(_hideWhenUnusable != to){
 				this._hideWhenUnusable = to;
-				invalidate();
+				invalidateSize();
 			}
 		}
 		public function get hideWhenUnusable():Boolean{
@@ -245,17 +245,16 @@ package org.farmcode.display.controls
 				this.dispatchScroll();
 			}
 		}
-		override protected function positionAsset():void{
+		override protected function validatePosition():void{
 			if(_direction==Direction.VERTICAL || !_rotateForHorizontal){
-				super.positionAsset();
+				super.validatePosition();
 				asset.rotation = 0;
 			}else{
 				asset.rotation = -90;
-				asset.setPosition(displayPosition.x,displayPosition.y+displayPosition.height);
+				asset.setPosition(_position.x,_position.y+_size.y);
 			}
 		}
-		override protected function draw():void{
-			positionAsset();
+		override protected function validateSize():void{
 			
 			var minimum:Number = _scrollMetrics.minimum;
 			var maximum:Number = _scrollMetrics.maximum;
@@ -318,11 +317,12 @@ package org.farmcode.display.controls
 				var height:Number;
 				var width:Number;
 				if(isVert){
-					height = displayPosition.height;
-					width = displayPosition.width;
+					height = _size.y;
+					width = _size.x;
 				}else{
-					height = displayPosition.width;
-					width = displayPosition.height;
+					asset.setPosition(_position.x,_position.y+_size.y);
+					height = _size.x;
+					width = _size.y;
 				}
 				
 				var buttonHeight:Number = foreMeas.y+aftMeas.y;
@@ -384,22 +384,22 @@ package org.farmcode.display.controls
 				}
 			}else{
 				var buttonWidth:Number = foreMeas.x+aftMeas.x;
-				if(displayPosition.width<buttonWidth){
-					aftWidth = displayPosition.width*(aftMeas.x/buttonWidth);
-					foreWidth = displayPosition.width*(foreMeas.x/buttonWidth);
+				if(_size.x<buttonWidth){
+					aftWidth = _size.x*(aftMeas.x/buttonWidth);
+					foreWidth = _size.x*(foreMeas.x/buttonWidth);
 				}else{
 					aftWidth = aftMeas.x;
 					foreWidth = foreMeas.x;
 				}
 				
 				if(_groupButtons){
-					trackWidth = displayPosition.width-foreHeight-aftWidth;
+					trackWidth = _size.x-foreHeight-aftWidth;
 					trackX = 0;
 					foreX = trackWidth;
 					aftX = foreX+foreWidth;
 				}else{
 					foreX = 0;
-					trackWidth = displayPosition.width-foreHeight-aftWidth;
+					trackWidth = _size.x-foreHeight-aftWidth;
 					trackX = foreWidth;
 					aftX = trackX+trackWidth;
 				}
@@ -414,49 +414,56 @@ package org.farmcode.display.controls
 				}
 				
 				
-				if(trackMeas.y<displayPosition.height){
+				if(trackMeas.y<_size.y){
 					trackHeight = trackMeas.y;
-					trackY = (displayPosition.height-trackHeight)/2;
+					trackY = (_size.y-trackHeight)/2;
 				}else{
-					trackHeight = displayPosition.height;
+					trackHeight = _size.y;
 					trackY = 0;
 				}
-				if(thumbMeas.y<displayPosition.height){
+				if(thumbMeas.y<_size.y){
 					thumbHeight = thumbMeas.y;
-					thumbY = (displayPosition.height-thumbHeight)/2;
+					thumbY = (_size.y-thumbHeight)/2;
 				}else{
-					thumbHeight = displayPosition.height;
+					thumbHeight = _size.y;
 					thumbY = 0;
 				}
-				if(foreMeas.y<displayPosition.height){
+				if(foreMeas.y<_size.y){
 					foreHeight = foreMeas.y;
-					foreY = (displayPosition.height-foreHeight)/2;
+					foreY = (_size.y-foreHeight)/2;
 				}else{
-					foreHeight = displayPosition.height;
+					foreHeight = _size.y;
 					foreY = 0;
 				}
-				if(aftMeas.y<displayPosition.height){
+				if(aftMeas.y<_size.y){
 					aftHeight = aftMeas.y;
-					aftY = (displayPosition.height-aftHeight)/2;
+					aftY = (_size.y-aftHeight)/2;
 				}else{
-					aftHeight = displayPosition.height;
+					aftHeight = _size.y;
 					aftY = 0;
 				}
 			}
-			_track.setDisplayPosition(trackX,trackY,trackWidth,trackHeight);
-			_scrollThumb.setDisplayPosition(thumbX,thumbY,thumbWidth,thumbHeight);
-			_foreButton.setDisplayPosition(foreX,foreY,foreWidth,foreHeight);
-			_aftButton.setDisplayPosition(aftX,aftY,aftWidth,aftHeight);
+			_track.setPosition(trackX,trackY);
+			_track.setSize(trackWidth,trackHeight);
+			
+			_scrollThumb.setPosition(thumbX,thumbY);
+			_scrollThumb.setSize(thumbWidth,thumbHeight);
+			
+			_foreButton.setPosition(foreX,foreY);
+			_foreButton.setSize(foreWidth,foreHeight);
+			
+			_aftButton.setPosition(aftX,aftY);
+			_aftButton.setSize(aftWidth,aftHeight);
 		}
 		protected function scrollToMouse(... params):void{
 			var offset:Number;
 			var ratio:Number;
 			if(_direction==Direction.VERTICAL || _rotateForHorizontal){
-				offset = (!isNaN(_dragOffset)?_dragOffset:(_scrollThumb?_scrollThumb.displayPosition.height/2:0));
-				ratio = Math.max(Math.min((asset.mouseY-offset-_track.displayPosition.y)/(_track.displayPosition.height-_scrollThumb.displayPosition.height),1),0);
+				offset = (!isNaN(_dragOffset)?_dragOffset:(_scrollThumb?_scrollThumb.size.y/2:0));
+				ratio = Math.max(Math.min((asset.mouseY-offset-_track.position.y)/(_track.size.y-_scrollThumb.size.y),1),0);
 			}else{
-				offset = (!isNaN(_dragOffset)?_dragOffset:(_scrollThumb?_scrollThumb.displayPosition.width/2:0));
-				ratio = Math.max(Math.min((asset.mouseX-offset-_track.displayPosition.x)/(_track.displayPosition.width-_scrollThumb.displayPosition.width),1),0);
+				offset = (!isNaN(_dragOffset)?_dragOffset:(_scrollThumb?_scrollThumb.size.x/2:0));
+				ratio = Math.max(Math.min((asset.mouseX-offset-_track.position.x)/(_track.size.x-_scrollThumb.size.x),1),0);
 			}
 			_scrollMetrics.scrollValue = (ratio*(_scrollMetrics.maximum-_scrollMetrics.pageSize-_scrollMetrics.minimum))+_scrollMetrics.minimum;
 			this.dispatchScroll();
@@ -465,9 +472,9 @@ package org.farmcode.display.controls
 		protected function beginDrag(... params):void{
 			if(_scrollThumb){
 				if(_direction==Direction.VERTICAL || _rotateForHorizontal){
-					_dragOffset = asset.mouseY-_scrollThumb.displayPosition.y;
+					_dragOffset = asset.mouseY-_scrollThumb.position.y;
 				}else{
-					_dragOffset = asset.mouseX-_scrollThumb.displayPosition.x;
+					_dragOffset = asset.mouseX-_scrollThumb.position.x;
 				}
 			}else{
 				_dragOffset = NaN;
@@ -517,7 +524,7 @@ package org.farmcode.display.controls
 			asset.stage.mousePressed.removeHandler(endScroll);
 		}
 		protected function onScrollMetricsChanged(from:IScrollMetrics):void{
-			invalidate();
+			invalidateSize();
 		}
 		protected function scrollMetricsEqual(scrollMatricsA:IScrollMetrics, scrollMatricsB:IScrollMetrics):Boolean{
 			if((scrollMatricsA.scrollValue != scrollMatricsB.scrollValue) || (scrollMatricsA.pageSize != scrollMatricsB.pageSize) ||

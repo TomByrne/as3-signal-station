@@ -66,19 +66,23 @@ package org.farmcode.display.controls
 			super.unbindFromAsset();
 			_textLabel.asset = null;
 		}
-		override public function setDisplayPosition(x:Number, y:Number, width:Number, height:Number) : void{
-			super.setDisplayPosition(x,y,width,height);
-			_textLabel.setDisplayPosition(x,y,width,height);
+		override public function setSize(width:Number, height:Number):void{
+			super.setSize(width,height);
+			_textLabel.setSize(width,height);
+		}
+		override public function setPosition(x:Number, y:Number) : void{
+			super.setPosition(x,y);
+			_textLabel.setPosition(x,y);
 		}
 		override protected function measure() : void{
 			_measurements = _textLabel.measurements;
 		}
-		override protected function draw() : void{
-			super.draw();
-			_interactiveArea.setSize(displayPosition.width,displayPosition.height);
+		override protected function validateSize():void{
+			super.validateSize();
+			_interactiveArea.setSize(size.x,size.y);
 		}
 		protected function onMeasurementsChange(from:ILayoutSubject, oldWidth:Number, oldHeight:Number):void{
-			performMeasChanged();
+			invalidateMeasurements();
 		}
 	}
 }

@@ -1,9 +1,6 @@
 package org.farmcode.debug.display
 {
-	import flash.display.BitmapData;
 	import flash.geom.Point;
-	import flash.geom.Rectangle;
-	import flash.utils.Dictionary;
 	
 	import org.farmcode.collections.linkedList.LinkedList;
 	import org.farmcode.core.IApplication;
@@ -33,7 +30,8 @@ package org.farmcode.debug.display
 				if(_asset && _application)_application.container = null;
 				_application = value;
 				if(_asset && _application)_application.container = _containerAsset;
-				invalidate();
+				invalidatePos();
+				invalidateSize();
 			}
 		}
 		
@@ -54,7 +52,9 @@ package org.farmcode.debug.display
 		override protected function init() : void{
 			super.init();
 			
-			this.rendererFactory = new MultiInstanceFactory(DebugItemRenderer);
+			var factory:MultiInstanceFactory = new MultiInstanceFactory(DebugItemRenderer);
+			factory.useChildFactories = true;
+			this.rendererFactory = factory;
 			
 			_graph = new DebugGraph(200,200);
 			
@@ -69,9 +69,7 @@ package org.farmcode.debug.display
 			
 			dataProvider = _menuItems;
 			
-			measurementsChanged.addHandler(onMeasChanged);
-			
-			assetGraphLabel();
+			assessGraphLabel();
 			
 			this.gap = 2
 			_layout.marginTop = 2;
@@ -85,7 +83,7 @@ package org.farmcode.debug.display
 			if(graphNode){
 				_graph.addStatistic(graphNode.statisticProvider, graphNode.maximumProvider,graphNode.colour,graphNode.name);
 				_graphItems.push(descendant);
-				assetGraphLabel();
+				assessGraphLabel();
 				_graphSummaryData.addChildData(new DebugData(graphNode.labelProvider));
 			}
 			var dataNode:IDebugDataNode = (descendant as IDebugDataNode);
@@ -100,14 +98,14 @@ package org.farmcode.debug.display
 				
 				var index:int = _graphItems.indexOf(descendant);
 				_graphItems.splice(index,1);
-				assetGraphLabel();
+				assessGraphLabel();
 			}
 			var dataNode:IDebugDataNode = (descendant as IDebugDataNode);
 			if(dataNode){
 				_menuItems.removeFirst(dataNode.debugData);
 			}
 		}
-		protected function assetGraphLabel() : void{
+		protected function assessGraphLabel() : void{
 			_graphLabel.removeAllTokens();
 			var labelPattern:String;
 			var found:Boolean;
@@ -129,9 +127,6 @@ package org.farmcode.debug.display
 				labelPattern = "Graph";
 			}
 			_graphLabelPattern.stringValue = labelPattern;
-		}
-		protected function onMeasChanged(from:DebugDisplay, oldWidth:Number, oldHeight:Number) : void{
-			invalidate();
 		}
 		override protected function bindToAsset() : void{
 			super.bindToAsset();
@@ -155,15 +150,23 @@ package org.farmcode.debug.display
 		}
 		override protected function measure() : void{
 			super.measure();
+			invalidatePos();
+			invalidateSize();
 		}
-		override protected function draw() : void{
-			positionAsset();
-			var pos:Rectangle = displayPosition;
+		override protected function validatePosition():void{
+			var pos:Point = position;
 			var meas:Point = measurements;
-			drawListAndScrollbar(0,0,pos.width,meas.y);
-			positionBacking(0,0,pos.width,meas.y);
 			if(_application){
-				_application.setDisplayPosition(pos.x,pos.y+meas.y,pos.width,pos.height-meas.y);
+				_application.setPosition(pos.x,pos.y+meas.y);
+			}
+		}
+		override protected function validateSize() : void{
+			var size:Point = size;
+			var meas:Point = measurements;
+			drawListAndScrollbar(size.x,meas.y);
+			positionBacking(size.x,meas.y);
+			if(_application){
+				_application.setSize(size.x,size.y-meas.y);
 			}
 		}
 	}

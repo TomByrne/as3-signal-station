@@ -45,7 +45,7 @@ package org.farmcode.actLibrary.display.visualSockets.socketContainers
 						layoutSocket = (socket as ILayoutSubject);
 						if(layoutSocket)_layout.addSubject(layoutSocket);
 					}
-					invalidate();
+					invalidateSize();
 				}
 			}
 		}
@@ -157,8 +157,12 @@ package org.farmcode.actLibrary.display.visualSockets.socketContainers
 				socketContHelper.asset = null;
 			}
 		}
-		override protected function draw():void{
-			super.draw();
+		override protected function validatePosition():void{
+			super.validatePosition();
+			drawLayout();
+		}
+		override protected function validateSize():void{
+			super.validateSize();
 			drawLayout();
 			if(_containerAsset){
 				if(_containerAsset.scaleX!=0 && _containerAsset.scaleX!=Infinity){
@@ -171,7 +175,7 @@ package org.farmcode.actLibrary.display.visualSockets.socketContainers
 		}
 		protected function drawLayout():void{
 			if(_layout){
-				_layout.setLayoutSize(displayPosition.x-_containerAsset.x,displayPosition.y-_containerAsset.y,displayPosition.width,displayPosition.height);
+				_layout.setLayoutSize(position.x-_containerAsset.x,position.y-_containerAsset.y,size.x,size.y);
 			}
 		}
 	}

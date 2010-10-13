@@ -5,7 +5,6 @@ package org.farmcode.display.layout.grid
 	public class GridAxis
 	{
 		public var coordRef:String;
-		public var dimRef:String;
 		public var indexRef:String;
 		
 		public var foreMargin:Number = 0;
@@ -30,9 +29,8 @@ package org.farmcode.display.layout.grid
 		public var scrollMetrics:ScrollMetrics = new ScrollMetrics();
 		public var pixScrollMetrics:ScrollMetrics = new ScrollMetrics();
 		
-		public function GridAxis(coordRef:String=null, dimRef:String=null, indexRef:String=null){
+		public function GridAxis(coordRef:String=null, indexRef:String=null){
 			this.coordRef = coordRef;
-			this.dimRef = dimRef;
 			this.indexRef = indexRef;
 		}
 	}

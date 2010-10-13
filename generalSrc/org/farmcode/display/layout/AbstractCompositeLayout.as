@@ -10,9 +10,12 @@ package org.farmcode.display.layout
 			super(scopeView);
 		}
 		override protected function onSubjectMeasChanged(from:ILayoutSubject, oldWidth:Number, oldHeight:Number): void{
-			doMeasurementsChanged();
+			invalidateMeasurements();
 		}
-		override protected function draw() : void{
+		override protected function validatePosition():void{
+			invalidateSize();
+		}
+		override protected function validateSize():void{
 			var doMeas:Boolean = (drawToMeasure() && _measurementsChanged);
 			if(doMeas){
 				var oldMeasWidth:Number = _measurements.x;

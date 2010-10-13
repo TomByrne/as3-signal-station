@@ -56,7 +56,7 @@ package org.farmcode.display.controls
 				}else{
 					throw new Error("Invalid anchor, must be top, bottom, left or right");
 				}
-				invalidate();
+				invalidateSize();
 			}
 		}
 		
@@ -106,7 +106,7 @@ package org.farmcode.display.controls
 			if(_valueChangeByUser)_valueChangeByUser.perform(this,value);
 		}
 		protected function onSliderMeasChanged(from:Slider, oldW:Number, oldH:Number):void{
-			invalidate();
+			invalidateSize();
 		}
 		override protected function bindToAsset() : void{
 			super.bindToAsset();
@@ -142,8 +142,8 @@ package org.farmcode.display.controls
 				_sliderAsset = null;
 			}
 		}
-		override protected function draw() : void{
-			super.draw();
+		override protected function validateSize():void{
+			super.validateSize();
 			if(_sliderAsset){
 				updateMask();
 			}
@@ -180,7 +180,8 @@ package org.farmcode.display.controls
 					_scrollRect.x = slidMeas.x*(1-_openFract);
 				}
 			}
-			_slider.setDisplayPosition(sliderX,sliderY,slidMeas.x,slidMeas.y);
+			_slider.setPosition(sliderX,sliderY);
+			_slider.setSize(slidMeas.x,slidMeas.y);
 			_slider.asset.scrollRect = _scrollRect;
 		}
 		
@@ -210,7 +211,7 @@ package org.farmcode.display.controls
 				_openTween.destProps = {value:value};
 				_openTween.start();
 			}else if(value!=_openFract){
-				invalidate();
+				invalidateSize();
 				if(_openFract && !_mouseOver && !_tweenRunning){
 					transTo(0,HIDE_DELAY);
 				}

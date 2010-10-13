@@ -5,6 +5,8 @@ package org.farmcode.display.layout
 	public interface ILayout
 	{
 		function set scopeView(value:IView):void;
+		
+		// TODO: split into size and position calls
 		function setLayoutSize(x:Number, y:Number, width:Number, height:Number):void;
 		function validate(forceDraw:Boolean=false):void;
 		

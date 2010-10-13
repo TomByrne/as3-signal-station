@@ -4,7 +4,8 @@ package org.farmcode.core
 
 	public interface IApplication
 	{
-		function setDisplayPosition(x:Number, y:Number, width:Number, height:Number):void;
+		function setPosition(x:Number, y:Number):void;
+		function setSize(width:Number, height:Number):void;
 		function set container(value:IContainerAsset):void;
 	}
 }

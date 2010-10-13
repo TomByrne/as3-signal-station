@@ -31,7 +31,6 @@ package org.farmcode.display.containers
 					_targetAsset.mouseWheel.addHandler(onMouseWheel);
 				}
 				checkScrolling(true);
-				checkMeasurements();
 			}
 		}
 		
@@ -130,23 +129,21 @@ package org.farmcode.display.containers
 			_scrollRect.x = _hScrollMetrics.scrollValue;
 			checkScrolling(false);
 		}*/
-		override public function setDisplayPosition(x:Number, y:Number, width:Number, height:Number):void{
-			_displayPosition.x = x;
-			_displayPosition.y = y;
-			_displayPosition.width = width;
-			_displayPosition.height = height;
-			
-			if(_vScrollMetrics.pageSize!=height){
-				_vScrollMetrics.pageSize = height;
-				//_scrollMetricsChanged.perform(this,Direction.VERTICAL,_vScrollMetrics);
-			}
-			if(_hScrollMetrics.pageSize!=width){
-				_hScrollMetrics.pageSize = width;
+		override protected function validatePosition():void{
+			_targetAsset.setPosition(_position.x,_position.y);
+		}
+		override protected function validateSize():void{
+			if(_hScrollMetrics.pageSize!=_size.x){
+				_hScrollMetrics.pageSize = _size.x;
 				//_scrollMetricsChanged.perform(this,Direction.HORIZONTAL,_hScrollMetrics);
 			}
+			if(_vScrollMetrics.pageSize!=_size.y){
+				_vScrollMetrics.pageSize = _size.y;
+				//_scrollMetricsChanged.perform(this,Direction.VERTICAL,_vScrollMetrics);
+			}
 			
-			_scrollRect.width = width;
-			_scrollRect.height = height;
+			_scrollRect.width = _size.x;
+			_scrollRect.height = _size.y;
 			checkScrolling(true);
 		}
 		override protected function onMeasurementsChanged(from:ILayoutSubject, oldWidth:Number, oldHeight:Number):void{
@@ -166,24 +163,24 @@ package org.farmcode.display.containers
 					_hScrollMetrics.maximum = meas.x;
 					hChange = true;
 				}
-				if(_displayPosition.width<meas.x || _displayPosition.height<meas.y){
+				if(_size.x<meas.x || _size.y<meas.y){
 					setScrollRect(_scrollRect);
 				}else{
 					setScrollRect(null);
 				}
 				var targetWidth:Number;
 				var targetHeight:Number;
-				if(_allowHorizontalScroll && meas.x>_displayPosition.width){
+				if(_allowHorizontalScroll && meas.x>_size.x){
 					targetWidth = meas.x;
 				}else{
-					targetWidth = _displayPosition.width;
+					targetWidth = _size.x;
 				}
-				if(_allowVerticalScroll && meas.y>_displayPosition.height){
+				if(_allowVerticalScroll && meas.y>_size.y){
 					targetHeight = meas.y;
 				}else{
-					targetHeight = _displayPosition.height;
+					targetHeight = _size.y;
 				}
-				target.setDisplayPosition(0,0,targetWidth,targetHeight);
+				target.setSize(targetWidth,targetHeight);
 			}else{
 				hChange = vChange = true;
 				setScrollRect(null);
@@ -199,7 +196,6 @@ package org.farmcode.display.containers
 		}
 		protected function setScrollRect(rect:Rectangle):void{
 			if(_targetView){
-				_targetAsset.setPosition(_displayPosition.x,_displayPosition.y);
 				_targetAsset.scrollRect = rect;
 			}
 		}

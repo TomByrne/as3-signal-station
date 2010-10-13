@@ -20,6 +20,7 @@ package org.farmcode.display.containers
 			super.bindToAsset();
 			if(_containerAsset){
 				_backing = _containerAsset.takeAssetByName(AssetNames.BACKING,IAsset,true);
+				if(_backing)_backing.setPosition(0,0);
 			}
 		}
 		override protected function unbindFromAsset() : void{
@@ -38,13 +39,12 @@ package org.farmcode.display.containers
 				super.measure();
 			}
 		}
-		override protected function draw() : void{
-			positionAsset();
-			positionBacking(0,0,displayPosition.width,displayPosition.height);
+		override protected function validateSize():void{
+			positionBacking(size.x,size.y);
 		}
-		protected function positionBacking(x:Number, y:Number, width:Number, height:Number):void{
+		protected function positionBacking(width:Number, height:Number):void{
 			if(_backing){
-				_backing.setSizeAndPos(x,y,width,height);
+				_backing.setSize(width,height);
 			}
 		}
 	}

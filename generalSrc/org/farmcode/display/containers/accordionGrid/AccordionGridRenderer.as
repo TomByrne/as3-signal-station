@@ -19,7 +19,7 @@ package org.farmcode.display.containers.accordionGrid
 		public function set wipeFromTop(value:Boolean):void{
 			if(_wipeFromTop!=value){
 				_wipeFromTop = value;
-				invalidate();
+				invalidateSize();
 			}
 		}
 		
@@ -101,10 +101,11 @@ package org.farmcode.display.containers.accordionGrid
 		}
 		
 		public function addCellRenderer(cellRenderer:ILayoutView, headerCell:Boolean):void{
-			invalidate();
-			performMeasChanged();
+			invalidateSize();
+			invalidateMeasurements();
 			if(headerCell){
 				_headerRenderers[cellRenderer] = true;
+				cellRenderer.sizeChanged.addHandler(onHeaderPosChanged);
 				cellRenderer.positionChanged.addHandler(onHeaderPosChanged);
 				if(_headerContainer){
 					_headerContainer.addAsset(cellRenderer.asset);
@@ -113,6 +114,7 @@ package org.farmcode.display.containers.accordionGrid
 				if(_minMeasurementsChanged)_minMeasurementsChanged.perform(this);
 			}else{
 				_cellRenderers[cellRenderer] = true;
+				cellRenderer.sizeChanged.addHandler(onCellPosChanged);
 				cellRenderer.positionChanged.addHandler(onCellPosChanged);
 				if(_cellContainer){
 					_cellContainer.addAsset(cellRenderer.asset);
@@ -121,10 +123,11 @@ package org.farmcode.display.containers.accordionGrid
 			}
 		}
 		public function removeCellRenderer(cellRenderer:ILayoutView):void{
-			invalidate();
-			performMeasChanged();
+			invalidateSize();
+			invalidateMeasurements();
 			if(_headerRenderers[cellRenderer]){
 				delete _headerRenderers[cellRenderer];
+				cellRenderer.sizeChanged.removeHandler(onHeaderPosChanged);
 				cellRenderer.positionChanged.removeHandler(onHeaderPosChanged);
 				if(_headerContainer){
 					_headerContainer.removeAsset(cellRenderer.asset);
@@ -132,6 +135,7 @@ package org.farmcode.display.containers.accordionGrid
 				_minMeasurementsFlag.invalidate();
 				if(_minMeasurementsChanged)_minMeasurementsChanged.perform(this);
 			}else{
+				cellRenderer.sizeChanged.removeHandler(onCellPosChanged);
 				cellRenderer.positionChanged.removeHandler(onCellPosChanged);
 				if(_cellContainer){
 					_cellContainer.removeAsset(cellRenderer.asset);
@@ -147,18 +151,19 @@ package org.farmcode.display.containers.accordionGrid
 			var newHeight:Number = 0;
 			for(var i:* in _headerRenderers){
 				var renderer:ILayoutView = (i as ILayoutView);
-				var pos:Rectangle = renderer.displayPosition;
+				var pos:Point = renderer.position;
+				var size:Point = renderer.size;
 				if(isNaN(newX) || newX>pos.x){
 					newX = pos.x;
 				}
 				if(isNaN(newY) || newY>pos.y){
 					newY = pos.y;
 				}
-				if(newWidth<pos.right){
-					newWidth = pos.right;
+				if(newWidth<pos.x+size.x){
+					newWidth = pos.x+size.x;
 				}
-				if(newHeight<pos.bottom){
-					newHeight = pos.bottom;
+				if(newHeight<pos.y+size.y){
+					newHeight = pos.y+size.y;
 				}
 			}
 			if(isNaN(newX)){
@@ -185,18 +190,19 @@ package org.farmcode.display.containers.accordionGrid
 			var newHeight:Number = 0;
 			for(var i:* in _cellRenderers){
 				var renderer:ILayoutView = (i as ILayoutView);
-				var pos:Rectangle = renderer.displayPosition;
+				var pos:Point = renderer.position;
+				var size:Point = renderer.size;
 				if(isNaN(newX) || newX>pos.x){
 					newX = pos.x;
 				}
 				if(isNaN(newY) || newY>pos.y){
 					newY = pos.y;
 				}
-				if(newWidth<pos.right){
-					newWidth = pos.right;
+				if(newWidth<pos.x+size.x){
+					newWidth = pos.x+size.x;
 				}
-				if(newHeight<pos.bottom){
-					newHeight = pos.bottom;
+				if(newHeight<pos.y+size.y){
+					newHeight = pos.y+size.y;
 				}
 			}
 			if(isNaN(newX)){
@@ -215,15 +221,15 @@ package org.farmcode.display.containers.accordionGrid
 			_containerMeas.width = newWidth;
 			_containerMeas.height = newHeight;
 		}
-		protected function onHeaderPosChanged(from:ILayoutView, oldX:Number, oldY:Number, oldWidth:Number, oldHeight:Number):void{
-			invalidate();
-			performMeasChanged();
+		protected function onHeaderPosChanged(... params):void{
+			invalidateSize();
+			invalidateMeasurements();
 			_minMeasurementsFlag.invalidate();
 			if(_minMeasurementsChanged)_minMeasurementsChanged.perform(this);
 		}
-		protected function onCellPosChanged(from:ILayoutView, oldX:Number, oldY:Number, oldWidth:Number, oldHeight:Number):void{
-			invalidate();
-			performMeasChanged();
+		protected function onCellPosChanged(... params):void{
+			invalidateSize();
+			invalidateMeasurements();
 			_containerMeasFlag.invalidate();
 		}
 		override protected function checkMinMeas():void{

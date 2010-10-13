@@ -136,10 +136,10 @@ package org.farmcode.display.progress
 			if(_application)applySizeToApplication();
 		}
 		private function applySizeToProgressDisplay(): void{
-			_progressDisplay.layoutView.setDisplayPosition(0,0,stage.stageWidth,stage.stageHeight);
+			_progressDisplay.layoutView.setSize(stage.stageWidth,stage.stageHeight);
 		}
 		private function applySizeToApplication(): void{
-			_application.setDisplayPosition(0,0,stage.stageWidth,stage.stageHeight);
+			_application.setSize(stage.stageWidth,stage.stageHeight);
 		}
 		protected function loadCompleted():void{
 			_progressDisplay.progress = _total;

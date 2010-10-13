@@ -107,7 +107,7 @@ package org.farmcode.display.utils
 			checkSize();
 		}
 		protected function checkSize():void{
-			_view.setDisplayPosition(0,0,_lastStage.stageWidth/_fullScreenScale,_lastStage.stageHeight/_fullScreenScale);
+			_view.setSize(_lastStage.stageWidth/_fullScreenScale,_lastStage.stageHeight/_fullScreenScale);
 			_view.asset.scaleX = _fullScreenScale;
 			_view.asset.scaleY = _fullScreenScale;
 		}

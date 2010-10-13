@@ -101,8 +101,8 @@ package org.farmcode.display.containers.accordion
 		public function set labelPosition(value:String):void{
 			if(_labelPosition!=value){
 				_labelPosition = value;
-				performMeasChanged();
-				invalidate();
+				invalidateMeasurements();
+				invalidateSize();
 			}
 		}
 		
@@ -234,7 +234,7 @@ package org.farmcode.display.containers.accordion
 		public function setOpenArea(width:Number, height:Number):void{
 			_openWidth = width;
 			_openHeight = height;
-			invalidate();
+			invalidatePos();
 		}
 		override protected function measure():void{
 			var minMeas:Point = minMeasurements;
@@ -264,8 +264,8 @@ package org.farmcode.display.containers.accordion
 				}
 			}
 		}
-		override protected function draw() : void{
-			_measureFlag.validate();
+		override protected function validatePosition():void{
+			measurements;// this will force measuring if it's invalid
 			var lackX:Number = (_measurements.x<_openWidth?_openWidth-_measurements.x:0);
 			var lackY:Number = (_measurements.y<_openHeight?_openHeight-_measurements.y:0);
 			
@@ -328,9 +328,10 @@ package org.farmcode.display.containers.accordion
 					break;
 			}
 			if(_label.asset){
-				_label.setDisplayPosition(displayPosition.x+labelX,displayPosition.y+labelY,labelW,labelH);
+				_label.setPosition(position.x+labelX,position.y+labelY);
+				_label.setSize(labelW,labelH);
 			}else{
-				asset.setPosition(displayPosition.x+labelX,displayPosition.y+labelY);
+				asset.setPosition(position.x+labelX,position.y+labelY);
 			}
 			if(_scrollBar){
 				if(_scrollBar.hideWhenUnusable)setContainerSize(childX,childY,childW,childH);
@@ -370,7 +371,8 @@ package org.farmcode.display.containers.accordion
 			// override me
 		}
 		protected function setScrollBarSize(x:Number, y:Number, width:Number, height:Number) : void{
-			_scrollBar.setDisplayPosition(x,y,width,height);
+			_scrollBar.setPosition(x,y);
+			_scrollBar.setSize(width,height);
 		}
 		protected function doTransition(destFract:Number, easing:Function, duration:Number, invertEasing:Boolean):void{
 			var start:Number;
@@ -404,7 +406,7 @@ package org.farmcode.display.containers.accordion
 			_labelMeas = _label.measurements || new Point();
 			_minMeasurementsFlag.invalidate();
 			if(_minMeasurementsChanged)_minMeasurementsChanged.perform(this);
-			performMeasChanged();
+			invalidateMeasurements();
 		}
 		protected function checkMinMeas():void{
 			_minMeasurements.x = _labelMeas.x;

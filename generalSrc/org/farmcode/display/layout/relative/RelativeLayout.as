@@ -15,7 +15,7 @@ package org.farmcode.display.layout.relative
 		}
 		// TODO:get rid of this
 		public function update():void{
-			invalidate();
+			invalidateSize();
 		}
 		override protected function layoutSubject(subject:ILayoutSubject, subjMeas:Point=null):void{
 			var subMeas:Point = subject.measurements;
@@ -53,21 +53,21 @@ package org.farmcode.display.layout.relative
 				
 				// fit into screen (if applicable)
 				if(layoutInfo.keepWithinStageBounds && stage){
-					if(width>_displayPosition.width){
-						width = _displayPosition.width;
+					if(width>_size.x){
+						width = _size.x;
 					}
-					if(transPoint.x<_displayPosition.x){
-						transPoint.x = _displayPosition.x;
-					}else if(transPoint.x>_displayPosition.x+_displayPosition.width-width){
-						transPoint.x = _displayPosition.x+_displayPosition.width-width;
+					if(transPoint.x<_position.x){
+						transPoint.x = _position.x;
+					}else if(transPoint.x>_position.x+_size.x-width){
+						transPoint.x = _position.x+_size.x-width;
 					}
-					if(height>_displayPosition.height){
-						height = _displayPosition.height;
+					if(height>_size.y){
+						height = _size.y;
 					}
-					if(transPoint.y<_displayPosition.y){
-						transPoint.y = _displayPosition.y;
-					}else if(transPoint.y>_displayPosition.y+_displayPosition.height-height){
-						transPoint.y = _displayPosition.y+_displayPosition.height-height;
+					if(transPoint.y<_position.y){
+						transPoint.y = _position.y;
+					}else if(transPoint.y>_position.y+_size.y-height){
+						transPoint.y = _position.y+_size.y-height;
 					}
 				}
 				
@@ -75,7 +75,8 @@ package org.farmcode.display.layout.relative
 				if(castView && castView.asset.parent){
 					transPoint = castView.asset.parent.globalToLocal(transPoint);
 				}
-				subject.setDisplayPosition(transPoint.x,transPoint.y,width,height);
+				subject.setPosition(transPoint.x,transPoint.y);
+				subject.setSize(width,height);
 			}
 		}
 	}

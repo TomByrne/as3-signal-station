@@ -98,8 +98,11 @@ package org.farmcode.debug
 		public function removeDescendant(descendant:IScopedObject):void{
 			_debugDisplay.removeDebugNode(descendant as IDebugNode);
 		}
-		public function setDisplayPosition(x:Number, y:Number, width:Number, height:Number):void{
-			_debugDisplay.setDisplayPosition(x, y, width, height);
+		public function setPosition(x:Number, y:Number):void{
+			_debugDisplay.setPosition(x, y);
+		}
+		public function setSize(width:Number, height:Number):void{
+			_debugDisplay.setSize(width, height);
 		}
 		public function onScopeChanged(from:DebugDisplay, oldScope:IDisplayAsset):void{
 			if(_scopeChanged)_scopeChanged.perform(this,oldScope);

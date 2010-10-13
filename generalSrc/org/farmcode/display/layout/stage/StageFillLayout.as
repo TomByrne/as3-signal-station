@@ -43,9 +43,9 @@ package org.farmcode.display.layout.stage
 			subjMeas.y = meas.y;
 		}
 		protected function onStageResize(e:Event=null, from:IStageAsset=null) : void{
-			_displayPosition.width = from.stageWidth;
-			_displayPosition.height = from.stageHeight;
-			invalidate();
+			_size.x = from.stageWidth;
+			_size.y = from.stageHeight;
+			invalidateSize();
 		}
 	}
 }

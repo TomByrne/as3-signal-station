@@ -38,11 +38,25 @@ package org.farmcode.actLibrary.display.visualSockets.plugs
 		}
 		
 		//TODO: these shouldn't be tied to _layoutTarget
-		public function get displayPosition():Rectangle{
-			return _layoutTarget.displayPosition;
+		public function get position():Point{
+			return _layoutTarget.position;
 		}
+		/**
+		 * @inheritDoc
+		 */
 		public function get positionChanged():IAct{
 			return _layoutTarget.positionChanged;
+		}
+		
+		
+		public function get size():Point{
+			return _layoutTarget.size;
+		}
+		/**
+		 * @inheritDoc
+		 */
+		public function get sizeChanged():IAct{
+			return _layoutTarget.sizeChanged;
 		}
 		
 		
@@ -126,9 +140,14 @@ package org.farmcode.actLibrary.display.visualSockets.plugs
 			return _layoutTarget?_layoutTarget.layoutInfo:null;
 		}
 		
-		public function setDisplayPosition(x:Number, y:Number, width:Number, height:Number):void{
+		public function setPosition(x:Number, y:Number):void{
 			if(_layoutTarget){
-				_layoutTarget.setDisplayPosition(x, y, width, height);
+				_layoutTarget.setPosition(x, y);
+			}
+		}
+		public function setSize(width:Number, height:Number):void{
+			if(_layoutTarget){
+				_layoutTarget.setSize(width, height);
 			}
 		}
 		protected function commitAsset():void{

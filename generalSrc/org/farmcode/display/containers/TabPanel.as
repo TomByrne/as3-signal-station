@@ -59,8 +59,8 @@ package org.farmcode.display.containers
 		public function set anchor(value:String):void{
 			if(_anchor!=value){
 				_anchor = value;
-				performMeasChanged();
-				invalidate();
+				invalidateMeasurements();
+				invalidateSize();
 			}
 		}
 		
@@ -96,7 +96,7 @@ package org.farmcode.display.containers
 		}
 		override protected function onLayoutMeasChange(from:ILayoutSubject, oldWidth:Number, oldHeight:Number) : void{
 			super.onLayoutMeasChange(from, oldWidth, oldHeight);
-			invalidate();
+			invalidateSize();
 		}
 		override protected function measure() : void{
 			super.measure();
@@ -137,15 +137,14 @@ package org.farmcode.display.containers
 				}
 			}
 		}
-		override protected function draw() : void{
-			_measureFlag.validate();
-			positionAsset();
-			positionBacking(displayPosition.x,displayPosition.y,displayPosition.width,displayPosition.height);
+		override protected function validateSize():void{
+			measurements; // this will force measurements to be valid
+			positionBacking(size.x,size.y);
 			
 			var listX:Number;
 			var listY:Number;
-			var listWidth:Number = (displayPosition.width<_listMeasure.x?displayPosition.width:_listMeasure.x);
-			var listHeight:Number = (displayPosition.height<_listMeasure.y?displayPosition.height:_listMeasure.y);
+			var listWidth:Number = (size.x<_listMeasure.x?size.x:_listMeasure.x);
+			var listHeight:Number = (size.y<_listMeasure.y?size.y:_listMeasure.y);
 			
 			var panelX:Number;
 			var panelY:Number;
@@ -153,8 +152,8 @@ package org.farmcode.display.containers
 			var panelHeight:Number;
 			if(_alignHorizontal){
 				panelY = 0;
-				panelWidth = displayPosition.width-listWidth;
-				panelHeight = displayPosition.height;
+				panelWidth = size.x-listWidth;
+				panelHeight = size.y;
 				switch(anchor){
 					case Anchor.TOP_LEFT:
 					case Anchor.LEFT:
@@ -176,15 +175,15 @@ package org.farmcode.display.containers
 						break;
 					case Anchor.BOTTOM_LEFT:
 					case Anchor.BOTTOM_RIGHT:
-						listY = displayPosition.height-listHeight;
+						listY = size.y-listHeight;
 						break;
 					default:
-						listY = (displayPosition.height-listHeight)/2;
+						listY = (size.y-listHeight)/2;
 				}
 			}else{
 				panelX = 0;
-				panelHeight = displayPosition.height-listHeight;
-				panelWidth = displayPosition.width;
+				panelHeight = size.y-listHeight;
+				panelWidth = size.x;
 				switch(anchor){
 					case Anchor.TOP_LEFT:
 					case Anchor.TOP:
@@ -206,14 +205,16 @@ package org.farmcode.display.containers
 						break;
 					case Anchor.TOP_RIGHT:
 					case Anchor.BOTTOM_RIGHT:
-						listX = displayPosition.width-listWidth;
+						listX = size.x-listWidth;
 						break;
 					default:
-						listX = (displayPosition.width-listWidth)/2;
+						listX = (size.x-listWidth)/2;
 				}
 			}
-			_panelDisplay.setDisplayPosition(panelX,panelY,panelWidth,panelHeight);
-			drawListAndScrollbar(listX,listY,listWidth,listHeight);
+			_panelDisplay.setPosition(panelX,panelY);
+			_panelDisplay.setSize(panelWidth,panelHeight);
+			_container.setPosition(listX,listY);
+			drawListAndScrollbar(listWidth,listHeight);
 		}
 		override protected function setSelectedIndex(index:int, forceRefresh:Boolean):void{
 			super.setSelectedIndex(index, forceRefresh);
@@ -226,7 +227,7 @@ package org.farmcode.display.containers
 			}
 		}
 		protected function onPanelMeasChanged(from:ILayoutView, oldWidth:Number, oldHeight:Number):void{
-			performMeasChanged();
+			invalidateMeasurements();
 		}
 		protected function onPanelAssetChanged(from:ILayoutView, oldAsset:IAsset):void{
 			setPanelAsset(from.asset);
@@ -251,7 +252,7 @@ package org.farmcode.display.containers
 					_containerAsset.addAsset(_panelAsset);
 					_containerAsset.setAssetIndex(_container,_containerAsset.numChildren-1);
 				}
-				performMeasChanged();
+				invalidateMeasurements();
 			}
 		}
 		override protected function assumedRendererAssetName() : String{

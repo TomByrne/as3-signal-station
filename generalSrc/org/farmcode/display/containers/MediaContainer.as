@@ -35,7 +35,7 @@ package org.farmcode.display.containers
 					_mediaSourceDisplay = _mediaSource.takeMediaDisplay();
 					if(_mediaContainer)_mediaContainer.addAsset(_mediaSourceDisplay.asset);
 					_layoutProxy.target = _mediaSourceDisplay;
-					invalidate();
+					invalidateSize();
 				}else{
 					_layoutProxy.target = null;
 				}
@@ -71,7 +71,7 @@ package org.farmcode.display.containers
 			_layout.measurementsChanged.addHandler(onLayoutMeasChange);
 		}
 		protected function onLayoutMeasChange(from:ILayoutSubject, oldWidth:Number, oldHeight:Number):void{
-			performMeasChanged();
+			invalidateMeasurements();
 		}
 		override protected function bindToAsset() : void{
 			super.bindToAsset()
@@ -109,13 +109,13 @@ package org.farmcode.display.containers
 			_measurements.x = _layout.measurements.x;
 			_measurements.y = _layout.measurements.y;
 		}
-		override protected function draw() : void{
-			super.draw();
-			_layout.setDisplayPosition(0,0,displayPosition.width,displayPosition.height);
-			getMarginAffectedArea(displayPosition, _layoutProxy.layoutInfo, _scrollRect);
+		override protected function validateSize() : void{
+			super.validateSize();
+			_layout.setSize(size.x,size.y);
+			getMarginAffectedArea(0,0,size.x,size.y, _layoutProxy.layoutInfo, _scrollRect);
 			
-			_scrollRect.x -= displayPosition.x;
-			_scrollRect.y -= displayPosition.y;
+			_scrollRect.x -= position.x;
+			_scrollRect.y -= position.y;
 			_mediaContainer.setPosition(_scrollRect.x,_scrollRect.y);
 			_mediaContainer.scrollRect = _scrollRect;
 			if(_mediaBounds){

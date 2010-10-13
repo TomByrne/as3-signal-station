@@ -55,7 +55,7 @@ package org.farmcode.display.controls
 		
 		override public function set asset(value:IDisplayAsset) : void{
 			super.asset = value;
-			performMeasChanged();
+			invalidateMeasurements();
 		}
 		
 		/**
@@ -108,7 +108,7 @@ package org.farmcode.display.controls
 		DisplayNamespace function set scaleAsset(value:Boolean):void{
 			if(_scaleAsset!=value){
 				_scaleAsset = value;
-				invalidate();
+				invalidateSize();
 			}
 		}
 		
@@ -188,11 +188,10 @@ package org.farmcode.display.controls
 			//TODO: when events are replaced with Info objects, do a check here to see if it's a descendant or not
 			_containerAsset.setAssetIndex(_interactiveArea,_containerAsset.numChildren-1);
 		}
-		override protected function draw() : void{
-			positionAsset();
+		override protected function validateSize() : void{
 			if(_scaleAsset){
-				asset.setSize(displayPosition.width,displayPosition.height);
-				_interactiveArea.setSize(displayPosition.width/asset.scaleX,displayPosition.height/asset.scaleY);
+				asset.setSize(size.x,size.y);
+				_interactiveArea.setSize(size.x/asset.scaleX,size.y/asset.scaleY);
 			}else{
 				var meas:Point = measurements;
 				_interactiveArea.setSize(meas.x/asset.scaleX,meas.y/asset.scaleY);

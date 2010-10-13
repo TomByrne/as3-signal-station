@@ -11,7 +11,7 @@ package org.farmcode.debug.logging
 		private static var _logger:ILogger;
 		private static var _visibility:int = -1;
 		{
-			Config::DEBUG{
+			CONFIG::debug{
 				_logger = new NativeLogger();
 			}
 		}

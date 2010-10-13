@@ -95,7 +95,7 @@ package org.farmcode.debug.display
 		private var _maxRect:Rectangle = new Rectangle();
 		
 		public function DebugGraph(width:int, height:int){
-			setSize(width,height);
+			setGraphSize(width,height);
 			EnterFrameHook.getAct().addHandler(onEnterFrame);
 		}
 		override protected function init() : void{
@@ -134,12 +134,13 @@ package org.farmcode.debug.display
 				_measurements.x = stackMeas.x;
 			}
 		}
-		override protected function draw() : void{
-			super.draw();
-			var pos:Rectangle = displayPosition;
+		override protected function validateSize() : void{
+			super.validateSize();
+			var pos:Point = position;
 			var stackMeas:Point = _stackLayout.measurements;
-			_bitmap.setSizeAndPos(0,0,pos.width,pos.height-stackMeas.y);
-			_stackLayout.setDisplayPosition(0,pos.height-stackMeas.y,pos.width,stackMeas.y);
+			_bitmap.setSize(pos.x,pos.y-stackMeas.y);
+			_stackLayout.setPosition(0, pos.y-stackMeas.y);
+			_stackLayout.setSize(pos.x, stackMeas.y);
 		}
 		
 		
@@ -200,7 +201,7 @@ package org.farmcode.debug.display
 			record.statistics = stats;
 			_frames.push(record);
 		}
-		public function setSize(width:int, height:int):void{
+		public function setGraphSize(width:int, height:int):void{
 			if(!_bitmapData || _bitmapData.width!=width || _bitmapData.height!=height){
 				_fillRect.y = 0;
 				_fillRect.x = width-1;
@@ -215,7 +216,7 @@ package org.farmcode.debug.display
 				
 				if(_displayChanged)_displayChanged.perform(this);
 				redrawAll(false);
-				performMeasChanged();
+				invalidateMeasurements();
 			}
 		}
 		public function addStatistic(statisticProvider:INumberProvider, maxProvider:INumberProvider, colour:Number, name:String):void{

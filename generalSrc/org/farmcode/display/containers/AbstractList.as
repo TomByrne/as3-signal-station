@@ -140,13 +140,13 @@ package org.farmcode.display.containers
 				if(_scrollMetrics){
 					_scrollMetrics.scrollMetricsChanged.addHandler(onScrollMetricsChanged);
 				}
-				performMeasChanged();
-				invalidate();
+				invalidateMeasurements();
+				invalidateSize();
 			}
 		}
 		protected function onScrollMetricsChanged(from:IScrollMetrics) : void{
-			performMeasChanged();
-			invalidate();
+			invalidateMeasurements();
+			invalidateSize();
 		}
 		protected function assumedRendererAssetName() : String{
 			return AssetNames.LIST_ITEM;
@@ -178,7 +178,7 @@ package org.farmcode.display.containers
 			_mouseWheelScroller.display = null;
 		}
 		protected function onLayoutMeasChange(from:ILayoutSubject, oldWidth:Number, oldHeight:Number) : void{
-			performMeasChanged();
+			invalidateMeasurements();
 		}
 		protected function onAddRenderer(layout:RendererGridLayout, renderer:ILayoutView) : void{
 			_renderers.push(renderer.asset);
@@ -217,11 +217,11 @@ package org.farmcode.display.containers
 				_measurements.x = layoutMeas.x;
 			}
 		}
-		override protected function draw() : void{
-			super.draw();
-			drawListAndScrollbar(displayPosition.x,displayPosition.y,displayPosition.width,displayPosition.height);
+		override protected function validateSize() : void{
+			super.validateSize();
+			drawListAndScrollbar(size.x,size.y);
 		}
-		protected function drawListAndScrollbar(x:Number, y:Number, width:Number, height:Number) : void{
+		protected function drawListAndScrollbar(width:Number, height:Number) : void{
 			var layoutWidth:Number = width;
 			var layoutHeight:Number = height;
 			if(_scrollBar){
@@ -229,12 +229,14 @@ package org.farmcode.display.containers
 				var metrics:IScrollMetrics = _scrollBar.scrollSubject.getScrollMetrics(_scrollBar.direction);
 				_scrollBarShown = (metrics.maximum>metrics.pageSize || !_scrollBar.hideWhenUnusable);
 				if(_scrollBar.direction==Direction.VERTICAL){
-					_scrollBar.setDisplayPosition(width-meas.x-_layout.marginRight,_layout.marginTop,meas.x,height-_layout.marginTop-_layout.marginBottom);
+					_scrollBar.setPosition(width-meas.x-_layout.marginRight,_layout.marginTop);
+					_scrollBar.setSize(meas.x,height-_layout.marginTop-_layout.marginBottom);
 					if(_scrollBarShown){
 						layoutWidth = width-meas.x;
 					}
 				}else{
-					_scrollBar.setDisplayPosition(_layout.marginLeft,height-meas.y-_layout.marginBottom,width-_layout.marginLeft-_layout.marginRight,meas.y);
+					_scrollBar.setPosition(_layout.marginLeft,height-meas.y-_layout.marginBottom);
+					_scrollBar.setSize(width-_layout.marginLeft-_layout.marginRight,meas.y);
 					if(_scrollBarShown){
 						layoutHeight = height-meas.y;
 					}
@@ -249,7 +251,7 @@ package org.farmcode.display.containers
 			_container.setPosition(_layout.marginLeft,_layout.marginTop);
 		}
 		protected function setLayoutDimensions(width:Number, height:Number):void{
-			_layout.setDisplayPosition(0,0,width,height);
+			_layout.setSize(width,height);
 			if(_layout.flowDirection==Direction.VERTICAL){
 				_layout.columnWidths = [width];
 				_layout.rowHeights = null;

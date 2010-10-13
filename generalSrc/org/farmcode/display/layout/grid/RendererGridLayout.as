@@ -145,7 +145,7 @@ package org.farmcode.display.layout.grid
 			if(_renderEmptyCells!=value){
 				_renderEmptyCells = value;
 				_cellPosFlag.invalidate();
-				invalidate();
+				invalidateSize();
 			}
 		}
 		public function get horizontalScrollByLine():Boolean{
@@ -233,8 +233,8 @@ package org.farmcode.display.layout.grid
 			super(scopeView);
 		}
 		override protected function createAxes():void{
-			_horizontalAxis = _horizontalRendAxis = new RendererGridAxis("x","width","columnIndex");
-			_verticalAxis = _verticalRendAxis = new RendererGridAxis("y","height","rowIndex");
+			_horizontalAxis = _horizontalRendAxis = new RendererGridAxis("x"/*,"width"*/,"columnIndex");
+			_verticalAxis = _verticalRendAxis = new RendererGridAxis("y"/*,"height"*/,"rowIndex");
 		}
 		override protected function validateProps():void{
 			super.validateProps();
@@ -301,7 +301,7 @@ package org.farmcode.display.layout.grid
 				super.doLayout();
 				_cullRenderersFlag.validate();
 			}else{
-				invalidate();
+				invalidateSize();
 			}
 		}
 		override protected function getChildKeys() : Dictionary{
@@ -360,7 +360,7 @@ package org.farmcode.display.layout.grid
 					}
 				}
 				_cellMeasFlag.invalidate();
-				invalidate();
+				invalidateSize();
 			}else{
 				Log.log(Log.ERROR,"RendererGridLayout.onRendMeasChanged() data couldn't be found");
 			}
@@ -485,7 +485,7 @@ package org.farmcode.display.layout.grid
 				if(oldTotal!=_fitRenderers && _renderEmptyCells && _fitRenderers>_dataCount){
 					validateCellMeas();
 					_cellMappingFlag.validate();
-					invalidate();
+					invalidateSize();
 				}
 				
 				if(shiftBreadth || shiftLength || oldBreadthRange!=breadthRange || oldLengthRange!=lengthRange){
@@ -554,7 +554,7 @@ package org.farmcode.display.layout.grid
 		override protected function validateScroll(scrollMetrics:ScrollMetrics, axis:GridAxis) : void{
 			var pixScroll:Number;
 			var pixScrollMax:Number;
-			var realDim:Number = _displayPosition[axis.dimRef];
+			var realDim:Number = _size[axis.coordRef];
 			var realMeas:Number = _measurements[axis.coordRef];
 			var newIndex:int;
 			var newIndexMax:int;
@@ -664,7 +664,7 @@ package org.farmcode.display.layout.grid
 		protected function clearMeasurements():void{
 			_cellMeasCache = new Dictionary();
 			_cellMeasFlag.invalidate();
-			invalidate();
+			invalidateSize();
 		}
 		override protected function positionRenderer(key:*, length:int, breadth:int, x:Number, y:Number, width:Number, height:Number):void{
 			super.positionRenderer(key, length, breadth, x, y, width, height);

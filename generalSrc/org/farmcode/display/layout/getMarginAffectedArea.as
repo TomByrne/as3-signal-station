@@ -4,7 +4,7 @@ package org.farmcode.display.layout{
 	import org.farmcode.display.layout.core.ILayoutInfo;
 	import org.farmcode.display.layout.core.IMarginLayoutInfo;
 
-	public function getMarginAffectedArea(displayPosition:Rectangle, layoutInfo:ILayoutInfo, fillRect:Rectangle, marginRect:Rectangle=null):void{
+	public function getMarginAffectedArea(positionX:Number, positionY:Number, sizeX:Number, sizeY:Number, layoutInfo:ILayoutInfo, fillRect:Rectangle, marginRect:Rectangle=null):void{
 		var cast:IMarginLayoutInfo = (layoutInfo as IMarginLayoutInfo);
 		var marginTop:Number;
 		var marginLeft:Number;
@@ -21,10 +21,10 @@ package org.farmcode.display.layout{
 			marginRight = 0;
 			marginBottom = 0;
 		}
-		fillRect.x = displayPosition.x+marginLeft;
-		fillRect.y = displayPosition.y+marginTop;
-		fillRect.width = displayPosition.width-marginLeft-marginRight;
-		fillRect.height = displayPosition.height-marginTop-marginBottom;
+		fillRect.x = positionX+marginLeft;
+		fillRect.y = positionY+marginTop;
+		fillRect.width = sizeX-marginLeft-marginRight;
+		fillRect.height = sizeY-marginTop-marginBottom;
 		
 		if(marginRect){
 			marginRect.x = marginTop;

@@ -1,7 +1,6 @@
 package org.farmcode.display.controls.popout
 {
 	import flash.geom.Point;
-	import flash.geom.Rectangle;
 	
 	import org.farmcode.acting.actTypes.IAct;
 	import org.farmcode.acting.acts.Act;
@@ -84,12 +83,14 @@ package org.farmcode.display.controls.popout
 		public function set relativeTo(value:ILayoutView):void{
 			if(_relativeTo !=value){
 				if(_relativeTo){
+					_relativeTo.sizeChanged.removeHandler(onRelativePositionChanged);
 					_relativeTo.positionChanged.removeHandler(onRelativePositionChanged);
 					_relativeTo.assetChanged.removeHandler(onRelativeAssetChanged);
 				}
 				_relativeTo = value;
 				_relativeLayout.scopeView = value;
 				if(_relativeTo){
+					_relativeTo.sizeChanged.addHandler(onRelativePositionChanged);
 					_relativeTo.positionChanged.addHandler(onRelativePositionChanged);
 					_relativeTo.assetChanged.addHandler(onRelativeAssetChanged);
 					_relativeLayoutInfo.relativeTo = value.asset;
@@ -211,30 +212,31 @@ package org.farmcode.display.controls.popout
 			_relativeLayoutInfo.relativeTo = from.asset;
 			_relativeLayout.update();
 		}
-		protected function onRelativePositionChanged(from:ILayoutView, oldX:Number, oldY:Number, oldWidth:Number, oldHeight:Number):void{
+		protected function onRelativePositionChanged(... params):void{
 			if(_popout)assessRelativePos();
 		}
 		protected function onPopoutMeasChanged(from:ILayoutView, oldWidth:Number, oldHeight:Number):void{
 			if(_relativeTo)assessRelativePos();
 		}
 		protected function assessRelativePos():void{
-			var relPos:Rectangle = _relativeTo.displayPosition;
+			var relPos:Point = _relativeTo.position;
+			var size:Point = _relativeTo.size;
 			var popMeas:Point = _popout.measurements;
 			var popMeasWidth:Number = popMeas.x;
 			var popMeasHeight:Number = popMeas.y;
 			
 			if(_enforceMinimums){
 				if(_popoutAnchor==Anchor.TOP || _popoutAnchor==Anchor.BOTTOM){
-					_relativeLayoutInfo.minWidth = relPos.width;
-					if(popMeasWidth<relPos.width){
-						popMeasWidth = relPos.width;
+					_relativeLayoutInfo.minWidth = size.x;
+					if(popMeasWidth<size.x){
+						popMeasWidth = size.x;
 					}
 					_relativeLayoutInfo.minHeight = NaN;
 				}else{
 					if(_lodgeCorners || _popoutAnchor==Anchor.LEFT || _popoutAnchor==Anchor.RIGHT){
-						_relativeLayoutInfo.minHeight = relPos.height;
-						if(popMeasHeight<relPos.height){
-							popMeasHeight = relPos.height;
+						_relativeLayoutInfo.minHeight = size.y;
+						if(popMeasHeight<size.y){
+							popMeasHeight = size.y;
 						}
 					}else{
 						_relativeLayoutInfo.minHeight = NaN;
@@ -255,24 +257,24 @@ package org.farmcode.display.controls.popout
 				case Anchor.TOP_LEFT:
 				case Anchor.TOP_RIGHT:
 					if(_lodgeCorners){
-						y = relPos.height-popMeasHeight;
+						y = size.y-popMeasHeight;
 					}else{
 						y = -popMeasHeight;
 					}
 					break;
 				case Anchor.BOTTOM:
-					y = relPos.height;
+					y = size.y;
 					break;
 				case Anchor.BOTTOM_LEFT:
 				case Anchor.BOTTOM_RIGHT:
 					if(_lodgeCorners){
 						y = 0;
 					}else{
-						y = relPos.height;
+						y = size.y;
 					}
 					break;
 				default:
-					y = (relPos.height-popMeasHeight)/2;
+					y = (size.y-popMeasHeight)/2;
 			}
 			switch(_popoutAnchor){
 				case Anchor.LEFT:
@@ -283,10 +285,10 @@ package org.farmcode.display.controls.popout
 				case Anchor.RIGHT:
 				case Anchor.TOP_RIGHT:
 				case Anchor.BOTTOM_RIGHT:
-					x = relPos.width;
+					x = size.x;
 					break;
 				default:
-					x = (relPos.width-popMeasWidth)/2;
+					x = (size.x-popMeasWidth)/2;
 			}
 			
 			_relativeLayoutInfo.relativeOffsetX = x;

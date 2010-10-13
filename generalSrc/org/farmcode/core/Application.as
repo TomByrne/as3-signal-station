@@ -1,6 +1,6 @@
 package org.farmcode.core
 {
-	import flash.geom.Rectangle;
+	import flash.geom.Point;
 	
 	import org.farmcode.binding.PropertyWatcher;
 	import org.farmcode.data.core.StringData;
@@ -83,7 +83,8 @@ package org.farmcode.core
 		protected var _container:IContainerAsset;
 		protected var _lastStage:IStageAsset;
 		protected var _inited:Boolean;
-		protected var _displayPosition:Rectangle;
+		protected var _position:Point;
+		protected var _size:Point;
 		protected var _assumedMainAsset:Boolean;
 		protected var _assetWatcher:PropertyWatcher;
 		protected var _stageWatcher:PropertyWatcher;
@@ -114,12 +115,16 @@ package org.farmcode.core
 				DebugManager.addDebugNode(new DebugDataNode(_scopedObject,new DebugData(new StringData("Garbage Collect"),new GarbageCollect())));
 			}
 		}
-		public function setDisplayPosition(x:Number, y:Number, width:Number, height:Number):void{
-			if(!_displayPosition)_displayPosition = new Rectangle();
-			_displayPosition.x = x;
-			_displayPosition.y = y;
-			_displayPosition.width = width;
-			_displayPosition.height = height;
+		public function setPosition(x:Number, y:Number):void{
+			if(!_position)_position = new Point();
+			_position.x = x;
+			_position.y = y;
+			if(_asset)setMainViewPos();
+		}
+		public function setSize(width:Number, height:Number):void{
+			if(!_size)_size = new Point();
+			_size.x = width;
+			_size.y = height;
 			if(_asset)setMainViewSize();
 		}
 		protected function attemptSetAssumedAsset():void{
@@ -173,12 +178,19 @@ package org.farmcode.core
 		protected function commitStage() : void{
 			// override me
 		}
+		protected function setMainViewPos() : void{
+			var pos:Point = _position;
+			// If FullscreenUtil is being used then this will be skipped
+			if(pos && _asset.parent==_container){
+				_mainView.setPosition(pos.x,pos.y);
+			}
+		}
 		protected function setMainViewSize() : void{
 			// If FullscreenUtil is being used then this will be skipped
-			var pos:Rectangle = _displayPosition;
-			if(pos && _asset.parent==_container){
+			var size:Point = _size;
+			if(size && _asset.parent==_container){
 				var scale:Number = (isNaN(_applicationScale) || _applicationScale<=0?1:_applicationScale);
-				_mainView.setDisplayPosition(pos.x,pos.y,pos.width*(1/scale),pos.height*(1/scale));
+				_mainView.setSize(size.x*(1/scale),size.y*(1/scale));
 				_asset.scaleX = scale;
 				_asset.scaleY = scale;
 			}

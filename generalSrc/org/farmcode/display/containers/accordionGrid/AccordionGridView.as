@@ -168,7 +168,7 @@ package org.farmcode.display.containers.accordionGrid
 		}
 		protected function onGridMeasChange(from:RendererGridLayout, oldWidth:Number, oldHeight:Number):void{
 			var meas:Point = _gridLayout.measurements;
-			_gridLayout.setDisplayPosition(0,0,meas.x,meas.y);
+			_gridLayout.setSize(meas.x,meas.y);
 		}
 		override protected function bindToAsset() : void{
 			super.bindToAsset();
@@ -339,13 +339,13 @@ package org.farmcode.display.containers.accordionGrid
 			var parentData:* = _dataToParentData[data];
 			return _accordDataToRend[parentData];
 		}
-		override protected function draw() : void{
-			super.draw();
-			drawGridLayout(displayPosition);
+		override protected function validateSize() : void{
+			super.validateSize();
+			drawGridLayout(position);
 		}
-		protected function drawGridLayout(position:Rectangle) : void{
+		protected function drawGridLayout(position:Point) : void{
 			var meas:Point = _gridLayout.measurements;
-			_gridLayout.setDisplayPosition(0,0,meas.x,meas.y);
+			_gridLayout.setSize(meas.x,meas.y);
 		}
 		protected function createGridLayout() : void{
 			_gridLayout = new RendererGridLayout(this);

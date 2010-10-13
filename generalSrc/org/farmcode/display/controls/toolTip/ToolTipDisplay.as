@@ -48,15 +48,15 @@ package org.farmcode.display.controls.toolTip
 		public function set anchorView(value:ILayoutView):void{
 			if(_anchorView!=value){
 				if(_anchorView){
-					_anchorView.positionChanged.removeHandler(onAnchorPosChanged);
+					_anchorView.sizeChanged.removeHandler(onAnchorSizeChanged);
 					_anchorView.assetChanged.removeHandler(onAnchorAssetChanged);
 				}
 				_anchorView = value;
 				if(_anchorView){
-					_anchorView.positionChanged.addHandler(onAnchorPosChanged);
+					_anchorView.sizeChanged.addHandler(onAnchorSizeChanged);
 					_anchorView.assetChanged.addHandler(onAnchorAssetChanged);
 				}
-				invalidate();
+				invalidateSize();
 			}
 		}
 		
@@ -74,11 +74,11 @@ package org.farmcode.display.controls.toolTip
 		public function ToolTipDisplay(asset:IDisplayAsset=null){
 			super(asset);
 		}
-		protected function onAnchorPosChanged(from:ILayoutView, oldX:Number, oldY:Number, oldWidth:Number, oldHeight:Number) : void{
-			invalidate();
+		protected function onAnchorSizeChanged(from:ILayoutView, oldWidth:Number, oldHeight:Number) : void{
+			invalidateSize();
 		}
 		protected function onAnchorAssetChanged(from:ILayoutView, oldAsset:IDisplayAsset) : void{
-			invalidate();
+			invalidateSize();
 		}
 		override protected function bindToAsset() : void{
 			super.bindToAsset();
@@ -105,51 +105,51 @@ package org.farmcode.display.controls.toolTip
 		override protected function measure() : void{
 			super.measure();
 		}
-		override protected function draw() : void{
-			super.draw();
+		override protected function validateSize():void{
+			super.validateSize();
 			if(_anchorView && _anchorView.asset){
 				var anchorPos:Point = _anchorView.asset.localToGlobal(ORIGIN);
 				anchorPos = anchorPos.subtract(_asset.localToGlobal(ORIGIN));
 				
-				var anchorSize:Rectangle = _anchorView.displayPosition;
+				var anchorSize:Point = _anchorView.size;
 				
 				var ancLeft:Number = anchorPos.x;
-				var ancRight:Number = anchorPos.x+anchorSize.width;
+				var ancRight:Number = anchorPos.x+anchorSize.x;
 				var ancTop:Number = anchorPos.y;
-				var ancBottom:Number = anchorPos.y+anchorSize.height;
+				var ancBottom:Number = anchorPos.y+anchorSize.y;
 				
-				var center:Point = new Point(displayPosition.width/2,displayPosition.height/2);
+				var center:Point = new Point(size.x/2,size.y/2);
 				
 				var anchorSide:String;
 				var intersect:Point;
 				
 				switch(_anchor){
 					case Anchor.RIGHT:
-						anchorPos.x += anchorSize.width;
+						anchorPos.x += anchorSize.x;
 						anchorSide = _anchor;
 						break;
 					case Anchor.LEFT:
 						anchorSide = _anchor;
 						break;
 					default:
-						anchorPos.x += anchorSize.width/2;
+						anchorPos.x += anchorSize.x/2;
 				}
 				switch(_anchor){
 					case Anchor.TOP:
-						anchorPos.y += anchorSize.height;
+						anchorPos.y += anchorSize.y;
 						anchorSide = _anchor;
 						break;
 					case Anchor.BOTTOM:
 						anchorSide = _anchor;
 						break;
 					default:
-						anchorPos.y += anchorSize.height/2;
+						anchorPos.y += anchorSize.y/2;
 				}
 				
 				if(!anchorSide){
 					var angle:Number = Trigonometry.getAngleTo(anchorPos,center);
 					// ancCornerAngle is the angle from the centre of the anchorView to it's top-right corner, used to work out the side which the connector hits
-					var ancCornerAngle:Number = Trigonometry.getAngleTo(ORIGIN,new Point(anchorSize.width/2,-anchorSize.height/2));
+					var ancCornerAngle:Number = Trigonometry.getAngleTo(ORIGIN,new Point(anchorSize.x/2,-anchorSize.y/2));
 					if(angle<ancCornerAngle || angle>360-ancCornerAngle){
 						anchorSide = Anchor.TOP;
 					}else if(angle<180-ancCornerAngle){
@@ -246,7 +246,7 @@ package org.farmcode.display.controls.toolTip
 				if(errorText.length){
 					if(_labelField.htmlText != errorText){
 						_labelField.htmlText = errorText;
-						performMeasChanged();
+						invalidateMeasurements();
 					}
 					return;
 				}

@@ -16,7 +16,7 @@ package org.farmcode.display.progress
 		public function set measurable(value:Boolean):void{
 			if(_measurable!=value){
 				_measurable = value;
-				invalidate();
+				invalidateSize();
 			}
 		}
 		
@@ -26,7 +26,7 @@ package org.farmcode.display.progress
 		public function set message(value:String):void{
 			if(_message!=value){
 				_message = value;
-				invalidate();
+				invalidateSize();
 			}
 		}
 		
@@ -36,6 +36,7 @@ package org.farmcode.display.progress
 		public function set progress(value:Number):void{
 			if(_progress!=value){
 				_progress = value;
+				invalidateSize();
 				validate(true);
 			}
 		}
@@ -46,7 +47,7 @@ package org.farmcode.display.progress
 		public function set total(value:Number):void{
 			if(_total!=value){
 				_total = value;
-				invalidate();
+				invalidateSize();
 			}
 		}
 		
@@ -56,7 +57,7 @@ package org.farmcode.display.progress
 		public function set units(value:String):void{
 			if(_units!=value){
 				_units = value;
-				invalidate();
+				invalidateSize();
 			}
 		}
 		public function get display():IDisplayAsset{

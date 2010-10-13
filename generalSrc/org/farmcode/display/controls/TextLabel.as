@@ -106,7 +106,7 @@ package org.farmcode.display.controls
 			_labelFieldSizer.paddingChanged.addHandler(onPaddingChanged);
 		}
 		protected function onPaddingChanged(from:PaddingSizer):void{
-			performMeasChanged();
+			invalidateMeasurements();
 		}
 		protected function onProviderChanged(... params):void{
 			if(_labelField)syncFieldToData();
@@ -184,7 +184,7 @@ package org.farmcode.display.controls
 				_labelField.width = widthWas;
 				if(measText!=textWas)_labelField.htmlText = textWas;
 			}else{
-				_measureFlag.invalidate();
+				invalidateMeasurements();
 			}
 		}
 		protected function useMeasuredWidth():Boolean{
@@ -221,18 +221,18 @@ package org.farmcode.display.controls
 		}
 		protected function fillField():void{
 			_labelField.htmlText = _stringData;
-			performMeasChanged();
+			invalidateMeasurements();
 		}
-		override protected function draw():void{
-			super.draw();
+		override protected function validateSize():void{
+			super.validateSize();
 			
-			var labelWidth:Number = displayPosition.width-_labelFieldSizer.paddingLeft-_labelFieldSizer.paddingRight+TextFieldGutter.TEXT_FIELD_GUTTER*2;
-			var labelHeight:Number = displayPosition.height-_labelFieldSizer.paddingTop-_labelFieldSizer.paddingBottom+TextFieldGutter.TEXT_FIELD_GUTTER*2;
+			var labelWidth:Number = size.x-_labelFieldSizer.paddingLeft-_labelFieldSizer.paddingRight+TextFieldGutter.TEXT_FIELD_GUTTER*2;
+			var labelHeight:Number = size.y-_labelFieldSizer.paddingTop-_labelFieldSizer.paddingBottom+TextFieldGutter.TEXT_FIELD_GUTTER*2;
 			if(labelWidth!=_labelField.width){
 				var textHeightWas:Number = _labelField.textHeight;
 				_labelField.setSize(labelWidth,labelHeight);
 				if(_labelField.textHeight!=textHeightWas){
-					performMeasChanged();
+					invalidateMeasurements();
 				}
 			}else{
 				_labelField.height = labelHeight;
@@ -241,12 +241,11 @@ package org.farmcode.display.controls
 				_labelField.setPosition(-TextFieldGutter.TEXT_FIELD_GUTTER+_labelFieldSizer.paddingLeft,-TextFieldGutter.TEXT_FIELD_GUTTER+_labelFieldSizer.paddingTop);
 			}
 		}
-		override protected function positionAsset():void{
+		override protected function validatePosition():void{
 			if(_labelField==asset){
-				
-				asset.setPosition(displayPosition.x-TextFieldGutter.TEXT_FIELD_GUTTER+_labelFieldSizer.paddingLeft,displayPosition.y-TextFieldGutter.TEXT_FIELD_GUTTER+_labelFieldSizer.paddingTop);
+				asset.setPosition(position.x-TextFieldGutter.TEXT_FIELD_GUTTER+_labelFieldSizer.paddingLeft,position.y-TextFieldGutter.TEXT_FIELD_GUTTER+_labelFieldSizer.paddingTop);
 			}else{
-				super.positionAsset();
+				super.validatePosition();
 			}
 		}
 		protected function getValueOrAssumed(value:*, assumedValue:*, defaultValue:*=null) : *{

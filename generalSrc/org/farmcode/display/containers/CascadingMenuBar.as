@@ -108,6 +108,7 @@ package org.farmcode.display.containers
 		}
 	}
 }
+import flash.geom.Point;
 import flash.geom.Rectangle;
 import flash.utils.Dictionary;
 
@@ -134,7 +135,7 @@ class ListWatcher{
 				_parentList.rendererFactory = null;
 				
 				_parentList.selectionChangeAct.removeHandler(onSelectionChange);
-				_parentList.layout.positionChanged.removeHandler(onListPosChanged);
+				//_parentList.layout.positionChanged.removeHandler(onListPosChanged);
 				_parentList.getScrollMetrics(Direction.HORIZONTAL).scrollMetricsChanged.removeHandler(onListScroll);
 				_parentList.getScrollMetrics(Direction.VERTICAL).scrollMetricsChanged.removeHandler(onListScroll);
 			}
@@ -143,7 +144,7 @@ class ListWatcher{
 				_parentList.rendererFactory = _rendererFactory;
 				
 				_parentList.selectionChangeAct.addHandler(onSelectionChange);
-				_parentList.layout.positionChanged.addHandler(onListPosChanged);
+				//_parentList.layout.positionChanged.addHandler(onListPosChanged);
 				_parentList.getScrollMetrics(Direction.HORIZONTAL).scrollMetricsChanged.addHandler(onListScroll);
 				_parentList.getScrollMetrics(Direction.VERTICAL).scrollMetricsChanged.addHandler(onListScroll);
 				
@@ -196,7 +197,7 @@ class ListWatcher{
 	private var _childListWatcher:ListWatcher;
 	private var _childDataIndex:int;
 	protected var _popoutDisplay:PopoutDisplay;
-	protected var _rendPos:Rectangle;
+	//protected var _rendPos:Rectangle;
 	
 	public function ListWatcher(anchor:String, listFactory:IInstanceFactory=null){
 		_popoutDisplay = new PopoutDisplay();
@@ -204,9 +205,9 @@ class ListWatcher{
 		this.parentList = parentList;
 		this.listFactory = listFactory;
 	}
-	protected function onListPosChanged(layout:RendererGridLayout, oldX:Number, oldY:Number, oldWidth:Number, oldHeight:Number) : void{
+	/*protected function onListPosChanged(layout:RendererGridLayout, oldX:Number, oldY:Number, oldWidth:Number, oldHeight:Number) : void{
 		assessRelative();
-	}
+	}*/
 	protected function onListScroll(from:IScrollMetrics) : void{
 		assessRelative();
 	}
@@ -235,7 +236,7 @@ class ListWatcher{
 				_childListWatcher.parentList.dataProvider = childData.data;
 				_popoutDisplay.popoutShown = true;
 			}
-			assessRelative();
+			//assessRelative();
 		}
 	}
 	internal function hideChildList() : void{
@@ -260,9 +261,10 @@ class ListWatcher{
 		parentList = null;
 	}
 	protected function assessRelative():void{
-		if(!_rendPos)_rendPos = new Rectangle();
-		var layoutPos:Rectangle = _parentList.layout.displayPosition;
-		var dataPos:Rectangle = _parentList.layout.getDataPosition(_childDataIndex,_rendPos);
-		
+		/*if(!_rendPos)_rendPos = new Rectangle();
+		var layoutPos:Point = _parentList.layout.position;
+		var dataPos:Rectangle = _parentList.layout.getDataPosition(_childDataIndex,_rendPos);*/
+		if(_childDataIndex!=-1)_popoutDisplay.relativeTo = _parentList.layout.getRenderer(_childDataIndex) as ILayoutView;
+		else _popoutDisplay.relativeTo = null;
 	}
 }

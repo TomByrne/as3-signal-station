@@ -26,11 +26,12 @@ package org.farmcode.display.layout.frame
 			var cast:IFrameLayoutInfo = (subject.layoutInfo as IFrameLayoutInfo);
 			if(cast){
 				
-				getMarginAffectedArea(_displayPosition, subject.layoutInfo, marginAffectedPosition, marginRect);
+				getMarginAffectedArea(position.x,position.y,size.x,size.y, subject.layoutInfo, marginAffectedPosition, marginRect);
 				
 				var subMeas:Point = subject.measurements;
 				var framed:Rectangle = DisplayFramer.frame(subMeas.x,subMeas.y,marginAffectedPosition,cast.anchor,cast.scaleXPolicy,cast.scaleYPolicy,cast.fitPolicy);
-				subject.setDisplayPosition(framed.x,framed.y,framed.width,framed.height);
+				subject.setPosition(framed.x,framed.y);
+				subject.setSize(framed.width,framed.height);
 				
 				if(subMeas){
 					subjMeas.x = subMeas.x+marginRect.x+marginRect.width;

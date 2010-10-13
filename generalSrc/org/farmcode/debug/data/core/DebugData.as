@@ -136,5 +136,8 @@ package org.farmcode.debug.data.core
 		protected function isTogglable():Boolean{
 			return (_childData && _childData.length)
 		}
+		public function toString():String{
+			return "[DebugData: "+stringValue+"]";
+		}
 	}
 }

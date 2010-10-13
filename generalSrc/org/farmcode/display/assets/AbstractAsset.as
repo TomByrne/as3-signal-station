@@ -64,7 +64,7 @@ package org.farmcode.display.assets
 			}
 		}
 		protected function _addStateList(stateList:Array):void{
-			Config::DEBUG{
+			CONFIG::debug{
 				if(_stateLists.indexOf(stateList)!=-1){
 					throw new Error("This state list has already been added");
 				}

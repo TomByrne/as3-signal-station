@@ -42,7 +42,7 @@ package org.farmcode.display.controls
 					_slider.maximum = _videoSource.totalTime.numericalValue;
 					_slider.value = _videoSource.currentTime.numericalValue;
 				}
-				invalidate();
+				invalidateSize();
 			}
 		}
 		
@@ -89,8 +89,15 @@ package org.farmcode.display.controls
 			_measurements.x = _slider.measurements.x;
 			_measurements.y = _slider.measurements.y;
 		}
-		override protected function draw() : void{
-			_slider.setDisplayPosition(displayPosition.x,displayPosition.y,displayPosition.width,displayPosition.height);
+		override public function setPosition(x:Number, y:Number) : void{
+			super.setPosition(x,y);
+			_slider.setPosition(x,y);
+		}
+		override public function setSize(width:Number, height:Number) : void{
+			super.setSize(width,height);
+			_slider.setSize(width,height);
+		}
+		override protected function validateSize():void{
 			
 			if(_bufferedBar){
 				_slider.validate(); // this forces _track & _thumb to have the correct sizes
@@ -139,15 +146,15 @@ package org.farmcode.display.controls
 			}
 		}
 		protected function onSliderMeasChange(from:ILayoutSubject, oldWidth:Number, oldHeight:Number):void{
-			performMeasChanged();
+			invalidateMeasurements();
 		}
 		protected function onLoadChange(from:INumberProvider):void{
-			invalidate();
+			invalidateSize();
 		}
 		protected function onTimeChange(from:INumberProvider):void{
 			_slider.maximum = _videoSource.totalTime.numericalValue;
 			_slider.value = _videoSource.currentTime.numericalValue;
-			invalidate();
+			invalidateSize();
 		}
 		protected function onPlayheadChange(from:Slider, value:Number):void{
 			if(_videoSource)_videoSource.currentTime.numericalValue = value;

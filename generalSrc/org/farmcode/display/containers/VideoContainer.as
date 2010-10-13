@@ -377,21 +377,22 @@ package org.farmcode.display.containers
 				layoutView.asset = null;
 			}
 		}
-		override protected function draw() : void{
-			super.draw();
-			_mainLayout.setDisplayPosition(0,0,displayPosition.width,displayPosition.height);
+		override protected function validateSize():void{
+			super.validateSize();
+			_mainLayout.setSize(size.x,size.y);
 			
 			if(_centredPauseButton){
 				var align:Rectangle =_mediaContainer.scrollRect;
 				var meas:Point = _centredPauseButton.measurements;
-				_centredPauseButton.setDisplayPosition(align.x+(align.width-meas.x)/2,align.y+(align.height-meas.y)/2,meas.x,meas.y);
+				_centredPauseButton.setPosition(align.x+(align.width-meas.x)/2,align.y+(align.height-meas.y)/2);
+				_centredPauseButton.setSize(meas.x,meas.y);
 			}
 			_videoCover.setSizeAndPos(_scrollRect.x,_scrollRect.y,_scrollRect.width,_scrollRect.height);
 			
 			if(_hasControlCont){
 				_mainLayout.validate();
-				var pos:Rectangle = _controlContainer.displayPosition;
-				_contLayout.setDisplayPosition(0,0,pos.width,pos.height);
+				var pos:Point = _controlContainer.position;
+				_contLayout.setSize(pos.x,pos.y);
 				drawControlScrollRect();
 			}
 		}
@@ -407,25 +408,25 @@ package org.farmcode.display.containers
 				var hasBottom:Boolean = (!isNaN(layout.bottom));
 				var hasRight:Boolean = (!isNaN(layout.right));
 				
-				var pos:Rectangle = _controlContainer.displayPosition;
+				var pos:Point = _controlContainer.position;
 				
-				_controlScrollRect.width = pos.width;
-				_controlScrollRect.height = pos.height;
+				_controlScrollRect.width = pos.x;
+				_controlScrollRect.height = pos.y;
 				if(hasBottom && !hasTop){
 					// aligned to bottom
 					_controlScrollRect.x = 0;
-					_controlScrollRect.y = -pos.height*(1-_openFract);
+					_controlScrollRect.y = -pos.y*(1-_openFract);
 				}else if(!hasBottom && hasTop){
 					// aligned to top
 					_controlScrollRect.x = 0;
-					_controlScrollRect.y = pos.height*(1-_openFract);
+					_controlScrollRect.y = pos.y*(1-_openFract);
 				}else if(!hasRight && hasLeft){
 					// aligned to left
-					_controlScrollRect.x = pos.width*(1-_openFract);
+					_controlScrollRect.x = pos.x*(1-_openFract);
 					_controlScrollRect.y = 0;
 				}else if(hasRight && !hasLeft){
 					// aligned to right
-					_controlScrollRect.x = -pos.width*(1-_openFract);
+					_controlScrollRect.x = -pos.x*(1-_openFract);
 					_controlScrollRect.y = 0;
 				}
 				_controlContainer.asset.scrollRect = _controlScrollRect;

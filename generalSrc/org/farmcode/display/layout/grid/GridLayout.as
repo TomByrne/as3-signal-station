@@ -53,8 +53,8 @@ package org.farmcode.display.layout.grid
 			super(scopeView);
 		}
 		public function getStandardGridDimensions(rendererWidth:Number, rendererHeight:Number):Point{
-			var availWidth:Number = (_displayPosition.width+horizontalGap-marginLeft-marginRight);
-			var availHeight:Number = (_displayPosition.height+verticalGap-marginTop-marginBottom);
+			var availWidth:Number = (_size.x+horizontalGap-marginLeft-marginRight);
+			var availHeight:Number = (_size.y+verticalGap-marginTop-marginBottom);
 			var columns:int = Math.floor(availWidth/(rendererWidth+horizontalGap));
 			if(columns<0)columns = 0;
 			var rows:int = Math.floor(availHeight/(rendererHeight+verticalGap));

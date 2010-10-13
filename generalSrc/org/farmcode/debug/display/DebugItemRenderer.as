@@ -26,7 +26,7 @@ package org.farmcode.debug.display
 				if(_bitmapDataProvider){
 					_bitmapDataProvider.bitmapDataChanged.addHandler(onBitmapChanged);
 					if(_bitmap)_bitmap.bitmapData = _bitmapDataProvider.bitmapData;
-					performMeasChanged();
+					invalidateMeasurements();
 				}else if(_bitmap){
 					_bitmap.bitmapData = null;
 				}
@@ -36,6 +36,17 @@ package org.farmcode.debug.display
 					setLayoutView(_layoutViewProvider.layoutView);
 				}else{
 					setLayoutView(null);
+				}
+			}
+		}
+		override public function set asset(value:IDisplayAsset):void{
+			if(super.asset != value){
+				if(_layoutViewAsset && _containerAsset){
+					_containerAsset.removeAsset(_layoutViewAsset);
+				}
+				super.asset = value;
+				if(_layoutViewAsset && _containerAsset){
+					_containerAsset.addAsset(_layoutViewAsset);
 				}
 			}
 		}
@@ -71,20 +82,13 @@ package org.farmcode.debug.display
 			_bitmapPaddingBottom = _backing.naturalHeight-(_bitmap.y+_bitmap.naturalHeight);
 			if(_bitmapDataProvider)_bitmap.bitmapData = _bitmapDataProvider.bitmapData;
 			
-			if(_layoutViewAsset){
-				_containerAsset.addAsset(_layoutViewAsset);
-			}
-			performMeasChanged();
+			invalidateMeasurements();
 		}
 		override protected function unbindFromAsset() : void{
 			super.unbindFromAsset();
 			_containerAsset.returnAsset(_bitmap);
 			_bitmap.bitmapData = null;
 			_bitmap = null;
-			
-			if(_layoutViewAsset){
-				_containerAsset.removeAsset(_layoutViewAsset);
-			}
 		}
 		override protected function measure() : void{
 			super.measure();
@@ -113,18 +117,18 @@ package org.farmcode.debug.display
 				}
 			}
 		}
-		override protected function draw() : void{
-			super.draw();
+		override protected function validateSize():void{
+			super.validateSize();
 			if(_bitmap){
 				_bitmap.x = _bitmapPaddingLeft;
 				_bitmap.y = _bitmapPaddingTop;
-				_bitmap.width = displayPosition.width-_bitmapPaddingLeft-_bitmapPaddingRight;
-				_bitmap.height = displayPosition.height-_bitmapPaddingTop-_bitmapPaddingBottom;
+				_bitmap.width = size.x-_bitmapPaddingLeft-_bitmapPaddingRight;
+				_bitmap.height = size.y-_bitmapPaddingTop-_bitmapPaddingBottom;
 			}
 			if(_layoutView){
-				_layoutView.setDisplayPosition(_bitmapPaddingLeft,_bitmapPaddingTop,
-					displayPosition.width-_bitmapPaddingLeft-_bitmapPaddingRight,
-					displayPosition.height-_bitmapPaddingTop-_bitmapPaddingBottom);
+				_layoutView.setPosition(_bitmapPaddingLeft,_bitmapPaddingTop);
+				_layoutView.setSize(size.x-_bitmapPaddingLeft-_bitmapPaddingRight,
+									size.y-_bitmapPaddingTop-_bitmapPaddingBottom);
 			}
 		}
 		override protected function onChildAdded(e:Event, from:IDisplayAsset) : void{
@@ -135,7 +139,7 @@ package org.farmcode.debug.display
 		
 		protected function onBitmapChanged(from:IBitmapDataProvider) : void{
 			if(_bitmap)_bitmap.bitmapData = _bitmapDataProvider.bitmapData;
-			performMeasChanged();
+			invalidateMeasurements();
 		}
 		protected function onViewChanged(from:ILayoutViewProvider) : void{
 			setLayoutView(_layoutViewProvider.layoutView);
@@ -152,8 +156,8 @@ package org.farmcode.debug.display
 				}else{
 					setViewAsset(null);
 				}
-				performMeasChanged();
-				invalidate();
+				invalidateMeasurements();
+				invalidateSize();
 			}
 		}
 		protected function onViewAssetChanged(from:ILayoutView) : void{

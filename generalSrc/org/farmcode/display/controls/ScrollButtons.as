@@ -96,16 +96,19 @@ package org.farmcode.display.controls
 		override protected function measure() : void{
 			super.measure();
 		}
-		override protected function draw() : void{
-			positionAsset();
+		override protected function validateSize():void{
 			var foreMeas:Point = _foreButton.measurements;
 			var aftMeas:Point = _aftButton.measurements;
 			if(_scrollDirection==Direction.HORIZONTAL){
-				_foreButton.setDisplayPosition(0,0,foreMeas.x,displayPosition.height);
-				_aftButton.setDisplayPosition(displayPosition.width-aftMeas.x,0,aftMeas.x,displayPosition.height);
+				_foreButton.setPosition(0,0);
+				_foreButton.setSize(foreMeas.x,size.y);
+				_aftButton.setPosition(position.x-aftMeas.x,0);
+				_aftButton.setSize(aftMeas.x,position.y);
 			}else{
-				_foreButton.setDisplayPosition(0,0,displayPosition.width,foreMeas.y);
-				_aftButton.setDisplayPosition(0,displayPosition.height-aftMeas.y,displayPosition.width,aftMeas.y);
+				_foreButton.setPosition(0,0);
+				_foreButton.setSize(size.x,foreMeas.y);
+				_aftButton.setPosition(0,position.y-aftMeas.y);
+				_aftButton.setSize(position.x,aftMeas.y);
 			}
 		}
 		protected function onForeDown(from:Button) : void{

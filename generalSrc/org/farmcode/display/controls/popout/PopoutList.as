@@ -1,6 +1,5 @@
 package org.farmcode.display.controls.popout {
 	import flash.geom.Point;
-	import flash.geom.Rectangle;
 	
 	import org.farmcode.display.actInfo.IMouseActInfo;
 	import org.farmcode.display.assets.assetTypes.IAsset;
@@ -39,7 +38,7 @@ package org.farmcode.display.controls.popout {
 		public function set listAnchor(value:String):void {
 			if(_listAnchor!=value) {
 				_listAnchor=value;
-				invalidate();
+				invalidateSize();
 			}
 		}
 		
@@ -129,7 +128,7 @@ package org.farmcode.display.controls.popout {
 					break;
 			}
 		}
-		override protected function draw():void {
+		override protected function validateSize():void{
 			/*var listMeas:Point = _listBox.measurements;
 			var alignArea:Rectangle = getListAlignArea();
 			var useRect:Boolean = (alignArea!=null);
@@ -206,7 +205,7 @@ package org.farmcode.display.controls.popout {
 				case Anchor.TOP:
 				case Anchor.CENTER:
 				case Anchor.BOTTOM:
-					performMeasChanged();
+					invalidateMeasurements();
 					break;
 			}
 		}

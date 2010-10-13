@@ -37,27 +37,27 @@ package org.farmcode.display.layout.canvas
 				var hasCentre:Boolean = (!isNaN(cast.centre));
 				
 				if(hasLeft && hasRight){
-					width = _displayPosition.width-cast.left-cast.right;
+					width = _size.x-cast.left-cast.right;
 				}else if(!isNaN(cast.width)){
 					width = cast.width;
 				}else if(!isNaN(cast.percentWidth)){
-					width = (cast.percentWidth/100)*_displayPosition.width;
+					width = (cast.percentWidth/100)*_size.x;
 				}else if(hasMeasurements){
 					width = measurements.x;
 				}else{
-					width = _displayPosition.width;
+					width = _size.x;
 				}
 				
 				if(hasLeft){
-					x = _displayPosition.x+cast.left;
+					x = _position.x+cast.left;
 				}else if(hasRight){
-					x = _displayPosition.x+_displayPosition.width-cast.right-width;
+					x = _position.x+_size.x-cast.right-width;
 				}else if(hasCentre){
-					x = _displayPosition.x+_displayPosition.width/2-cast.middle-width/2;
+					x = _position.x+_size.x/2-cast.middle-width/2;
 				}else if(hasMeasurements){
-					x = _displayPosition.x+measurements.x;
+					x = _position.x+measurements.x;
 				}else{
-					x = _displayPosition.x;
+					x = _position.x;
 				}
 				
 				var y:Number;
@@ -67,29 +67,30 @@ package org.farmcode.display.layout.canvas
 				var hasMiddle:Boolean = (!isNaN(cast.middle));
 				
 				if(hasTop && hasBottom){
-					height = _displayPosition.height-cast.top-cast.bottom;
+					height = _size.y-cast.top-cast.bottom;
 				}else if(!isNaN(cast.height)){
 					height = cast.height;
 				}else if(!isNaN(cast.percentHeight)){
-					height = (cast.percentHeight/100)*_displayPosition.height;
+					height = (cast.percentHeight/100)*_size.y;
 				}else if(hasMeasurements){
 					height = measurements.y;
 				}else{
-					height = _displayPosition.height;
+					height = _size.y;
 				}
 				
 				if(hasTop){
-					y = _displayPosition.y+cast.top;
+					y = _position.y+cast.top;
 				}else if(hasBottom){
-					y = _displayPosition.y+_displayPosition.height-cast.bottom-height;
+					y = _position.y+_size.y-cast.bottom-height;
 				}else if(hasBottom){
-					y = _displayPosition.y+_displayPosition.height/2-cast.middle-height/2;
+					y = _position.y+_size.y/2-cast.middle-height/2;
 				}else if(hasMeasurements){
-					y = _displayPosition.y+measurements.y;
+					y = _position.y+measurements.y;
 				}else{
-					y = _displayPosition.y;
+					y = _position.y;
 				}
-				subject.setDisplayPosition(x,y,width,height);
+				subject.setPosition(x,y);
+				subject.setSize(width,height);
 			}
 		}
 	}

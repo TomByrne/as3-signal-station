@@ -26,7 +26,7 @@ package org.farmcode.display.controls
 		public function set direction(value:String):void{
 			if(_direction!=value){
 				_direction = value;
-				invalidate();
+				invalidateSize();
 			}
 		}
 		
@@ -36,7 +36,7 @@ package org.farmcode.display.controls
 		public function set maximum(value:Number):void{
 			if(_maximum!=value){
 				_maximum = value;
-				invalidate();
+				invalidateSize();
 			}
 		}
 		
@@ -46,7 +46,7 @@ package org.farmcode.display.controls
 		public function set minimum(value:Number):void{
 			if(_minimum!=value){
 				_minimum = value;
-				invalidate();
+				invalidateSize();
 			}
 		}
 		
@@ -72,7 +72,7 @@ package org.farmcode.display.controls
 			if(_value!=value && !_dragDelay.running){
 				_value = value;
 				if(_valueChange)_valueChange.perform(this,this.value);
-				invalidate();
+				invalidateSize();
 			}
 		}
 		override public function set active(value:Boolean):void{
@@ -185,10 +185,9 @@ package org.farmcode.display.controls
 		override protected function measure():void{
 			super.measure();
 		}
-		override protected function draw() : void{
+		override protected function validateSize():void{
 			var dir:String = direction;
 			
-			positionAsset();
 			_asset.scaleX = 1;
 			_asset.scaleY = 1;
 			
@@ -201,11 +200,11 @@ package org.farmcode.display.controls
 			
 			if(dir==_assumedDirection){
 				_track.rotation = _thumb.asset.rotation = (dir!=_assumedDirection?90:0);
-				usableW = displayPosition.width-pad.paddingLeft-pad.paddingRight;
-				usableH = displayPosition.height-pad.paddingTop-pad.paddingBottom;
+				usableW = _size.x-pad.paddingLeft-pad.paddingRight;
+				usableH = _size.y-pad.paddingTop-pad.paddingBottom;
 			}else{
-				usableW = displayPosition.width-pad.paddingTop-pad.paddingBottom;
-				usableH = displayPosition.height-pad.paddingLeft-pad.paddingRight;
+				usableW = _size.x-pad.paddingTop-pad.paddingBottom;
+				usableH = _size.y-pad.paddingLeft-pad.paddingRight;
 			}
 			
 			
@@ -255,9 +254,15 @@ package org.farmcode.display.controls
 				pTrackWidth = thumbX+_thumb.asset.width/2;
 				pTrackHeight = trackHeight;
 			}
-			_thumb.setDisplayPosition(thumbX,thumbY,_thumb.asset.width,_thumb.asset.height);
-			_trackButton.setDisplayPosition(trackX,trackY,trackWidth,trackHeight);
-			_progressTrack.setDisplayPosition(trackX,pTrackY,pTrackWidth,pTrackHeight);
+			_thumb.setPosition(thumbX,thumbY);
+			_thumb.setSize(_thumb.asset.width,_thumb.asset.height);
+			
+			_trackButton.setPosition(trackX,trackY);
+			_trackButton.setSize(trackWidth,trackHeight);
+			
+			_progressTrack.setPosition(trackX,pTrackY);
+			_progressTrack.setSize(pTrackWidth,pTrackHeight);
+			
 			_progressTrack.validate();
 		}
 		override public function setAssetAndPosition(asset:IDisplayAsset) : void{

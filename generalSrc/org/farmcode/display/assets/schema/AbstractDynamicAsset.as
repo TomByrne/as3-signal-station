@@ -182,7 +182,7 @@ package org.farmcode.display.assets.schema
 			_height = _displayObject.height;
 			
 			_displayObject.addEventListener(Event.REMOVED_FROM_STAGE,onRemovedFromStage);
-			DISPLAY_MAP[_displayObject] = _displayObject;
+			DISPLAY_MAP[_displayObject] = this;
 		}
 		override protected function removeSchema():void{
 			_displaySchema = null;
@@ -680,7 +680,7 @@ package org.farmcode.display.assets.schema
 		}
 		
 		public function addAsset(asset:IDisplayAsset):void{
-			Config::DEBUG{
+			CONFIG::debug{
 				if(_children[asset.displayObject])Log.log(Log.ERROR,"asset already added (AbstractDynamicAsset.addAsset).");
 			}
 			asset.parent = this;

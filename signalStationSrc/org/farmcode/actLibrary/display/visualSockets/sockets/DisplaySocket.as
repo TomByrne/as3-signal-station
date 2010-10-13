@@ -17,18 +17,11 @@ package org.farmcode.actLibrary.display.visualSockets.sockets
 	import org.farmcode.display.core.IScopedObject;
 	import org.farmcode.display.core.IView;
 	import org.farmcode.display.layout.ILayoutSubject;
+	import org.farmcode.display.layout.LayoutSubject;
 	import org.farmcode.display.layout.core.ILayoutInfo;
 
-	public class DisplaySocket implements IDisplaySocket, ILayoutSubject, IView
+	public class DisplaySocket extends LayoutSubject implements IDisplaySocket, ILayoutSubject, IView
 	{
-		
-		/**
-		 * @inheritDoc
-		 */
-		public function get measurementsChanged():IAct{
-			if(!_measurementsChanged)_measurementsChanged = new Act();
-			return _measurementsChanged;
-		}
 		
 		/**
 		 * @inheritDoc
@@ -44,18 +37,9 @@ package org.farmcode.actLibrary.display.visualSockets.sockets
 			if(!_plugDisplayChanged)_plugDisplayChanged = new Act();
 			return _plugDisplayChanged;
 		}
-		/**
-		 * @inheritDoc
-		 */
-		public function get positionChanged():IAct{
-			if(!_positionChanged)_positionChanged = new Act();
-			return _positionChanged;
-		}
 		
 		protected var _plugDisplayChanged:Act;
 		protected var _assetChanged:Act;
-		protected var _measurementsChanged:Act;
-		protected var _positionChanged:Act;
 		
 		protected var _oldMeasWidth:Number;
 		protected var _oldMeasHeight:Number;
@@ -71,7 +55,6 @@ package org.farmcode.actLibrary.display.visualSockets.sockets
 		private var _introOutroOverlap:Number = 0;
 		private var _outroBegunAt:Number;
 		private var _outroLength:Number;
-		private var _layoutInfo:ILayoutInfo;
 		
 		private var _lastDisplayObject:IDisplayAsset;
 		private var _lastParent:IContainerAsset;
@@ -81,9 +64,6 @@ package org.farmcode.actLibrary.display.visualSockets.sockets
 			this.socketId = socketId;
 			this.container = container;
 			this.plugMappers = plugMappers;
-		}
-		public function get displayPosition():Rectangle{
-			return _displayPosition;
 		}
 		public function get asset():IDisplayAsset{
 			return _container;
@@ -97,28 +77,18 @@ package org.farmcode.actLibrary.display.visualSockets.sockets
 			return new Rectangle(tl.x,tl.y,br.x-tl.x,br.y-tl.y);
 		}
 		
-		[Property(toString="true",clonable="true")]
-		public function get layoutInfo():ILayoutInfo{
-			return _layoutInfo;
-		}
-		public function set layoutInfo(value:ILayoutInfo):void{
-			_layoutInfo = value;
-		}
-		[Property(toString="true", clonable="true")]
 		public function get socketId(): String{
 			return this._socketId;
 		}
 		public function set socketId(value: String): void{
 			this._socketId = value;
 		}
-		[Property(toString="true", clonable="true")]
 		public function get socketPath(): String{
 			return this._socketPath;
 		}
 		public function set socketPath(value: String): void{
 			this._socketPath = value;
 		}
-		[Property(toString="true", clonable="true")]
 		public function get displayDepth(): int{
 			return this._displayDepth;
 		}
@@ -212,7 +182,8 @@ package org.farmcode.actLibrary.display.visualSockets.sockets
 						_lastDepth = _lastParent.getAssetIndex(_plugDisplay.display);
 					}
 					// call setDisplayPosition before adding the plugDisplay to stage so that it has the correct position for transitioning.
-					_plugDisplay.setDisplayPosition(_displayPosition.x,_displayPosition.y,_displayPosition.width,_displayPosition.height);
+					_plugDisplay.setPosition(_displayPosition.x,_displayPosition.y);
+					_plugDisplay.setSize(_displayPosition.x,_displayPosition.y);
 					if(_container){
 						addDisplayAfterDelay(_plugDisplay,depth);
 					}
@@ -220,55 +191,30 @@ package org.farmcode.actLibrary.display.visualSockets.sockets
 					_plugDisplay.measurementsChanged.addHandler(onPlugMeasChanged);
 				}
 				if(_plugDisplayChanged)_plugDisplayChanged.perform(this);
-				dispatchMeasurementChange();
+				invalidateMeasurements();
 			}
 		}
 		public function get layoutDisplay():IDisplayAsset{
 			return _plugDisplay?_plugDisplay.display:null;
 		}
-		public function get measurements():Point{
-			var meas:Point;
-			if(_plugDisplay && (meas = _plugDisplay.measurements)){
-				_oldMeasWidth = meas.x;
-				_oldMeasHeight = meas.y;
-				return meas; 
+		override protected function measure():void{
+			var meas:Point = _plugDisplay.measurements;
+			if(meas){
+				_measurements.x = meas.x;
+				_measurements.y = meas.y;
 			}else{
-				_oldMeasWidth = NaN;
-				_oldMeasHeight = NaN;
-				return null;
+				_measurements.x = NaN;
+				_measurements.y = NaN;
 			}
 		}
-		public function setDisplayPosition(x:Number, y:Number, width:Number, height:Number):void{
-			if(_positionChanged){
-				var oldX:Number = _displayPosition.x;
-				var oldY:Number = _displayPosition.y;
-				var oldWidth:Number = _displayPosition.width;
-				var oldHeight:Number = _displayPosition.height;
-			}
-			var change:Boolean = false;
-			if(_displayPosition.x!=x){
-				_displayPosition.x = x;
-				change = true;
-			}
-			if(_displayPosition.y!=y){
-				_displayPosition.y = y;
-				change = true;
-			}
-			if(_displayPosition.width!=width){
-				_displayPosition.width = width;
-				change = true;
-			}
-			if(_displayPosition.height!=height){
-				_displayPosition.height = height;
-				change = true;
-			}
-			if(change){
-				if(_plugDisplay)_plugDisplay.setDisplayPosition(x,y,width,height);
-				if(_positionChanged)_positionChanged.perform(this,oldX,oldY,oldWidth,oldHeight);
-			}
+		override protected function validatePosition():void{
+			if(_plugDisplay)_plugDisplay.setPosition(_position.x,_position.y);
+		}
+		override protected function validateSize():void{
+			if(_plugDisplay)_plugDisplay.setSize(_size.x,_size.y);
 		}
 		protected function onPlugMeasChanged(from:ILayoutSubject, oldWidth:Number, oldHeight:Number):void{
-			dispatchMeasurementChange();
+			invalidateMeasurements();
 		}
 		protected function onDisplayChanged(from:IPlugDisplay, oldDisplay:DisplayObject, newDisplay:DisplayObject):void{
 			completeRemoveDisplay(_lastDisplayObject, _container, _lastParent, _lastDepth);
@@ -330,9 +276,6 @@ package org.farmcode.actLibrary.display.visualSockets.sockets
 			}else if(_container.getAssetIndex(_lastDisplayObject)!=depth && depth!=-1){
 				_container.setAssetIndex(_lastDisplayObject,depth);
 			}
-		}
-		protected function dispatchMeasurementChange():void{
-			if(_measurementsChanged)_measurementsChanged.perform(this, _oldMeasWidth, _oldMeasHeight);
 		}
 	}
 }

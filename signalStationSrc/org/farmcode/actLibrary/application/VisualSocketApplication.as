@@ -80,9 +80,13 @@ package org.farmcode.actLibrary.application
 			super.addMainAsset();
 			_proxiedDisplaySocket.container = _asset.parent;
 		}
-		override public function setDisplayPosition(x:Number, y:Number, width:Number, height:Number) : void{
-			super.setDisplayPosition(x, y, width, height);
-			_proxiedDisplaySocket.setDisplayPosition(x, y, width, height);
+		override public function setPosition(x:Number, y:Number) : void{
+			super.setPosition(x, y);
+			_proxiedDisplaySocket.setPosition(x,y);
+		}
+		override public function setSize(width:Number, height:Number) : void{
+			super.setSize(width, height);
+			_proxiedDisplaySocket.setSize(width, height);
 		}
 		override protected function init():void{
 			super.init();

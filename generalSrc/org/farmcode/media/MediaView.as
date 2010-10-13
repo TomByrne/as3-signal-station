@@ -14,7 +14,7 @@ package org.farmcode.media
 			super(asset);
 		}
 		public function displayMeasurementsChanged():void{
-			performMeasChanged();
+			invalidateMeasurements();
 		}
 		override protected function measure() : void{
 			// ignore

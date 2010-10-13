@@ -6,6 +6,7 @@
       <compilerSourcePathEntry kind="1" linkType="1" path="siteStreamSrc"/>
       <compilerSourcePathEntry kind="1" linkType="1" path="signalStationSrc"/>
       <compilerSourcePathEntry kind="1" linkType="1" path="debugSrc"/>
+      <compilerSourcePathEntry kind="1" linkType="1" path="pureMvcSrc"/>
     </compilerSourcePath>
     <libraryPath defaultLinkType="1">
       <libraryPathEntry kind="4" path="">

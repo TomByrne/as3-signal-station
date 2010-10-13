@@ -1,7 +1,6 @@
 package org.farmcode.display.layout
 {
 	import flash.geom.Point;
-	import flash.geom.Rectangle;
 	
 	import org.farmcode.acting.actTypes.IAct;
 	import org.farmcode.display.layout.core.ILayoutInfo;
@@ -16,14 +15,22 @@ package org.farmcode.display.layout
 		function get measurementsChanged():IAct;
 		function get measurements():Point;
 		
-		// TODO: split position/size
-		function get displayPosition():Rectangle;
-		// TODO: split into  setSize and setPosition
-		function setDisplayPosition(x:Number, y:Number, width:Number, height:Number):void;
-		// TODO: split into positionChanged/sizeChanged
+		
+		
+		function get position():Point;
+		function setPosition(x:Number, y:Number):void;
 		/**
-		 * handler(from:ILayoutSubject, oldX:Number, oldY:Number, oldWidth:Number, oldHeight:Number)
+		 * handler(from:ILayoutSubject, oldWidth:Number, oldHeight:Number)
 		 */
 		function get positionChanged():IAct;
+		
+		
+		
+		function get size():Point;
+		function setSize(width:Number, height:Number):void;
+		/**
+		 * handler(from:ILayoutSubject, oldWidth:Number, oldHeight:Number)
+		 */
+		function get sizeChanged():IAct;
 	}
 }

@@ -20,7 +20,7 @@ package org.farmcode.display.controls.toolTip
 		public function set annotationType(value:String):void{
 			if(_annotationType!=value){
 				_annotationType = value;
-				invalidate();
+				invalidateAll();
 			}
 		}
 		
@@ -30,7 +30,7 @@ package org.farmcode.display.controls.toolTip
 		public function set annotationPattern(value:String):void{
 			if(_annotationPattern!=value){
 				_annotationPattern = value;
-				invalidate();
+				invalidateAll();
 			}
 		}
 		
@@ -43,12 +43,12 @@ package org.farmcode.display.controls.toolTip
 		}
 		public function addTipTrigger(trigger:IToolTipTrigger):void{
 			_tipTriggers.push(trigger);
-			invalidate();
+			invalidateAll();
 		}
 		public function removeTipTrigger(trigger:IToolTipTrigger):void{
 			var index:int = _tipTriggers.indexOf(trigger);
 			_tipTriggers.splice(index,1);
-			invalidate();
+			invalidateAll();
 		}
 		override protected function bindToAsset() : void{
 			super.bindToAsset();
@@ -58,8 +58,8 @@ package org.farmcode.display.controls.toolTip
 			super.unbindFromAsset();
 			_textField = null;
 		}
-		override protected function draw() : void{
-			super.draw();
+		override protected function validateAll():void{
+			super.validateAll();
 			_tipTriggers = _tipTriggers.sort(sortTips);
 			var text:String = "";
 			var count:int = 0;

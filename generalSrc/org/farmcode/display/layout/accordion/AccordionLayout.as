@@ -24,7 +24,7 @@ package org.farmcode.display.layout.accordion
 			if(_accordionDirection!=value){
 				_accordionDirection = value;
 				_cellPosFlag.invalidate();
-				invalidate();
+				invalidateSize();
 			}
 		}
 		
@@ -46,7 +46,7 @@ package org.farmcode.display.layout.accordion
 			renderer.openFractChanged.removeHandler(onOpenFractChanged);
 		}
 		protected function onOpenFractChanged(from:IMinimisableLayoutSubject) : void{
-			invalidate();
+			invalidateSize();
 		}
 		override protected function rendererAdded(renderer:ILayoutSubject):void{
 			super.rendererAdded(renderer);
@@ -60,7 +60,7 @@ package org.farmcode.display.layout.accordion
 		protected function onMinChanged(from:IMinimisableLayoutSubject) : void{
 			var data:* = from[_dataField];
 			delete _cellMeasCache[data];
-			invalidate();
+			invalidateSize();
 		}
 		override protected function getChildMeasurement(key:*) : Point{
 			if(key>=_dataCount){
@@ -113,10 +113,12 @@ package org.farmcode.display.layout.accordion
 			if(renderer){
 				var fullMeas:Rectangle = _realMeas[key];
 				if(_accordionDirection==Direction.VERTICAL){
-					renderer.setDisplayPosition(x,y,width,fullMeas.height>height?fullMeas.height:height);
+					renderer.setPosition(x,y);
+					renderer.setSize(width,fullMeas.height>height?fullMeas.height:height);
 					renderer.setOpenArea(width,height);
 				}else{
-					renderer.setDisplayPosition(x,y,fullMeas.width>width?fullMeas.width:width,height);
+					renderer.setPosition(x,y);
+					renderer.setSize(fullMeas.width>width?fullMeas.width:width,height);
 					renderer.setOpenArea(width,height);
 				}
 			}
