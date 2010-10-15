@@ -123,25 +123,28 @@ package org.tbyrne.application
 		private function onAddedToStage(from:IDisplayAsset=null):void{
 			if(!_hasStarted){
 				_hasStarted = true;
-				_facade.sendNotification(ApplicationNotifications.START_UP);
-				
-				
-				CONFIG::debug{
-					_scopedObject = new ScopedObject(_container);
-					
-					var memory:INumberProvider = new MemoryUnitConverter(new MemoryUsage(),MemoryUnitConverter.BYTES,MemoryUnitConverter.MEGABYTES)
-					DebugManager.addDebugNode(new GraphStatisticNode(_scopedObject,"Mem",0x009900,memory,true));
-					
-					var fps:GraphStatisticNode = new GraphStatisticNode(_scopedObject,"FPS",0x990000,new RealFrameRate(),true);
-					fps.maximumProvider = new IntendedFrameRate(_scopedObject);
-					DebugManager.addDebugNode(fps);
-					DebugManager.addDebugNode(new DebugDataNode(_scopedObject,new DebugData(new StringData("Garbage Collect"),new GarbageCollect())));
-				}
+				startApplication();
 			}
 			addToContainer();
 			_container.removedFromStage.addTempHandler(onRemovedFromStage);
 			if(_appPosition)setApplicationPos();
 			if(_appSize)setApplicationSize();
+		}
+		protected function startApplication():void{
+			_facade.sendNotification(ApplicationNotifications.START_UP);
+			
+			
+			CONFIG::debug{
+				_scopedObject = new ScopedObject(_container);
+				
+				var memory:INumberProvider = new MemoryUnitConverter(new MemoryUsage(),MemoryUnitConverter.BYTES,MemoryUnitConverter.MEGABYTES)
+				DebugManager.addDebugNode(new GraphStatisticNode(_scopedObject,"Mem",0x009900,memory,true));
+				
+				var fps:GraphStatisticNode = new GraphStatisticNode(_scopedObject,"FPS",0x990000,new RealFrameRate(),true);
+				fps.maximumProvider = new IntendedFrameRate(_scopedObject);
+				DebugManager.addDebugNode(fps);
+				DebugManager.addDebugNode(new DebugDataNode(_scopedObject,new DebugData(new StringData("Garbage Collect"),new GarbageCollect())));
+			}
 		}
 		private function onRemovedFromStage(from:IDisplayAsset=null):void{
 			removeFromContainer();
