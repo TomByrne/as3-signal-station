@@ -131,8 +131,6 @@ package org.tbyrne.application
 			if(_appSize)setApplicationSize();
 		}
 		protected function startApplication():void{
-			_facade.sendNotification(ApplicationNotifications.START_UP);
-			
 			
 			CONFIG::debug{
 				_scopedObject = new ScopedObject(_container);
@@ -145,6 +143,7 @@ package org.tbyrne.application
 				DebugManager.addDebugNode(fps);
 				DebugManager.addDebugNode(new DebugDataNode(_scopedObject,new DebugData(new StringData("Garbage Collect"),new GarbageCollect())));
 			}
+			_facade.sendNotification(ApplicationNotifications.START_UP);
 		}
 		private function onRemovedFromStage(from:IDisplayAsset=null):void{
 			removeFromContainer();
