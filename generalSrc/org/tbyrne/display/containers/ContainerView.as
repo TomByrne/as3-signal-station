@@ -39,7 +39,7 @@ package org.tbyrne.display.containers
 				super.measure();
 			}
 		}
-		override protected function validateSize():void{
+		override protected function commitSize():void{
 			positionBacking(size.x,size.y);
 		}
 		protected function positionBacking(width:Number, height:Number):void{

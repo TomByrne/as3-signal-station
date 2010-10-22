@@ -96,7 +96,7 @@ package org.tbyrne.display.controls
 		override protected function measure() : void{
 			super.measure();
 		}
-		override protected function validateSize():void{
+		override protected function commitSize():void{
 			var foreMeas:Point = _foreButton.measurements;
 			var aftMeas:Point = _aftButton.measurements;
 			if(_scrollDirection==Direction.HORIZONTAL){

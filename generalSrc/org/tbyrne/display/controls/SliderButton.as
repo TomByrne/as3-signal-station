@@ -142,8 +142,8 @@ package org.tbyrne.display.controls
 				_sliderAsset = null;
 			}
 		}
-		override protected function validateSize():void{
-			super.validateSize();
+		override protected function commitSize():void{
+			super.commitSize();
 			if(_sliderAsset){
 				updateMask();
 			}

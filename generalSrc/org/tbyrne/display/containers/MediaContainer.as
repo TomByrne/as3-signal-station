@@ -109,8 +109,8 @@ package org.tbyrne.display.containers
 			_measurements.x = _layout.measurements.x;
 			_measurements.y = _layout.measurements.y;
 		}
-		override protected function validateSize() : void{
-			super.validateSize();
+		override protected function commitSize() : void{
+			super.commitSize();
 			_layout.setSize(size.x,size.y);
 			getMarginAffectedArea(0,0,size.x,size.y, _layoutProxy.layoutInfo, _scrollRect);
 			

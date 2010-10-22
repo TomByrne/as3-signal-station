@@ -128,7 +128,7 @@ package org.tbyrne.display.controls.popout {
 					break;
 			}
 		}
-		override protected function validateSize():void{
+		override protected function commitSize():void{
 			/*var listMeas:Point = _listBox.measurements;
 			var alignArea:Rectangle = getListAlignArea();
 			var useRect:Boolean = (alignArea!=null);

@@ -137,7 +137,7 @@ package org.tbyrne.display.containers
 				}
 			}
 		}
-		override protected function validateSize():void{
+		override protected function commitSize():void{
 			measurements; // this will force measurements to be valid
 			positionBacking(size.x,size.y);
 			

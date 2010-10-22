@@ -105,8 +105,8 @@ package org.tbyrne.display.controls.toolTip
 		override protected function measure() : void{
 			super.measure();
 		}
-		override protected function validateSize():void{
-			super.validateSize();
+		override protected function commitSize():void{
+			super.commitSize();
 			if(_anchorView && _anchorView.asset){
 				var anchorPos:Point = _anchorView.asset.localToGlobal(ORIGIN);
 				anchorPos = anchorPos.subtract(_asset.localToGlobal(ORIGIN));

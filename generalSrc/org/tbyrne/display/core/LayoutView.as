@@ -86,8 +86,8 @@ package org.tbyrne.display.core
 			if(!_measurements)_measurements = new Point();
 			super(asset);
 			
-			addDrawFlag(_posDrawFlag = new FrameValidationFlag(this,validatePosition,true));
-			addDrawFlag(_sizeDrawFlag = new FrameValidationFlag(this,validateSize,true));
+			addDrawFlag(_posDrawFlag = new FrameValidationFlag(this,commitPosition,true));
+			addDrawFlag(_sizeDrawFlag = new FrameValidationFlag(this,commitSize,true));
 		}
 		
 		override protected function unbindFromAsset():void{
@@ -139,6 +139,9 @@ package org.tbyrne.display.core
 		protected function invalidateSize(): void{
 			_sizeDrawFlag.invalidate();
 		}
+		protected function validateSize(force:Boolean): void{
+			_sizeDrawFlag.validate(force);
+		}
 		
 		public function setAssetAndPosition(asset:IDisplayAsset):void{
 			this.asset = asset;
@@ -164,10 +167,10 @@ package org.tbyrne.display.core
 				_measureFlag.invalidate();
 			}
 		}
-		protected function validateSize():void{
+		protected function commitSize():void{
 			asset.setSize(_size.x,_size.y);
 		}
-		protected function validatePosition():void{
+		protected function commitPosition():void{
 			asset.setPosition(_position.x,_position.y);
 		}
 		protected function invalidateMeasurements():void{

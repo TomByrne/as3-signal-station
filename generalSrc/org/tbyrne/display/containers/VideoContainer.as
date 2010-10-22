@@ -377,8 +377,8 @@ package org.tbyrne.display.containers
 				layoutView.asset = null;
 			}
 		}
-		override protected function validateSize():void{
-			super.validateSize();
+		override protected function commitSize():void{
+			super.commitSize();
 			_mainLayout.setSize(size.x,size.y);
 			
 			if(_centredPauseButton){

@@ -34,6 +34,16 @@ package org.tbyrne.display.containers
 			_layout.gap = value;
 		}
 		
+		public function get clickAutoClose():Boolean{
+			return _rootWatcher.clickAutoClose;
+		}
+		public function set clickAutoClose(value:Boolean):void{
+			if(_rootWatcher.clickAutoClose!=value){
+				_rootWatcher.clickAutoClose = value;
+			}
+		}
+		
+		private var _clickAutoClose:Boolean;
 		
 		protected var _assumedListAsset:IDisplayAsset;
 		protected var _assumedListFactory:SimpleInstanceFactory;
@@ -114,6 +124,11 @@ import flash.utils.Dictionary;
 
 import org.tbyrne.data.dataTypes.IDataProvider;
 import org.tbyrne.display.DisplayNamespace;
+import org.tbyrne.display.actInfo.IMouseActInfo;
+import org.tbyrne.display.assets.assetTypes.IContainerAsset;
+import org.tbyrne.display.assets.assetTypes.IDisplayAsset;
+import org.tbyrne.display.assets.assetTypes.IInteractiveObjectAsset;
+import org.tbyrne.display.assets.utils.isDescendant;
 import org.tbyrne.display.constants.Anchor;
 import org.tbyrne.display.constants.Direction;
 import org.tbyrne.display.containers.AbstractSelectableList;
@@ -159,6 +174,22 @@ class ListWatcher{
 		}
 	}
 	
+	
+	public function get clickAutoClose():Boolean{
+		return _clickAutoClose;
+	}
+	public function set clickAutoClose(value:Boolean):void{
+		_clickAutoClose = value;
+		if(_childListWatcher)_childListWatcher.clickAutoClose = value;
+		if(_popoutDisplay.popoutShown){
+			if(_clickAutoClose){
+				addClickAutoCloseListener();
+			}else{
+				removeClickAutoCloseListener();
+			}
+		}
+	}
+	
 	public function get listFactory():IInstanceFactory{
 		return _listFactory;
 	}
@@ -197,7 +228,7 @@ class ListWatcher{
 	private var _childListWatcher:ListWatcher;
 	private var _childDataIndex:int;
 	protected var _popoutDisplay:PopoutDisplay;
-	//protected var _rendPos:Rectangle;
+	private var _clickAutoClose:Boolean = true;
 	
 	public function ListWatcher(anchor:String, listFactory:IInstanceFactory=null){
 		_popoutDisplay = new PopoutDisplay();
@@ -205,9 +236,6 @@ class ListWatcher{
 		this.parentList = parentList;
 		this.listFactory = listFactory;
 	}
-	/*protected function onListPosChanged(layout:RendererGridLayout, oldX:Number, oldY:Number, oldWidth:Number, oldHeight:Number) : void{
-		assessRelative();
-	}*/
 	protected function onListScroll(from:IScrollMetrics) : void{
 		assessRelative();
 	}
@@ -220,12 +248,13 @@ class ListWatcher{
 		}
 	}
 	protected function showChildList() : void{
-		var childData:IDataProvider = _parentList.layout.getDataAt(_childDataIndex);
+		var childData:IDataProvider = _parentList.layout.getDataAt(_childDataIndex) as IDataProvider;
 		if(childData && childData.data){
-			if(!_popoutDisplay.popoutShown){
+			if(!_popoutDisplay.popoutShown || childData.data!=_childListWatcher.parentList.dataProvider){
 				if(!_childListWatcher){
 					_childListWatcher = new ListWatcher(Anchor.BOTTOM_RIGHT, _listFactory);
 					_childListWatcher.rendererFactory = _rendererFactory;
+					_childListWatcher.clickAutoClose = _clickAutoClose;
 				}
 				if(!_childListWatcher.parentList){
 					_childListWatcher.parentList = _listFactory.createInstance();
@@ -235,10 +264,12 @@ class ListWatcher{
 				_popoutDisplay.relativeTo = renderer as ILayoutView;
 				_childListWatcher.parentList.dataProvider = childData.data;
 				_popoutDisplay.popoutShown = true;
+				
+				if(_clickAutoClose)addClickAutoCloseListener();
 			}
-			//assessRelative();
 		}
 	}
+	
 	internal function hideChildList() : void{
 		_parentList.selectedIndex = -1;
 	}
@@ -247,6 +278,7 @@ class ListWatcher{
 			if(_childListWatcher){
 				_childListWatcher.hideChildList();
 			}
+			if(_clickAutoClose)removeClickAutoCloseListener();
 			_popoutDisplay.popoutShown = false;
 			_popoutDisplay.relativeTo = null;
 		}
@@ -261,10 +293,22 @@ class ListWatcher{
 		parentList = null;
 	}
 	protected function assessRelative():void{
-		/*if(!_rendPos)_rendPos = new Rectangle();
-		var layoutPos:Point = _parentList.layout.position;
-		var dataPos:Rectangle = _parentList.layout.getDataPosition(_childDataIndex,_rendPos);*/
 		if(_childDataIndex!=-1)_popoutDisplay.relativeTo = _parentList.layout.getRenderer(_childDataIndex) as ILayoutView;
 		else _popoutDisplay.relativeTo = null;
+	}
+	
+	
+	
+	protected function addClickAutoCloseListener():void{
+		parentList.asset.stage.mousePressed.addHandler(onStageClicked);
+	}
+	protected function removeClickAutoCloseListener():void{
+		parentList.asset.stage.mousePressed.removeHandler(onStageClicked);
+	}
+	protected function onStageClicked(from:IInteractiveObjectAsset, info:IMouseActInfo):void{
+		var childAsset:IDisplayAsset = _childListWatcher.parentList.asset;
+		if(info.mouseTarget!=childAsset && !isDescendant(childAsset as IContainerAsset,info.mouseTarget)){
+			hideChildList();
+		}
 	}
 }

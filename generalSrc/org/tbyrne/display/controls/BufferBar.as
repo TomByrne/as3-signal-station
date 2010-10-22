@@ -97,7 +97,7 @@ package org.tbyrne.display.controls
 			super.setSize(width,height);
 			_slider.setSize(width,height);
 		}
-		override protected function validateSize():void{
+		override protected function commitSize():void{
 			
 			if(_bufferedBar){
 				_slider.validate(); // this forces _track & _thumb to have the correct sizes

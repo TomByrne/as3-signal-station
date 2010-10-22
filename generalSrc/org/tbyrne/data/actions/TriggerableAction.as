@@ -17,7 +17,7 @@ package org.tbyrne.data.actions
 			var act:IAct = getAct();
 			if(act){
 				var params:Array = getParams();
-				act.perform(params);
+				act.perform.apply(null,params);
 			}else{
 				Log.log(Log.SUSPICIOUS_IMPLEMENTATION,"no IAct associated with TriggerableAction");
 			}

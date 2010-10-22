@@ -22,6 +22,7 @@ package org.tbyrne.display.containers
 			return _layout.dataProvider;
 		}
 		public function set dataProvider(value:*):void{
+			attemptInit();
 			if(_layout.dataProvider != value){
 				var dataCount:int = _layout.getDataCount();
 				var i:int;

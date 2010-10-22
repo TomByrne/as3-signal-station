@@ -185,7 +185,7 @@ package org.tbyrne.display.controls
 		override protected function measure():void{
 			super.measure();
 		}
-		override protected function validateSize():void{
+		override protected function commitSize():void{
 			var dir:String = direction;
 			
 			_asset.scaleX = 1;

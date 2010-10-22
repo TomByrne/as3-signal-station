@@ -223,8 +223,8 @@ package org.tbyrne.display.controls
 			_labelField.htmlText = _stringData;
 			invalidateMeasurements();
 		}
-		override protected function validateSize():void{
-			super.validateSize();
+		override protected function commitSize():void{
+			super.commitSize();
 			
 			var labelWidth:Number = size.x-_labelFieldSizer.paddingLeft-_labelFieldSizer.paddingRight+TextFieldGutter.TEXT_FIELD_GUTTER*2;
 			var labelHeight:Number = size.y-_labelFieldSizer.paddingTop-_labelFieldSizer.paddingBottom+TextFieldGutter.TEXT_FIELD_GUTTER*2;
@@ -241,11 +241,11 @@ package org.tbyrne.display.controls
 				_labelField.setPosition(-TextFieldGutter.TEXT_FIELD_GUTTER+_labelFieldSizer.paddingLeft,-TextFieldGutter.TEXT_FIELD_GUTTER+_labelFieldSizer.paddingTop);
 			}
 		}
-		override protected function validatePosition():void{
+		override protected function commitPosition():void{
 			if(_labelField==asset){
 				asset.setPosition(position.x-TextFieldGutter.TEXT_FIELD_GUTTER+_labelFieldSizer.paddingLeft,position.y-TextFieldGutter.TEXT_FIELD_GUTTER+_labelFieldSizer.paddingTop);
 			}else{
-				super.validatePosition();
+				super.commitPosition();
 			}
 		}
 		protected function getValueOrAssumed(value:*, assumedValue:*, defaultValue:*=null) : *{

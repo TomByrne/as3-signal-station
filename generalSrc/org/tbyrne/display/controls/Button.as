@@ -14,6 +14,7 @@ package org.tbyrne.display.controls
 	import org.tbyrne.display.assets.assetTypes.IDisplayAsset;
 	import org.tbyrne.display.assets.assetTypes.IInteractiveObjectAsset;
 	import org.tbyrne.display.assets.assetTypes.ISpriteAsset;
+	import org.tbyrne.display.assets.assetTypes.IStageAsset;
 	import org.tbyrne.display.assets.states.StateDef;
 	
 	use namespace DisplayNamespace;
@@ -137,6 +138,8 @@ package org.tbyrne.display.controls
 		protected var _over:Boolean;
 		protected var _down:Boolean;
 		
+		protected var _pressedStage:IStageAsset;
+		
 		protected var _overState:StateDef = new StateDef([STATE_OVER,STATE_OUT],1);
 		protected var _downState:StateDef = new StateDef([STATE_DOWN,STATE_UP],1);
 		
@@ -188,7 +191,7 @@ package org.tbyrne.display.controls
 			//TODO: when events are replaced with Info objects, do a check here to see if it's a descendant or not
 			_containerAsset.setAssetIndex(_interactiveArea,_containerAsset.numChildren-1);
 		}
-		override protected function validateSize() : void{
+		override protected function commitSize() : void{
 			if(_scaleAsset){
 				asset.setSize(size.x,size.y);
 				_interactiveArea.setSize(size.x/asset.scaleX,size.y/asset.scaleY);
@@ -217,7 +220,8 @@ package org.tbyrne.display.controls
 		}
 		private function onMouseDown(from:IInteractiveObjectAsset, info:IMouseActInfo):void{
 			if(_active){
-				asset.stage.mousePressed.addHandler(onMouseUp);
+				_pressedStage = asset.stage;
+				_pressedStage.mousePressed.addHandler(onMouseUp);
 				_downState.selection = 0;
 				_down = true;
 				if(_mousePressed)_mousePressed.perform(this);
@@ -225,7 +229,8 @@ package org.tbyrne.display.controls
 		}
 		private function onMouseUp(from:IInteractiveObjectAsset, info:IMouseActInfo=null):void{
 			if(_active){
-				asset.stage.mousePressed.removeHandler(onMouseUp);
+				_pressedStage.mousePressed.removeHandler(onMouseUp);
+				_pressedStage = null;
 				_downState.selection = 1;
 				_down = false;
 				if(_mouseReleased)_mouseReleased.perform(this);

@@ -226,7 +226,7 @@ package org.tbyrne.display.progress
 		protected function get shouldShow() : Boolean{
 			return (!measurable || (!isNaN(progress) && !isNaN(total) && progress<total));
 		}
-		override protected function validateSize():void{
+		override protected function commitSize():void{
 			
 			_background.width = position.x;
 			_background.height = position.y;

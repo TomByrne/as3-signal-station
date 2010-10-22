@@ -137,6 +137,9 @@ package org.tbyrne.collections.linkedList
 		public function unshift(value:*):void{
 			splice(0,0,[value]);
 		}
+		public function contains(value:*):Boolean{
+			return _indexes[value]!=null;
+		}
 		public function firstIndexOf(value:*):int{
 			var value:* = _indexes[value];
 			if(value!=null)return value;

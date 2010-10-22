@@ -339,8 +339,8 @@ package org.tbyrne.display.containers.accordionGrid
 			var parentData:* = _dataToParentData[data];
 			return _accordDataToRend[parentData];
 		}
-		override protected function validateSize() : void{
-			super.validateSize();
+		override protected function commitSize() : void{
+			super.commitSize();
 			drawGridLayout(position);
 		}
 		protected function drawGridLayout(position:Point) : void{

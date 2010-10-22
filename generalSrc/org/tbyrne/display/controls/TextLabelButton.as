@@ -46,6 +46,10 @@ package org.tbyrne.display.controls
 			paddingLeft = value;
 			paddingRight = value;
 		}
+		override public function set active(value:Boolean):void{
+			super.active = value;
+			_textLabel.active = value;
+		}
 		
 		protected var _textLabel:TextLabel;
 		
@@ -77,8 +81,8 @@ package org.tbyrne.display.controls
 		override protected function measure() : void{
 			_measurements = _textLabel.measurements;
 		}
-		override protected function validateSize():void{
-			super.validateSize();
+		override protected function commitSize():void{
+			super.commitSize();
 			_interactiveArea.setSize(size.x,size.y);
 		}
 		protected function onMeasurementsChange(from:ILayoutSubject, oldWidth:Number, oldHeight:Number):void{

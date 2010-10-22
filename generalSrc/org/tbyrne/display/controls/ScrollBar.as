@@ -245,16 +245,16 @@ package org.tbyrne.display.controls
 				this.dispatchScroll();
 			}
 		}
-		override protected function validatePosition():void{
+		override protected function commitPosition():void{
 			if(_direction==Direction.VERTICAL || !_rotateForHorizontal){
-				super.validatePosition();
+				super.commitPosition();
 				asset.rotation = 0;
 			}else{
 				asset.rotation = -90;
 				asset.setPosition(_position.x,_position.y+_size.y);
 			}
 		}
-		override protected function validateSize():void{
+		override protected function commitSize():void{
 			
 			var minimum:Number = _scrollMetrics.minimum;
 			var maximum:Number = _scrollMetrics.maximum;

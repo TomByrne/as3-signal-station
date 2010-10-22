@@ -264,7 +264,7 @@ package org.tbyrne.display.containers.accordion
 				}
 			}
 		}
-		override protected function validatePosition():void{
+		override protected function commitPosition():void{
 			measurements;// this will force measuring if it's invalid
 			var lackX:Number = (_measurements.x<_openWidth?_openWidth-_measurements.x:0);
 			var lackY:Number = (_measurements.y<_openHeight?_openHeight-_measurements.y:0);

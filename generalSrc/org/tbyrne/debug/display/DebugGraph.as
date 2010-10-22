@@ -134,8 +134,8 @@ package org.tbyrne.debug.display
 				_measurements.x = stackMeas.x;
 			}
 		}
-		override protected function validateSize() : void{
-			super.validateSize();
+		override protected function commitSize() : void{
+			super.commitSize();
 			var pos:Point = position;
 			var stackMeas:Point = _stackLayout.measurements;
 			_bitmap.setSize(pos.x,pos.y-stackMeas.y);

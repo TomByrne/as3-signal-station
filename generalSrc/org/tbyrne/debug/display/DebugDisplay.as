@@ -153,14 +153,14 @@ package org.tbyrne.debug.display
 			invalidatePos();
 			invalidateSize();
 		}
-		override protected function validatePosition():void{
+		override protected function commitPosition():void{
 			var pos:Point = position;
 			var meas:Point = measurements;
 			if(_application){
 				_application.setPosition(pos.x,pos.y+meas.y);
 			}
 		}
-		override protected function validateSize() : void{
+		override protected function commitSize() : void{
 			var size:Point = size;
 			var meas:Point = measurements;
 			drawListAndScrollbar(size.x,meas.y);

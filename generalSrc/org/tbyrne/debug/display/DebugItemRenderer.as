@@ -117,8 +117,8 @@ package org.tbyrne.debug.display
 				}
 			}
 		}
-		override protected function validateSize():void{
-			super.validateSize();
+		override protected function commitSize():void{
+			super.commitSize();
 			if(_bitmap){
 				_bitmap.x = _bitmapPaddingLeft;
 				_bitmap.y = _bitmapPaddingTop;

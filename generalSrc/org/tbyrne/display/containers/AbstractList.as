@@ -9,8 +9,8 @@ package org.tbyrne.display.containers
 	import org.tbyrne.display.assets.assetTypes.IContainerAsset;
 	import org.tbyrne.display.assets.assetTypes.IDisplayAsset;
 	import org.tbyrne.display.constants.Direction;
+	import org.tbyrne.display.controls.ListRenderer;
 	import org.tbyrne.display.controls.ScrollBar;
-	import org.tbyrne.display.controls.TextLabelButton;
 	import org.tbyrne.display.core.DrawableView;
 	import org.tbyrne.display.core.ILayoutView;
 	import org.tbyrne.display.layout.ILayoutSubject;
@@ -217,8 +217,8 @@ package org.tbyrne.display.containers
 				_measurements.x = layoutMeas.x;
 			}
 		}
-		override protected function validateSize() : void{
-			super.validateSize();
+		override protected function commitSize() : void{
+			super.commitSize();
 			drawListAndScrollbar(size.x,size.y);
 		}
 		protected function drawListAndScrollbar(width:Number, height:Number) : void{
@@ -293,7 +293,7 @@ package org.tbyrne.display.containers
 			}
 		}
 		protected function createAssumedFactory():SimpleInstanceFactory{
-			var factory:SimpleInstanceFactory = new SimpleInstanceFactory(TextLabelButton);
+			var factory:SimpleInstanceFactory = new SimpleInstanceFactory(ListRenderer);
 			factory.useChildFactories = true;
 			factory.instanceProperties = new Dictionary();
 			factory.instanceProperties["togglable"] = true;
@@ -318,6 +318,7 @@ package org.tbyrne.display.containers
 		}
 		
 		public function getScrollMetrics(direction:String):IScrollMetrics{
+			attemptInit();
 			if(direction==Direction.HORIZONTAL){
 				if(!_horScrollMetrics)_horScrollMetrics = new ScrollMultiplier(scrollSpeed(direction),_layout.getScrollMetrics(direction));
 				return _horScrollMetrics;

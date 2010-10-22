@@ -13,7 +13,7 @@ package org.tbyrne.display.assets.utils
 	 */
 	public function isDescendant(parent:IContainerAsset, decendant:IDisplayAsset):Boolean{
 		var subject:IDisplayAsset = decendant;
-		while(subject!=decendant.stage){
+		while(subject && subject!=decendant.stage){
 			subject = subject.parent;
 			if(subject==parent)return true;
 		}
