@@ -9,7 +9,7 @@ package org.tbyrne.formatters
 	import org.tbyrne.data.dataTypes.IValueProvider;
 	import org.tbyrne.utils.DateFormat;
 	
-	public class DateFormatter implements IFormatter, IValueProvider
+	public class DateFormatter implements IFormatter, IValueProvider, IStringProvider
 	{
 		public function set valueProvider(value:IValueProvider):void{
 			dateProvider = value as IDateProvider;
@@ -57,8 +57,13 @@ package org.tbyrne.formatters
 			rawDateValue = parseString(value);
 		}
 		protected function set rawDateValue(value:Date):void{
-			if(_rawDateValue!=value){
+			if(_rawDateValue!=value || (value && _lastDateTime!=value.time)){
 				_rawDateValue = value;
+				if(value){
+					_lastDateTime = value.time;
+				}else{
+					_lastDateTime = -1;
+				}
 				if(_dateConsumer){
 					_dateConsumer.dateValue = value;
 				}
@@ -84,14 +89,16 @@ package org.tbyrne.formatters
 		private var _dateConsumer:IDateConsumer;
 		private var _ignoreProviderChanges:Boolean;
 		private var _rawDateValue:Date;
+		private var _lastDateTime:int = -1;
 		private var _stringValue:String;
 		private var _dateValue:Date;
 		private var _stringValueChanged:Act;
 		private var _stringInvalid:Boolean;
 		private var _dateFormat:DateFormat = new DateFormat();
 		
-		public function DateFormatter(dateProvider:IDateProvider=null){
+		public function DateFormatter(dateProvider:IDateProvider=null, format:String=null){
 			this.dateProvider = dateProvider;
+			this.format = format;
 		}
 		protected function invalidateString():void{
 			_stringInvalid = true;

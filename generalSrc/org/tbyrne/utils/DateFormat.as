@@ -2,7 +2,8 @@
 {
 	/**
 	 * The DateFormat class facilitates conversions between date strings and date
-	 * objects.
+	 * objects. This is an example pattern:<br/>
+	 * "Time Spent: ${NN}:${SS}"
 	 */
 	public class DateFormat
 	{
@@ -12,6 +13,10 @@
     	public static const DAY_NAMES_LONG:Array = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
     	public static const MONTH_NAMES_SHORT:Array = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sept","Oct","Nov","Dec"];
     	public static const MONTH_NAMES_LONG:Array = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+		
+		protected static const PRE_PATTERN:String = "[$]{(";
+		protected static const POST_PATTERN:String = "+)}";
+		
 		
 		/*private static var FIRST_DAY_DATE:Date = new Date();
 		
@@ -57,7 +62,7 @@
 				var term:DateTerm = _terms[i];
 				var top:String = ret.slice(0,term.index);
 				var encoded:String = encodePart(date,term.key,term.count)
-				var tail:String = ret.slice(term.index+term.count);
+				var tail:String = ret.slice(term.index+term.stripCount);
 				ret = top+encoded+tail;
 			}
 			return ret;
@@ -94,21 +99,22 @@
 		private function findTerms(formatString:String):Array{
 			var terms:Array = [];
 			var length:int = VALID_PATTERN_CHARS.length;
+			var patternLength:int = PRE_PATTERN.length+POST_PATTERN.length;
 			for(var i:int=0; i<length; ++i){
-				var char:String = VALID_PATTERN_CHARS[i];
-				var index:Number = formatString.indexOf(char);
-				if(index!=-1){
-					var count:Number = 1;
-					while(formatString.indexOf(char,index+count)!=-1){
-						count++;
-					}
-					if(!isNaN(index)){
-						terms.push(new DateTerm(char, index, count));
-					}
+				var key:String = VALID_PATTERN_CHARS[i];
+				var pattern:RegExp = new RegExp(PRE_PATTERN+key+POST_PATTERN);
+				var result:Object = pattern.exec(formatString);
+				if(result){
+					terms.push(new DateTerm(key,result.index,result[1].length,result[0].length));
 				}
 			}
 			return terms;
 		}
+		
+		/*
+		We sort these in reverse order so that when encoding we work from
+		back-to-front. This keeps index references correct.
+		*/
 		private function termSortingFunction(term1:DateTerm,term2:DateTerm):Number{
 			if(term1.index<term2.index)return 1;
 			else if(term1.index>term2.index)return -1;
@@ -274,11 +280,13 @@
 }
 class DateTerm{
 	public var key:String;
-	public var index:Number;
-	public var count:Number;
-	public function DateTerm(key:String,index:Number,count:Number){
+	public var index:int;
+	public var count:int;
+	public var stripCount:int;
+	public function DateTerm(key:String,index:int,count:int,stripCount:int){
 		this.key = key;
 		this.index = index;
 		this.count = count;
+		this.stripCount = stripCount;
 	}
 }
