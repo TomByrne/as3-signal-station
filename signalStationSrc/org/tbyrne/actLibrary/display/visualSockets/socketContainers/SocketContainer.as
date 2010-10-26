@@ -157,12 +157,12 @@ package org.tbyrne.actLibrary.display.visualSockets.socketContainers
 				socketContHelper.asset = null;
 			}
 		}
-		override protected function validatePosition():void{
-			super.validatePosition();
+		override protected function commitPosition():void{
+			super.commitPosition();
 			drawLayout();
 		}
-		override protected function validateSize():void{
-			super.validateSize();
+		override protected function commitSize():void{
+			super.commitSize();
 			drawLayout();
 			if(_containerAsset){
 				if(_containerAsset.scaleX!=0 && _containerAsset.scaleX!=Infinity){

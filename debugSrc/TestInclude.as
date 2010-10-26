@@ -19,6 +19,7 @@ package
 	import org.tbyrne.collections.utils.arraysEqual;
 	import org.tbyrne.collections.utils.randomSort;
 	import org.tbyrne.data.actions.Link;
+	import org.tbyrne.data.navigation.ActNavItem;
 	import org.tbyrne.data.operators.NumberRange;
 	import org.tbyrne.debug.DebugManager;
 	import org.tbyrne.debug.display.DebugItemRenderer;
@@ -32,7 +33,6 @@ package
 	import org.tbyrne.display.containers.accordion.AbstractAccordionView;
 	import org.tbyrne.display.containers.accordionGrid.AccordionGridRenderer;
 	import org.tbyrne.display.containers.accordionGrid.AccordionGridView;
-	import org.tbyrne.display.containers.grid.GridView;
 	import org.tbyrne.display.controls.BufferBar;
 	import org.tbyrne.display.controls.ScrollButtons;
 	import org.tbyrne.display.controls.Slider;
@@ -164,7 +164,7 @@ package
 			ToolTipDisplay;
 			SliderButton;
 			ToolTipAnnotator;
-			GridView;
+			ActNavItem;
 		}
 	}
 }

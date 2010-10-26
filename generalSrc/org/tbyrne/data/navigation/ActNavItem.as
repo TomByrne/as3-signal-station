@@ -24,7 +24,7 @@ package org.tbyrne.data.navigation
 		private var _params:Array;
 		private var _act:IAct;
 		
-		public function ActNavItem(stringValue:String=null, act:IAct=null, params:Array){
+		public function ActNavItem(stringValue:String=null, act:IAct=null, params:Array=null){
 			super(stringValue);
 			this.act = act;
 			this.params = params;
