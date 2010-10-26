@@ -6,15 +6,17 @@ package org.tbyrne.display.containers
 	
 	import org.tbyrne.acting.actTypes.IAct;
 	import org.tbyrne.acting.acts.Act;
-	import org.tbyrne.data.dataTypes.IBooleanConsumer;
-	import org.tbyrne.data.dataTypes.IBooleanProvider;
 	import org.tbyrne.debug.logging.Log;
+	import org.tbyrne.display.DisplayNamespace;
 	import org.tbyrne.display.assets.assetTypes.IDisplayAsset;
 	import org.tbyrne.display.constants.Direction;
 	import org.tbyrne.display.core.ILayoutView;
 	import org.tbyrne.display.layout.grid.RendererGridLayout;
 	import org.tbyrne.display.layout.list.ListLayoutInfo;
 	import org.tbyrne.display.scrolling.IScrollMetrics;
+	import org.tbyrne.instanceFactory.IInstanceFactory;
+	
+	use namespace DisplayNamespace;
 	
 	public class AbstractSelectableList extends AbstractList
 	{
@@ -24,36 +26,8 @@ package org.tbyrne.display.containers
 		public function set dataProvider(value:*):void{
 			attemptInit();
 			if(_layout.dataProvider != value){
-				var dataCount:int = _layout.getDataCount();
-				var i:int;
-				var selectableData:IBooleanProvider;
-				for(i=0; i<dataCount; i++){
-					selectableData = (_layout.getDataAt(i) as IBooleanProvider);
-					if(selectableData){
-						selectableData.booleanValueChanged.removeHandler(onDataSelectedChanged);
-					}
-				}
-				var change:Boolean = (_selectedCount>0);
-				_selectedCount = 0;
-				_selectedData = new Dictionary();
-				_selectedIndices = [];
 				_layout.dataProvider = value;
-				dataCount = _layout.getDataCount();
-				for(i=0; i<dataCount; i++){
-					selectableData = (_layout.getDataAt(i) as IBooleanProvider);
-					if(selectableData){
-						selectableData.booleanValueChanged.addHandler(onDataSelectedChanged);
-						if(selectableData.booleanValue){
-							_selectedData[i] = selectableData;
-							_selectedIndices[_selectedCount] = i;
-							++_selectedCount;
-							change = true;
-						}
-					}
-				}
-				if(!validateSelectionCount() && change){
-					_selectionChangeAct.perform(this, _selectedIndices, _selectedData);
-				}
+				if(_protoRenderer)checkDataSelection();
 				checkAutoScroll();
 			}
 		}
@@ -82,10 +56,14 @@ package org.tbyrne.display.containers
 		
 		public function set selectedIndices(value: Array):void{
 			if(_selectedIndices!=value){
+				if(!_protoRenderer){
+					Log.log(Log.ERROR, "selectedIndices cannot be set without a renderer that implements ISelectableRenderer");
+				}
+				
 				var valueCount:int;
 				var safeIndices:Array = [];
 				var index:int;
-				var selData:IBooleanConsumer;
+				//var selData:IBooleanConsumer;
 				var change:Boolean;
 				if(value){
 					// remove any duplication between old and new selection
@@ -110,14 +88,13 @@ package org.tbyrne.display.containers
 					deselectCount -= (_minSelected-valueCount);
 				}
 				i=0;
+				var data:*;
 				while(i<_selectedIndices.length && deselectCount>0){
 					index = _selectedIndices[index];
 					if(safeIndices.indexOf(index)==-1){
 						_selectedIndices.splice(i,1);
-						selData = (_layout.getDataAt(index) as IBooleanConsumer);
-						if(selData){
-							selData.booleanValue = false;
-						}
+						data = _layout.getDataAt(index);
+						setDataSelected(index, data, false);
 						delete _selectedData[index];
 						--_selectedCount;
 						-- deselectCount;
@@ -134,12 +111,9 @@ package org.tbyrne.display.containers
 				while(valueCount>0){
 					index = value.shift();
 					_selectedIndices.push(index);
-					var data:* = _layout.getDataAt(index);
+					data = _layout.getDataAt(index);
+					setDataSelected(index, data, true);
 					_selectedData[index] = data;
-					selData = (data as IBooleanConsumer);
-					if(selData){
-						selData.booleanValue = true;
-					}
 					change = true;
 					++_selectedCount;
 					--valueCount;
@@ -147,6 +121,7 @@ package org.tbyrne.display.containers
 				checkAutoScroll();
 				if(change){
 					_selectionChangeAct.perform(this, _selectedIndices, _selectedData);
+					updateRendererSelectedIndices()
 				}
 			}
 		}
@@ -165,22 +140,49 @@ package org.tbyrne.display.containers
 		
 		private var _selectedData:Dictionary = new Dictionary();
 		private var _selectedIndices:Array = [];
+		private var _rendSelectedIndices:Array = [];
 		private var _selectedCount:int = 0;
 		
 		protected var _scrollByLine:Boolean;
 		protected var _autoScrollToSelection:Boolean;
+		protected var _protoRenderer:ISelectableRenderer; // used to which data is selected 
 		
-		private var _selectionChangeAct:Act = new Act(); 
+		private var _selectionChangeAct:Act = new Act();
+		
+		// remember, in some cases (CascadingMenuBar for example), selected renderers and selected data are different.
+		//private var _selectedRenderers:Dictionary = new Dictionary(); 
 		
 		
 		public function AbstractSelectableList(asset:IDisplayAsset=null){
 			super(asset);
+		}
+		override protected function init() : void{
+			super.init();
+			_layout.setRendererDataAct.addHandler(onRendererDataSet);
 		}
 		override protected function onAddRenderer(layout:RendererGridLayout, renderer:ILayoutView) : void{
 			super.onAddRenderer(layout, renderer);
 			var selRenderer:ISelectableRenderer = (renderer as ISelectableRenderer);
 			if(selRenderer){
 				selRenderer.selectedChanged.addHandler(onRendererSelect);
+				selRenderer.selectedIndices = _rendSelectedIndices;
+			}
+		}
+		protected function onRendererDataSet(layout:RendererGridLayout, renderer:ILayoutView, data:*, dataField:String) : void{
+			// in case 'useDataForSelected' is false, here we refresh the selected state
+			var selRenderer:ISelectableRenderer = (renderer as ISelectableRenderer);
+			if(selRenderer){
+				var dataIndex:int = getDataIndex(data);
+				selRenderer.selected = (_selectedIndices.indexOf(dataIndex)!=-1);
+				selRenderer.selectedIndices = null;
+			}
+		}
+		protected function updateRendererSelectedIndices() : void{
+			_rendSelectedIndices = _selectedIndices.concat();
+			var dataCount:int = _layout.getDataCount();
+			for(var i:int=0; i<dataCount; ++i){
+				var renderer:ISelectableRenderer = _layout.getRenderer(i) as ISelectableRenderer;
+				if(renderer)renderer.selectedIndices = _rendSelectedIndices;
 			}
 		}
 		protected function getDataIndex(data:*) : int{
@@ -194,14 +196,14 @@ package org.tbyrne.display.containers
 				selRenderer.selectedChanged.removeHandler(onRendererSelect);
 			}
 		}
-		protected function onDataSelectedChanged(from:IBooleanProvider) : void{
-			var selected:Boolean = tryDataSelect(getDataIndex(from), from, from.booleanValue);
+		/*protected function onDataSelectedChanged(from:IBooleanProvider) : void{
+			var selected:Boolean = tryRendererSelect(getDataIndex(from), from, from.booleanValue);
 			var consumer:IBooleanConsumer = (from as IBooleanConsumer);
 			if(consumer){
 				consumer.booleanValue = selected;
 			}
-		}
-		protected function tryDataSelect(dataIndex:int, data:*, selected:Boolean) : Boolean{
+		}*/
+		protected function tryRendererSelect(dataIndex:int, data:*, selected:Boolean) : Boolean{
 			var selIndex:int = _selectedIndices.indexOf(dataIndex);
 			if((selIndex!=-1 && selected) ||
 				(selIndex==-1 && !selected)){
@@ -220,12 +222,8 @@ package org.tbyrne.display.containers
 						var otherDataIndex:int = _selectedIndices[i];
 						if(otherDataIndex!=dataIndex){
 							_selectedIndices.splice(i,1);
-							var otherData:IBooleanConsumer = _selectedData[otherDataIndex] as IBooleanConsumer;
-							if(otherData){
-								otherData.booleanValue = false;
-							}else{
-								Log.log(Log.SUSPICIOUS_IMPLEMENTATION,"Data cannot be deselected as it does not implement IBooleanConsumer");
-							}
+							var otherData:* = _selectedData[otherDataIndex];
+							setDataSelected(otherDataIndex, otherData, false);
 							delete _selectedData[otherDataIndex];
 							--_selectedCount;
 						}else{
@@ -247,13 +245,66 @@ package org.tbyrne.display.containers
 			}
 			if(change){
 				_selectionChangeAct.perform(this,_selectedIndices,_selectedData);
+				updateRendererSelectedIndices();
 				checkAutoScroll();
 			}
 			return selected;
 		}
+		protected function setDataSelected(dataIndex:int, data:*, value:Boolean) : void{
+			var renderer:ISelectableRenderer = _layout.getRenderer(dataIndex) as ISelectableRenderer;
+			if(!renderer){
+				renderer = _protoRenderer;
+				renderer[_layout.dataField] = data;
+			}
+			renderer.selected = value;
+		}
+		/*
+		In most renderers there is a relationship between the renderer's selection state
+		and the data's booleanValue property. In some circumstances this is undesirable,
+		e.g. so items can be closed and selected or open and unselected. This relationship
+		is normally governed by the 'useDatForSelection' property (within the ToggleButton
+		class).
+		*/
 		protected function onRendererSelect(renderer:ISelectableRenderer) : void{
 			var data:* = renderer[_layout.dataField];
-			renderer.selected = tryDataSelect(getDataIndex(data), data, renderer.selected);
+			var dataIndex:int = getDataIndex(data);
+			renderer.selected = tryRendererSelect(dataIndex, data, renderer.selected);
+		}
+		override protected function updateFactory(factory:IInstanceFactory, dataField:String):void{
+			super.updateFactory(factory, dataField);
+			if(_protoRenderer){
+				_protoRenderer[_layout.dataField] = null;
+				_protoRenderer = null;
+			}
+			if(factory && dataField){
+				_protoRenderer = factory.createInstance() as ISelectableRenderer;
+				if(_protoRenderer)checkDataSelection();
+			}
+		}
+		/**
+		 * loops though data and, using the proto renderer, determines what is currently
+		 * selected.
+		 */
+		protected function checkDataSelection():void{
+			var dataCount:int = _layout.getDataCount();
+			var change:Boolean = (_selectedCount>0);
+			_selectedCount = 0;
+			_selectedData = new Dictionary();
+			_selectedIndices = [];
+			for(var i:int=0; i<dataCount; i++){
+				var data:* = _layout.getDataAt(i);
+				_protoRenderer[_layout.dataField] = data;
+				if(_protoRenderer.selected){
+					_selectedData[i] = data;
+					_selectedIndices[_selectedCount] = i;
+					++_selectedCount;
+					change = true;
+				}
+			}
+			if(!validateSelectionCount() && change){
+				_selectionChangeAct.perform(this, _selectedIndices, _selectedData);
+				updateRendererSelectedIndices();
+			}
 		}
 		/**
 		 * returns true if selection was changed
@@ -261,17 +312,15 @@ package org.tbyrne.display.containers
 		public function validateSelectionCount():Boolean{
 			attemptInit();
 			var change:Boolean;
-			var selectableData:IBooleanConsumer
+			var data:*;
 			if(_selectedCount>_maxSelected){
 				while(_selectedCount>_maxSelected && _selectedIndices.length>0){
 					var dataIndex:int = _selectedIndices.shift();
 					delete _selectedData[dataIndex];
 					--_selectedCount;
 					
-					selectableData = _selectedData[dataIndex] as IBooleanConsumer;
-					if(selectableData){
-						selectableData.booleanValue = false;
-					}
+					data = _selectedData[dataIndex];
+					setDataSelected(dataIndex, data, false);
 					change = true;
 				}
 			}else{
@@ -280,14 +329,11 @@ package org.tbyrne.display.containers
 				while(_selectedCount<_minSelected && i<len){
 					if(_selectedIndices.indexOf(i)==-1){
 						_selectedIndices.push(i);
-						var data:* = _layout.getDataAt(i);
+						data = _layout.getDataAt(i);
 						_selectedData[i] = data;
 						++_selectedCount;
 						
-						selectableData = (data as IBooleanConsumer);
-						if(selectableData){
-							selectableData.booleanValue = true;
-						}
+						setDataSelected(i, data, true);
 						change = true;
 					}
 					++i;
@@ -296,6 +342,7 @@ package org.tbyrne.display.containers
 			if(change && _selectionChangeAct){
 				_selectionChangeAct.perform(this, _selectedIndices, _selectedData);
 				checkAutoScroll();
+				updateRendererSelectedIndices();
 			}
 			return change;
 		}
@@ -369,9 +416,6 @@ package org.tbyrne.display.containers
 						}
 					}
 				}
-				/*if(changed){
-					_layout.setScrollMetrics(_layout.flowDirection,metrics);
-				}*/
 			}
 		}
 	}

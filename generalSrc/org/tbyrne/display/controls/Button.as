@@ -200,7 +200,7 @@ package org.tbyrne.display.controls
 				_interactiveArea.setSize(meas.x/asset.scaleX,meas.y/asset.scaleY);
 			}
 		}
-		private function onRollOver(from:IInteractiveObjectAsset, info:IMouseActInfo):void{
+		protected function onRollOver(from:IInteractiveObjectAsset, info:IMouseActInfo):void{
 			if(_active){
 				_overState.selection = 0;
 				_over = true;
@@ -209,7 +209,7 @@ package org.tbyrne.display.controls
 				}
 			}
 		}
-		private function onRollOut(from:IInteractiveObjectAsset, info:IMouseActInfo):void{
+		protected function onRollOut(from:IInteractiveObjectAsset, info:IMouseActInfo):void{
 			if(_active){
 				_overState.selection = 1;
 				_over = false;
@@ -218,7 +218,7 @@ package org.tbyrne.display.controls
 				}
 			}
 		}
-		private function onMouseDown(from:IInteractiveObjectAsset, info:IMouseActInfo):void{
+		protected function onMouseDown(from:IInteractiveObjectAsset, info:IMouseActInfo):void{
 			if(_active){
 				_pressedStage = asset.stage;
 				_pressedStage.mousePressed.addHandler(onMouseUp);
@@ -227,7 +227,7 @@ package org.tbyrne.display.controls
 				if(_mousePressed)_mousePressed.perform(this);
 			}
 		}
-		private function onMouseUp(from:IInteractiveObjectAsset, info:IMouseActInfo=null):void{
+		protected function onMouseUp(from:IInteractiveObjectAsset, info:IMouseActInfo=null):void{
 			if(_active){
 				_pressedStage.mousePressed.removeHandler(onMouseUp);
 				_pressedStage = null;
@@ -236,7 +236,7 @@ package org.tbyrne.display.controls
 				if(_mouseReleased)_mouseReleased.perform(this);
 			}
 		}
-		private function onClick(from:IInteractiveObjectAsset, info:IMouseActInfo):void{
+		protected function onClick(from:IInteractiveObjectAsset, info:IMouseActInfo):void{
 			if(_active){
 				var assetMatch:Boolean = (info.mouseTarget==_interactiveArea);
 				/*if(!assetMatch){

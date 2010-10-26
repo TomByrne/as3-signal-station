@@ -293,13 +293,16 @@ package org.tbyrne.display.containers
 			}
 		}
 		protected function createAssumedFactory():SimpleInstanceFactory{
-			var factory:SimpleInstanceFactory = new SimpleInstanceFactory(ListRenderer);
+			var factory:SimpleInstanceFactory = new SimpleInstanceFactory(getAssumedRendererClass());
 			factory.useChildFactories = true;
 			factory.instanceProperties = new Dictionary();
 			factory.instanceProperties["togglable"] = true;
 			checkAssetFactory();
 			factory.instanceProperties["asset"] = _assumedAssetFactory;
 			return factory;
+		}
+		protected function getAssumedRendererClass():Class{
+			return ListRenderer;
 		}
 		protected function checkAssetFactory():void{
 			if(!_assumedAssetFactory && _assumedRendererAsset){

@@ -7,6 +7,7 @@ package org.tbyrne.display.containers
 	import org.tbyrne.display.assets.assetTypes.IDisplayAsset;
 	import org.tbyrne.display.constants.Anchor;
 	import org.tbyrne.display.constants.Direction;
+	import org.tbyrne.display.controls.MenuBarRenderer;
 	import org.tbyrne.instanceFactory.IInstanceFactory;
 	import org.tbyrne.instanceFactory.SimpleInstanceFactory;
 	
@@ -85,6 +86,9 @@ package org.tbyrne.display.containers
 				}
 			}
 		}
+		override protected function getAssumedRendererClass():Class{
+			return MenuBarRenderer;
+		}
 		protected function assessListFactory():void{
 			var factory:IInstanceFactory;
 			if(_listFactory){
@@ -102,7 +106,7 @@ package org.tbyrne.display.containers
 			}
 		}
 		protected function createAssumedListFactory(asset:IDisplayAsset):SimpleInstanceFactory{
-			var factory:SimpleInstanceFactory = new SimpleInstanceFactory(ListBox);
+			var factory:SimpleInstanceFactory = new SimpleInstanceFactory(CascadingListBox);
 			factory.useChildFactories = true;
 			factory.instanceProperties = new Dictionary();
 			factory.instanceProperties["asset"] = asset.getCloneFactory();
@@ -132,6 +136,8 @@ import org.tbyrne.display.assets.utils.isDescendant;
 import org.tbyrne.display.constants.Anchor;
 import org.tbyrne.display.constants.Direction;
 import org.tbyrne.display.containers.AbstractSelectableList;
+import org.tbyrne.display.containers.ListBox;
+import org.tbyrne.display.controls.MenuBarRenderer;
 import org.tbyrne.display.controls.popout.PopoutDisplay;
 import org.tbyrne.display.core.ILayoutView;
 import org.tbyrne.display.layout.ILayoutSubject;
@@ -306,9 +312,16 @@ class ListWatcher{
 		parentList.asset.stage.mousePressed.removeHandler(onStageClicked);
 	}
 	protected function onStageClicked(from:IInteractiveObjectAsset, info:IMouseActInfo):void{
+		var parentAsset:IDisplayAsset = _parentList.asset;
 		var childAsset:IDisplayAsset = _childListWatcher.parentList.asset;
-		if(info.mouseTarget!=childAsset && !isDescendant(childAsset as IContainerAsset,info.mouseTarget)){
+		if(info.mouseTarget!=parentAsset && !isDescendant(parentAsset as IContainerAsset,info.mouseTarget) &&
+			info.mouseTarget!=childAsset && !isDescendant(childAsset as IContainerAsset,info.mouseTarget)){
 			hideChildList();
 		}
+	}
+}
+class CascadingListBox extends ListBox{
+	override protected function getAssumedRendererClass():Class{
+		return MenuBarRenderer;
 	}
 }

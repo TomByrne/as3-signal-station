@@ -6,10 +6,13 @@ package org.tbyrne.display.controls.popout {
 	
 	import org.tbyrne.acting.actTypes.IAct;
 	import org.tbyrne.acting.acts.Act;
+	import org.tbyrne.display.DisplayNamespace;
 	import org.tbyrne.display.assets.assetTypes.IDisplayAsset;
 	import org.tbyrne.display.containers.ListBox;
 	import org.tbyrne.display.controls.TextLabelButton;
 	import org.tbyrne.display.layout.ILayoutSubject;
+	
+	use namespace DisplayNamespace;
 	
 	public class DropDownList extends PopoutList {
 		public function set selectedIndex(value: int):void{

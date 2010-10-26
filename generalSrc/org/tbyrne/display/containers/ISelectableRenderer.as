@@ -5,6 +5,8 @@ package org.tbyrne.display.containers
 	
 	public interface ISelectableRenderer extends ILayoutView
 	{
+		function set selectedIndices(value:Array):void;
+		
 		function set selected(value:Boolean):void;
 		function get selected():Boolean;
 		

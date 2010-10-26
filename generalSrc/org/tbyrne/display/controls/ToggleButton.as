@@ -6,7 +6,9 @@ package org.tbyrne.display.controls
 	import org.tbyrne.data.dataTypes.IBooleanConsumer;
 	import org.tbyrne.data.dataTypes.IBooleanProvider;
 	import org.tbyrne.display.DisplayNamespace;
+	import org.tbyrne.display.actInfo.IMouseActInfo;
 	import org.tbyrne.display.assets.assetTypes.IDisplayAsset;
+	import org.tbyrne.display.assets.assetTypes.IInteractiveObjectAsset;
 	import org.tbyrne.display.assets.states.StateDef;
 	import org.tbyrne.display.containers.ISelectableRenderer;
 	import org.tbyrne.display.tabFocus.ITabFocusable;
@@ -34,8 +36,14 @@ package org.tbyrne.display.controls
 				_selectedState.selection = (_togglable?(_selected?0:1):-1);
 				if(_selectedChanged)_selectedChanged.perform(this);
 			}
-
 		}
+		public function get selectedIndices():Array{
+			return _selectedIndices;
+		}
+		public function set selectedIndices(value:Array):void{
+			_selectedIndices = value;
+		}
+		
 		public function get togglable():Boolean{
 			return _togglable;
 		}
@@ -91,15 +99,29 @@ package org.tbyrne.display.controls
 		protected var _selectedChanged:Act;
 		
 		/**
-		 * Whether the 'selected property of the data should be used to get/set
+		 * Whether the selected property of the data should be used to get/set
 		 * the state of the ToggleButton. Only changes behaviour if the data
-		 * implements ISelectableData.
+		 * implements IBooleanConsumer.
 		 */
-		public var useDataForSelected:Boolean = true;
+		DisplayNamespace function get useDataForSelected():Boolean{
+			return _useDataForSelected;
+		}
+		DisplayNamespace function set useDataForSelected(value:Boolean):void{
+			if(_useDataForSelected!=value){
+				_useDataForSelected = value;
+				if(value){
+					// this will force the data to conform (if possible)
+					selected = selected;
+				}
+			}
+		}
+		
+		protected var _selectedIndices:Array;
+		private var _useDataForSelected:Boolean = true;
 		
 		private var _booleanProvider:IBooleanProvider;
 		private var _booleanConsumer:IBooleanConsumer;
-		private var _selected:Boolean;
+		protected var _selected:Boolean;
 		private var _togglable:Boolean = true;
 		private var _tabFocusable:InteractiveAssetFocusWrapper;
 		private var _ignoreDataChanges:Boolean;
@@ -111,7 +133,6 @@ package org.tbyrne.display.controls
 		}
 		override protected function init() : void{
 			super.init();
-			clicked.addHandler(onClick);
 		}
 		override protected function bindToAsset() : void{
 			super.bindToAsset();
@@ -128,7 +149,8 @@ package org.tbyrne.display.controls
 		private function onProviderChanged(from:IBooleanProvider):void{
 			if(useDataForSelected && !_ignoreDataChanges)this.selected = from.booleanValue;
 		}
-		private function onClick(from:Button):void{
+		override protected function onClick(from:IInteractiveObjectAsset, info:IMouseActInfo):void{
+			super.onClick(from, info);
 			if(_active){
 				selected = !selected;
 			}

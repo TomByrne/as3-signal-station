@@ -116,7 +116,9 @@ package org.tbyrne.formatters.patternFormatters
 				if(_stringValue){
 					for(var token:String in _tokens){
 						var provider:IStringProvider = _tokens[token];
-						_stringValue = _stringValue.replace(token,provider.stringValue);
+						var val:String = provider.stringValue;
+						if(!val)val = "";
+						_stringValue = _stringValue.replace(token,val);
 					}
 				}
 			}else{
