@@ -22,18 +22,18 @@ package org.tbyrne.display.assets.nativeAssets
 		 * @inheritDoc
 		 */
 		public function get mouseReleased():IAct{
-			if(!_mouseDown)_mouseDown = new Act();
-			confirmListening(MouseEvent.MOUSE_DOWN);
-			return _mouseDown;
+			if(!_mouseUp)_mouseUp = new Act();
+			confirmListening(MouseEvent.MOUSE_UP);
+			return _mouseUp;
 		}
 		
 		/**
 		 * @inheritDoc
 		 */
 		public function get mousePressed():IAct{
-			if(!_mouseUp)_mouseUp = new Act();
-			confirmListening(MouseEvent.MOUSE_UP);
-			return _mouseUp;
+			if(!_mouseDown)_mouseDown = new Act();
+			confirmListening(MouseEvent.MOUSE_DOWN);
+			return _mouseDown;
 		}
 		
 		/**

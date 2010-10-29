@@ -51,7 +51,7 @@ package org.tbyrne.display.controls
 			var ret:Array = super.fillStateList(fill);
 			ret.push(_oddEvenRowState = new StateDef(["evenRow","oddRow"]));
 			ret.push(_oddEvenColumnState = new StateDef(["evenColumn","oddColumn"]));
-			ret.push(_hasChildrenState = new StateDef(["noChildren","hasChildren"]));
+			ret.push(_hasChildrenState = new StateDef(["noChildren","hasChildren"],0));
 			if(super.data)assessDataDrivenStates();
 			return ret;
 		}
@@ -61,7 +61,7 @@ package org.tbyrne.display.controls
 				_hasChildrenState.selection = (dataProv.data==null)?0:1;
 				active = true;
 			}else{
-				_hasChildrenState.selection = -1;
+				_hasChildrenState.selection = 0;
 				var boolProv:IBooleanProvider = (data as IBooleanProvider);
 				active = (boolProv!=null);
 			}

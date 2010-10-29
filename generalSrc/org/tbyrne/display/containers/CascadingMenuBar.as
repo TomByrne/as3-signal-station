@@ -8,6 +8,7 @@ package org.tbyrne.display.containers
 	import org.tbyrne.display.constants.Anchor;
 	import org.tbyrne.display.constants.Direction;
 	import org.tbyrne.display.controls.MenuBarRenderer;
+	import org.tbyrne.display.core.ILayoutView;
 	import org.tbyrne.instanceFactory.IInstanceFactory;
 	import org.tbyrne.instanceFactory.SimpleInstanceFactory;
 	
@@ -60,8 +61,9 @@ package org.tbyrne.display.containers
 			super.init();
 			_layout.pixelFlow = true;
 			_layout.flowDirection = Direction.HORIZONTAL;
+			_layout.equaliseCellHeights = true;
 			
-			_rootWatcher = new ListWatcher(Anchor.BOTTOM);
+			_rootWatcher = new ListWatcher(Anchor.BOTTOM, true);
 			_rootWatcher.parentList = this;
 		}
 		override protected function bindToAsset() : void{
@@ -122,8 +124,6 @@ package org.tbyrne.display.containers
 		}
 	}
 }
-import flash.geom.Point;
-import flash.geom.Rectangle;
 import flash.utils.Dictionary;
 
 import org.tbyrne.data.dataTypes.IDataProvider;
@@ -136,12 +136,13 @@ import org.tbyrne.display.assets.utils.isDescendant;
 import org.tbyrne.display.constants.Anchor;
 import org.tbyrne.display.constants.Direction;
 import org.tbyrne.display.containers.AbstractSelectableList;
+import org.tbyrne.display.containers.ICascadingMenuBarRenderer;
 import org.tbyrne.display.containers.ListBox;
 import org.tbyrne.display.controls.MenuBarRenderer;
 import org.tbyrne.display.controls.popout.PopoutDisplay;
 import org.tbyrne.display.core.ILayoutView;
+import org.tbyrne.display.layout.ILayout;
 import org.tbyrne.display.layout.ILayoutSubject;
-import org.tbyrne.display.layout.grid.RendererGridLayout;
 import org.tbyrne.display.scrolling.IScrollMetrics;
 import org.tbyrne.instanceFactory.IInstanceFactory;
 
@@ -154,6 +155,9 @@ class ListWatcher{
 		if(_parentList!=value){
 			if(_parentList){
 				_parentList.rendererFactory = null;
+				
+				_parentList.layout.addRendererAct.removeHandler(onAddRenderer);
+				_parentList.layout.removeRendererAct.removeHandler(onRemoveRenderer);
 				
 				_parentList.selectionChangeAct.removeHandler(onSelectionChange);
 				//_parentList.layout.positionChanged.removeHandler(onListPosChanged);
@@ -168,6 +172,9 @@ class ListWatcher{
 				//_parentList.layout.positionChanged.addHandler(onListPosChanged);
 				_parentList.getScrollMetrics(Direction.HORIZONTAL).scrollMetricsChanged.addHandler(onListScroll);
 				_parentList.getScrollMetrics(Direction.VERTICAL).scrollMetricsChanged.addHandler(onListScroll);
+				
+				_parentList.layout.addRendererAct.addHandler(onAddRenderer);
+				_parentList.layout.removeRendererAct.addHandler(onRemoveRenderer);
 				
 				_childDataIndex = _parentList.selectedIndex;
 				
@@ -228,6 +235,8 @@ class ListWatcher{
 		return _popoutDisplay.popoutShown;
 	}
 	
+	private var _isTopWatcher:Boolean;
+	private var _isMenuOpen:Boolean;
 	private var _rendererFactory:IInstanceFactory;
 	private var _listFactory:IInstanceFactory;
 	private var _parentList:AbstractSelectableList;
@@ -235,12 +244,37 @@ class ListWatcher{
 	private var _childDataIndex:int;
 	protected var _popoutDisplay:PopoutDisplay;
 	private var _clickAutoClose:Boolean = true;
+	private var _renderers:Vector.<ICascadingMenuBarRenderer>;
 	
-	public function ListWatcher(anchor:String, listFactory:IInstanceFactory=null){
+	public function ListWatcher(anchor:String, isTopWatcher:Boolean, listFactory:IInstanceFactory=null){
 		_popoutDisplay = new PopoutDisplay();
 		_popoutDisplay.popoutAnchor = anchor;
 		this.parentList = parentList;
 		this.listFactory = listFactory;
+		_isTopWatcher = isTopWatcher;
+	}
+	protected function onAddRenderer(layout:ILayout, renderer:ILayoutSubject):void{
+		var castRenderer:ICascadingMenuBarRenderer = (renderer as ICascadingMenuBarRenderer);
+		if(castRenderer){
+			if(!_renderers)_renderers = new Vector.<ICascadingMenuBarRenderer>();
+			_renderers.push(castRenderer);
+			castRenderer.isMenuOpen = _isMenuOpen;
+		}
+	}
+	protected function onRemoveRenderer(layout:ILayout, renderer:ILayoutSubject):void{
+		if(_renderers){
+			var index:int = _renderers.indexOf(renderer);
+			if(index!=-1){
+				_renderers.splice(index,1);
+			}
+		}
+	}
+	internal function setIsMenuOpen(value:Boolean) : void{
+		_isMenuOpen = value;
+		for each(var renderer:ICascadingMenuBarRenderer in _renderers){
+			renderer.isMenuOpen = value;
+		}
+		if(_childListWatcher)_childListWatcher.setIsMenuOpen(_isMenuOpen);
 	}
 	protected function onListScroll(from:IScrollMetrics) : void{
 		assessRelative();
@@ -256,11 +290,13 @@ class ListWatcher{
 	protected function showChildList() : void{
 		var childData:IDataProvider = _parentList.layout.getDataAt(_childDataIndex) as IDataProvider;
 		if(childData && childData.data){
+			
 			if(!_popoutDisplay.popoutShown || childData.data!=_childListWatcher.parentList.dataProvider){
 				if(!_childListWatcher){
-					_childListWatcher = new ListWatcher(Anchor.BOTTOM_RIGHT, _listFactory);
+					_childListWatcher = new ListWatcher(Anchor.BOTTOM_RIGHT, false, _listFactory);
 					_childListWatcher.rendererFactory = _rendererFactory;
 					_childListWatcher.clickAutoClose = _clickAutoClose;
+					_childListWatcher.setIsMenuOpen(_isMenuOpen);
 				}
 				if(!_childListWatcher.parentList){
 					_childListWatcher.parentList = _listFactory.createInstance();
@@ -271,8 +307,15 @@ class ListWatcher{
 				_childListWatcher.parentList.dataProvider = childData.data;
 				_popoutDisplay.popoutShown = true;
 				
+				
 				if(_clickAutoClose)addClickAutoCloseListener();
+				
+				if(_isTopWatcher){
+					setIsMenuOpen(true);
+				}
 			}
+		}else{
+			_hideChildList();
 		}
 	}
 	
@@ -287,6 +330,9 @@ class ListWatcher{
 			if(_clickAutoClose)removeClickAutoCloseListener();
 			_popoutDisplay.popoutShown = false;
 			_popoutDisplay.relativeTo = null;
+			if(_isTopWatcher){
+				setIsMenuOpen(false);
+			}
 		}
 	}
 	protected function releaseChildList():void{

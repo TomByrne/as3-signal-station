@@ -30,8 +30,6 @@ package org.tbyrne.display.validation
 		protected var currentRunCount:int = 0;
 		
 		public function FrameValidationManager(){
-			// TODO: RENDER would be better but doesn't seem to work immediately
-			//frameDispatcher.addEventListener(Event.RENDER, onRender);
 			frameDispatcher.addEventListener(Event.ENTER_FRAME, onRender);
 		}
 		protected function onRender(e:Event):void{

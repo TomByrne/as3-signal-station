@@ -121,7 +121,6 @@ package org.tbyrne.display.containers
 				checkAutoScroll();
 				if(change){
 					_selectionChangeAct.perform(this, _selectedIndices, _selectedData);
-					updateRendererSelectedIndices()
 				}
 			}
 		}
@@ -140,7 +139,6 @@ package org.tbyrne.display.containers
 		
 		private var _selectedData:Dictionary = new Dictionary();
 		private var _selectedIndices:Array = [];
-		private var _rendSelectedIndices:Array = [];
 		private var _selectedCount:int = 0;
 		
 		protected var _scrollByLine:Boolean;
@@ -165,7 +163,6 @@ package org.tbyrne.display.containers
 			var selRenderer:ISelectableRenderer = (renderer as ISelectableRenderer);
 			if(selRenderer){
 				selRenderer.selectedChanged.addHandler(onRendererSelect);
-				selRenderer.selectedIndices = _rendSelectedIndices;
 			}
 		}
 		protected function onRendererDataSet(layout:RendererGridLayout, renderer:ILayoutView, data:*, dataField:String) : void{
@@ -174,15 +171,6 @@ package org.tbyrne.display.containers
 			if(selRenderer){
 				var dataIndex:int = getDataIndex(data);
 				selRenderer.selected = (_selectedIndices.indexOf(dataIndex)!=-1);
-				selRenderer.selectedIndices = null;
-			}
-		}
-		protected function updateRendererSelectedIndices() : void{
-			_rendSelectedIndices = _selectedIndices.concat();
-			var dataCount:int = _layout.getDataCount();
-			for(var i:int=0; i<dataCount; ++i){
-				var renderer:ISelectableRenderer = _layout.getRenderer(i) as ISelectableRenderer;
-				if(renderer)renderer.selectedIndices = _rendSelectedIndices;
 			}
 		}
 		protected function getDataIndex(data:*) : int{
@@ -245,7 +233,6 @@ package org.tbyrne.display.containers
 			}
 			if(change){
 				_selectionChangeAct.perform(this,_selectedIndices,_selectedData);
-				updateRendererSelectedIndices();
 				checkAutoScroll();
 			}
 			return selected;
@@ -303,7 +290,6 @@ package org.tbyrne.display.containers
 			}
 			if(!validateSelectionCount() && change){
 				_selectionChangeAct.perform(this, _selectedIndices, _selectedData);
-				updateRendererSelectedIndices();
 			}
 		}
 		/**
@@ -342,7 +328,6 @@ package org.tbyrne.display.containers
 			if(change && _selectionChangeAct){
 				_selectionChangeAct.perform(this, _selectedIndices, _selectedData);
 				checkAutoScroll();
-				updateRendererSelectedIndices();
 			}
 			return change;
 		}

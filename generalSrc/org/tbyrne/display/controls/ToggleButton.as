@@ -37,12 +37,6 @@ package org.tbyrne.display.controls
 				if(_selectedChanged)_selectedChanged.perform(this);
 			}
 		}
-		public function get selectedIndices():Array{
-			return _selectedIndices;
-		}
-		public function set selectedIndices(value:Array):void{
-			_selectedIndices = value;
-		}
 		
 		public function get togglable():Boolean{
 			return _togglable;
@@ -116,7 +110,6 @@ package org.tbyrne.display.controls
 			}
 		}
 		
-		protected var _selectedIndices:Array;
 		private var _useDataForSelected:Boolean = true;
 		
 		private var _booleanProvider:IBooleanProvider;
