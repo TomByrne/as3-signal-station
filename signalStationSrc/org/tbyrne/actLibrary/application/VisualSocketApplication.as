@@ -98,7 +98,7 @@ package org.tbyrne.actLibrary.application
 			var browserActor:BrowserActor = new BrowserActor();
 			_universalActorHelper.addChild(browserActor);
 			
-			CONFIG::debug
+			/*CONFIG::debug
 			{
 				var onKeyDown:Function = function(e:KeyboardEvent, from:IInteractiveObjectAsset):void{
 					if(e.ctrlKey && e.altKey){
@@ -106,7 +106,7 @@ package org.tbyrne.actLibrary.application
 					}
 				}
 				_lastStage.keyDown.addHandler(onKeyDown);
-			}
+			}*/
 		}
 		override protected function setRootObject(execution:UniversalActExecution, object:Object):void{
 			_config = object as IVisualSocketAppConfig;
