@@ -47,6 +47,7 @@ package org.tbyrne.core
 		}
 		public function set mainView(value:ILayoutView):void{
 			if(_mainView!=value){
+				attemptInit();
 				if(_mainView){
 					if(_assumedMainAsset){
 						_castMainView.asset = null;

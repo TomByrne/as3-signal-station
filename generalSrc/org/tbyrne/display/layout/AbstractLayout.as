@@ -32,8 +32,8 @@ package org.tbyrne.display.layout
 			
 			this.scopeView = scopeView;
 		}
-		/* If this returns true then the measure function must
-		be overrdien, if it returns false then the draw function must
+		/* If this returns false then the measure function must
+		be overriden, if it returns true then the draw function must
 		perform the measuring.
 		*/
 		protected function drawToMeasure() : Boolean{
@@ -65,6 +65,12 @@ package org.tbyrne.display.layout
 		public function setLayoutSize(x:Number, y:Number, width:Number, height:Number):void{
 			setPosition(x, y);
 			setSize(width, height);
+		}
+		override public function setSize(width:Number, height:Number):void{
+			super.setSize(width, height);
+			if(drawToMeasure()){
+				invalidateMeasurements();
+			}
 		}
 		
 		protected function onSubjectMeasChanged(from:ILayoutSubject, oldWidth:Number, oldHeight:Number): void{

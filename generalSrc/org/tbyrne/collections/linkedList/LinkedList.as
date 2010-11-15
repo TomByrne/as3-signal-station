@@ -42,18 +42,20 @@ package org.tbyrne.collections.linkedList
 				subj = subj.next;
 			}
 		}
-		/** This is useful for debugging but shouldn't be used elsewhere
-		 * as it defeats the purpose of using a LinkedList in the first place.
-		 */
-		public function get arrayVersion():Array{
-			var ret:Array = [];
-			var iterator:IIterator = getIterator();
-			var child:*;
-			while(child = iterator.next()){
-				ret.push(child);
+		CONFIG::debug{
+			/** This is useful for debugging but shouldn't be used elsewhere
+			 * as it defeats the purpose of using a LinkedList in the first place.
+			 */
+			public function get arrayVersion():Array{
+				var ret:Array = [];
+				var iterator:IIterator = getIterator();
+				var child:*;
+				while(child = iterator.next()){
+					ret.push(child);
+				}
+				iterator.release();
+				return ret;
 			}
-			iterator.release();
-			return ret;
 		}
 		
 		/**

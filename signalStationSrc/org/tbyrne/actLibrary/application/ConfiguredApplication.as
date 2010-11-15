@@ -1,7 +1,5 @@
 package org.tbyrne.actLibrary.application
 {
-	import flash.display.Sprite;
-	
 	import org.tbyrne.actLibrary.core.UniversalActorHelper;
 	import org.tbyrne.actLibrary.errors.ErrorActor;
 	import org.tbyrne.actLibrary.external.config.ConfigActor;

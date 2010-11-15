@@ -252,13 +252,13 @@ package org.tbyrne.display.containers
 		}
 		protected function setLayoutDimensions(width:Number, height:Number):void{
 			_layout.setSize(width,height);
-			if(_layout.flowDirection==Direction.VERTICAL){
-				_layout.columnWidths = [width];
+			/*if(_layout.flowDirection==Direction.VERTICAL){
+				_layout.columnWidths = [width-_layout.marginLeft-_layout.marginRight];
 				_layout.rowHeights = null;
 			}else{
 				_layout.columnWidths = null;
-				_layout.rowHeights = [height];
-			}
+				_layout.rowHeights = [height-_layout.marginTop-_layout.marginBottom];
+			}*/
 		}
 		protected function assessFactory():void{
 			attemptInit();
