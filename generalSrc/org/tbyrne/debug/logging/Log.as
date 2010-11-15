@@ -21,7 +21,9 @@ package org.tbyrne.debug.logging
 			if(_logger)_logger.setVisibility(_visibility);
 		}
 		public static function log(level:int, ... params):void{
-			if(_logger)_logger.log(level,params);
+			if(_logger){
+				_logger.log.apply(null,[level].concat(params));
+			}
 		}
 		public static function setVisibility(level:int):void{
 			_visibility = level;
