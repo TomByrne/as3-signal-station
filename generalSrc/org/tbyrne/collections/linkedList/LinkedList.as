@@ -115,10 +115,14 @@ package org.tbyrne.collections.linkedList
 			return ret;
 		}
 		public function pop():*{
-			var list:LinkedList = splice(_length-1,1);
-			var ret:* = list.get(0);
-			list.release();
-			return ret;
+			if(_length>0){
+				var list:LinkedList = splice(_length-1,1);
+				var ret:* = list.get(0);
+				list.release();
+				return ret;
+			}else{
+				return null;
+			}
 		}
 		public function push(value:*):void{
 			splice(_length,0,[value]);
@@ -148,15 +152,18 @@ package org.tbyrne.collections.linkedList
 			else return -1;
 		}
 		public function reset():void{
-			var link:Link = _firstLink;
-			while(link){
-				var next:Link = link.next
-				destroyLink(link);
-				link = next;
+			if(_length>0){
+				var link:Link = _firstLink;
+				while(link){
+					var next:Link = link.next
+					destroyLink(link);
+					link = next;
+				}
+				_firstLink = null;
+				_length = 0;
+				_indexes = new Dictionary(true);
+				if(_collectionChanged)_collectionChanged.perform(this,_length,_length+1);
 			}
-			_firstLink = null;
-			_length = 0;
-			_indexes = new Dictionary(true);
 		}
 		public function clone():Object{
 			var ret:LinkedList = getNew();

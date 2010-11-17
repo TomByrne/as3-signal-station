@@ -221,15 +221,15 @@ package org.tbyrne.display.controls
 		protected function onMouseDown(from:IInteractiveObjectAsset, info:IMouseActInfo):void{
 			if(_active){
 				_pressedStage = asset.stage;
-				_pressedStage.mousePressed.addHandler(onMouseUp);
+				_pressedStage.mouseReleased.addHandler(onMouseUp);
 				_downState.selection = 0;
 				_down = true;
 				if(_mousePressed)_mousePressed.perform(this);
 			}
 		}
 		protected function onMouseUp(from:IInteractiveObjectAsset, info:IMouseActInfo=null):void{
+			_pressedStage.mouseReleased.removeHandler(onMouseUp);
 			if(_active){
-				_pressedStage.mousePressed.removeHandler(onMouseUp);
 				_pressedStage = null;
 				_downState.selection = 1;
 				_down = false;

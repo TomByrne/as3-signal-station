@@ -8,6 +8,7 @@ package org.tbyrne.display.layout.grid
 	import org.tbyrne.display.constants.Direction;
 	import org.tbyrne.display.core.IView;
 	import org.tbyrne.display.layout.AbstractCompositeLayout;
+	import org.tbyrne.display.layout.AbstractLayout;
 	import org.tbyrne.display.layout.ILayoutSubject;
 	import org.tbyrne.display.layout.core.ILayoutInfo;
 	import org.tbyrne.display.layout.list.IListLayoutInfo;
@@ -281,9 +282,8 @@ package org.tbyrne.display.layout.grid
 			createAxes();
 			_horizontalAxis.scrollMetrics.scrollMetricsChanged.addHandler(onHScrollMetricsChanged);
 			_verticalAxis.scrollMetrics.scrollMetricsChanged.addHandler(onVScrollMetricsChanged);
-			sizeChanged.addHandler(onSizeChanged);
 		}
-		protected function onSizeChanged(from:AbstractGridLayout, oldWidth:Number, oldHeight:Number): void{
+		override protected function onSizeChanged(from:AbstractLayout, oldWidth:Number, oldHeight:Number): void{
 			_cellMappingFlag.invalidate();
 		}
 		override protected function onSubjectMeasChanged(from:ILayoutSubject, oldWidth:Number, oldHeight:Number): void{

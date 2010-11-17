@@ -31,6 +31,8 @@ package org.tbyrne.display.layout
 			new PropertyWatcher(scopeView_name,setScopeView,null,null,this);
 			
 			this.scopeView = scopeView;
+			
+			this.sizeChanged.addHandler(onSizeChanged);
 		}
 		/* If this returns false then the measure function must
 		be overriden, if it returns true then the draw function must
@@ -66,8 +68,7 @@ package org.tbyrne.display.layout
 			setPosition(x, y);
 			setSize(width, height);
 		}
-		override public function setSize(width:Number, height:Number):void{
-			super.setSize(width, height);
+		protected function onSizeChanged(from:AbstractLayout, oldWidth:Number, oldHeight:Number):void{
 			if(drawToMeasure()){
 				invalidateMeasurements();
 			}

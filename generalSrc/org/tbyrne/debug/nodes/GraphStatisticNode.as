@@ -85,6 +85,7 @@ package org.tbyrne.debug.nodes
 		
 		public function GraphStatisticNode(scopedObject:IScopedObject, name:String, colour:Number, statisticProvider:INumberProvider, showInSummary:Boolean){
 			_assumedLabelProvider = new PatternFormatter(new StringData(LABEL_TOKEN+": <font color='#"+COLOUR_TOKEN+"'>"+VALUE_TOKEN+"/"+MAX_TOKEN+"</font>"));
+			_assumedLabelProvider.quickValidate = true;
 			_assumedValueRounder = new NumberRounder();
 			_assumedMaxProvider = new MaximumNumber(_assumedValueRounder);
 			_assumedLabelProvider.addToken(MAX_TOKEN,_assumedMaxProvider);

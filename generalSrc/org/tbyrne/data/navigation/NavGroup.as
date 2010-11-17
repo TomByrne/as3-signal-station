@@ -1,11 +1,12 @@
 package org.tbyrne.data.navigation
 {
 	import org.tbyrne.collections.linkedList.LinkedList;
+	import org.tbyrne.data.core.StringData;
 	import org.tbyrne.data.dataTypes.IDataProvider;
 	import org.tbyrne.data.dataTypes.IStringProvider;
 	import org.tbyrne.debug.logging.Log;
 
-	public class NavGroup extends AbstractNavItem implements IDataProvider
+	public class NavGroup extends StringData implements IDataProvider
 	{
 		public function get data():*{
 			if(_children && _children.length){
@@ -52,13 +53,8 @@ package org.tbyrne.data.navigation
 				removeChild(child);
 			}
 		}
-		
-		override protected function isSelectable():Boolean{
-			if(_children && _children.length){
-				return true;
-			}else{
-				return false;
-			}
+		public function removeAllChildren():void{
+			if(_children)_children.reset();
 		}
 	}
 }

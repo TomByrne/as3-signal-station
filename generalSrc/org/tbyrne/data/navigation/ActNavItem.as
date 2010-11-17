@@ -1,11 +1,12 @@
 package org.tbyrne.data.navigation
 {
 	import org.tbyrne.acting.actTypes.IAct;
+	import org.tbyrne.data.core.StringData;
 	import org.tbyrne.data.dataTypes.ITriggerableAction;
 	import org.tbyrne.debug.logging.Log;
 	import org.tbyrne.display.assets.assetTypes.IDisplayAsset;
 
-	public class ActNavItem extends AbstractNavItem implements ITriggerableAction
+	public class ActNavItem extends StringData implements ITriggerableAction
 	{
 		public function get act():IAct{
 			return _act;

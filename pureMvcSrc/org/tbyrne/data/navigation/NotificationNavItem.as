@@ -1,10 +1,11 @@
 package org.tbyrne.data.navigation
 {
 	import org.puremvc.as3.interfaces.INotifier;
+	import org.tbyrne.data.core.StringData;
 	import org.tbyrne.data.dataTypes.ITriggerableAction;
 	import org.tbyrne.display.assets.assetTypes.IDisplayAsset;
 
-	public class NotificationNavItem extends AbstractNavItem implements ITriggerableAction
+	public class NotificationNavItem extends StringData implements ITriggerableAction
 	{
 		
 		public function get notifier():INotifier{

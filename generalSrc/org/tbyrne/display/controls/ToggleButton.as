@@ -18,6 +18,7 @@ package org.tbyrne.display.controls
 	
 	public class ToggleButton extends Button implements ISelectableRenderer
 	{
+		DisplayNamespace static var STATE_UNSELECTABLE:String = "unselectable";
 		DisplayNamespace static var STATE_SELECTED:String = "selected";
 		DisplayNamespace static var STATE_UNSELECTED:String = "unselected";
 		
@@ -33,7 +34,7 @@ package org.tbyrne.display.controls
 			}
 			if(_selected!=value){
 				_selected = value;
-				_selectedState.selection = (_togglable?(_selected?0:1):-1);
+				assessSelectedState();
 				if(_selectedChanged)_selectedChanged.perform(this);
 			}
 		}
@@ -44,7 +45,7 @@ package org.tbyrne.display.controls
 		public function set togglable(value:Boolean):void{
 			if(_togglable!=value){
 				_togglable = value;
-				_selectedState.selection = (_togglable?(_selected?0:1):-1);
+				assessSelectedState();
 			}
 		}
 		public function get tabFocusable(): ITabFocusable{
@@ -71,6 +72,7 @@ package org.tbyrne.display.controls
 				}else{
 					selected = false;
 				}
+				assessSelectedState();
 			}else if(!_booleanProvider && _data){
 				/*
 				If a list's dataProvider array is reset and some items
@@ -119,11 +121,14 @@ package org.tbyrne.display.controls
 		private var _tabFocusable:InteractiveAssetFocusWrapper;
 		private var _ignoreDataChanges:Boolean;
 		
-		protected var _selectedState:StateDef = new StateDef([STATE_SELECTED,STATE_UNSELECTED],1);
+		protected var _selectedState:StateDef = new StateDef([STATE_UNSELECTABLE,STATE_SELECTED,STATE_UNSELECTED],0);
 		
 		public function ToggleButton(asset:IDisplayAsset=null){
 			super(asset);
 		}
+		override public function setSize(width:Number, height:Number):void{
+			super.setSize(width, height);
+		} 
 		override protected function init() : void{
 			super.init();
 		}
@@ -141,11 +146,23 @@ package org.tbyrne.display.controls
 		}
 		private function onProviderChanged(from:IBooleanProvider):void{
 			if(useDataForSelected && !_ignoreDataChanges)this.selected = from.booleanValue;
+			assessSelectedState();
+		}
+		protected function assessSelectedState():void{
+			if(!_booleanProvider){
+				_selectedState.selection = 0;
+			}else{
+				_selectedState.selection = _booleanProvider.booleanValue?1:2;
+			}
 		}
 		override protected function onClick(from:IInteractiveObjectAsset, info:IMouseActInfo):void{
 			super.onClick(from, info);
 			if(_active){
 				selected = !selected;
+				
+				if(!useDataForSelected && _booleanConsumer){
+					_booleanConsumer.booleanValue = !_booleanProvider.booleanValue;
+				}
 			}
 		}
 		

@@ -6,6 +6,7 @@ package org.tbyrne.display.assets.nativeAssets
 	import flash.display.Stage;
 	import flash.events.Event;
 	import flash.events.FullScreenEvent;
+	import flash.events.MouseEvent;
 	
 	import org.tbyrne.acting.actTypes.IAct;
 	import org.tbyrne.acting.acts.NativeAct;

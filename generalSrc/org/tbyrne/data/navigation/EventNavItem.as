@@ -3,11 +3,12 @@ package org.tbyrne.data.navigation
 	import flash.events.Event;
 	import flash.events.IEventDispatcher;
 	
+	import org.tbyrne.data.core.StringData;
 	import org.tbyrne.data.dataTypes.ITriggerableAction;
 	import org.tbyrne.debug.logging.Log;
 	import org.tbyrne.display.assets.assetTypes.IDisplayAsset;
 
-	public class EventNavItem extends AbstractNavItem implements ITriggerableAction
+	public class EventNavItem extends StringData implements ITriggerableAction
 	{
 		
 		public function get event():Event{

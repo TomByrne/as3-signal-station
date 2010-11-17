@@ -2,6 +2,7 @@ package org.tbyrne.display.controls
 {
 	import org.tbyrne.data.dataTypes.IBooleanProvider;
 	import org.tbyrne.data.dataTypes.IDataProvider;
+	import org.tbyrne.data.dataTypes.ITriggerableAction;
 	import org.tbyrne.display.assets.assetTypes.IDisplayAsset;
 	import org.tbyrne.display.assets.states.StateDef;
 	import org.tbyrne.display.layout.grid.IGridLayoutSubject;
@@ -63,7 +64,12 @@ package org.tbyrne.display.controls
 			}else{
 				_hasChildrenState.selection = 0;
 				var boolProv:IBooleanProvider = (data as IBooleanProvider);
-				active = (boolProv!=null);
+				if(boolProv){
+					active = true;
+				}else{
+					var trigData:ITriggerableAction = (data as ITriggerableAction);
+					active = (trigData!=null);
+				}
 			}
 		}
 	}
