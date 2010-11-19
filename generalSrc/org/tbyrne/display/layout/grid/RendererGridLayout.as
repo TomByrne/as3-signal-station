@@ -13,7 +13,6 @@ package org.tbyrne.display.layout.grid
 	import org.tbyrne.collections.linkedList.LinkedListConverter;
 	import org.tbyrne.debug.logging.Log;
 	import org.tbyrne.display.DisplayNamespace;
-	import org.tbyrne.display.constants.Direction;
 	import org.tbyrne.display.core.IView;
 	import org.tbyrne.display.layout.ILayoutSubject;
 	import org.tbyrne.display.layout.core.ILayoutInfo;

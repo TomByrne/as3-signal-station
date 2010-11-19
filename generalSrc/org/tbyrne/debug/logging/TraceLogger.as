@@ -24,7 +24,9 @@ package org.tbyrne.debug.logging
 		protected function getLevelName(level:int):String{
 			if(!LEVEL_NAMES){
 				LEVEL_NAMES = [];
-				LEVEL_NAMES[Log.INFO] = "INFO: ";
+				LEVEL_NAMES[Log.USER_INFO] = "USER INFO: ";
+				LEVEL_NAMES[Log.USER_ERROR] = "USER ERROR: ";
+				LEVEL_NAMES[Log.DEV_INFO] = "INFO: ";
 				LEVEL_NAMES[Log.PERFORMANCE] = "PERFORMANCE: ";
 				LEVEL_NAMES[Log.SUSPICIOUS_IMPLEMENTATION] = "SUSPICIOUS: ";
 				LEVEL_NAMES[Log.ERROR] = "ERROR: ";

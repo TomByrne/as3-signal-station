@@ -27,7 +27,7 @@ package org.tbyrne.core
 	 * interface.
 	 */
 	/*[SWF(width=1000, height=750, frameRate=30, backgroundColor="#ffffff")]
-	[Frame(factoryClass="org.farmcode.display.progress.SimpleSWFPreloaderFrame")] */ // this must be on subclass
+	[Frame(factoryClass="org.tbyrne.display.progress.SimpleSWFPreloaderFrame")] */ // this must be on subclass
 	public class Application implements IApplication
 	{
 		public function get container():IContainerAsset{
@@ -151,10 +151,11 @@ package org.tbyrne.core
 			if(!_mainAssetAdded && _container && _asset){
 				_mainAssetAdded = true;
 				_container.addAsset(_asset);
-				setMainViewSize();
+				if(_size)setMainViewSize();
 			}
 		}
 		protected function setAsset(value:IDisplayAsset) : void{
+			attemptInit();
 			if(_asset){
 				removeMainAsset();
 				_asset.addedToStage.removeHandler(onAddedToStage);
@@ -168,7 +169,7 @@ package org.tbyrne.core
 		}
 		private function onAddedToStage(from:IAsset) : void{
 			// after fullscreen is exited this will occur
-			setMainViewSize();
+			if(_size)setMainViewSize();
 		}
 		private function setStage(value:IStageAsset) : void{
 			if(_lastStage!=value){
@@ -182,14 +183,14 @@ package org.tbyrne.core
 		protected function setMainViewPos() : void{
 			var pos:Point = _position;
 			// If FullscreenUtil is being used then this will be skipped
-			if(pos && _asset.parent==_container){
+			if(pos && _asset.parent==_container && _mainView){
 				_mainView.setPosition(pos.x,pos.y);
 			}
 		}
 		protected function setMainViewSize() : void{
 			// If FullscreenUtil is being used then this will be skipped
 			var size:Point = _size;
-			if(size && _asset.parent==_container){
+			if(size && _asset.parent==_container && _mainView){
 				var scale:Number = (isNaN(_applicationScale) || _applicationScale<=0?1:_applicationScale);
 				_mainView.setSize(size.x*(1/scale),size.y*(1/scale));
 				_asset.scaleX = scale;

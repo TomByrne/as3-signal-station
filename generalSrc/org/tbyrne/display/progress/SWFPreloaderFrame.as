@@ -33,8 +33,8 @@ package org.tbyrne.display.progress
 				_progressDisplay = value;
 				if(_progressDisplay){
 					if(_progressDisplay.layoutView){
-						_nativeAsset.addAsset(_progressDisplay.display);
 						applySizeToProgressDisplay();
+						_nativeAsset.addAsset(_progressDisplay.display);
 					}
 					_progressDisplayAnim = (_progressDisplay.layoutView as IOutroView);
 				}

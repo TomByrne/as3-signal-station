@@ -84,7 +84,8 @@ package org.tbyrne.display.progress
 		private var _showMessage:Boolean = false;
 		private var _detailsFormat:String;
 		private var _textFormat:TextFormat;
-		private var _transStart:Number;
+		private var _transStartTime:Number;
+		private var _transStartValue:Number;
 		
 		private var _containerWrapper:SpriteAsset;
 		private var _detailsField:TextField;
@@ -108,7 +109,7 @@ package org.tbyrne.display.progress
 			_textFormat.align = TextFormatAlign.CENTER;
 			
 			_container = new Sprite();
-			_container.alpha = shouldShow?1:0;
+			_container.alpha = (!isNaN(progress) && !isNaN(total) && progress<total)?1:0;
 			_container.blendMode = _doInvertBlend?BlendMode.INVERT:BlendMode.NORMAL;
 			
 			_background = new Shape();
@@ -158,9 +159,10 @@ package org.tbyrne.display.progress
 			startTransIn();
 		}
 		protected function startTransIn() : void{
-			if(transitionTime>0){
+			if(transitionTime>0 && _container.alpha<1){
 				clearTransitions();
-				_transStart = getTimer();
+				_transStartValue = _container.alpha;
+				_transStartTime = getTimer();
 				_transInRunning = true;
 				_container.addEventListener(Event.ENTER_FRAME, introTick);
 			}else{
@@ -168,7 +170,7 @@ package org.tbyrne.display.progress
 			}
 		}
 		protected function introTick(e:Event) : void{
-			_container.alpha = (getTimer()-_transStart)/(transitionTime*1000);
+			_container.alpha = _transStartValue+(getTimer()-_transStartTime)/(transitionTime*1000);
 			if(_container.alpha>=1){
 				clearTransitions();
 			}
@@ -186,7 +188,8 @@ package org.tbyrne.display.progress
 		protected function startTransOut() : void{
 			if(transitionTime>0){
 				clearTransitions();
-				_transStart = getTimer();
+				_transStartValue = _container.alpha;
+				_transStartTime = getTimer();
 				_transOutRunning = true;
 				_container.addEventListener(Event.ENTER_FRAME, outroTick);
 			}else{
@@ -194,7 +197,7 @@ package org.tbyrne.display.progress
 			}
 		}
 		protected function outroTick(e:Event) : void{
-			_container.alpha = 1-((getTimer()-_transStart)/(transitionTime*1000));
+			_container.alpha = _transStartValue-((getTimer()-_transStartTime)/(transitionTime*1000));
 			if(_container.alpha<=0){
 				clearTransitions();
 			}
@@ -221,7 +224,7 @@ package org.tbyrne.display.progress
 			super.unbindFromAsset();
 		}
 		override protected function measure() : void{
-			
+			// ignore
 		}
 		protected function get shouldShow() : Boolean{
 			return (!measurable || (!isNaN(progress) && !isNaN(total) && progress<total));
@@ -271,8 +274,8 @@ package org.tbyrne.display.progress
 				_bar.x = 0;
 			}
 			
-			_centerContainer.x = (position.x-width)/2;
-			_centerContainer.y = position.y/2;
+			_centerContainer.x = (_size.x-width)/2;
+			_centerContainer.y = _size.y/2;
 		}
 	}
 }

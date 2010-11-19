@@ -14,6 +14,7 @@ package org.tbyrne.debug.display
 	import org.tbyrne.display.assets.assetTypes.IContainerAsset;
 	import org.tbyrne.display.assets.assetTypes.IDisplayAsset;
 	import org.tbyrne.display.containers.CascadingMenuBar;
+	import org.tbyrne.display.layout.ILayoutSubject;
 	import org.tbyrne.formatters.patternFormatters.PatternFormatter;
 	import org.tbyrne.instanceFactory.MultiInstanceFactory;
 	
@@ -148,8 +149,8 @@ package org.tbyrne.debug.display
 			if(_application)_application.container = null;
 			super.unbindFromAsset();
 		}
-		override protected function measure() : void{
-			super.measure();
+		override protected function onLayoutMeasChange(from:ILayoutSubject, oldWidth:Number, oldHeight:Number):void{
+			super.onLayoutMeasChange(from, oldWidth, oldHeight);
 			invalidatePos();
 			invalidateSize();
 		}

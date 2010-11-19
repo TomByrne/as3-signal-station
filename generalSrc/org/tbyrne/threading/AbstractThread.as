@@ -1,7 +1,9 @@
 package org.tbyrne.threading
 {
+	import flash.display.LoaderInfo;
 	import flash.display.Shape;
 	import flash.events.Event;
+	import flash.system.System;
 	
 	import org.tbyrne.acting.actTypes.IAct;
 	import org.tbyrne.acting.acts.Act;
@@ -10,6 +12,15 @@ package org.tbyrne.threading
 	[Event(name="threadComplete",type="org.tbyrne.threading.ThreadEvent")]
 	public class AbstractThread
 	{
+		{
+			/*
+				Static code block run when AbstractThread first referenced
+				gets the stage's framerate.
+			*/
+			intendedFPS = LoaderInfo.getLoaderInfoByDefinition(AbstractThread).frameRate;
+		}
+		
+		
 		private static var _intendedFPS:Number;
 		protected static const instances:Array = [];
 		protected static const FRAME_DISPATCHER:Shape = new Shape();

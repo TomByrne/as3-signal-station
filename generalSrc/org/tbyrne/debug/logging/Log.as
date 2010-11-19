@@ -3,7 +3,9 @@ package org.tbyrne.debug.logging
 	public class Log
 	{
 		// The lower the level the more important (i.e. 0 is most important)
-		public static const INFO:int 						= 3;
+		public static const USER_INFO:int 					= 5;
+		public static const USER_ERROR:int 					= 4;
+		public static const DEV_INFO:int 					= 3;
 		public static const PERFORMANCE:int					= 2;
 		public static const SUSPICIOUS_IMPLEMENTATION:int	= 1;
 		public static const ERROR:int						= 0;
@@ -32,7 +34,7 @@ package org.tbyrne.debug.logging
 		
 		// Shortcuts
 		public static function trace(... params):void{
-			log.apply(null,[INFO].concat(params));
+			log.apply(null,[DEV_INFO].concat(params));
 		}
 		public static function error(... params):void{
 			log.apply(null,[ERROR].concat(params));
