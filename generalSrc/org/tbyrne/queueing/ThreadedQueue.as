@@ -1,6 +1,7 @@
 package org.tbyrne.queueing
 {
 	import flash.events.Event;
+	import flash.system.System;
 	import flash.utils.getTimer;
 	
 	import org.tbyrne.acting.actTypes.IAct;
@@ -9,6 +10,9 @@ package org.tbyrne.queueing
 	
 	public class ThreadedQueue extends AbstractThread implements IQueue
 	{
+		public static const NORMAL_MAX_PER_FRAME:int = 512;
+		
+		
 		public static function get intendedFPS():Number{
 			return AbstractThread.intendedFPS;
 		}
@@ -54,16 +58,19 @@ package org.tbyrne.queueing
 		protected var _queueItemEnd:Act;
 		
 		public var id:String;
+		public var maxPerFrame:int = -1;
 		
 		protected var _queueItems:Array = [];
 		protected var _currentItem:IQueueItem;
 		
+		protected var _executedThisFrame:int;
 		protected var _frameStartTime:int;
 		protected var _currentStepsDone:int;
 		
-		public function ThreadedQueue(id:String=null, intendedThreadSpeed:Number = 0.5){
+		public function ThreadedQueue(id:String=null, intendedThreadSpeed:Number = 0.5, maxPerFrame:int = 512){
 			super(intendedThreadSpeed);
 			this.id = id;
+			this.maxPerFrame = maxPerFrame;
 		}
 		public function addQueueItem(queueItem:IQueueItem, prioritise:Boolean=false):void{
 			var index:int = _queueItems.indexOf(queueItem);
@@ -130,9 +137,11 @@ package org.tbyrne.queueing
 			//trace("\nonFrame");
 			FRAME_DISPATCHER.removeEventListener(Event.ENTER_FRAME,onFrame);
 			_frameStartTime = getTimer();
+			_executedThisFrame = 0;
 			process();
 		}
 		override protected function process(... params):void{
+			++_executedThisFrame;
 			var remaining:int = _currentItem.totalSteps-_currentStepsDone;
 			if(!remaining){
 				cleanUpCurrent();
@@ -146,13 +155,13 @@ package org.tbyrne.queueing
 				}
 			}
 			var frameTime:Number = getTimer()-_frameStartTime;
-			//trace("process: "+frameTime,_processTime);
-			if(frameTime>_processTime){
-				//trace("timeout\n");
+			if(frameTime>_processTime || (maxPerFrame!=-1 && _executedThisFrame>=maxPerFrame)){
 				FRAME_DISPATCHER.addEventListener(Event.ENTER_FRAME,onFrame);
 				return;
 			}
 			_currentItem.step(_currentStepsDone++);
+			//wait for stepFinished to fire
+			_executedThisFrame = 0;
 		}
 	}
 }

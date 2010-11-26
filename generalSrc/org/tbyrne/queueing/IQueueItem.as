@@ -4,8 +4,13 @@ package org.tbyrne.queueing
 	
 	public interface IQueueItem
 	{
+		/**
+		 * handler(queueItem:IQueueItem)
+		 */
+		function get stepFinished():IAct;
 		function get totalSteps():uint;
 		function step(currentStep:uint):void;
-		function get stepFinished():IAct;// (queueItem:IQueueItem)
+		
+		
 	}
 }
