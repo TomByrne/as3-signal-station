@@ -25,10 +25,12 @@ package org.tbyrne.display.assets.schema
 	import org.tbyrne.display.actInfo.IMouseActInfo;
 	import org.tbyrne.display.assets.IAssetFactory;
 	import org.tbyrne.display.assets.assetTypes.*;
+	import org.tbyrne.display.assets.nativeAssets.INativeAsset;
 	import org.tbyrne.display.assets.nativeAssets.actInfo.MouseActInfo;
 	import org.tbyrne.display.assets.schemaTypes.*;
+	import org.tbyrne.display.assets.utils.isDescendant;
 	
-	public class AbstractDynamicAsset extends AbstractSchemaBasedAsset implements ISpriteAsset, ITextFieldAsset, IBitmapAsset
+	public class AbstractDynamicAsset extends AbstractSchemaBasedAsset implements ISpriteAsset, ITextFieldAsset, IBitmapAsset, INativeAsset
 	{
 		private static var DISPLAY_MAP:Dictionary = new Dictionary();
 		
@@ -465,7 +467,12 @@ package org.tbyrne.display.assets.schema
 			return _displayObject.localToGlobal(point);
 		}
 		public function getBounds(space:IDisplayAsset):Rectangle {
-			return _displayObject.getBounds(space.displayObject || space.bitmapDrawable as DisplayObject);
+			var nativeAsset:INativeAsset = (space as INativeAsset);
+			if(nativeAsset){
+				return _displayObject.getBounds(nativeAsset.displayObject || space.bitmapDrawable as DisplayObject);
+			}else{
+				return null;
+			}
 		}
 		
 		
@@ -680,32 +687,35 @@ package org.tbyrne.display.assets.schema
 		}
 		
 		public function addAsset(asset:IDisplayAsset):void{
+			var nativeAsset:INativeAsset = (asset as INativeAsset);
 			CONFIG::debug{
-				if(_children[asset.displayObject])Log.log(Log.ERROR,"asset already added (AbstractDynamicAsset.addAsset).");
+				if(_children[nativeAsset.displayObject])Log.log(Log.ERROR,"asset already added (AbstractDynamicAsset.addAsset).");
 			}
 			asset.parent = this;
-			_sprite.addChild(asset.displayObject);
-			_children[asset.displayObject] = asset;
+			_sprite.addChild(nativeAsset.displayObject);
+			_children[nativeAsset.displayObject] = asset;
 			for each(var stateList:Array in _stateLists){
 				asset.addStateList(stateList,true);
 			}
 		}
 		public function addAssetAt(asset:IDisplayAsset, index:int):IDisplayAsset{
+			var nativeAsset:INativeAsset = (asset as INativeAsset);
 			asset.parent = this;
-			_sprite.addChildAt(asset.displayObject,index);
-			_children[asset.displayObject] = asset;
+			_sprite.addChildAt(nativeAsset.displayObject,index);
+			_children[nativeAsset.displayObject] = asset;
 			for each(var stateList:Array in _stateLists){
 				asset.addStateList(stateList,true);
 			}
 			return asset;
 		}
 		public function removeAsset(asset:IDisplayAsset):void{
+			var nativeAsset:INativeAsset = (asset as INativeAsset);
 			for each(var stateList:Array in _stateLists){
 				asset.removeStateList(stateList);
 			}
 			asset.parent = null;
-			_sprite.removeChild(asset.displayObject);
-			delete _children[asset.displayObject];
+			_sprite.removeChild(nativeAsset.displayObject);
+			delete _children[nativeAsset.displayObject];
 		}
 		
 		public function containsAssetByName(name:String):Boolean{
@@ -713,14 +723,25 @@ package org.tbyrne.display.assets.schema
 			return _children[display]!=null;
 		}
 		public function contains(child:IDisplayAsset):Boolean{
-			return _children[child.displayObject]!=null;
+			var nativeAsset:INativeAsset = (child as INativeAsset);
+			if(_children[nativeAsset.displayObject] || child==this){
+				return true;
+			}else if(_sprite){
+				var cast:INativeAsset = (child as INativeAsset);
+				if(cast){
+					return _sprite.contains(cast.displayObject);
+				}
+			}
+			return isDescendant(this,child);
 		}
 		
 		public function getAssetIndex(asset:IDisplayAsset):int{
-			return _sprite.getChildIndex(asset.displayObject);
+			var nativeAsset:INativeAsset = (asset as INativeAsset);
+			return _sprite.getChildIndex(nativeAsset.displayObject);
 		}
 		public function setAssetIndex(asset:IDisplayAsset, index:int):void{
-			_sprite.setChildIndex(asset.displayObject,index);
+			var nativeAsset:INativeAsset = (asset as INativeAsset);
+			_sprite.setChildIndex(nativeAsset.displayObject,index);
 		}
 		public function getAssetAt(index:int):IDisplayAsset{
 			var display:DisplayObject = _sprite.getChildAt(index);
@@ -734,11 +755,12 @@ package org.tbyrne.display.assets.schema
 		
 		protected function removeAllChildren():void{
 			for each(var child:IDisplayAsset in _children){
+				var nativeAsset:INativeAsset = (child as INativeAsset);
 				for each(var stateList:Array in _stateLists){
 					child.removeStateList(stateList);
 				}
 				child.parent = null;
-				_sprite.removeChild(child.displayObject);
+				_sprite.removeChild(nativeAsset.displayObject);
 			}
 			_children = new Dictionary();
 		}
@@ -761,9 +783,10 @@ package org.tbyrne.display.assets.schema
 			return _hitArea;
 		}
 		public function set hitArea(value:ISpriteAsset):void{
+			var nativeAsset:INativeAsset = (value as INativeAsset);
 			_hitArea = value;
-			if(value){
-				_sprite.hitArea = value.displayObject as Sprite;
+			if(value && nativeAsset){
+				_sprite.hitArea = nativeAsset.displayObject as Sprite;
 			}else{
 				_sprite.hitArea = null;
 			}

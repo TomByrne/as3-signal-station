@@ -15,7 +15,7 @@ package org.tbyrne.display.assets.nativeAssets {
 	import org.tbyrne.instanceFactory.*;
 	
 	
-	public class DisplayObjectAsset extends NativeAsset implements IDisplayAsset {
+	public class DisplayObjectAsset extends NativeAsset implements IDisplayAsset, INativeAsset {
 		/**
 		 * @inheritDoc
 		 */
@@ -73,11 +73,9 @@ package org.tbyrne.display.assets.nativeAssets {
 		}
 		
 		
-		public function get displayObject():DisplayObject {
+		public function get displayObject():DisplayObject{
 			return _displayObject;
 		}
-		
-		
 		public function set displayObject(value:DisplayObject):void {
 			if(_displayObject!=value) {
 				if(_displayObject) {
@@ -294,6 +292,9 @@ package org.tbyrne.display.assets.nativeAssets {
 		
 		
 		public function get parent():IContainerAsset {
+			if(_isAddedToStage && !_parent && !(this is IStageAsset)){
+				_parent = _nativeFactory.getNew(_displayObject.parent);
+			}
 			return _parent;
 		}
 		public function set parent(value:IContainerAsset):void {
@@ -354,7 +355,8 @@ package org.tbyrne.display.assets.nativeAssets {
 			return _displayObject.localToGlobal(point);
 		}
 		public function getBounds(space:IDisplayAsset):Rectangle {
-			return _displayObject.getBounds(space.displayObject || space.bitmapDrawable as DisplayObject);
+			var nativeAsset:INativeAsset = (space as INativeAsset);
+			return _displayObject.getBounds(nativeAsset.displayObject || space.bitmapDrawable as DisplayObject);
 		}
 		
 		public function getCloneFactory():IInstanceFactory{

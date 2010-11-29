@@ -358,10 +358,10 @@ class ListWatcher{
 		parentList.asset.stage.mousePressed.removeHandler(onStageClicked);
 	}
 	protected function onStageClicked(from:IInteractiveObjectAsset, info:IMouseActInfo):void{
-		var parentAsset:IDisplayAsset = _parentList.asset;
-		var childAsset:IDisplayAsset = _childListWatcher.parentList.asset;
-		if(info.mouseTarget!=parentAsset && !isDescendant(parentAsset as IContainerAsset,info.mouseTarget) &&
-			info.mouseTarget!=childAsset && !isDescendant(childAsset as IContainerAsset,info.mouseTarget)){
+		var parentAsset:IContainerAsset = _parentList.asset as IContainerAsset;
+		var childAsset:IContainerAsset = _childListWatcher.parentList.asset as IContainerAsset;
+		if(info.mouseTarget!=parentAsset && !parentAsset.contains(info.mouseTarget) &&
+			info.mouseTarget!=childAsset && !childAsset.contains(info.mouseTarget)){
 			hideChildList();
 		}
 	}

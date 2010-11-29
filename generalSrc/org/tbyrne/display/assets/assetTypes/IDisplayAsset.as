@@ -11,13 +11,6 @@ package org.tbyrne.display.assets.assetTypes
 
 	public interface IDisplayAsset extends IAsset
 	{
-		/**
-		 * This allows the asset (and it's children to be added
-		 * to the heirarchy). It is only required if the asset
-		 * to which this asset is being added requires it.
-		 * The root asset of every skin should support this at least.
-		 */
-		function get displayObject():DisplayObject;
 		
 		function set x(value:Number):void;
 		function get x():Number;

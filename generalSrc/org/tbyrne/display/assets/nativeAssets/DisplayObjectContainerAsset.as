@@ -15,6 +15,7 @@ package org.tbyrne.display.assets.nativeAssets
 	import org.tbyrne.display.assets.assetTypes.IContainerAsset;
 	import org.tbyrne.display.assets.assetTypes.IDisplayAsset;
 	import org.tbyrne.display.assets.states.IStateDef;
+	import org.tbyrne.display.assets.utils.isDescendant;
 	import org.tbyrne.display.utils.MovieClipUtils;
 	import org.tbyrne.hoborg.ObjectPool;
 	
@@ -88,8 +89,16 @@ package org.tbyrne.display.assets.nativeAssets
 		}
 		public function contains(child:IDisplayAsset):Boolean{
 			if(_displayObjectContainer){
-				var cast:DisplayObjectAsset = (child as DisplayObjectAsset);
-				return _displayObjectContainer.contains(cast.displayObject);
+				var nativeAsset:INativeAsset = (child as INativeAsset);
+				if(child==this || (nativeAsset && _children[nativeAsset.displayObject])){
+					return true;
+				}else if(_displayObjectContainer){
+					var cast:INativeAsset = (child as INativeAsset);
+					if(cast){
+						return _displayObjectContainer.contains(cast.displayObject);
+					}
+				}
+				return isDescendant(this,child);
 			}else{
 				throw new Error("This method cannot be called before a displayObject is set");
 			}
@@ -117,12 +126,14 @@ package org.tbyrne.display.assets.nativeAssets
 			// nothing to do
 		}
 		public function addAsset(asset:IDisplayAsset):void{
-			storeChildAsset(asset,asset.displayObject);
-			_displayObjectContainer.addChild(asset.displayObject);
+			var nativeAsset:INativeAsset = (asset as INativeAsset);
+			storeChildAsset(asset,nativeAsset.displayObject);
+			_displayObjectContainer.addChild(nativeAsset.displayObject);
 		}
 		public function removeAsset(asset:IDisplayAsset):void{
-			_displayObjectContainer.removeChild(asset.displayObject);
-			removeChildAsset(asset,asset.displayObject);
+			var nativeAsset:INativeAsset = (asset as INativeAsset);
+			_displayObjectContainer.removeChild(nativeAsset.displayObject);
+			removeChildAsset(asset,nativeAsset.displayObject);
 		}
 		public function addAssetAt(asset:IDisplayAsset, index:int):IDisplayAsset{
 			var cast:DisplayObjectAsset = (asset as DisplayObjectAsset);

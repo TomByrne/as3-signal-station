@@ -26,8 +26,9 @@ package org.tbyrne.display.assets.nativeAssets
 			return _sprite && _sprite.hitArea?_nativeFactory.getNew(_sprite.hitArea):null;
 		}
 		public function set hitArea(value:ISpriteAsset):void{
-			if(value){
-				_sprite.hitArea = value.displayObject as Sprite;
+			var nativeAsset:INativeAsset = (value as INativeAsset);
+			if(nativeAsset){
+				_sprite.hitArea = nativeAsset.displayObject as Sprite;
 			}else{
 				_sprite.hitArea = null;
 			}

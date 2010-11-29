@@ -2,9 +2,7 @@ package org.tbyrne.application
 {
 	import flash.geom.Point;
 	
-	import flashx.textLayout.debug.assert;
-	
-	import org.tbyrne.binding.PropertyWatcher;
+	import org.puremvc.as3.patterns.facade.Facade;
 	import org.tbyrne.core.IApplication;
 	import org.tbyrne.data.core.StringData;
 	import org.tbyrne.data.dataTypes.INumberProvider;
@@ -20,7 +18,6 @@ package org.tbyrne.application
 	import org.tbyrne.display.assets.assetTypes.IDisplayAsset;
 	import org.tbyrne.display.core.ScopedObject;
 	import org.tbyrne.math.units.MemoryUnitConverter;
-	import org.puremvc.as3.patterns.facade.Facade;
 	import org.tbyrne.notifications.ApplicationNotifications;
 	
 	public class PureMvcApplication implements IApplication
@@ -50,6 +47,7 @@ package org.tbyrne.application
 					if(_container.stage)onAddedToStage();
 					else _container.addedToStage.addTempHandler(onAddedToStage);
 				}
+				_scopedObject.asset = _container;
 			}
 		}
 		
@@ -58,13 +56,11 @@ package org.tbyrne.application
 		protected var _appSize:Point;
 		protected var _facade:Facade;
 		protected var _hasStarted:Boolean;
-		
-		CONFIG::debug{
-			protected var _scopedObject:ScopedObject;
-		}
+		protected var _scopedObject:ScopedObject;
 		
 		
 		public function PureMvcApplication(){
+			_scopedObject = new ScopedObject();
 		}
 		public function setPosition(x:Number, y:Number):void{
 			if(!_appPosition){
@@ -133,7 +129,6 @@ package org.tbyrne.application
 		protected function startApplication():void{
 			
 			CONFIG::debug{
-				_scopedObject = new ScopedObject(_container);
 				
 				var memory:INumberProvider = new MemoryUnitConverter(new MemoryUsage(),MemoryUnitConverter.BYTES,MemoryUnitConverter.MEGABYTES)
 				DebugManager.addDebugNode(new GraphStatisticNode(_scopedObject,"Mem",0x009900,memory,true));

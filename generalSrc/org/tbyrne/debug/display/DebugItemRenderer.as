@@ -8,10 +8,10 @@ package org.tbyrne.debug.display
 	import org.tbyrne.display.assets.AssetNames;
 	import org.tbyrne.display.assets.assetTypes.IBitmapAsset;
 	import org.tbyrne.display.assets.assetTypes.IDisplayAsset;
-	import org.tbyrne.display.controls.TextLabelButton;
+	import org.tbyrne.display.controls.MenuBarRenderer;
 	import org.tbyrne.display.core.ILayoutView;
 	
-	public class DebugItemRenderer extends TextLabelButton
+	public class DebugItemRenderer extends MenuBarRenderer
 	{
 		override public function set data(value:*):void{
 			if(data != value){

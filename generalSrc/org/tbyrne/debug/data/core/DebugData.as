@@ -116,7 +116,7 @@ package org.tbyrne.debug.data.core
 		protected function onBitmapChanged():void{
 			if(_bitmapDataChanged)_bitmapDataChanged.perform(this);
 		}
-		public function addChildData(data:DebugData):void{
+		public function addChildData(data:IStringProvider):void{
 			if(!_childData){
 				_childData = new LinkedList();
 			}
