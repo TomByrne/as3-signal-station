@@ -462,7 +462,8 @@ package org.tbyrne.display.layout.grid
 								if(_breadthAxis.hasMaxCount && _breadthAxis.maxCount>breadthIndices.length){
 									breadthTotal = _breadthAxis.maxCount;
 								}else{
-									breadthTotal = breadthIndices.length+1;
+									// plus an extra one to give it room to wrap into
+									breadthTotal = breadthIndices.length+2;
 								}
 							}
 							if(!satisfied){

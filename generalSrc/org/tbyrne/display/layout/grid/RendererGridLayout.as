@@ -439,8 +439,10 @@ package org.tbyrne.display.layout.grid
 						(!_renderEmptyCells && (_cellPosCache[length]==null || _cellPosCache[length][breadth]==null))){
 						
 						delete _renderers[i];
+						/* must remove before setting data to null to avoid the layout responding to
+						the resulting measurement and throwing an error for not finding the renderers data.*/
+						rendererRemoved(renderer); 
 						renderer[_dataField] = null;
-						rendererRemoved(renderer);
 					}
 				}
 			}

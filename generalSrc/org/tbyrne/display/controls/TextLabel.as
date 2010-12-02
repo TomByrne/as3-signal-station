@@ -6,6 +6,7 @@ package org.tbyrne.display.controls
 	import flash.text.TextField;
 	import flash.text.TextFormat;
 	
+	import org.tbyrne.data.core.StringData;
 	import org.tbyrne.data.dataTypes.IStringProvider;
 	import org.tbyrne.data.dataTypes.IValueProvider;
 	import org.tbyrne.display.DisplayNamespace;
@@ -19,6 +20,9 @@ package org.tbyrne.display.controls
 	
 	public class TextLabel extends Control
 	{
+		public function get stringData():String{
+			return _stringData;
+		}
 		public function get data():*{
 			return _data;
 		}
@@ -28,6 +32,9 @@ package org.tbyrne.display.controls
 					_stringProvider.stringValueChanged.removeHandler(onProviderChanged);
 				}else if(_valueProvider){
 					_valueProvider.valueChanged.removeHandler(onProviderChanged);
+				}
+				if(value is String){
+					value = new StringData(value);
 				}
 				_data = value;
 				_stringProvider = value as IStringProvider;
@@ -113,13 +120,8 @@ package org.tbyrne.display.controls
 		}
 		override protected function bindToAsset():void{
 			super.bindToAsset();
-			if(asset.conformsToType(ITextFieldAsset)){
-				_labelField = (asset as ITextFieldAsset);
-			}
-			if(!_labelField){
-				_labelField = _containerAsset.takeAssetByName(AssetNames.LABEL_FIELD, ITextFieldAsset);
-			}
-			_assumedTextFormat = _labelField.defaultTextFormat;
+			bindTextField();
+			if(!_data && _labelField.text.length)_data = _labelField.text;
 			if(_backing){
 				
 				var operableHeight:Number = _labelField.naturalHeight-TextFieldGutter.TEXT_FIELD_GUTTER*2;
@@ -139,9 +141,17 @@ package org.tbyrne.display.controls
 				_labelFieldSizer.assumedPaddingBottom = (_backing.y+_backing.height)-(_labelField.y+TextFieldGutter.TEXT_FIELD_GUTTER+operableHeight);
 				_labelFieldSizer.assumedPaddingRight = (_backing.x+_backing.width)-(_labelField.x+TextFieldGutter.TEXT_FIELD_GUTTER+operableWidth);
 			}
-			if(_data)syncFieldToData();
-			else if(_labelField.text.length)_data = _labelField.text;
+			syncFieldToData();
 			applyFormat();
+		}
+		protected function bindTextField():void{
+			if(asset.conformsToType(ITextFieldAsset)){
+				_labelField = (asset as ITextFieldAsset);
+			}
+			if(!_labelField){
+				_labelField = _containerAsset.takeAssetByName(AssetNames.LABEL_FIELD, ITextFieldAsset);
+			}
+			_assumedTextFormat = _labelField.defaultTextFormat;
 		}
 		override protected function unbindFromAsset():void{
 			_labelFieldSizer.assumedPaddingTop = NaN;

@@ -115,8 +115,13 @@ package org.tbyrne.display.controls
 		public function TextInput(asset:IDisplayAsset=null){
 			super(asset);
 		}
-		override protected function bindToAsset() : void{
+		/*override protected function bindToAsset() : void{
 			super.bindToAsset();
+		}*/
+		override protected function bindTextField():void{
+			super.bindTextField();
+			_assumedPrompt = _labelField.text;
+			_labelField.text = "";
 			_labelField.change.addHandler(onTextChange);
 			_labelField.focusIn.addHandler(onFocusIn);
 			_labelField.focusOut.addHandler(onFocusOut);
@@ -125,14 +130,9 @@ package org.tbyrne.display.controls
 			_labelField.type = TextFieldType.INPUT;
 			_tabFocusable = new InteractiveAssetFocusWrapper(_labelField);
 			
-			_assumedPrompt = _labelField.text;
-			_showingPrompt = true;
 			
 			_labelField.type = (_active?TextFieldType.INPUT:TextFieldType.DYNAMIC);
 			_labelField.selectable = _active;
-			
-			syncFieldToData();
-			applyPrompt();
 		}
 		protected function onFocusIn(e:Event, from:IInteractiveObjectAsset) : void{
 			if(!_focused){
@@ -174,6 +174,7 @@ package org.tbyrne.display.controls
 			}
 			_showingPrompt = false;
 			
+			_labelField.text = _assumedPrompt;
 			_labelField.change.removeHandler(onTextChange);
 			_labelField.focusIn.removeHandler(onFocusIn);
 			_labelField.focusOut.removeHandler(onFocusOut);
@@ -186,7 +187,7 @@ package org.tbyrne.display.controls
 			if(_stringData.length || _focused){
 				_labelField.text = _stringData;
 				_showingPrompt = false;
-			}else if(!_showingPrompt){
+			}else if(!_showingPrompt && _labelField){
 				_showingPrompt = true;
 				applyPrompt();
 			}
