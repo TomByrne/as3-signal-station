@@ -689,6 +689,8 @@ package org.tbyrne.display.assets.schema
 		public function addAsset(asset:IDisplayAsset):void{
 			var nativeAsset:INativeAsset = (asset as INativeAsset);
 			CONFIG::debug{
+				if(!asset)Log.log(Log.ERROR,"no asset provided");
+				if(!nativeAsset)Log.log(Log.ERROR,"cannot add non-native asset");
 				if(_children[nativeAsset.displayObject])Log.log(Log.ERROR,"asset already added (AbstractDynamicAsset.addAsset).");
 			}
 			asset.parent = this;

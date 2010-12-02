@@ -70,6 +70,11 @@ package
 	import org.tbyrne.display.transition.Transition;
 	import org.tbyrne.display.transition.WipeTransition;
 	import org.tbyrne.display.utils.TopLayerManager;
+	import org.tbyrne.gateway.ServerProxy;
+	import org.tbyrne.gateway.commands.CallMethodCommand;
+	import org.tbyrne.gateways.FlashVarsGateway;
+	import org.tbyrne.gateways.methodCalls.GetPropertyCall;
+	import org.tbyrne.gateways.methodCalls.SetPropertyCall;
 	import org.tbyrne.media.MediaProgressDisplayAdaptor;
 	import org.tbyrne.media.image.ImageSource;
 	import org.tbyrne.media.video.ProgressiveVideoSource;
@@ -165,6 +170,11 @@ package
 			SliderButton;
 			ToolTipAnnotator;
 			ActNavItem;
+			ServerProxy;
+			CallMethodCommand;
+			SetPropertyCall;
+			GetPropertyCall;
+			FlashVarsGateway;
 		}
 	}
 }

@@ -3,18 +3,18 @@ package org.tbyrne.logging
 	import flash.utils.getTimer;
 	
 	import org.puremvc.as3.patterns.proxy.Proxy;
+	import org.tbyrne.core.SignalStationProxyNames;
 	import org.tbyrne.debug.logging.ILogger;
 	
 	public class LogProxy extends Proxy implements ILogger, ILogProxy
 	{
-		protected static const NAME:String = "LogProxy";
 		
 		private var _visibility:int = -1;
 		private var _messages:Vector.<LogInfo>;
 		private var _leveled:Array; // leveled isn't dense and so can't be a Vactor
 		
 		public function LogProxy(){
-			super(NAME, this);
+			super(SignalStationProxyNames.LOG, this);
 			_messages = new Vector.<LogInfo>();
 			_leveled = [];
 		}

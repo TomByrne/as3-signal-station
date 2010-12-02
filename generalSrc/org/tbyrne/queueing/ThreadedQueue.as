@@ -143,7 +143,7 @@ package org.tbyrne.queueing
 		override protected function process(... params):void{
 			++_executedThisFrame;
 			var remaining:int = _currentItem.totalSteps-_currentStepsDone;
-			if(!remaining){
+			if(remaining<=0){
 				cleanUpCurrent();
 				_queueItems.shift();
 				if(_queueItems.length){

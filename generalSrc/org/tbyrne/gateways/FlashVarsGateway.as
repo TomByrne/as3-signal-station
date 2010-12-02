@@ -19,7 +19,7 @@ package org.tbyrne.gateways
 			parameters = LoaderInfo.getLoaderInfoByDefinition(this).parameters;
 			
 		}
-		public function shouldExecuteCall(methodCall:MethodCall):Boolean{
+		override public function shouldExecuteCall(methodCall:MethodCall):Boolean{
 			_lastCast = (methodCall as GetPropertyCall);
 			return (_lastCast && parameters[_lastCast.propertyName]!=null);
 		}

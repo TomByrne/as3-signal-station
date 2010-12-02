@@ -4,6 +4,7 @@ package org.tbyrne.display.core
 	import flash.display.DisplayObjectContainer;
 	import flash.geom.Point;
 	import flash.geom.Rectangle;
+	import flash.utils.Dictionary;
 	
 	import org.tbyrne.acting.actTypes.IAct;
 	import org.tbyrne.acting.acts.Act;
@@ -81,6 +82,9 @@ package org.tbyrne.display.core
 		//private var _maskDisplay:Boolean;
 		private var _layoutInfo:ILayoutInfo;
 		
+		// mapped childView > assetName
+		private var _boundChildren:Dictionary = new Dictionary();
+		
 		public function LayoutView(asset:IDisplayAsset=null){
 			_measureFlag = new ValidationFlag(doMeasure, false);
 			if(!_measurements)_measurements = new Point();
@@ -93,6 +97,28 @@ package org.tbyrne.display.core
 		override protected function unbindFromAsset():void{
 			super.unbindFromAsset();
 			_posDrawFlag.invalidate();
+			unbindChildren();
+		}
+		protected function bindChildAsset(childView:LayoutView, assetName:String, assetType:Class=null, setPosAlso:Boolean=false) : void{
+			if(!_boundChildren)_boundChildren = new Dictionary();
+			var asset:IDisplayAsset = _containerAsset.takeAssetByName(assetName,assetType);
+			if(setPosAlso){
+				childView.setAssetAndPosition(asset);
+			}else{
+				childView.asset = asset;
+			}
+			_boundChildren[childView] = assetName;
+		}
+		protected function unbindChildren():void{
+			if(_boundChildren){
+				for(var i:* in _boundChildren){
+					var child:LayoutView = (i as LayoutView);
+					var asset:IDisplayAsset = child.asset;
+					child.asset = null;
+					_containerAsset.returnAsset(asset);
+				}
+				_boundChildren = null;
+			}
 		}
 		
 		public function setPosition(x:Number, y:Number):void{

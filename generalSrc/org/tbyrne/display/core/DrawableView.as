@@ -2,6 +2,7 @@ package org.tbyrne.display.core
 {
 	import flash.display.DisplayObject;
 	import flash.events.Event;
+	import flash.utils.Dictionary;
 	
 	import org.tbyrne.acting.actTypes.IAct;
 	import org.tbyrne.acting.acts.Act;
@@ -163,7 +164,6 @@ package org.tbyrne.display.core
 			_revertParentStateLists = _asset.useParentStateLists;
 			_asset.useParentStateLists = false;
 			_asset.addStateList(_stateList,false);
-			
 		}
 		protected function unbindFromAsset():void{
 			_asset.removeStateList(_stateList);

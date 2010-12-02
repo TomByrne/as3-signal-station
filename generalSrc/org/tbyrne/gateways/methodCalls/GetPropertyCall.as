@@ -2,7 +2,7 @@ package org.tbyrne.gateways.methodCalls
 {
 	public class GetPropertyCall extends MethodCall
 	{
-		public function get parameters():Array{
+		override public function get parameters():Array{
 			return [propertyName];
 		}
 		

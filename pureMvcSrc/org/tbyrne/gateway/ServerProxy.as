@@ -1,9 +1,9 @@
 package org.tbyrne.gateway
 {
-	import org.tbyrne.gateways.methodCalls.MethodCall;
+	import org.tbyrne.core.AbstractProxy;
+	import org.tbyrne.core.SignalStationProxyNames;
 	import org.tbyrne.gateways.IDataGateway;
-	import com.extro.models.AbstractProxy;
-	import com.extro.models.ProxyNames;
+	import org.tbyrne.gateways.methodCalls.MethodCall;
 	
 	public class ServerProxy extends AbstractProxy implements IGatewayProxy
 	{
@@ -19,7 +19,7 @@ package org.tbyrne.gateway
 		
 		public function ServerProxy(){
 			model = new GatewayModel();
-			super(ProxyNames.SERVER, model);
+			super(SignalStationProxyNames.SERVER, model);
 		}
 		
 		public function callMethod(method:MethodCall):void{
