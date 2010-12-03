@@ -62,7 +62,7 @@ package org.tbyrne.gateways.interpreters
 			}
 			return data;
 		}
-		public function doIncoming(data:*):*{
+		protected function doIncoming(data:*):*{
 			var ret:Object = new _type();
 			for(var propName:String in _propMapping){
 				var interpreters:Vector.<IDataInterpreter>;
@@ -94,7 +94,7 @@ package org.tbyrne.gateways.interpreters
 			}
 			return data;
 		}
-		public function doOutgoing(data:*):*{
+		protected function doOutgoing(data:*):*{
 			var propName:String;
 			var ret:Object = {};
 			for(propName in _propMapping){

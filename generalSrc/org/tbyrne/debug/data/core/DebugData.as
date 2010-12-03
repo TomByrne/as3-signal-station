@@ -123,6 +123,11 @@ package org.tbyrne.debug.data.core
 			_childData.push(data);
 			checkSelected();
 		}
+		public function removeChildData(data:IStringProvider):void{
+			if(_childData){
+				_childData.removeFirst(data);
+			}
+		}
 		protected function checkSelected():void{
 			var value:Boolean = (isTogglable() && _intBooleanValue);
 			if(_booleanValue != value){
