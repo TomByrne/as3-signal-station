@@ -245,6 +245,7 @@ class ListWatcher{
 	protected var _popoutDisplay:PopoutDisplay;
 	private var _clickAutoClose:Boolean = true;
 	private var _renderers:Vector.<ICascadingMenuBarRenderer>;
+	private var _listeningToStage:Boolean;
 	
 	public function ListWatcher(anchor:String, isTopWatcher:Boolean, listFactory:IInstanceFactory=null){
 		_popoutDisplay = new PopoutDisplay();
@@ -352,10 +353,16 @@ class ListWatcher{
 	
 	
 	protected function addClickAutoCloseListener():void{
-		parentList.asset.stage.mousePressed.addHandler(onStageClicked);
+		if(!_listeningToStage){
+			_listeningToStage = true;
+			parentList.asset.stage.mousePressed.addHandler(onStageClicked);
+		}
 	}
 	protected function removeClickAutoCloseListener():void{
-		parentList.asset.stage.mousePressed.removeHandler(onStageClicked);
+		if(_listeningToStage){
+			_listeningToStage = false;
+			parentList.asset.stage.mousePressed.removeHandler(onStageClicked);
+		}
 	}
 	protected function onStageClicked(from:IInteractiveObjectAsset, info:IMouseActInfo):void{
 		var parentAsset:IContainerAsset = _parentList.asset as IContainerAsset;

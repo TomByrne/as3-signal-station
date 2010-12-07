@@ -196,10 +196,10 @@ package org.tbyrne.collections.linkedList
 				}
 				destroyLink(removeLink);
 				
+				delete _indexes[value];
 				incrementIndices(index,-1);
 				--_length;
 				if(_collectionChanged)_collectionChanged.perform(this,index,_length);
-				delete _indexes[value];
 				return true;
 			}
 			return false;
