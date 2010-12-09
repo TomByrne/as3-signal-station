@@ -38,12 +38,7 @@ package org.tbyrne.display.validation
 		}
 		public function validate(flag:IFrameValidationFlag):void{
 			assessAllFlags();
-			CONFIG::debug{
-				if(!flag.asset){
-					throw new Error("Trying to validate flag with no asset");
-				}
-			}
-			if(flag.asset){
+			if(flag.readyForExecution){
 				startDrawRun(flag);
 			}
 		}
@@ -68,11 +63,9 @@ package org.tbyrne.display.validation
 			}
 			var index:int = pendingFlags.indexOf(flag);
 			if(index==-1){
-				if(flag.asset){
-					var bundle:AssetBundle = bundleMap[flag.asset];
-					removeFromBundle(flag, bundle);
-					removeFromRuns(flag);
-				}
+				var bundle:AssetBundle = bundleMap[flag.asset];
+				removeFromBundle(flag, bundle);
+				removeFromRuns(flag);
 				flag.assetChanged.removeHandler(onFlagAssetChanged);
 			}else{
 				pendingFlags.splice(index);
@@ -91,21 +84,17 @@ package org.tbyrne.display.validation
 		 */
 		protected function assessFlag(flag:IFrameValidationFlag):void{
 			flag.assetChanged.addHandler(onFlagAssetChanged);
-			if(flag.asset){
-				addToBundle(flag);
-				addToRuns(flag);
-			}
+			addToBundle(flag);
+			addToRuns(flag);
 		}
 		protected function onFlagAssetChanged(from:IFrameValidationFlag, oldAsset:IDisplayAsset):void{
 			var oldBundle:AssetBundle = bundleMap[oldAsset];
 			var oldRun:DrawRun;
-			if(oldAsset){
-				oldRun = findRunForBundle(oldBundle);
-				removeFromBundle(from, oldBundle);
-			}
-			if(from.asset){
-				var newBundle:AssetBundle = addToBundle(from);
-			}
+			
+			oldRun = findRunForBundle(oldBundle);
+			removeFromBundle(from, oldBundle);
+			
+			var newBundle:AssetBundle = addToBundle(from);
 			checkIfRunChange(from, newBundle, oldRun);
 		}
 		protected function addToBundle(flag:IFrameValidationFlag):AssetBundle{
@@ -114,7 +103,7 @@ package org.tbyrne.display.validation
 				bundle = AssetBundle.getNew(flag.asset);
 				bundleMap[flag.asset] = bundle;
 				bundle.assetPosChanged.addHandler(onAssetPosChanged);
-				if(bundle.addedToStage)addToHeirarchy(bundle);
+				if(bundle.readyForExecution)addToHeirarchy(bundle);
 			}
 			bundle.addValidationFlag(flag);
 			return bundle;
@@ -131,7 +120,7 @@ package org.tbyrne.display.validation
 		protected function onAssetPosChanged(bundle:AssetBundle):void{
 			var oldRun:DrawRun = findRunForBundle(bundle);
 			removeFromHeirarchy(bundle);
-			if(bundle.addedToStage)addToHeirarchy(bundle);
+			if(bundle.readyForExecution)addToHeirarchy(bundle);
 			checkIfRunChange(null, bundle, oldRun);
 		}
 		protected function checkIfRunChange(flag:IFrameValidationFlag, bundle:AssetBundle, oldRun:DrawRun):void{
@@ -213,11 +202,14 @@ package org.tbyrne.display.validation
 				childRuns = [];
 				if(currentRunCount){
 					for each(drawRun in currentRuns){
-						if(drawRun.root.asset==asset || isDescendant(drawRun.root.asset,asset)){
-							existingRun = drawRun;
-							break;
-						}else if(isDescendant(asset,drawRun.root.asset)){
-							childRuns.push(drawRun);
+						var otherAsset:IDisplayAsset = drawRun.root.asset;
+						if(otherAsset){
+							if(otherAsset==asset || isDescendant(otherAsset,asset)){
+								existingRun = drawRun;
+								break;
+							}else if(isDescendant(asset,otherAsset)){
+								childRuns.push(drawRun);
+							}
 						}
 					}
 				}
@@ -335,28 +327,31 @@ class AssetBundle implements IPoolable{
 			if(_asset){
 				_asset.addedToStage.addHandler(onAdded);
 				_asset.removedFromStage.addHandler(onRemoved);
-				addedToStage = (_asset.stage!=null);
+				_addedToStage = (_asset.stage!=null);
 			}else{
-				addedToStage = false;
+				_addedToStage = false;
 			}
 		}
+	}
+	public function get readyForExecution():Boolean{
+		return !_asset || _addedToStage;
 	}
 	
 	public var parent:AssetBundle;
 	public var children:Array = [];
 	public var validationFlags:Array = [];
-	public var addedToStage:Boolean;
 	
+	protected var _addedToStage:Boolean;
 	protected var _asset:IDisplayAsset;
 	protected var _assetPosChanged:Act = new Act();
 	
 	
 	protected function onAdded(from:IDisplayAsset):void{
-		addedToStage = true;
+		_addedToStage = true;
 		_assetPosChanged.perform(this);
 	}
 	protected function onRemoved(from:IDisplayAsset):void{
-		addedToStage = false;
+		_addedToStage = false;
 		_assetPosChanged.perform(this);
 	}
 	public function addChild(bundle:AssetBundle):void{

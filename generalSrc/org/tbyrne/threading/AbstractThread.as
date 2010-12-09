@@ -17,7 +17,11 @@ package org.tbyrne.threading
 				Static code block run when AbstractThread first referenced
 				gets the stage's framerate.
 			*/
-			intendedFPS = LoaderInfo.getLoaderInfoByDefinition(AbstractThread).frameRate;
+			try{
+				intendedFPS = LoaderInfo.getLoaderInfoByDefinition(AbstractThread).frameRate;
+			}catch(e:Error){
+				// If this SWF is not running in the localTrusted sandbox it will throw an error.
+			}
 		}
 		
 		

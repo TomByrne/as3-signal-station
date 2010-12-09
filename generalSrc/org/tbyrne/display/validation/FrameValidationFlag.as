@@ -46,7 +46,7 @@ package org.tbyrne.display.validation
 			}
 		}
 		public function get readyForExecution():Boolean{
-			return true;
+			return (_allowAddWithoutAsset || _asset);
 		}
 		
 		
@@ -55,13 +55,19 @@ package org.tbyrne.display.validation
 		protected var _assetChanged:Act;
 		protected var _added:Boolean;
 		protected var _manager:FrameValidationManager;
+		protected var _allowAddWithoutAsset:Boolean;
 		
-		public function FrameValidationFlag(view:IView, validator:Function, valid:Boolean, parameters:Array=null){
+		public function FrameValidationFlag(view:IView, validator:Function, valid:Boolean, parameters:Array=null, allowAddWithoutAsset:Boolean=false){
 			super(validator, valid, parameters);
 			_manager = FrameValidationManager.instance;
+			_allowAddWithoutAsset = allowAddWithoutAsset;
 			this.view = view;
-			
+			if(_allowAddWithoutAsset && !view){
+				checkAdded();
+			}
 		}
+		
+		
 		protected function onAssetChanged(from:IView, oldAsset:IAsset):void{
 			setAsset(_view.asset);
 		}
@@ -70,11 +76,14 @@ package org.tbyrne.display.validation
 				var oldAsset:IDisplayAsset = _asset;
 				_asset = asset;
 				if(_assetChanged)_assetChanged.perform(this,oldAsset);
-				if(_asset){
-					setAdded(true);
-				}else{
-					setAdded(false);
-				}
+				checkAdded();
+			}
+		}
+		private function checkAdded():void{
+			if(readyForExecution){
+				setAdded(true);
+			}else{
+				setAdded(false);
 			}
 		}
 		protected function setAdded(value:Boolean):void{
