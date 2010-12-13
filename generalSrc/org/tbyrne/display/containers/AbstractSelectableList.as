@@ -249,7 +249,7 @@ package org.tbyrne.display.containers
 		In most renderers there is a relationship between the renderer's selection state
 		and the data's booleanValue property. In some circumstances this is undesirable,
 		e.g. so items can be closed and selected or open and unselected. This relationship
-		is normally governed by the 'useDatForSelection' property (within the ToggleButton
+		is normally governed by the 'useDataForSelection' property (within the ToggleButton
 		class).
 		*/
 		protected function onRendererSelect(renderer:ISelectableRenderer) : void{

@@ -43,6 +43,10 @@ package org.tbyrne.data.navigation
 				Log.log(Log.SUSPICIOUS_IMPLEMENTATION, "NavGroup.removeChild: must be provided a IStringProvider argument");
 			}
 		}
+		public function setChildren(children:Array):void{
+			if(_children)_children.reset();
+			addChildren(children);
+		}
 		public function addChildren(children:Array):void{
 			for each(var child:IStringProvider in children){
 				addChild(child);

@@ -156,7 +156,6 @@ package org.tbyrne.display.controls
 			}
 		}
 		override protected function onClick(from:IInteractiveObjectAsset, info:IMouseActInfo):void{
-			super.onClick(from, info);
 			if(_active){
 				selected = !selected;
 				
@@ -164,6 +163,7 @@ package org.tbyrne.display.controls
 					_booleanConsumer.booleanValue = !_booleanProvider.booleanValue;
 				}
 			}
+			super.onClick(from, info);
 		}
 		
 		

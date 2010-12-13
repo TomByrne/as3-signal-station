@@ -35,11 +35,11 @@ package org.tbyrne.core
 			}
 		}
 		protected function getActNoteMapping():Dictionary {
-			// override me with act names mapped to notification names
+			// override me with model act names mapped to notification names
 			return null;
 		}
 		protected function getActActMapping():Dictionary {
-			// override me with act names mapped to notification names
+			// override me with model act names mapped to proxy act names
 			return null;
 		}
 		protected function onActNotePerform(... params):void{
