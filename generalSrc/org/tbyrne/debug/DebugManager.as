@@ -1,21 +1,18 @@
 package org.tbyrne.debug
 {
-	import flash.display.DisplayObjectContainer;
-	import flash.display.Sprite;
 	import flash.utils.Dictionary;
 	
 	import org.tbyrne.acting.actTypes.IAct;
 	import org.tbyrne.acting.acts.Act;
 	import org.tbyrne.core.IApplication;
 	import org.tbyrne.debug.display.DebugDisplay;
+	import org.tbyrne.debug.display.assets.DebugAssetFactory;
 	import org.tbyrne.debug.nodeTypes.IDebugNode;
 	import org.tbyrne.display.assets.AssetNames;
 	import org.tbyrne.display.assets.assetTypes.IAsset;
 	import org.tbyrne.display.assets.assetTypes.IContainerAsset;
 	import org.tbyrne.display.assets.assetTypes.IDisplayAsset;
-	import org.tbyrne.display.assets.nativeAssets.NativeAssetFactory;
 	import org.tbyrne.display.assets.schema.StandardAssetSchema;
-	import org.tbyrne.debug.display.assets.DebugAssetFactory;
 	import org.tbyrne.display.core.IScopedObject;
 	import org.tbyrne.display.core.IScopedObjectRoot;
 	import org.tbyrne.display.core.ScopedObjectAssigner;

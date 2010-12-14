@@ -10,8 +10,9 @@ package org.tbyrne.debug.nodes
 	import org.tbyrne.debug.nodeTypes.IGraphStatisticNode;
 	import org.tbyrne.display.core.IScopedObject;
 	import org.tbyrne.formatters.patternFormatters.PatternFormatter;
+	import org.tbyrne.display.core.ProxyScopedObject;
 
-	public class GraphStatisticNode extends AbstractDebugNode implements IGraphStatisticNode
+	public class GraphStatisticNode extends ProxyScopedObject implements IGraphStatisticNode
 	{
 		private static const COLOUR_TOKEN:String = "${colour}";
 		private static const LABEL_TOKEN:String = "${label}";

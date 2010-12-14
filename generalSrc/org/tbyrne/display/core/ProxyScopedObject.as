@@ -1,12 +1,10 @@
-package org.tbyrne.debug.nodes
+package org.tbyrne.display.core
 {
 	import org.tbyrne.acting.actTypes.IAct;
 	import org.tbyrne.acting.acts.Act;
-	import org.tbyrne.debug.nodeTypes.IDebugNode;
 	import org.tbyrne.display.assets.assetTypes.IDisplayAsset;
-	import org.tbyrne.display.core.IScopedObject;
 
-	public class AbstractDebugNode implements IDebugNode
+	public class ProxyScopedObject implements IScopedObject
 	{
 		
 		public function get scopedObject():IScopedObject{
@@ -41,7 +39,7 @@ package org.tbyrne.debug.nodes
 		protected var _scopeChanged:Act;
 		private var _scopedObject:IScopedObject;
 		
-		public function AbstractDebugNode(scopedObject:IScopedObject=null){
+		public function ProxyScopedObject(scopedObject:IScopedObject=null){
 			super();
 			this.scopedObject = scopedObject;
 		}

@@ -7,7 +7,7 @@ package org.tbyrne.acting.metadata
 	import org.tbyrne.acting.universal.UniversalActExecution;
 	import org.tbyrne.acting.universal.reactions.MethodReaction;
 	import org.tbyrne.acting.universal.ruleTypes.IUniversalRule;
-	import org.tbyrne.compiler.MetadataConfirmer;
+	import org.tbyrne.utils.MetadataConfirmer;
 	import org.tbyrne.display.assets.assetTypes.IDisplayAsset;
 	import org.tbyrne.reflection.Deliterator;
 	import org.tbyrne.reflection.ReflectionUtils;

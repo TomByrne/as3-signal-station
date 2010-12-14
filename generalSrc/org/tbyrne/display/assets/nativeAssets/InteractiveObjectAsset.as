@@ -10,9 +10,11 @@ package org.tbyrne.display.assets.nativeAssets
 	import org.tbyrne.acting.actTypes.IAct;
 	import org.tbyrne.acting.acts.Act;
 	import org.tbyrne.acting.acts.NativeAct;
+	import org.tbyrne.display.actInfo.IKeyActInfo;
 	import org.tbyrne.display.actInfo.IMouseActInfo;
 	import org.tbyrne.display.assets.assetTypes.IDisplayAsset;
 	import org.tbyrne.display.assets.assetTypes.IInteractiveObjectAsset;
+	import org.tbyrne.display.assets.nativeAssets.actInfo.KeyActInfo;
 	import org.tbyrne.display.assets.nativeAssets.actInfo.MouseActInfo;
 
 	public class InteractiveObjectAsset extends DisplayObjectAsset implements IInteractiveObjectAsset
@@ -115,18 +117,21 @@ package org.tbyrne.display.assets.nativeAssets
 			if(!_focusOut)_focusOut = new NativeAct(_interactiveObject,FocusEvent.FOCUS_OUT,[this]);
 			return _focusOut;
 		}
+		
 		/**
 		 * @inheritDoc
 		 */
 		public function get keyUp():IAct{
-			if(!_keyUp)_keyUp = new NativeAct(_interactiveObject,KeyboardEvent.KEY_UP,[this]);
+			if(!_keyUp)_keyUp = new Act();
+			confirmListening(KeyboardEvent.KEY_UP);
 			return _keyUp;
 		}
 		/**
 		 * @inheritDoc
 		 */
 		public function get keyDown():IAct{
-			if(!_keyDown)_keyDown = new NativeAct(_interactiveObject,KeyboardEvent.KEY_DOWN,[this]);
+			if(!_keyDown)_keyDown = new Act();
+			confirmListening(KeyboardEvent.KEY_DOWN);
 			return _keyDown;
 		}
 		
@@ -157,8 +162,6 @@ package org.tbyrne.display.assets.nativeAssets
 				
 				if(_focusIn)_focusIn.eventDispatcher = value;
 				if(_focusOut)_focusOut.eventDispatcher = value;
-				if(_keyUp)_keyUp.eventDispatcher = value;
-				if(_keyDown)_keyDown.eventDispatcher = value;
 			}
 		}
 		
@@ -192,9 +195,9 @@ package org.tbyrne.display.assets.nativeAssets
 		
 		protected var _focusIn:NativeAct;
 		protected var _focusOut:NativeAct;
-		protected var _keyDown:NativeAct;
-		protected var _keyUp:NativeAct;
 		
+		protected var _keyDown:Act;
+		protected var _keyUp:Act;
 		protected var _mouseWheel:Act;
 		protected var _click:Act;
 		protected var _doubleClick:Act;
@@ -221,12 +224,20 @@ package org.tbyrne.display.assets.nativeAssets
 							new EventBundle(MouseEvent.MOUSE_OUT, "_mouseOut", onMouseEvent),
 							new EventBundle(MouseEvent.MOUSE_OVER, "_mouseOver", onMouseEvent),
 							new EventBundle(MouseEvent.MOUSE_UP, "_mouseUp", onMouseEvent),
-							new EventBundle(MouseEvent.MOUSE_DOWN, "_mouseDown", onMouseEvent)];
+							new EventBundle(MouseEvent.MOUSE_DOWN, "_mouseDown", onMouseEvent),
+							new EventBundle(KeyboardEvent.KEY_UP, "_keyUp", onKeyEvent),
+							new EventBundle(KeyboardEvent.KEY_DOWN, "_keyDown", onKeyEvent)];
 		}
 		protected function onMouseEvent(e:MouseEvent):void{
 			var act:Act = this["_"+e.type];
 			if(act){
 				act.perform(this,createMouseInfo(e));
+			}
+		}
+		protected function onKeyEvent(e:KeyboardEvent):void{
+			var act:Act = this["_"+e.type];
+			if(act){
+				act.perform(this,createKeyInfo(e));
 			}
 		}
 		protected function onMouseWheel(e:MouseEvent):void{
@@ -235,6 +246,10 @@ package org.tbyrne.display.assets.nativeAssets
 		protected function createMouseInfo(e:MouseEvent):IMouseActInfo{
 			var target:IDisplayAsset = (e.target==_interactiveObject?this:_nativeFactory.getNew(e.target as DisplayObject));
 			return new MouseActInfo(target, e.altKey, e.ctrlKey, e.shiftKey);
+		}
+		protected function createKeyInfo(e:KeyboardEvent):IKeyActInfo{
+			var target:IDisplayAsset = (e.target==_interactiveObject?this:_nativeFactory.getNew(e.target as DisplayObject));
+			return new KeyActInfo(target, e.altKey, e.ctrlKey, e.shiftKey, e.charCode, e.keyCode, e.keyLocation);
 		}
 		
 		protected function confirmListening(eventName:String):void{

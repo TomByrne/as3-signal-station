@@ -10,6 +10,7 @@ package org.tbyrne.display.controls
 	import org.tbyrne.data.dataTypes.IStringConsumer;
 	import org.tbyrne.data.dataTypes.IValueConsumer;
 	import org.tbyrne.display.DisplayNamespace;
+	import org.tbyrne.display.actInfo.IKeyActInfo;
 	import org.tbyrne.display.assets.assetTypes.IDisplayAsset;
 	import org.tbyrne.display.assets.assetTypes.IInteractiveObjectAsset;
 	import org.tbyrne.display.assets.assetTypes.ITextFieldAsset;
@@ -157,8 +158,8 @@ package org.tbyrne.display.controls
 				if(_focusedChanged)_focusedChanged.perform(this);
 			}
 		}
-		protected function onKeyUp(e:KeyboardEvent, from:IInteractiveObjectAsset) : void{
-			if(e.charCode==Keyboard.ENTER && _enterKeyPressed){
+		protected function onKeyUp(from:IInteractiveObjectAsset, info:IKeyActInfo) : void{
+			if(info.charCode==Keyboard.ENTER && _enterKeyPressed){
 				_enterKeyPressed.perform(this);
 			}
 		}

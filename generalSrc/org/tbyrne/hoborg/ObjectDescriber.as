@@ -6,7 +6,7 @@ package org.tbyrne.hoborg
 	import flash.utils.Dictionary;
 	import flash.utils.getQualifiedClassName;
 	
-	import org.tbyrne.compiler.MetadataConfirmer;
+	import org.tbyrne.utils.MetadataConfirmer;
 	import org.tbyrne.reflection.ReflectionUtils;
 	
 	public class ObjectDescriber

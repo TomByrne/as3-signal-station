@@ -71,11 +71,11 @@ package org.tbyrne.display.assets.assetTypes
 		
 		
 		/**
-		 * handler(e:KeyboardEvent, from:IInteractiveObjectAsset)
+		 * handler(from:IInteractiveObjectAsset, keyActInfo:IKeyActInfo)
 		 */
 		function get keyDown():IAct;
 		/**
-		 * handler(e:KeyboardEvent, from:IInteractiveObjectAsset)
+		 * handler(from:IInteractiveObjectAsset, keyActInfo:IKeyActInfo)
 		 */
 		function get keyUp():IAct;
 		

@@ -11,8 +11,10 @@ package org.tbyrne.display.containers
 	import flash.ui.Mouse;
 	import flash.utils.Timer;
 	
+	import org.goasap.events.GoEvent;
 	import org.tbyrne.data.core.StringData;
 	import org.tbyrne.display.DisplayNamespace;
+	import org.tbyrne.display.actInfo.IKeyActInfo;
 	import org.tbyrne.display.actInfo.IMouseActInfo;
 	import org.tbyrne.display.assets.assetTypes.IContainerAsset;
 	import org.tbyrne.display.assets.assetTypes.IDisplayAsset;
@@ -34,7 +36,6 @@ package org.tbyrne.display.containers
 	import org.tbyrne.media.video.IVideoSource;
 	import org.tbyrne.media.video.VolumeMemory;
 	import org.tbyrne.tweening.LooseTween;
-	import org.goasap.events.GoEvent;
 	
 	use namespace DisplayNamespace
 	
@@ -255,8 +256,8 @@ package org.tbyrne.display.containers
 				_videoProgressProviderPattern.stringValue = null;
 			}
 		}
-		protected function onKeyUp(e:KeyboardEvent, from:IDisplayAsset):void{
-			if(e.charCode==Keyboard.SPACE){
+		protected function onKeyUp(from:IDisplayAsset, info:IKeyActInfo):void{
+			if(info.charCode==Keyboard.SPACE){
 				if(_videoSource){
 					_videoSource.playing = !_videoSource.playing;
 					assessPlaying();

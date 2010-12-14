@@ -2,8 +2,9 @@ package org.tbyrne.debug.nodes
 {
 	import org.tbyrne.debug.nodeTypes.IDebugDataNode;
 	import org.tbyrne.display.core.IScopedObject;
+	import org.tbyrne.display.core.ProxyScopedObject;
 	
-	public class DebugDataNode extends AbstractDebugNode implements IDebugDataNode
+	public class DebugDataNode extends ProxyScopedObject implements IDebugDataNode
 	{
 		
 		public function get debugData():*{

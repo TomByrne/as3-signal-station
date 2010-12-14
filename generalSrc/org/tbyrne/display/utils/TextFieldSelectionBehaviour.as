@@ -5,6 +5,7 @@ package org.tbyrne.display.utils
 	import flash.ui.Keyboard;
 	
 	import org.tbyrne.display.DisplayNamespace;
+	import org.tbyrne.display.actInfo.IKeyActInfo;
 	import org.tbyrne.display.actInfo.IMouseActInfo;
 	import org.tbyrne.display.assets.AssetNames;
 	import org.tbyrne.display.assets.assetTypes.IDisplayAsset;
@@ -148,9 +149,9 @@ package org.tbyrne.display.utils
 		protected function onClick(from:IInteractiveObjectAsset, info:IMouseActInfo):void{
 			assessSelection();
 		}
-		protected function onKeyUp(e:KeyboardEvent, from:IInteractiveObjectAsset):void{
+		protected function onKeyUp(from:IInteractiveObjectAsset, info:IKeyActInfo):void{
 			if(_replaceMode &&
-				(e.keyCode==Keyboard.LEFT || e.keyCode==Keyboard.BACKSPACE) &&
+				(info.keyCode==Keyboard.LEFT || info.keyCode==Keyboard.BACKSPACE) &&
 				_textField.selectionEndIndex<=_textField.selectionBeginIndex+1){
 				_textField.setSelection(_textField.selectionBeginIndex-1,_textField.selectionEndIndex);
 			}
