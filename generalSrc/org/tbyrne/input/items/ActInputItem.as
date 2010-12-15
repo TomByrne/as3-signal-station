@@ -1,12 +1,14 @@
-package org.tbyrne.data.navigation
+package org.tbyrne.input.items
 {
 	import org.tbyrne.acting.actTypes.IAct;
-	import org.tbyrne.data.core.StringData;
+	import org.tbyrne.data.dataTypes.IStringProvider;
 	import org.tbyrne.data.dataTypes.ITriggerableAction;
 	import org.tbyrne.debug.logging.Log;
 	import org.tbyrne.display.assets.assetTypes.IDisplayAsset;
+	import org.tbyrne.input.menu.IMenuInputItem;
+	import org.tbyrne.input.shortcuts.IShortcutInputItem;
 
-	public class ActNavItem extends StringData implements ITriggerableAction
+	public class ActInputItem extends AbstractInputItem implements ITriggerableAction, IShortcutInputItem, IMenuInputItem
 	{
 		public function get act():IAct{
 			return _act;
@@ -25,12 +27,12 @@ package org.tbyrne.data.navigation
 		private var _params:Array;
 		private var _act:IAct;
 		
-		public function ActNavItem(stringValue:String=null, act:IAct=null, params:Array=null){
-			super(stringValue);
+		public function ActInputItem(stringProvider:IStringProvider=null, act:IAct=null, params:Array=null){
+			super(stringProvider);
 			this.act = act;
 			this.params = params;
 		}
-		public function triggerAction(scopeDisplay:IDisplayAsset):void{
+		override public function triggerAction(scopeDisplay:IDisplayAsset):void{
 			if(!_act){
 				Log.log(Log.SUSPICIOUS_IMPLEMENTATION,"no IAct associated with ActNavItem");
 			}else{

@@ -1,11 +1,13 @@
-package org.tbyrne.data.navigation
+package org.tbyrne.input.items
 {
 	import org.puremvc.as3.interfaces.INotifier;
-	import org.tbyrne.data.core.StringData;
+	import org.tbyrne.data.dataTypes.IStringProvider;
 	import org.tbyrne.data.dataTypes.ITriggerableAction;
 	import org.tbyrne.display.assets.assetTypes.IDisplayAsset;
+	import org.tbyrne.input.menu.IMenuInputItem;
+	import org.tbyrne.input.shortcuts.IShortcutInputItem;
 
-	public class NotificationNavItem extends StringData implements ITriggerableAction
+	public class NotificationInputItem extends AbstractInputItem implements ITriggerableAction, IShortcutInputItem, IMenuInputItem
 	{
 		
 		public function get notifier():INotifier{
@@ -33,14 +35,14 @@ package org.tbyrne.data.navigation
 		private var _notification:String;
 		private var _notifier:INotifier;
 		
-		public function NotificationNavItem(stringValue:String=null, notifier:INotifier=null, notification:String=null, noteBody:String=null)
+		public function NotificationInputItem(stringProvider:IStringProvider=null, notifier:INotifier=null, notification:String=null, noteBody:String=null)
 		{
-			super(stringValue);
+			super(stringProvider);
 			this.notifier = notifier;
 			this.notification = notification;
 			this.noteBody = noteBody;
 		}
-		public function triggerAction(scopeDisplay:IDisplayAsset):void{
+		override public function triggerAction(scopeDisplay:IDisplayAsset):void{
 			_notifier.sendNotification(_notification,_noteBody);
 		}
 	}

@@ -120,6 +120,7 @@ package org.tbyrne.application
 			if(!_hasStarted){
 				_hasStarted = true;
 				startApplication();
+				_facade.sendNotification(ApplicationNotifications.START_UP);
 			}
 			addToContainer();
 			_container.removedFromStage.addTempHandler(onRemovedFromStage);
@@ -138,7 +139,6 @@ package org.tbyrne.application
 				DebugManager.addDebugNode(fps);
 				DebugManager.addDebugNode(new DebugDataNode(_scopedObject,new DebugData(new StringData("Garbage Collect"),new GarbageCollect())));
 			}
-			_facade.sendNotification(ApplicationNotifications.START_UP);
 		}
 		private function onRemovedFromStage(from:IDisplayAsset=null):void{
 			removeFromContainer();

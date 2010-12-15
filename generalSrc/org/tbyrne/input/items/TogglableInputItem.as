@@ -1,12 +1,14 @@
-package org.tbyrne.data.navigation
+package org.tbyrne.input.items
 {
 	import org.tbyrne.acting.actTypes.IAct;
 	import org.tbyrne.acting.acts.Act;
 	import org.tbyrne.data.dataTypes.IBooleanConsumer;
 	import org.tbyrne.data.dataTypes.IBooleanProvider;
-	import org.tbyrne.data.dataTypes.IStringProvider;
+	import org.tbyrne.display.assets.assetTypes.IDisplayAsset;
+	import org.tbyrne.input.menu.IMenuInputItem;
+	import org.tbyrne.input.shortcuts.IShortcutInputItem;
 
-	public class TogglableNavItem implements IBooleanProvider, IBooleanConsumer, IStringProvider
+	public class TogglableInputItem extends AbstractInputItem implements IBooleanProvider, IBooleanConsumer, IShortcutInputItem, IMenuInputItem
 	{
 		/**
 		 * @inheritDoc
@@ -14,20 +16,6 @@ package org.tbyrne.data.navigation
 		public function get booleanValueChanged():IAct{
 			return (_booleanValueChanged || (_booleanValueChanged = new Act()));
 		}
-		/**
-		 * @inheritDoc
-		 */
-		public function get stringValueChanged():IAct{
-			return (_stringValueChanged || (_stringValueChanged = new Act()));
-		}
-		/**
-		 * @inheritDoc
-		 */
-		public function get valueChanged():IAct{
-			return stringValueChanged;
-		}
-		
-		protected var _stringValueChanged:Act;
 		protected var _booleanValueChanged:Act;
 		
 		
@@ -43,11 +31,8 @@ package org.tbyrne.data.navigation
 				assessString();
 			}
 		}
-		public function get stringValue():String{
-			return _stringValue;
-		}
-		public function get value():*{
-			return _stringValue;
+		override public function set stringValue(value:String):void{
+			enabledString = value;
 		}
 		public function get enabledString():String{
 			return _enabledString;
@@ -67,15 +52,18 @@ package org.tbyrne.data.navigation
 				assessString();
 			}
 		}
+		override public function get stringValue():String{
+			return _stringValue;
+		}
 		
 		private var _disabledString:String;
 		private var _enabledString:String;
+		private var _stringValue:String;
 		
 		
 		private var _booleanValue:Boolean;
-		private var _stringValue:String;
 		
-		public function TogglableNavItem(enabledString:String, disabledString:String=null){
+		public function TogglableInputItem(enabledString:String, disabledString:String=null){
 			_enabledString = enabledString;
 			_disabledString = disabledString;
 			assessString();
@@ -86,6 +74,9 @@ package org.tbyrne.data.navigation
 				_stringValue = newVal;
 				if(_stringValueChanged)_stringValueChanged.perform(this);
 			}
+		}
+		override public function triggerAction(scopeDisplay:IDisplayAsset):void{
+			booleanValue = !booleanValue;
 		}
 	}
 }

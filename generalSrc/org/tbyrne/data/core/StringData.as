@@ -19,7 +19,7 @@ package org.tbyrne.data.core
 			}
 		}
 		public function get value():*{
-			return _stringValue;
+			return stringValue;
 		}
 		
 		/**
@@ -34,7 +34,7 @@ package org.tbyrne.data.core
 		}
 		
 		protected var _stringValueChanged:Act;
-		private var _stringValue:String;
+		protected var _stringValue:String;
 		
 		public function StringData(stringValue:String=null){
 			this.stringValue = stringValue;

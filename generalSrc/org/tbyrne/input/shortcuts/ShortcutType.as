@@ -1,4 +1,4 @@
-package org.tbyrne.shortcuts
+package org.tbyrne.input.shortcuts
 {
 	public class ShortcutType
 	{

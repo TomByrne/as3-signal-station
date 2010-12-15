@@ -1,13 +1,34 @@
-package org.tbyrne.data.navigation
+package org.tbyrne.input.items
 {
+	import org.tbyrne.acting.actTypes.IAct;
+	import org.tbyrne.acting.acts.Act;
 	import org.tbyrne.collections.linkedList.LinkedList;
 	import org.tbyrne.data.core.StringData;
 	import org.tbyrne.data.dataTypes.IDataProvider;
 	import org.tbyrne.data.dataTypes.IStringProvider;
 	import org.tbyrne.debug.logging.Log;
+	import org.tbyrne.input.menu.IMenuInputItem;
 
-	public class NavGroup extends StringData implements IDataProvider
+	public class InputGroup extends StringData implements IDataProvider, IMenuInputItem
 	{
+		/**
+		 * @inheritDoc
+		 */
+		public function get shownInMenuChanged():IAct{
+			return (_shownInMenuChanged || (_shownInMenuChanged = new Act()));
+		}
+		/**
+		 * @inheritDoc
+		 */
+		public function get menuLocationChanged():IAct{
+			return (_menuLocationChanged || (_menuLocationChanged = new Act()));
+		}
+		
+		protected var _menuLocationChanged:Act;
+		protected var _shownInMenuChanged:Act;
+		
+		
+		
 		public function get data():*{
 			if(_children && _children.length){
 				return _children;
@@ -15,11 +36,36 @@ package org.tbyrne.data.navigation
 				return null;
 			}
 		}
+		public function get childList():LinkedList{
+			if(!_children)_children = new LinkedList();
+			return _children;
+		}
 		
+		public function get shownInMenu():Boolean{
+			return _shownInMenu;
+		}
+		public function set shownInMenu(value:Boolean):void{
+			if(_shownInMenu!=value){
+				_shownInMenu = value;
+				if(_shownInMenuChanged)_shownInMenuChanged.perform(this);
+			}
+		}
+		public function get menuLocation():String{
+			return _menuLocation;
+		}
+		public function set menuLocation(value:String):void{
+			if(_menuLocation!=value){
+				_menuLocation = value;
+				if(_menuLocationChanged)_menuLocationChanged.perform(this);
+			}
+		}
+		
+		private var _menuLocation:String;
+		private var _shownInMenu:Boolean = true;
 		private var _children:LinkedList;
 		
 		
-		public function NavGroup(stringValue:String=null, children:Array=null){
+		public function InputGroup(stringValue:String=null, children:Array=null){
 			super(stringValue);
 			if(children){
 				addChildren(children);

@@ -19,7 +19,6 @@ package
 	import org.tbyrne.collections.utils.arraysEqual;
 	import org.tbyrne.collections.utils.randomSort;
 	import org.tbyrne.data.actions.Link;
-	import org.tbyrne.data.navigation.ActNavItem;
 	import org.tbyrne.data.operators.NumberRange;
 	import org.tbyrne.debug.DebugManager;
 	import org.tbyrne.debug.display.DebugItemRenderer;
@@ -75,6 +74,10 @@ package
 	import org.tbyrne.gateways.FlashVarsGateway;
 	import org.tbyrne.gateways.methodCalls.GetPropertyCall;
 	import org.tbyrne.gateways.methodCalls.SetPropertyCall;
+	import org.tbyrne.input.items.ActInputItem;
+	import org.tbyrne.input.items.EventInputItem;
+	import org.tbyrne.input.items.MethodCallInputItem;
+	import org.tbyrne.input.items.NotificationInputItem;
 	import org.tbyrne.media.MediaProgressDisplayAdaptor;
 	import org.tbyrne.media.image.ImageSource;
 	import org.tbyrne.media.video.ProgressiveVideoSource;
@@ -169,7 +172,10 @@ package
 			ToolTipDisplay;
 			SliderButton;
 			ToolTipAnnotator;
-			ActNavItem;
+			ActInputItem;
+			NotificationInputItem;
+			EventInputItem;
+			MethodCallInputItem;
 			ServerProxy;
 			CallMethodCommand;
 			SetPropertyCall;

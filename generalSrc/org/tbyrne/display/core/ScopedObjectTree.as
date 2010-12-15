@@ -1,10 +1,11 @@
-package org.tbyrne.display.validation
+package org.tbyrne.display.core
 {
 	import flash.utils.Dictionary;
 	
 	import org.tbyrne.display.assets.assetTypes.IDisplayAsset;
 	import org.tbyrne.display.core.IScopedObject;
 	
+	//@todo: Refactor FrameValidationManager to use this class
 	public class ScopedObjectTree
 	{
 		public var assessImmediately:Boolean = false;
@@ -12,9 +13,9 @@ package org.tbyrne.display.validation
 		// mapped IScopedObject > true
 		protected var _scopedObjects:Dictionary = new Dictionary();
 		// these are scoped objects whose scope haven't yet been checked
-		protected var _pendingScopedObjects:Vector.<AssetBundle> = new Vector.<AssetBundle>();
+		protected var _pendingScopedObjects:Vector.<IScopedObject> = new Vector.<IScopedObject>();
 		protected var _rootBundles:Vector.<AssetBundle> = new Vector.<AssetBundle>();
-		// mapped asset > AssetBundle
+		// mapped IDisplayAsset > AssetBundle
 		protected var _assetToBundleMap:Dictionary = new Dictionary();
 		
 		public function ScopedObjectTree(){
@@ -40,27 +41,87 @@ package org.tbyrne.display.validation
 			}
 			var index:int = _pendingScopedObjects.indexOf(scopedObject);
 			if(index==-1){
-				var bundle:AssetBundle = _assetToBundleMap[scopedObject.asset];
+				var bundle:AssetBundle = _assetToBundleMap[scopedObject.scope];
 				removeFromBundle(scopedObject, bundle);
-				scopedObject.assetChanged.removeHandler(onAssetChanged);
+				scopedObject.scopeChanged.removeHandler(onAssetChanged);
 			}else{
-				_pendingScopedObjects.splice(index);
+				_pendingScopedObjects.splice(index,1);
 			}
 			delete _scopedObjects[scopedObject];
+		}
+		/**
+		 * Executes a function for all IScopedObjects whose scope is at or above the specified
+		 * IDisplayObject in the heirarchy. Execution starts at the specified IDispalyObject
+		 * and moves back upwards to the root.
+		 * @param display 
+		 * @param func The function to execute for each IScopedObject, if the function returns false
+		 * execution will cease at this level (i.e. if multiple IScopedObjects exist at this level they will
+		 * still be executed). The function should accept two parameters; firstly, the IScopedObject;
+		 * secondly, the specified IDispalyAsset.<br/>
+		 * For example:<br/>
+		 * <code>function checkScopedObject(scopedObject:IScopedObject, display:IDisplayAsset):Boolean</code>
+		 * 
+		 */
+		public function executeUpwardsFrom(display:IDisplayAsset, func:Function):void{
+			var bundle:AssetBundle = findFirstScopedAbove(display);
+			while(bundle){
+				var finished:Boolean = false;
+				for each(var scopedObject:IScopedObject in bundle.scopedObjects){
+					var ret:* = func(scopedObject, display);
+					if(ret!=null && ret==false){
+						finished = true;
+					}
+				}
+				if(finished){
+					break;
+				}else{
+					bundle = bundle.parent;
+				}
+			}
+		}
+		/**
+		 * 
+		 * @param display The IDisplayAsset for which the IScopedObjects shuold be found.
+		 * @return Returns the first bundle of IScopedObjects for the specified IDisplayObject
+		 * or it's ascendants.
+		 * 
+		 */
+		protected function findFirstScopedAbove(display:IDisplayAsset):AssetBundle{
+			assessAllScopedObject();
+			var bundle:AssetBundle = _assetToBundleMap[display];
+			if(bundle){
+				return bundle;
+			}else{
+				var bundles:Vector.<AssetBundle> = _rootBundles;
+				var matchedAscend:AssetBundle;
+				while(bundles){
+					var found:Boolean = false;
+					for each(bundle in bundles){
+						if(!bundle.asset || isDescendant(bundle.asset,display)){
+							found = true;
+							matchedAscend = bundle;
+							bundles = matchedAscend.children;
+							break;
+						}
+					}
+					if(!found)break;
+				}
+				return matchedAscend;
+			}
 		}
 		
 		protected function assessAllScopedObject():void{
 			for each(var scopedObject:IScopedObject in _pendingScopedObjects){
 				assessScopedObject(scopedObject);
 			}
-			_pendingScopedObjects = [];
+			_pendingScopedObjects = new Vector.<IScopedObject>();
 		}
 		/**
 		 * Adds this IScopedObject object into the asset heirarchy.
 		 */
 		protected function assessScopedObject(scopedObject:IScopedObject):void{
-			flag.assetChanged.addHandler(onAssetChanged);
-			addToBundle(flag);
+			scopedObject.scopeChanged.addHandler(onAssetChanged);
+			addToBundle(scopedObject);
 		}
 		protected function onAssetChanged(from:IScopedObject, oldAsset:IDisplayAsset):void{
 			var oldBundle:AssetBundle = _assetToBundleMap[oldAsset];
@@ -69,18 +130,18 @@ package org.tbyrne.display.validation
 			var newBundle:AssetBundle = addToBundle(from);
 		}
 		protected function addToBundle(scopedObject:IScopedObject):AssetBundle{
-			var bundle:AssetBundle = _assetToBundleMap[flag.asset];
+			var bundle:AssetBundle = _assetToBundleMap[scopedObject.scope];
 			if(!bundle){
-				bundle = AssetBundle.getNew(flag.asset);
-				_assetToBundleMap[flag.asset] = bundle;
+				bundle = AssetBundle.getNew(scopedObject.scope);
+				_assetToBundleMap[scopedObject.scope] = bundle;
 				bundle.assetPosChanged.addHandler(onAssetPosChanged);
 				if(bundle.readyForExecution)addToHeirarchy(bundle);
 			}
-			bundle.addValidationFlag(flag);
+			bundle.addScopedObject(scopedObject);
 			return bundle;
 		}
 		protected function removeFromBundle(scopedObject:IScopedObject, bundle:AssetBundle):void{
-			bundle.removeValidationFlag(flag);
+			bundle.removeScopedObject(scopedObject);
 			if(!bundle.validationFlagCount){
 				removeFromHeirarchy(bundle);
 				delete _assetToBundleMap[bundle.asset];
@@ -131,10 +192,10 @@ package org.tbyrne.display.validation
 		 * Analyses a list of children and transfers them to the bundle when they fall underneath
 		 * the bundles asset.
 		 */
-		protected function stealChildren(bundle:AssetBundle, children:Array):void{
+		protected function stealChildren(bundle:AssetBundle, children:Vector.<AssetBundle>):void{
 			for(var i:int=0; i<children.length; i++){
 				var child:AssetBundle = children[i];
-				if(isDescendant(bundle.asset, child.asset)){
+				if(!bundle.asset || isDescendant(bundle.asset, child.asset)){
 					bundle.addChild(child);
 					children.splice(i,1);
 				}
@@ -175,7 +236,7 @@ class AssetBundle implements IPoolable{
 	}
 	
 	public function get validationFlagCount():int{
-		return validationFlags.length;
+		return scopedObjects.length;
 	}
 	
 	public function get asset():IDisplayAsset{
@@ -202,8 +263,8 @@ class AssetBundle implements IPoolable{
 	}
 	
 	public var parent:AssetBundle;
-	public var children:Array = [];
-	public var validationFlags:Array = [];
+	public var children:Vector.<AssetBundle> = new Vector.<AssetBundle>();
+	public var scopedObjects:Vector.<IScopedObject> = new Vector.<IScopedObject>();
 	
 	protected var _addedToStage:Boolean;
 	protected var _asset:IDisplayAsset;
@@ -238,29 +299,29 @@ class AssetBundle implements IPoolable{
 		children.splice(index,1);
 	}
 	
-	public function addValidationFlag(validationscopedObject:IScopedObject):void{
+	public function addScopedObject(scopedObject:IScopedObject):void{
 		CONFIG::debug{
-			if(validationFlags.indexOf(validationFlag)!=-1){
-				throw new Error("flag already added");
+			if(scopedObjects.indexOf(scopedObject)!=-1){
+				throw new Error("IScopedObject already added");
 			}
 		}
-		validationFlags.push(validationFlag);
+		scopedObjects.push(scopedObject);
 	}
-	public function removeValidationFlag(validationscopedObject:IScopedObject):void{
-		var index:int = validationFlags.indexOf(validationFlag);
+	public function removeScopedObject(scopedObject:IScopedObject):void{
+		var index:int = scopedObjects.indexOf(scopedObject);
 		CONFIG::debug{
 			if(index==-1){
-				throw new Error("flag not added");
+				throw new Error("IScopedObject not added");
 			}
 		}
-		validationFlags.splice(index,1);
+		scopedObjects.splice(index,1);
 	}
 	
 	public function reset():void{
 		asset = null
-		validationFlags = [];
+		scopedObjects = new Vector.<IScopedObject>();
 		parent = null;
-		children = [];
+		children = new Vector.<AssetBundle>();
 	}
 	public function release():void{
 		pool.releaseObject(this);
