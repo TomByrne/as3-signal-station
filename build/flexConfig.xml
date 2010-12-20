@@ -11,6 +11,8 @@
         	<name>CONFIG::debug</name>
         	<value>false</value>
     	</define>
+		
+		<warn-assignment-within-conditional>false</warn-assignment-within-conditional>
 	 </compiler>
 	 
 	 <metadata>

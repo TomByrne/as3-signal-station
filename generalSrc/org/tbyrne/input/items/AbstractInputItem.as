@@ -1,8 +1,5 @@
 package org.tbyrne.input.items
 {
-	import flash.system.Capabilities;
-	import flash.ui.KeyLocation;
-	
 	import org.tbyrne.acting.actTypes.IAct;
 	import org.tbyrne.acting.acts.Act;
 	import org.tbyrne.data.dataTypes.IBooleanProvider;
@@ -11,6 +8,7 @@ package org.tbyrne.input.items
 	import org.tbyrne.display.actInfo.IKeyActInfo;
 	import org.tbyrne.display.assets.assetTypes.IDisplayAsset;
 	import org.tbyrne.display.core.IScopedObject;
+	import org.tbyrne.input.shortcuts.ShortcutLiterator;
 	import org.tbyrne.input.shortcuts.ShortcutType;
 
 	public class AbstractInputItem extends StringProxy
@@ -42,15 +40,16 @@ package org.tbyrne.input.items
 		
 		
 		override public function set stringValue(value:String):void{
-			var shortcutStr:String = generateShortcutString();
+			var shortcutStr:String = getShortcutStr();
 			if(shortcutStr.length && value.indexOf(shortcutStr)==value.length-shortcutStr.length){
 				value.substr(0,value.length-shortcutStr.length);
 			}
 			super.stringValue = value;
 		}
 		override public function get stringValue():String{
-			return super.stringValue+generateShortcutString();
+			return super.stringValue+getShortcutStr();
 		}
+		
 		
 		
 		public function get scopedObject():IScopedObject{
@@ -210,42 +209,13 @@ package org.tbyrne.input.items
 			_isActive = from.booleanValue;
 		}
 		
-		protected function generateShortcutString():String{
-			var ret:String;
-			if(hasShortcut() && charCode!=-1){
-				ret = " ( ";
-				if(altKey){
-					ret += "ALT + ";
-				}
-				if(ctrlKey){
-					if(Capabilities.os.indexOf("Mac")!=-1 || Capabilities.os.indexOf("iPhone")!=-1 || Capabilities.os.indexOf("iPad")!=-1){
-						ret += "CMD + ";
-					}else{
-						ret += "CTRL + ";
-					}
-				}
-				if(shiftKey){
-					ret += "SHFT + ";
-				}
-				if(keyLocation!=-1){
-					switch(keyLocation){
-						case KeyLocation.LEFT:
-							ret += "Left ";
-							break;
-						case KeyLocation.RIGHT:
-							ret += "Right ";
-							break;
-						case KeyLocation.NUM_PAD:
-							ret += "NumPad ";
-							break;
-					}
-				}
-				ret += String.fromCharCode(charCode).toUpperCase();
-				ret += " )"
+		private function getShortcutStr():String{
+			var ret:String = ShortcutLiterator.literateShortcut(this).toUpperCase();
+			if(ret.length){
+				return " ("+ret+")";
 			}else{
-				ret = "";
+				return ret;
 			}
-			return ret;
 		}
 	}
 }

@@ -3,11 +3,21 @@ package org.tbyrne.gateways.interpreters
 	public class ArrayInterpreter implements IDataInterpreter
 	{
 		public var vectorType:*;
-		public var nestedInterpreter:IDataInterpreter;
+		public var nestedInterpreters:Vector.<IDataInterpreter>;
 		
-		public function ArrayInterpreter(nestedInterpreter:IDataInterpreter=null, vectorType:*=null){
+		public function ArrayInterpreter(nestedInterpreters:*=null, vectorType:*=null){
 			this.vectorType = vectorType;
-			this.nestedInterpreter = nestedInterpreter;
+			
+			var vectCast:Vector.<IDataInterpreter> = (nestedInterpreters as Vector.<IDataInterpreter>);
+			var arrCast:Array;
+			var dataCast:IDataInterpreter;
+			if(vectCast){
+				this.nestedInterpreters = vectCast;
+			}else if(arrCast = (nestedInterpreters as Array)){
+				this.nestedInterpreters = Vector.<IDataInterpreter>(arrCast);
+			}else if(dataCast = (nestedInterpreters as IDataInterpreter)){
+				this.nestedInterpreters = Vector.<IDataInterpreter>([dataCast]);
+			}
 		}
 		
 		public function incoming(data:*):*{
@@ -21,8 +31,8 @@ package org.tbyrne.gateways.interpreters
 				}
 				for each(var item:* in cast){
 					if(item!=null){
-						if(nestedInterpreter){
-							item = nestedInterpreter.incoming(item);
+						for each(var datInt:IDataInterpreter in nestedInterpreters){
+							item = datInt.incoming(item);
 						}
 						ret.push(item);
 					}
@@ -33,7 +43,7 @@ package org.tbyrne.gateways.interpreters
 					return ret;
 				}
 			}
-			return cast;
+			return data;
 		}
 		
 		public function outgoing(data:*):*{
@@ -47,8 +57,8 @@ package org.tbyrne.gateways.interpreters
 				var ret:Array = [];
 				for each(var item:* in data){
 					if(item!=null){
-						if(nestedInterpreter){
-							item = nestedInterpreter.outgoing(item);
+						for each(var datInt:IDataInterpreter in nestedInterpreters){
+							item = datInt.outgoing(item);
 						}
 						ret.push(item);
 					}
