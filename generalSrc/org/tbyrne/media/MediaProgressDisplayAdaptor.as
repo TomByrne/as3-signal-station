@@ -39,11 +39,14 @@ package org.tbyrne.media
 			if(_progressDisplay!=value){
 				_progressDisplay = value;
 				if(_progressDisplay){
+					_progressDisplay.measurable = true;
 					if(_mediaSource){
-						_progressDisplay.measurable = true;
 						_progressDisplay.progress = _mediaSource.loadProgress.numericalValue;
 						_progressDisplay.total = _mediaSource.loadTotal.numericalValue;
 						_progressDisplay.units = _mediaSource.loadUnits.stringValue;
+					} else {
+						_progressDisplay.progress = 0;
+						_progressDisplay.total = 1;
 					}
 				}
 			}
