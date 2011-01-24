@@ -4,8 +4,8 @@ package org.tbyrne.display.progress
 
 	public class SimpleSWFPreloaderFrame extends SWFPreloaderFrame
 	{
-		public function SimpleSWFPreloaderFrame(){
-			super(null,new SimpleProgressDisplay(nativeFactory.createContainer()),false);
+		public function SimpleSWFPreloaderFrame(mainClasspath: String=null){
+			super(mainClasspath,new SimpleProgressDisplay(nativeFactory.createContainer()),false);
 		}
 	}
 }
