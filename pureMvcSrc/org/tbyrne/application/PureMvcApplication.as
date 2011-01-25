@@ -14,8 +14,8 @@ package org.tbyrne.application
 	import org.tbyrne.debug.data.core.DebugData;
 	import org.tbyrne.debug.nodes.DebugDataNode;
 	import org.tbyrne.debug.nodes.GraphStatisticNode;
-	import org.tbyrne.display.assets.assetTypes.IContainerAsset;
-	import org.tbyrne.display.assets.assetTypes.IDisplayAsset;
+	import org.tbyrne.display.assets.nativeTypes.IDisplayObjectContainer;
+	import org.tbyrne.display.assets.nativeTypes.IDisplayObject;
 	import org.tbyrne.display.core.ScopedObject;
 	import org.tbyrne.math.units.MemoryUnitConverter;
 	import org.tbyrne.notifications.ApplicationNotifications;
@@ -23,10 +23,10 @@ package org.tbyrne.application
 	public class PureMvcApplication implements IApplication
 	{
 		
-		public function get container():IContainerAsset{
+		public function get container():IDisplayObjectContainer{
 			return _container;
 		}
-		public function set container(value:IContainerAsset):void{
+		public function set container(value:IDisplayObjectContainer):void{
 			if(_container!=value){
 				if(_container){
 					if(_container.stage){
@@ -51,7 +51,7 @@ package org.tbyrne.application
 			}
 		}
 		
-		protected var _container:IContainerAsset;
+		protected var _container:IDisplayObjectContainer;
 		protected var _appPosition:Point;
 		protected var _appSize:Point;
 		protected var _facade:Facade;
@@ -116,7 +116,7 @@ package org.tbyrne.application
 			if(_hasStarted)_facade.sendNotification(ApplicationNotifications.SET_APP_SIZE,_appSize);
 		}
 		
-		private function onAddedToStage(from:IDisplayAsset=null):void{
+		private function onAddedToStage(from:IDisplayObject=null):void{
 			if(!_hasStarted){
 				_hasStarted = true;
 				startApplication();
@@ -140,7 +140,7 @@ package org.tbyrne.application
 				DebugManager.addDebugNode(new DebugDataNode(_scopedObject,new DebugData(new StringData("Garbage Collect"),new GarbageCollect())));
 			}
 		}
-		private function onRemovedFromStage(from:IDisplayAsset=null):void{
+		private function onRemovedFromStage(from:IDisplayObject=null):void{
 			removeFromContainer();
 			_container.addedToStage.addTempHandler(onAddedToStage);
 		}

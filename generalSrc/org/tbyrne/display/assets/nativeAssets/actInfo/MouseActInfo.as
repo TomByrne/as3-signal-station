@@ -1,14 +1,14 @@
 package org.tbyrne.display.assets.nativeAssets.actInfo
 {
 	import org.tbyrne.display.actInfo.IMouseActInfo;
-	import org.tbyrne.display.assets.assetTypes.IDisplayAsset;
+	import org.tbyrne.display.assets.nativeTypes.IDisplayObject;
 	
 	public class MouseActInfo implements IMouseActInfo
 	{
-		public function get mouseTarget():IDisplayAsset{
+		public function get mouseTarget():IDisplayObject{
 			return _mouseTarget;
 		}
-		public function set mouseTarget(value:IDisplayAsset):void{
+		public function set mouseTarget(value:IDisplayObject):void{
 			_mouseTarget = value;
 		}
 		
@@ -36,9 +36,9 @@ package org.tbyrne.display.assets.nativeAssets.actInfo
 		private var _shiftKey:Boolean;
 		private var _ctrlKey:Boolean;
 		private var _altKey:Boolean;
-		private var _mouseTarget:IDisplayAsset;
+		private var _mouseTarget:IDisplayObject;
 		
-		public function MouseActInfo(mouseTarget:IDisplayAsset, altKey:Boolean, ctrlKey:Boolean, shiftKey:Boolean){
+		public function MouseActInfo(mouseTarget:IDisplayObject, altKey:Boolean, ctrlKey:Boolean, shiftKey:Boolean){
 			this.mouseTarget = mouseTarget;
 			this.altKey = altKey;
 			this.ctrlKey = ctrlKey;

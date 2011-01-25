@@ -4,7 +4,7 @@ package org.tbyrne.debug.data.baseMetrics
 	import org.tbyrne.binding.PropertyWatcher;
 	import org.tbyrne.binding.Watchable;
 	import org.tbyrne.debug.data.core.NumberMonitor;
-	import org.tbyrne.display.assets.assetTypes.IStageAsset;
+	import org.tbyrne.display.assets.nativeTypes.IStage;
 	import org.tbyrne.display.core.IView;
 	
 	public class IntendedFrameRate extends NumberMonitor
@@ -20,17 +20,17 @@ package org.tbyrne.debug.data.baseMetrics
 		public function get view():IView{return _watchable.view;}
 		public function set view(value:IView):void{_watchable.view = value;}
 		
-		public function get stage():IStageAsset{
+		public function get stage():IStage{
 			return _stage;
 		}
-		public function set stage(value:IStageAsset):void{
+		public function set stage(value:IStage):void{
 			if(_stage!=value){
 				_stage = value;
 				target = value;
 			}
 		}
 		
-		private var _stage:IStageAsset;
+		private var _stage:IStage;
 		private var _watchable:Watchable;
 		
 		public function IntendedFrameRate(view:IView=null){
@@ -40,7 +40,7 @@ package org.tbyrne.debug.data.baseMetrics
 			new PropertyWatcher("view.asset.stage",setStage,null,null,this);
 			this.view = view;
 		}
-		protected function setStage(newStage:IStageAsset):void{
+		protected function setStage(newStage:IStage):void{
 			this.stage = newStage;
 		}
 	}

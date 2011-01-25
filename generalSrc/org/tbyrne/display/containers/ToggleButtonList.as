@@ -7,7 +7,7 @@ package org.tbyrne.display.containers
 	import org.tbyrne.data.dataTypes.IBooleanConsumer;
 	import org.tbyrne.data.dataTypes.IBooleanProvider;
 	import org.tbyrne.display.assets.assetTypes.IAsset;
-	import org.tbyrne.display.assets.assetTypes.IDisplayAsset;
+	import org.tbyrne.display.assets.nativeTypes.IDisplayObject;
 	import org.tbyrne.display.constants.Direction;
 	import org.tbyrne.display.core.ILayoutView;
 	import org.tbyrne.display.core.IView;
@@ -127,7 +127,7 @@ package org.tbyrne.display.containers
 		protected var _ignoreRenderers:Boolean;
 		protected var _selectedItem:*;
 		
-		public function ToggleButtonList(asset:IDisplayAsset=null){
+		public function ToggleButtonList(asset:IDisplayObject=null){
 			super(asset);
 		}
 		// TODO:bring selected renderer to top depth (and arrange others)

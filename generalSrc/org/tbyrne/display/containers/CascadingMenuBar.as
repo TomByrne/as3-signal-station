@@ -4,7 +4,7 @@ package org.tbyrne.display.containers
 	
 	import org.tbyrne.display.DisplayNamespace;
 	import org.tbyrne.display.assets.AssetNames;
-	import org.tbyrne.display.assets.assetTypes.IDisplayAsset;
+	import org.tbyrne.display.assets.nativeTypes.IDisplayObject;
 	import org.tbyrne.display.constants.Anchor;
 	import org.tbyrne.display.constants.Direction;
 	import org.tbyrne.display.controls.MenuBarRenderer;
@@ -47,14 +47,14 @@ package org.tbyrne.display.containers
 		
 		private var _clickAutoClose:Boolean;
 		
-		protected var _assumedListAsset:IDisplayAsset;
+		protected var _assumedListAsset:IDisplayObject;
 		protected var _assumedListFactory:SimpleInstanceFactory;
 		protected var _listFactory:IInstanceFactory;
 		protected var _currListFactory:IInstanceFactory;
 		protected var _rootWatcher:ListWatcher;
 		
 		
-		public function CascadingMenuBar(asset:IDisplayAsset=null){
+		public function CascadingMenuBar(asset:IDisplayObject=null){
 			super(asset);
 		}
 		override protected function init() : void{
@@ -68,7 +68,7 @@ package org.tbyrne.display.containers
 		}
 		override protected function bindToAsset() : void{
 			super.bindToAsset();
-			_assumedListAsset = _containerAsset.takeAssetByName(AssetNames.CHILD_LIST,IDisplayAsset,true);
+			_assumedListAsset = _containerAsset.takeAssetByName(AssetNames.CHILD_LIST,IDisplayObject,true);
 			if(_assumedListAsset){
 				_containerAsset.removeAsset(_assumedListAsset);
 				assessListFactory();
@@ -107,7 +107,7 @@ package org.tbyrne.display.containers
 				updateListFactory(factory);
 			}
 		}
-		protected function createAssumedListFactory(asset:IDisplayAsset):SimpleInstanceFactory{
+		protected function createAssumedListFactory(asset:IDisplayObject):SimpleInstanceFactory{
 			var factory:SimpleInstanceFactory = new SimpleInstanceFactory(CascadingListBox);
 			factory.useChildFactories = true;
 			factory.instanceProperties = new Dictionary();
@@ -129,9 +129,9 @@ import flash.utils.Dictionary;
 import org.tbyrne.data.dataTypes.IDataProvider;
 import org.tbyrne.display.DisplayNamespace;
 import org.tbyrne.display.actInfo.IMouseActInfo;
-import org.tbyrne.display.assets.assetTypes.IContainerAsset;
-import org.tbyrne.display.assets.assetTypes.IDisplayAsset;
-import org.tbyrne.display.assets.assetTypes.IInteractiveObjectAsset;
+import org.tbyrne.display.assets.nativeTypes.IDisplayObjectContainer;
+import org.tbyrne.display.assets.nativeTypes.IDisplayObject;
+import org.tbyrne.display.assets.nativeTypes.IInteractiveObject;
 import org.tbyrne.display.assets.utils.isDescendant;
 import org.tbyrne.display.constants.Anchor;
 import org.tbyrne.display.constants.Direction;
@@ -364,9 +364,9 @@ class ListWatcher{
 			parentList.asset.stage.mousePressed.removeHandler(onStageClicked);
 		}
 	}
-	protected function onStageClicked(from:IInteractiveObjectAsset, info:IMouseActInfo):void{
-		var parentAsset:IContainerAsset = _parentList.asset as IContainerAsset;
-		var childAsset:IContainerAsset = _childListWatcher.parentList.asset as IContainerAsset;
+	protected function onStageClicked(from:IInteractiveObject, info:IMouseActInfo):void{
+		var parentAsset:IDisplayObjectContainer = _parentList.asset as IDisplayObjectContainer;
+		var childAsset:IDisplayObjectContainer = _childListWatcher.parentList.asset as IDisplayObjectContainer;
 		if(info.mouseTarget!=parentAsset && !parentAsset.contains(info.mouseTarget) &&
 			info.mouseTarget!=childAsset && !childAsset.contains(info.mouseTarget)){
 			hideChildList();

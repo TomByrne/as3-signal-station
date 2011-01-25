@@ -6,14 +6,14 @@ package org.tbyrne.display.containers
 	
 	import org.tbyrne.display.assets.AssetNames;
 	import org.tbyrne.display.assets.assetTypes.IAsset;
-	import org.tbyrne.display.assets.assetTypes.IDisplayAsset;
+	import org.tbyrne.display.assets.nativeTypes.IDisplayObject;
 	import org.tbyrne.display.core.LayoutView;
 	
 	public class ContainerView extends LayoutView
 	{
-		protected var _backing:IDisplayAsset;
+		protected var _backing:IDisplayObject;
 		
-		public function ContainerView(asset:IDisplayAsset=null){
+		public function ContainerView(asset:IDisplayObject=null){
 			super(asset);
 		}
 		override protected function bindToAsset() : void{

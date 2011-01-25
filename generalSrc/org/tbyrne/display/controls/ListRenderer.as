@@ -3,7 +3,7 @@ package org.tbyrne.display.controls
 	import org.tbyrne.data.dataTypes.IBooleanProvider;
 	import org.tbyrne.data.dataTypes.IDataProvider;
 	import org.tbyrne.data.dataTypes.ITriggerableAction;
-	import org.tbyrne.display.assets.assetTypes.IDisplayAsset;
+	import org.tbyrne.display.assets.nativeTypes.IDisplayObject;
 	import org.tbyrne.display.assets.states.StateDef;
 	import org.tbyrne.display.layout.grid.IGridLayoutSubject;
 	
@@ -45,7 +45,7 @@ package org.tbyrne.display.controls
 		private var _oddEvenColumnState:StateDef;
 		private var _hasChildrenState:StateDef;
 		
-		public function ListRenderer(asset:IDisplayAsset=null){
+		public function ListRenderer(asset:IDisplayObject=null){
 			super(asset);
 		}
 		override protected function fillStateList(fill:Array):Array{

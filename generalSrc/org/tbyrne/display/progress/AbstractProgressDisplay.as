@@ -3,7 +3,7 @@ package org.tbyrne.display.progress
 	import flash.display.DisplayObject;
 	
 	import org.tbyrne.display.assets.assetTypes.IAsset;
-	import org.tbyrne.display.assets.assetTypes.IDisplayAsset;
+	import org.tbyrne.display.assets.nativeTypes.IDisplayObject;
 	import org.tbyrne.display.assets.nativeAssets.DisplayObjectAsset;
 	import org.tbyrne.display.core.ILayoutView;
 	import org.tbyrne.display.core.LayoutView;
@@ -60,7 +60,7 @@ package org.tbyrne.display.progress
 				invalidateSize();
 			}
 		}
-		public function get display():IDisplayAsset{
+		public function get display():IDisplayObject{
 			return asset;
 		}
 		public function get layoutView():ILayoutView{
@@ -73,7 +73,7 @@ package org.tbyrne.display.progress
 		private var _message:String;
 		private var _measurable:Boolean;
 		
-		public function AbstractProgressDisplay(asset:IDisplayAsset=null)
+		public function AbstractProgressDisplay(asset:IDisplayObject=null)
 		{
 			super(asset);
 		}

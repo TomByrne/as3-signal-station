@@ -7,7 +7,7 @@ package org.tbyrne.display.controls.popout {
 	import org.tbyrne.acting.actTypes.IAct;
 	import org.tbyrne.acting.acts.Act;
 	import org.tbyrne.display.DisplayNamespace;
-	import org.tbyrne.display.assets.assetTypes.IDisplayAsset;
+	import org.tbyrne.display.assets.nativeTypes.IDisplayObject;
 	import org.tbyrne.display.containers.ListBox;
 	import org.tbyrne.display.controls.TextLabelButton;
 	import org.tbyrne.display.layout.ILayoutSubject;
@@ -70,7 +70,7 @@ package org.tbyrne.display.controls.popout {
 		
 		private var _selectionChangeAct:Act = new Act(); 
 		
-		public function DropDownList(asset:IDisplayAsset=null) {
+		public function DropDownList(asset:IDisplayObject=null) {
 			super(asset);
 			_textLabelButton=new TextLabelButton();
 			_textLabelButton.useDataForSelected = false;

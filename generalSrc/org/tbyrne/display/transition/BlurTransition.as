@@ -5,8 +5,8 @@ package org.tbyrne.display.transition
 	import flash.geom.Matrix;
 	import flash.geom.Point;
 	
-	import org.tbyrne.display.assets.assetTypes.IBitmapAsset;
-	import org.tbyrne.display.assets.assetTypes.IDisplayAsset;
+	import org.tbyrne.display.assets.nativeTypes.IBitmap;
+	import org.tbyrne.display.assets.nativeTypes.IDisplayObject;
 	
 	public class BlurTransition extends Transition
 	{
@@ -26,12 +26,12 @@ package org.tbyrne.display.transition
 			this.blurY = blurY;
 		}
 		
-		override public function doTransition(start:IDisplayAsset, finish:IDisplayAsset, bitmap:IBitmapAsset, duration:Number, currentTime:Number):void{
+		override public function doTransition(start:IDisplayObject, finish:IDisplayObject, bitmap:IBitmap, duration:Number, currentTime:Number):void{
 			var bitmapMatrix:Matrix = bitmap.transform.concatenatedMatrix;
 			bitmapMatrix.invert();
 			
 			var fract:Number = currentTime/duration;
-			var subject:IDisplayAsset;
+			var subject:IDisplayObject;
 			if(fract<=0.5){
 				fract = (fract)/0.5;
 				subject = start;

@@ -1,8 +1,8 @@
-package org.tbyrne.display.assets.assetTypes
+package org.tbyrne.display.assets.nativeTypes
 {
 	import flash.display.BitmapData;
 
-	public interface IBitmapAsset extends IDisplayAsset
+	public interface IBitmap extends IDisplayObject
 	{
 		function get bitmapData():BitmapData;
 		function set bitmapData(value:BitmapData):void;

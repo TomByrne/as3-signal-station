@@ -18,7 +18,7 @@ package org.tbyrne.actLibrary.application
 	import org.tbyrne.acting.actTypes.IUniversalAct;
 	import org.tbyrne.acting.universal.UniversalActExecution;
 	import org.tbyrne.acting.universal.rules.ActInstanceRule;
-	import org.tbyrne.display.assets.assetTypes.IDisplayAsset;
+	import org.tbyrne.display.assets.nativeTypes.IDisplayObject;
 	
 	public class StateApplication extends ConfiguredApplication
 	{

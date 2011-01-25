@@ -26,6 +26,7 @@ package org.tbyrne.siteStream.parsers
 	public class DefaultParser extends EventDispatcher implements ISiteStreamParser
 	{
 		private static const NODE_REFERENCE_EXP:RegExp = /^\{(\S*)\}$/;
+		private static const VECTOR_TEST:RegExp = /\[class Vector\.<.*>\]/;
 		
 		public function get idAttribute():String{
 			return _idAttribute;
@@ -216,16 +217,26 @@ package org.tbyrne.siteStream.parsers
 							}
 						}
 						break;
-					case Array:
-						if(castPropInfo.bestData.nodeKind()==XMLNodeKinds.ATTRIBUTE){
-							parsedValue = simpleValue.split(",");
+					default:
+						var isArray:Boolean = (castPropInfo.classRef==Array);
+						
+						if(isArray || VECTOR_TEST.test(String(castPropInfo.classRef))){
+							if(castPropInfo.bestData.nodeKind()==XMLNodeKinds.ATTRIBUTE){
+								parsedValue = simpleValue.split(",");
+								if(!isArray){
+									var vec:* = new castPropInfo.classRef();
+									for each(var value:* in parsedValue){
+										vec.push(value);
+									}
+									parsedValue = vec;
+								}
+							}else{
+								// if it's an element node and of type Array it gets parsed like a normal object below.
+								complexType = true;
+							}
 						}else{
 							complexType = true;
 						}
-						break;
-						// if it's an element node and of type Array it gets parsed like a normal object below.
-					default:
-						complexType = true;
 				}
 			}
 			

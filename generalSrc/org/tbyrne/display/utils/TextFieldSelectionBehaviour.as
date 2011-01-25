@@ -8,9 +8,9 @@ package org.tbyrne.display.utils
 	import org.tbyrne.display.actInfo.IKeyActInfo;
 	import org.tbyrne.display.actInfo.IMouseActInfo;
 	import org.tbyrne.display.assets.AssetNames;
-	import org.tbyrne.display.assets.assetTypes.IDisplayAsset;
-	import org.tbyrne.display.assets.assetTypes.IInteractiveObjectAsset;
-	import org.tbyrne.display.assets.assetTypes.ITextFieldAsset;
+	import org.tbyrne.display.assets.nativeTypes.IDisplayObject;
+	import org.tbyrne.display.assets.nativeTypes.IInteractiveObject;
+	import org.tbyrne.display.assets.nativeTypes.ITextField;
 	import org.tbyrne.display.controls.TextLabel;
 	import org.tbyrne.display.core.DrawableView;
 	
@@ -57,14 +57,14 @@ package org.tbyrne.display.utils
 		protected var _replaceMode:Boolean = false;
 		protected var _allowMultiCharSelect:Boolean = true;
 		protected var _skipCharSelection:String;
-		protected var _textField:ITextFieldAsset;
+		protected var _textField:ITextField;
 		protected var _lastBegin:int;
 		
-		public function TextFieldSelectionBehaviour(asset:IDisplayAsset=null){
+		public function TextFieldSelectionBehaviour(asset:IDisplayObject=null){
 			super(asset);
 		}
 		override protected function bindToAsset() : void{
-			_textField = _containerAsset.takeAssetByName(AssetNames.LABEL_FIELD, ITextFieldAsset);
+			_textField = _containerAsset.takeAssetByName(AssetNames.LABEL_FIELD, ITextField);
 			_textField.clicked.addHandler(onClick);
 			_textField.keyUp.addHandler(onKeyUp);
 			_textField.focusIn.addHandler(onFocusIn);
@@ -143,13 +143,13 @@ package org.tbyrne.display.utils
 			}
 		}
 		
-		protected function onFocusIn(e:Event, from:IInteractiveObjectAsset):void{
+		protected function onFocusIn(e:Event, from:IInteractiveObject):void{
 			assessSelection();
 		}
-		protected function onClick(from:IInteractiveObjectAsset, info:IMouseActInfo):void{
+		protected function onClick(from:IInteractiveObject, info:IMouseActInfo):void{
 			assessSelection();
 		}
-		protected function onKeyUp(from:IInteractiveObjectAsset, info:IKeyActInfo):void{
+		protected function onKeyUp(from:IInteractiveObject, info:IKeyActInfo):void{
 			if(_replaceMode &&
 				(info.keyCode==Keyboard.LEFT || info.keyCode==Keyboard.BACKSPACE) &&
 				_textField.selectionEndIndex<=_textField.selectionBeginIndex+1){

@@ -8,7 +8,7 @@ package org.tbyrne.display.containers
 	import org.tbyrne.acting.acts.Act;
 	import org.tbyrne.debug.logging.Log;
 	import org.tbyrne.display.DisplayNamespace;
-	import org.tbyrne.display.assets.assetTypes.IDisplayAsset;
+	import org.tbyrne.display.assets.nativeTypes.IDisplayObject;
 	import org.tbyrne.display.constants.Direction;
 	import org.tbyrne.display.core.ILayoutView;
 	import org.tbyrne.display.layout.grid.RendererGridLayout;
@@ -151,7 +151,7 @@ package org.tbyrne.display.containers
 		//private var _selectedRenderers:Dictionary = new Dictionary(); 
 		
 		
-		public function AbstractSelectableList(asset:IDisplayAsset=null){
+		public function AbstractSelectableList(asset:IDisplayObject=null){
 			super(asset);
 		}
 		override protected function init() : void{

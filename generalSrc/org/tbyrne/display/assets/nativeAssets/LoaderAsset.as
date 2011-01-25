@@ -6,10 +6,10 @@ package org.tbyrne.display.assets.nativeAssets
 	import flash.system.LoaderContext;
 	import flash.utils.ByteArray;
 	
-	import org.tbyrne.display.assets.assetTypes.IDisplayAsset;
-	import org.tbyrne.display.assets.assetTypes.ILoaderAsset;
+	import org.tbyrne.display.assets.nativeTypes.IDisplayObject;
+	import org.tbyrne.display.assets.nativeTypes.ILoader;
 	
-	public class LoaderAsset extends DisplayObjectContainerAsset implements ILoaderAsset
+	public class LoaderAsset extends DisplayObjectContainerAsset implements ILoader
 	{
 		public function get loader():Loader {
 			return _loader;
@@ -20,14 +20,14 @@ package org.tbyrne.display.assets.nativeAssets
 		}
 		
 		private var _loader:Loader;
-		private var _content:IDisplayAsset;
+		private var _content:IDisplayObject;
 		
 		
 		public function LoaderAsset(factory:NativeAssetFactory=null){
 			super(factory);
 		}
 		
-		public function get content():IDisplayAsset{
+		public function get content():IDisplayObject{
 			if(!_content && _loader.content){
 				_content = _nativeFactory.getNew(_loader.content);;
 			}

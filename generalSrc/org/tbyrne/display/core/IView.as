@@ -4,7 +4,7 @@ package org.tbyrne.display.core
 	
 	import org.tbyrne.acting.actTypes.IAct;
 	import org.tbyrne.display.assets.assetTypes.IAsset;
-	import org.tbyrne.display.assets.assetTypes.IDisplayAsset;
+	import org.tbyrne.display.assets.nativeTypes.IDisplayObject;
 
 	public interface IView
 	{
@@ -12,6 +12,6 @@ package org.tbyrne.display.core
 		 * handler(from:IView, oldAsset:IAsset)
 		 */
 		function get assetChanged():IAct;
-		function get asset():IDisplayAsset;
+		function get asset():IDisplayObject;
 	}
 }

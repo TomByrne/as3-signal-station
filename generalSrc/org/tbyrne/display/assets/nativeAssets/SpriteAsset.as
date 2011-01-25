@@ -3,9 +3,9 @@ package org.tbyrne.display.assets.nativeAssets
 	import flash.display.DisplayObject;
 	import flash.display.Sprite;
 	
-	import org.tbyrne.display.assets.assetTypes.ISpriteAsset;
+	import org.tbyrne.display.assets.nativeTypes.ISprite;
 
-	public class SpriteAsset extends DisplayObjectContainerAsset implements ISpriteAsset
+	public class SpriteAsset extends DisplayObjectContainerAsset implements ISprite
 	{
 		override public function set displayObject(value:DisplayObject):void{
 			if(super.displayObject!=value){
@@ -22,10 +22,10 @@ package org.tbyrne.display.assets.nativeAssets
 		}
 		
 		
-		public function get hitArea():ISpriteAsset{
+		public function get hitArea():ISprite{
 			return _sprite && _sprite.hitArea?_nativeFactory.getNew(_sprite.hitArea):null;
 		}
-		public function set hitArea(value:ISpriteAsset):void{
+		public function set hitArea(value:ISprite):void{
 			var nativeAsset:INativeAsset = (value as INativeAsset);
 			if(nativeAsset){
 				_sprite.hitArea = nativeAsset.displayObject as Sprite;

@@ -11,8 +11,8 @@ package org.tbyrne.debug.display
 	import org.tbyrne.debug.nodeTypes.IGraphStatisticNode;
 	import org.tbyrne.display.DisplayNamespace;
 	import org.tbyrne.display.assets.AssetNames;
-	import org.tbyrne.display.assets.assetTypes.IContainerAsset;
-	import org.tbyrne.display.assets.assetTypes.IDisplayAsset;
+	import org.tbyrne.display.assets.nativeTypes.IDisplayObjectContainer;
+	import org.tbyrne.display.assets.nativeTypes.IDisplayObject;
 	import org.tbyrne.display.containers.CascadingMenuBar;
 	import org.tbyrne.display.layout.ILayoutSubject;
 	import org.tbyrne.formatters.patternFormatters.PatternFormatter;
@@ -45,7 +45,7 @@ package org.tbyrne.debug.display
 		private var _graphItems:Array = [];
 		private var _graph:DebugGraph;
 		
-		public function DebugDisplay(asset:IDisplayAsset=null, application:IApplication=null){
+		public function DebugDisplay(asset:IDisplayObject=null, application:IApplication=null){
 			super(asset);
 			this.application = application;
 		}
@@ -134,13 +134,13 @@ package org.tbyrne.debug.display
 			if(_application)_application.container = _containerAsset;
 			
 			CONFIG::debug{
-				_graph.asset = _containerAsset.takeAssetByName(AssetNames.DEBUG_GRAPH_DISPLAY,IContainerAsset);
+				_graph.asset = _containerAsset.takeAssetByName(AssetNames.DEBUG_GRAPH_DISPLAY,IDisplayObjectContainer);
 			}
 			_containerAsset.removeAsset(_graph.asset);
 			_graphData.layoutView = _graph;
 		}
 		override protected function unbindFromAsset() : void{
-			var graphAsset:IDisplayAsset = _graph.asset;
+			var graphAsset:IDisplayObject = _graph.asset;
 			_graphData.layoutView = null;
 			_graph.asset = null;
 			_containerAsset.addAsset(graphAsset);

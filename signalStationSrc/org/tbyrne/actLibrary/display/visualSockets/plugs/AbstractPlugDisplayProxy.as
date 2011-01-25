@@ -10,23 +10,23 @@ package org.tbyrne.actLibrary.display.visualSockets.plugs
 	import org.tbyrne.acting.acts.Act;
 	import org.tbyrne.acting.acts.UniversalAct;
 	import org.tbyrne.acting.universal.UniversalActExecution;
-	import org.tbyrne.display.assets.assetTypes.IDisplayAsset;
+	import org.tbyrne.display.assets.nativeTypes.IDisplayObject;
 	import org.tbyrne.display.core.DrawableView;
 	import org.tbyrne.display.layout.ILayoutSubject;
 	import org.tbyrne.display.layout.core.ILayoutInfo;
 	
 	public class AbstractPlugDisplayProxy implements ILayoutSubject, IPlugDisplay
 	{
-		public function get asset():IDisplayAsset{
+		public function get asset():IDisplayObject{
 			return _asset;
 		}
-		public function set asset(value:IDisplayAsset):void{
+		public function set asset(value:IDisplayObject):void{
 			if(_asset!=value){
 				_asset = value;
 				commitAsset();
 			}
 		}
-		public function get display():IDisplayAsset{
+		public function get display():IDisplayObject{
 			return _asset;
 		}
 		
@@ -84,7 +84,7 @@ package org.tbyrne.actLibrary.display.visualSockets.plugs
 		protected var _dataProvider:*;
 		protected var _displaySocket:IDisplaySocket;
 		protected var _target:DrawableView;
-		protected var _asset:IDisplayAsset;
+		protected var _asset:IDisplayObject;
 		protected var _layoutTarget:ILayoutSubject;
 		
 		public function AbstractPlugDisplayProxy(target:DrawableView=null){

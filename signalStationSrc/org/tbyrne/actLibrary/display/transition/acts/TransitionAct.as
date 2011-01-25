@@ -2,20 +2,20 @@ package org.tbyrne.actLibrary.display.transition.acts
 {
 	import org.tbyrne.actLibrary.display.transition.actTypes.IAdvancedTransitionAct;
 	import org.tbyrne.acting.acts.UniversalAct;
-	import org.tbyrne.display.assets.assetTypes.IDisplayAsset;
+	import org.tbyrne.display.assets.nativeTypes.IDisplayObject;
 
 	public class TransitionAct extends UniversalAct implements IAdvancedTransitionAct
 	{
-		public function get startDisplay():IDisplayAsset{
+		public function get startDisplay():IDisplayObject{
 			return _startDisplay;
 		}
-		public function set startDisplay(value:IDisplayAsset):void{
+		public function set startDisplay(value:IDisplayObject):void{
 			_startDisplay = value;
 		}
-		public function get endDisplay():IDisplayAsset{
+		public function get endDisplay():IDisplayObject{
 			return _endDisplay;
 		}
-		public function set endDisplay(value:IDisplayAsset):void{
+		public function set endDisplay(value:IDisplayObject):void{
 			_endDisplay = value;
 		}
 		public function get transitions():Array{
@@ -34,8 +34,8 @@ package org.tbyrne.actLibrary.display.transition.acts
 			return this._doTransition;
 		}
 		
-		private var _startDisplay:IDisplayAsset;
-		private var _endDisplay:IDisplayAsset;
+		private var _startDisplay:IDisplayObject;
+		private var _endDisplay:IDisplayObject;
 		private var _transitions:Array;
 		private var _doTransition: Boolean = true;
 		

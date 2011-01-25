@@ -4,7 +4,7 @@ package org.tbyrne.input.items
 	import org.tbyrne.data.dataTypes.IStringProvider;
 	import org.tbyrne.data.dataTypes.ITriggerableAction;
 	import org.tbyrne.debug.logging.Log;
-	import org.tbyrne.display.assets.assetTypes.IDisplayAsset;
+	import org.tbyrne.display.assets.nativeTypes.IDisplayObject;
 	import org.tbyrne.input.menu.IMenuInputItem;
 	import org.tbyrne.input.shortcuts.IShortcutInputItem;
 
@@ -32,7 +32,7 @@ package org.tbyrne.input.items
 			this.act = act;
 			this.params = params;
 		}
-		override public function triggerAction(scopeDisplay:IDisplayAsset):void{
+		override public function triggerAction(scopeDisplay:IDisplayObject):void{
 			if(!_act){
 				Log.log(Log.SUSPICIOUS_IMPLEMENTATION,"no IAct associated with ActNavItem");
 			}else{

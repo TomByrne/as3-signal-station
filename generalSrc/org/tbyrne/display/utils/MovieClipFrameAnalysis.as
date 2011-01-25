@@ -34,6 +34,15 @@ package org.tbyrne.display.utils
 		public function MovieClipFrameAnalysis(movieClip:MovieClip=null){
 			this.movieClip = movieClip;
 		}
+		public function getFrameLabelIndex(frameLabel:String):int{
+			_framesAnalysedFlag.validate();
+			var run:FrameRun = _frameRuns[frameLabel];
+			if(run){
+				return run.startFrame;
+			}else{
+				return -1;
+			}
+		}
 		public function getFrameLabelDuration(frameLabel:String):int{
 			_framesAnalysedFlag.validate();
 			var run:FrameRun = _frameRuns[frameLabel];

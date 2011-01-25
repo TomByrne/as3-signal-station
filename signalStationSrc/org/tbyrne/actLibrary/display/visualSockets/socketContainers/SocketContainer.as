@@ -7,8 +7,8 @@ package org.tbyrne.actLibrary.display.visualSockets.socketContainers
 	import org.tbyrne.acting.actTypes.IAct;
 	import org.tbyrne.acting.acts.Act;
 	import org.tbyrne.acting.universal.UniversalActExecution;
-	import org.tbyrne.display.assets.assetTypes.IContainerAsset;
-	import org.tbyrne.display.assets.assetTypes.IDisplayAsset;
+	import org.tbyrne.display.assets.nativeTypes.IDisplayObjectContainer;
+	import org.tbyrne.display.assets.nativeTypes.IDisplayObject;
 	import org.tbyrne.display.core.IOutroView;
 	import org.tbyrne.display.layout.ILayout;
 	import org.tbyrne.display.layout.ILayoutSubject;
@@ -19,7 +19,7 @@ package org.tbyrne.actLibrary.display.visualSockets.socketContainers
 			super.displaySocket = value;
 			checkHelper();
 		}
-		override public function set asset(value:IDisplayAsset):void{
+		override public function set asset(value:IDisplayObject):void{
 			super.asset = value;
 			checkHelper();
 		}
@@ -49,8 +49,8 @@ package org.tbyrne.actLibrary.display.visualSockets.socketContainers
 				}
 			}
 		}
-		override public function get display():IDisplayAsset{
-			var ret:IDisplayAsset = super.display;
+		override public function get display():IDisplayObject{
+			var ret:IDisplayObject = super.display;
 			if(!ret){
 				// TODO: fix this
 				//ret = asset = new Sprite();
@@ -69,9 +69,9 @@ package org.tbyrne.actLibrary.display.visualSockets.socketContainers
 		protected var _childSocketsChanged:Act = new Act();
 		private var _layout:ILayout;
 		protected var _socketContHelper:SocketContainerHelper;
-		protected var _childContainer:IContainerAsset;
+		protected var _childContainer:IDisplayObjectContainer;
 		
-		public function SocketContainer(asset:IDisplayAsset=null){
+		public function SocketContainer(asset:IDisplayObject=null){
 			super(asset);
 		}
 		override public function setDataProvider(value:*, execution:UniversalActExecution=null):void{

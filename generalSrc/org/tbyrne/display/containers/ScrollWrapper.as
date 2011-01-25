@@ -7,7 +7,7 @@ package org.tbyrne.display.containers
 	import org.tbyrne.acting.actTypes.IAct;
 	import org.tbyrne.acting.acts.Act;
 	import org.tbyrne.display.actInfo.IMouseActInfo;
-	import org.tbyrne.display.assets.assetTypes.IInteractiveObjectAsset;
+	import org.tbyrne.display.assets.nativeTypes.IInteractiveObject;
 	import org.tbyrne.display.constants.Direction;
 	import org.tbyrne.display.core.IView;
 	import org.tbyrne.display.layout.ILayoutSubject;
@@ -26,7 +26,7 @@ package org.tbyrne.display.containers
 				}
 				super.target = value;
 				_targetView = (value as IView);
-				_targetAsset = (_targetView.asset as IInteractiveObjectAsset);
+				_targetAsset = (_targetView.asset as IInteractiveObject);
 				if(_targetAsset){
 					_targetAsset.mouseWheel.addHandler(onMouseWheel);
 				}
@@ -77,7 +77,7 @@ package org.tbyrne.display.containers
 		private var _allowVerticalScroll:Boolean = true;
 		private var _target:ILayoutSubject;
 		private var _targetView:IView;
-		private var _targetAsset:IInteractiveObjectAsset;
+		private var _targetAsset:IInteractiveObject;
 		private var _vScrollMetrics:ScrollMetrics = new ScrollMetrics(0,0,0);
 		private var _hScrollMetrics:ScrollMetrics = new ScrollMetrics(0,0,0);
 		private var _scrollRect:Rectangle = new Rectangle();
@@ -199,7 +199,7 @@ package org.tbyrne.display.containers
 				_targetAsset.scrollRect = rect;
 			}
 		}
-		protected function onMouseWheel(from:IInteractiveObjectAsset, mouseActInfo:IMouseActInfo, delta:int):void{
+		protected function onMouseWheel(from:IInteractiveObject, mouseActInfo:IMouseActInfo, delta:int):void{
 			if(_mouseWheel)_mouseWheel.perform(this,delta);
 		}
 	}

@@ -3,7 +3,7 @@ package org.tbyrne.data.dataTypes
 	import flash.display.BitmapData;
 	
 	import org.tbyrne.acting.actTypes.IAct;
-	import org.tbyrne.display.assets.assetTypes.IDisplayAsset;
+	import org.tbyrne.display.assets.nativeTypes.IDisplayObject;
 
 	public interface IBitmapDataProvider
 	{

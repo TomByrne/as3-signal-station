@@ -3,7 +3,7 @@ package org.tbyrne.display.controls
 	import flash.display.DisplayObject;
 	
 	import org.tbyrne.display.assets.assetTypes.IAsset;
-	import org.tbyrne.display.assets.assetTypes.IDisplayAsset;
+	import org.tbyrne.display.assets.nativeTypes.IDisplayObject;
 	import org.tbyrne.display.assets.states.StateDef;
 	import org.tbyrne.display.containers.ContainerView;
 	import org.tbyrne.display.core.LayoutView;
@@ -53,7 +53,7 @@ package org.tbyrne.display.controls
 		protected var _activeState:StateDef = new StateDef([ACTIVE_FRAME_LABEL,INACTIVE_FRAME_LABEL],0);
 		protected var _validState:StateDef = new StateDef([VALID_FRAME_LABEL,INVALID_FRAME_LABEL],0);
 		
-		public function Control(asset:IDisplayAsset=null){
+		public function Control(asset:IDisplayObject=null){
 			super(asset);
 		}
 		protected function onValidChanged(from:IValidator):void{

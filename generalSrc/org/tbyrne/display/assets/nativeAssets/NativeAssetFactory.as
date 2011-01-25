@@ -2,16 +2,20 @@ package org.tbyrne.display.assets.nativeAssets
 {
 	import flash.display.*;
 	import flash.media.Video;
+	import flash.system.Capabilities;
+	import flash.system.PlayerTypes;
+	import flash.system.System;
 	import flash.text.TextField;
 	import flash.utils.Dictionary;
 	
 	import org.tbyrne.display.assets.*;
-	import org.tbyrne.display.assets.assetTypes.*;
+	import org.tbyrne.display.assets.assetTypes.IAsset;
+	import org.tbyrne.display.assets.nativeTypes.*;
 	import org.tbyrne.instanceFactory.*;
 
 	public class NativeAssetFactory implements IAssetFactory
 	{
-		// mapped DisplayObject -> IDisplayAsset
+		// mapped DisplayObject -> IDisplayObject
 		private static var cache:Dictionary = new Dictionary(true);
 		
 		
@@ -31,21 +35,21 @@ package org.tbyrne.display.assets.nativeAssets
 			this.skinContainer = skinContainer;
 		}
 		public function getCoreSkin(coreSkinLabel:String):IAsset{
-			var ret:DisplayObject = _skinContainer.getChildByName(coreSkinLabel);
+			var ret:* = _skinContainer.getChildByName(coreSkinLabel);
 			var type:Class = ret["constructor"];
 			CONFIG::debug{
 				checkFactoryType(type);
 			}
 			return getNew(new type());
 		}
-		public function createContainer():IContainerAsset{
-			return getNewByType(IContainerAsset);
+		public function createContainer():IDisplayObjectContainer{
+			return getNewByType(IDisplayObjectContainer);
 		}
-		public function createBitmap():IBitmapAsset{
-			return getNewByType(IBitmapAsset);
+		public function createBitmap():IBitmap{
+			return getNewByType(IBitmap);
 		}
-		public function createHitArea():ISpriteAsset{
-			var ret:SpriteAsset = getNewByType(ISpriteAsset);
+		public function createHitArea():ISprite{
+			var ret:SpriteAsset = getNewByType(ISprite);
 			ret.pixelSnapping = pixelSnapping;
 			var sprite:Sprite = ret.displayObject as Sprite;
 			sprite.graphics.beginFill(0,0);
@@ -70,18 +74,22 @@ package org.tbyrne.display.assets.nativeAssets
 		
 		private function init():void{
 			// this must never list a superclass before a subclass (i.e. SpriteAsset mustn't be above MovieClipAsset)
-			bundles = [	new TypeBundle(BitmapAsset, [IBitmapAsset], Bitmap),
-						new TypeBundle(TextFieldAsset, [ITextFieldAsset], TextField),
-						new TypeBundle(MovieClipAsset, [IMovieClipAsset], MovieClip),
-						new TypeBundle(StageAsset, [IStageAsset], Stage),
-						new TypeBundle(SpriteAsset, [ISpriteAsset,IContainerAsset], Sprite),
-						new TypeBundle(LoaderAsset, [ILoaderAsset], Loader),
-						new TypeBundle(InteractiveObjectAsset, [IInteractiveObjectAsset], SimpleButton),
-						new TypeBundle(VideoAsset, [IVideoAsset], Video),
-						new TypeBundle(DisplayObjectAsset, [IDisplayAsset], Shape)];
+			bundles = [	new TypeBundle(BitmapAsset, [IBitmap], Bitmap),
+						new TypeBundle(TextFieldAsset, [ITextField], TextField),
+						new TypeBundle(MovieClipAsset, [IMovieClip], MovieClip),
+						new TypeBundle(StageAsset, [IStage], Stage),
+						new TypeBundle(SpriteAsset, [ISprite,IDisplayObjectContainer], Sprite),
+						new TypeBundle(LoaderAsset, [ILoader], Loader),
+						new TypeBundle(InteractiveObjectAsset, [IInteractiveObject], SimpleButton),
+						new TypeBundle(VideoAsset, [IVideo], Video),
+						new TypeBundle(DisplayObjectAsset, [IDisplayObject], Shape)];
+			
+			if(Capabilities.playerType==PlayerTypes.DESKTOP){
+				bundles.push(new TypeBundle(NativeWindowAsset, [INativeWindow], NativeWindow));
+			}
 		}
 		
-		public function getNew(displayObject:DisplayObject):*{
+		public function getNew(displayObject:*):*{
 			if(displayObject){
 				if(!bundles)init();
 				var ret:NativeAsset = cache[displayObject];
@@ -93,7 +101,7 @@ package org.tbyrne.display.assets.nativeAssets
 					
 					var cast:DisplayObjectAsset = (ret as DisplayObjectAsset);
 					if(cast && displayObject.parent && displayObject.parent==displayObject.stage){
-						cast.parent = getNew(displayObject.parent); // this provides the entire app with a reference to the IStageAsset
+						cast.parent = getNew(displayObject.parent); // this provides the entire app with a reference to the IStage
 					}
 				}
 				ret.pixelSnapping = pixelSnapping;
@@ -102,7 +110,7 @@ package org.tbyrne.display.assets.nativeAssets
 				return null;
 			}
 		}
-		public function getExisting(displayObject:DisplayObject):*{
+		public function getExisting(displayObject:*):*{
 			if(displayObject){
 				if(!bundles)init();
 				var ret:DisplayObjectAsset = cache[displayObject];
@@ -143,7 +151,7 @@ package org.tbyrne.display.assets.nativeAssets
 		}
 		
 		
-		private function getBundleByDisplay(display:DisplayObject):TypeBundle{
+		private function getBundleByDisplay(display:*):TypeBundle{
 			for each(var type:TypeBundle in bundles){
 				if(display is type.displayClass){
 					return type;

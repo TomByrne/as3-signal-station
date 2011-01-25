@@ -1,7 +1,7 @@
 package org.tbyrne.display.assets.nativeAssets.actInfo
 {
 	import org.tbyrne.display.actInfo.IKeyActInfo;
-	import org.tbyrne.display.assets.assetTypes.IDisplayAsset;
+	import org.tbyrne.display.assets.nativeTypes.IDisplayObject;
 	
 	public class KeyActInfo implements IKeyActInfo
 	{
@@ -50,14 +50,14 @@ package org.tbyrne.display.assets.nativeAssets.actInfo
 			_charCode = value;
 		}
 		
-		public function get keyTarget():IDisplayAsset{
+		public function get keyTarget():IDisplayObject{
 			return _keyTarget;
 		}
-		public function set keyTarget(value:IDisplayAsset):void{
+		public function set keyTarget(value:IDisplayObject):void{
 			_keyTarget = value;
 		}
 		
-		private var _keyTarget:IDisplayAsset;
+		private var _keyTarget:IDisplayObject;
 		private var _shiftKey:Boolean;
 		private var _ctrlKey:Boolean;
 		private var _altKey:Boolean;
@@ -67,7 +67,7 @@ package org.tbyrne.display.assets.nativeAssets.actInfo
 		private var _keyLocation:uint;
 		
 		
-		public function KeyActInfo(keyTarget:IDisplayAsset, altKey:Boolean, ctrlKey:Boolean, shiftKey:Boolean, charCode:uint, keyCode:uint, keyLocation:uint){
+		public function KeyActInfo(keyTarget:IDisplayObject, altKey:Boolean, ctrlKey:Boolean, shiftKey:Boolean, charCode:uint, keyCode:uint, keyLocation:uint){
 			this.keyTarget = keyTarget;
 			this.charCode = charCode;
 			this.keyCode = keyCode;

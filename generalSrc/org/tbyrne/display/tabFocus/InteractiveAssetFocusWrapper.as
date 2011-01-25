@@ -2,7 +2,7 @@ package org.tbyrne.display.tabFocus
 {
 	import flash.events.Event;
 	
-	import org.tbyrne.display.assets.assetTypes.IInteractiveObjectAsset;
+	import org.tbyrne.display.assets.nativeTypes.IInteractiveObject;
 
 	public class InteractiveAssetFocusWrapper extends AbstractTabFocusable implements ITabFocusable
 	{
@@ -28,10 +28,10 @@ package org.tbyrne.display.tabFocus
 			return 1;
 		}
 		
-		public function get interactiveAsset():IInteractiveObjectAsset{
+		public function get interactiveAsset():IInteractiveObject{
 			return _interactiveAsset;
 		}
-		public function set interactiveAsset(value:IInteractiveObjectAsset):void{
+		public function set interactiveAsset(value:IInteractiveObject):void{
 			if(_interactiveAsset!=value){
 				if(_interactiveAsset){
 					_interactiveAsset.focusIn.removeHandler(onFocusIn);
@@ -49,24 +49,24 @@ package org.tbyrne.display.tabFocus
 			}
 		}
 		
-		private var _interactiveAsset:IInteractiveObjectAsset;
+		private var _interactiveAsset:IInteractiveObject;
 		private var _focused:Boolean;
 		
-		public function InteractiveAssetFocusWrapper(interactiveAsset:IInteractiveObjectAsset=null){
+		public function InteractiveAssetFocusWrapper(interactiveAsset:IInteractiveObject=null){
 			this.interactiveAsset = interactiveAsset;
 		}
-		public function onFocusIn(e:Event, from:IInteractiveObjectAsset):void{
+		public function onFocusIn(e:Event, from:IInteractiveObject):void{
 			_focused = true;
 			if(_focusIn)_focusIn.perform(this);
 		}
-		public function onFocusOut(e:Event, from:IInteractiveObjectAsset):void{
+		public function onFocusOut(e:Event, from:IInteractiveObject):void{
 			_focused = false;
 			if(_focusOut)_focusOut.perform(this);
 		}
-		public function onAddedToStage(from:IInteractiveObjectAsset):void{
+		public function onAddedToStage(from:IInteractiveObject):void{
 			if(_focused)_interactiveAsset.stage.focus = _interactiveAsset;
 		}
-		public function onRemovedFromStage(from:IInteractiveObjectAsset):void{
+		public function onRemovedFromStage(from:IInteractiveObject):void{
 			if(_interactiveAsset.stage.focus == _interactiveAsset)_interactiveAsset.stage.focus = null;
 		}
 	}

@@ -2,7 +2,7 @@ package org.tbyrne.display.containers.accordion
 {
 	import flash.utils.Dictionary;
 	
-	import org.tbyrne.display.assets.assetTypes.IDisplayAsset;
+	import org.tbyrne.display.assets.nativeTypes.IDisplayObject;
 	import org.tbyrne.display.constants.Direction;
 	import org.tbyrne.display.containers.AbstractList;
 	import org.tbyrne.display.core.ILayoutView;

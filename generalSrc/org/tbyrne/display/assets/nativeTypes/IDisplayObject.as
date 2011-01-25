@@ -1,4 +1,4 @@
-package org.tbyrne.display.assets.assetTypes
+package org.tbyrne.display.assets.nativeTypes
 {
 	import flash.display.DisplayObject;
 	import flash.display.IBitmapDrawable;
@@ -8,21 +8,10 @@ package org.tbyrne.display.assets.assetTypes
 	
 	import org.tbyrne.acting.actTypes.IAct;
 	import org.tbyrne.instanceFactory.IInstanceFactory;
+	import org.tbyrne.display.assets.assetTypes.IBaseDisplayAsset;
 
-	public interface IDisplayAsset extends IAsset
+	public interface IDisplayObject extends IBaseDisplayAsset
 	{
-		
-		function set x(value:Number):void;
-		function get x():Number;
-		
-		function set y(value:Number):void;
-		function get y():Number;
-		
-		function set width(value:Number):void;
-		function get width():Number;
-		
-		function set height(value:Number):void;
-		function get height():Number;
 		
 		function set scaleX(value:Number):void;
 		function get scaleX():Number;
@@ -39,9 +28,6 @@ package org.tbyrne.display.assets.assetTypes
 		function get naturalWidth():Number;
 		function get naturalHeight():Number;
 		
-		function set visible(value:Boolean):void;
-		function get visible():Boolean;
-		
 		function set name(value:String):void;
 		function get name():String;
 		
@@ -54,10 +40,12 @@ package org.tbyrne.display.assets.assetTypes
 		function set scrollRect(value:Rectangle):void;
 		function get scrollRect():Rectangle;
 		
-		function set parent(value:IContainerAsset):void;
-		function get parent():IContainerAsset;
+		function set parent(value:IDisplayObjectContainer):void;
+		function get parent():IDisplayObjectContainer;
 		
-		function get stage():IStageAsset;
+		function set filters(value:Array):void;
+		function get filters():Array;
+		
 		function get transform():Transform;
 		function get bitmapDrawable():IBitmapDrawable;
 		
@@ -93,7 +81,7 @@ package org.tbyrne.display.assets.assetTypes
 		
 		function globalToLocal(point:Point):Point;
 		function localToGlobal(point:Point):Point;
-		function getBounds(space:IDisplayAsset):Rectangle;
+		function getBounds(space:IDisplayObject):Rectangle;
 		
 		function getCloneFactory():IInstanceFactory;
 	}

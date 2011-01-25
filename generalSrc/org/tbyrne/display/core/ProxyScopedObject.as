@@ -2,7 +2,7 @@ package org.tbyrne.display.core
 {
 	import org.tbyrne.acting.actTypes.IAct;
 	import org.tbyrne.acting.acts.Act;
-	import org.tbyrne.display.assets.assetTypes.IDisplayAsset;
+	import org.tbyrne.display.assets.nativeTypes.IDisplayObject;
 
 	public class ProxyScopedObject implements IScopedObject
 	{
@@ -21,10 +21,10 @@ package org.tbyrne.display.core
 				}
 			}
 		}
-		public function set scope(value:IDisplayAsset):void{
+		public function set scope(value:IDisplayObject):void{
 			_scopedObject.scope = value;
 		}
-		public function get scope():IDisplayAsset{
+		public function get scope():IDisplayObject{
 			return _scopedObject.scope;
 		}
 		
@@ -43,7 +43,7 @@ package org.tbyrne.display.core
 			super();
 			this.scopedObject = scopedObject;
 		}
-		protected function onScopeChanged(scopedObject:IScopedObject, oldScope:IDisplayAsset):void{
+		protected function onScopeChanged(scopedObject:IScopedObject, oldScope:IDisplayObject):void{
 			if(_scopeChanged)_scopeChanged.perform(this,oldScope);
 		}
 	}

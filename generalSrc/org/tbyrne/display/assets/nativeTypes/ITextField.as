@@ -1,10 +1,10 @@
-package org.tbyrne.display.assets.assetTypes
+package org.tbyrne.display.assets.nativeTypes
 {
 	import flash.text.TextFormat;
 	
 	import org.tbyrne.acting.actTypes.IAct;
 
-	public interface ITextFieldAsset extends IInteractiveObjectAsset
+	public interface ITextField extends IInteractiveObject
 	{
 		function set text(value:String):void;
 		function get text():String;
@@ -26,6 +26,9 @@ package org.tbyrne.display.assets.assetTypes
 		
 		function set wordWrap(value:Boolean):void;
 		function get wordWrap():Boolean;
+		
+		function set displayAsPassword(value:Boolean):void;
+		function get displayAsPassword():Boolean;
 		
 		function set selectable(value:Boolean):void;
 		function get selectable():Boolean;
@@ -53,7 +56,7 @@ package org.tbyrne.display.assets.assetTypes
 		
 		
 		/**
-		 * handler(e:Event, from:ITextFieldAsset)
+		 * handler(e:Event, from:ITextField)
 		 */
 		function get change():IAct;
 		

@@ -4,7 +4,7 @@ package org.tbyrne.input.items
 	import org.tbyrne.acting.acts.Act;
 	import org.tbyrne.data.dataTypes.IBooleanConsumer;
 	import org.tbyrne.data.dataTypes.IBooleanProvider;
-	import org.tbyrne.display.assets.assetTypes.IDisplayAsset;
+	import org.tbyrne.display.assets.nativeTypes.IDisplayObject;
 	import org.tbyrne.input.menu.IMenuInputItem;
 	import org.tbyrne.input.shortcuts.IShortcutInputItem;
 
@@ -75,7 +75,7 @@ package org.tbyrne.input.items
 				if(_stringValueChanged)_stringValueChanged.perform(this);
 			}
 		}
-		override public function triggerAction(scopeDisplay:IDisplayAsset):void{
+		override public function triggerAction(scopeDisplay:IDisplayObject):void{
 			booleanValue = !booleanValue;
 		}
 	}

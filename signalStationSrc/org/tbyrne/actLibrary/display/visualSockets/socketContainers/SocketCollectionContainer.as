@@ -2,7 +2,7 @@ package org.tbyrne.actLibrary.display.visualSockets.socketContainers
 {
 	import flash.display.DisplayObject;
 	
-	import org.tbyrne.display.assets.assetTypes.IDisplayAsset;
+	import org.tbyrne.display.assets.nativeTypes.IDisplayObject;
 	import org.tbyrne.display.layout.ILayout;
 	import org.tbyrne.display.layout.ILayoutSubject;
 	
@@ -78,7 +78,7 @@ package org.tbyrne.actLibrary.display.visualSockets.socketContainers
 		private var _collectionLayoutSubject:ILayoutSubject;
 		private var _socketCollContHelper:SocketCollectionContainerHelper;
 		
-		public function SocketCollectionContainer(asset:IDisplayAsset=null){
+		public function SocketCollectionContainer(asset:IDisplayObject=null){
 			super(asset);
 		}
 		override public function get childSockets(): Array{

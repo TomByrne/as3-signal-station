@@ -5,7 +5,7 @@ package org.tbyrne.display.utils
 	import org.tbyrne.diff.Common;
 	import org.tbyrne.diff.Diff;
 	import org.tbyrne.diff.Difference;
-	import org.tbyrne.display.assets.assetTypes.ITextFieldAsset;
+	import org.tbyrne.display.assets.nativeTypes.ITextField;
 
 	/**
 	 * TextSelectionCorrecter corrects user selection indices when a block
@@ -16,7 +16,7 @@ package org.tbyrne.display.utils
 		public function TextSelectionCorrecter(){
 		}
 		
-		public function setText(textField:ITextFieldAsset, toText:String, fromText:String=null, currSelBeginIndex:int=-1, currSelEndIndex:int=-1) : void{
+		public function setText(textField:ITextField, toText:String, fromText:String=null, currSelBeginIndex:int=-1, currSelEndIndex:int=-1) : void{
 			if(textField.text!=toText){
 				var oldText:String = fromText?fromText:textField.text;
 				var oldBegin:int = currSelBeginIndex==-1?textField.selectionBeginIndex:currSelBeginIndex;

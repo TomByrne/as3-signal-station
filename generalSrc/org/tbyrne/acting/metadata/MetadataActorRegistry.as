@@ -7,10 +7,10 @@ package org.tbyrne.acting.metadata
 	import org.tbyrne.acting.universal.UniversalActExecution;
 	import org.tbyrne.acting.universal.reactions.MethodReaction;
 	import org.tbyrne.acting.universal.ruleTypes.IUniversalRule;
-	import org.tbyrne.utils.MetadataConfirmer;
-	import org.tbyrne.display.assets.assetTypes.IDisplayAsset;
+	import org.tbyrne.display.assets.nativeTypes.IDisplayObject;
 	import org.tbyrne.reflection.Deliterator;
 	import org.tbyrne.reflection.ReflectionUtils;
+	import org.tbyrne.utils.MetadataConfirmer;
 	import org.tbyrne.utils.ObjectUtils;
 	
 	use namespace ActingNamspace;
@@ -18,12 +18,12 @@ package org.tbyrne.acting.metadata
 	public class MetadataActorRegistry
 	{
 		private static const REQUIRED_META_TAGS: Array = ["ActRule","ActReaction"];
-		private static const DEFAULT_RULE_PACKAGE: String = "org.farmcode.acting.universal.rules.";
+		private static const DEFAULT_RULE_PACKAGE: String = "org.tbyrne.acting.universal.rules.";
 		private static const PROPERTY_MATCHER:RegExp = /\{([\w\.]+)\}/;
 		
 		private static var actMap:Dictionary = new Dictionary();
 		
-		public static function addActor(actor:Object, scopeDisplay:IDisplayAsset):void{
+		public static function addActor(actor:Object, scopeDisplay:IDisplayObject):void{
 			CONFIG::debug{
 				if(actMap[actor]){
 					throw new Error("Actor already registered");
@@ -73,7 +73,7 @@ package org.tbyrne.acting.metadata
 			}
 			actMap[actor] = scopedObjects;
 		}
-		public static function changeActorDisplay(actor:Object, scopeDisplay:IDisplayAsset):void{
+		public static function changeActorDisplay(actor:Object, scopeDisplay:IDisplayObject):void{
 			var acts:Array = actMap[actor];
 			CONFIG::debug{
 				if(!acts){
@@ -103,7 +103,7 @@ package org.tbyrne.acting.metadata
 		}
 		
 		
-		protected static function createImplicitReaction(actor:Object, memberNode:XML, scopeDisplay:IDisplayAsset):MethodReaction{
+		protected static function createImplicitReaction(actor:Object, memberNode:XML, scopeDisplay:IDisplayObject):MethodReaction{
 			var methodName:String = memberNode.@name;
 			var method:Function = actor[methodName];
 			if(method==null){

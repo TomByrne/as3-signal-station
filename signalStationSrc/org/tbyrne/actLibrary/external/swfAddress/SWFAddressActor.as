@@ -11,7 +11,7 @@ package org.tbyrne.actLibrary.external.swfAddress
 	import org.tbyrne.acting.universal.UniversalActExecution;
 	import org.tbyrne.data.core.StringData;
 	import org.tbyrne.data.dataTypes.IStringProvider;
-	import org.tbyrne.display.assets.assetTypes.IDisplayAsset;
+	import org.tbyrne.display.assets.nativeTypes.IDisplayObject;
 	
 	
 	use namespace ActingNamspace;

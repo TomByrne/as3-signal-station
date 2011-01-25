@@ -14,9 +14,9 @@ package org.tbyrne.core
 	import org.tbyrne.debug.nodes.DebugDataNode;
 	import org.tbyrne.debug.nodes.GraphStatisticNode;
 	import org.tbyrne.display.assets.assetTypes.IAsset;
-	import org.tbyrne.display.assets.assetTypes.IContainerAsset;
-	import org.tbyrne.display.assets.assetTypes.IDisplayAsset;
-	import org.tbyrne.display.assets.assetTypes.IStageAsset;
+	import org.tbyrne.display.assets.nativeTypes.IDisplayObjectContainer;
+	import org.tbyrne.display.assets.nativeTypes.IDisplayObject;
+	import org.tbyrne.display.assets.nativeTypes.IStage;
 	import org.tbyrne.display.core.ILayoutView;
 	import org.tbyrne.display.core.LayoutView;
 	import org.tbyrne.display.core.ScopedObject;
@@ -30,10 +30,10 @@ package org.tbyrne.core
 	[Frame(factoryClass="org.tbyrne.display.progress.SimpleSWFPreloaderFrame")] */ // this must be on subclass
 	public class Application implements IApplication
 	{
-		public function get container():IContainerAsset{
+		public function get container():IDisplayObjectContainer{
 			return _container;
 		}
-		public function set container(value:IContainerAsset):void{
+		public function set container(value:IDisplayObjectContainer):void{
 			if(_container!=value){
 				removeMainAsset();
 				_container = value;
@@ -80,9 +80,9 @@ package org.tbyrne.core
 		
 		protected var _mainView:ILayoutView;
 		protected var _castMainView:LayoutView;
-		protected var _asset:IDisplayAsset;
-		protected var _container:IContainerAsset;
-		protected var _lastStage:IStageAsset;
+		protected var _asset:IDisplayObject;
+		protected var _container:IDisplayObjectContainer;
+		protected var _lastStage:IStage;
 		protected var _inited:Boolean;
 		protected var _position:Point;
 		protected var _size:Point;
@@ -130,14 +130,14 @@ package org.tbyrne.core
 		}
 		protected function attemptSetAssumedAsset():void{
 			if(_castMainView && !_castMainView.asset){
-				var asset:IDisplayAsset = getAssumedAsset();
+				var asset:IDisplayObject = getAssumedAsset();
 				if(asset){
 					_assumedMainAsset = true;
 					_castMainView.asset = asset;
 				}
 			}
 		}
-		protected function getAssumedAsset():IDisplayAsset{
+		protected function getAssumedAsset():IDisplayObject{
 			// override me
 			return null;
 		}
@@ -154,7 +154,7 @@ package org.tbyrne.core
 				if(_size)setMainViewSize();
 			}
 		}
-		protected function setAsset(value:IDisplayAsset) : void{
+		protected function setAsset(value:IDisplayObject) : void{
 			attemptInit();
 			if(_asset){
 				removeMainAsset();
@@ -171,7 +171,7 @@ package org.tbyrne.core
 			// after fullscreen is exited this will occur
 			if(_size)setMainViewSize();
 		}
-		private function setStage(value:IStageAsset) : void{
+		private function setStage(value:IStage) : void{
 			if(_lastStage!=value){
 				_lastStage = value;
 				commitStage();

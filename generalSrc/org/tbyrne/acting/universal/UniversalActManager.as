@@ -7,7 +7,7 @@ package org.tbyrne.acting.universal
 	import org.tbyrne.acting.actTypes.IUniversalAct;
 	import org.tbyrne.acting.universal.reactions.IActReaction;
 	import org.tbyrne.acting.universal.ruleTypes.IUniversalRule;
-	import org.tbyrne.display.assets.assetTypes.IDisplayAsset;
+	import org.tbyrne.display.assets.nativeTypes.IDisplayObject;
 	
 	use namespace ActingNamspace;
 
@@ -26,7 +26,7 @@ package org.tbyrne.acting.universal
 		*/		
 		private static var executors:Dictionary = new Dictionary();
 		
-		public static function addManager(scopeDisplay:IDisplayAsset=null):void{
+		public static function addManager(scopeDisplay:IDisplayObject=null):void{
 			if(managers[scopeDisplay]){
 				throw new Error("Manager already added");
 			}else{
@@ -53,9 +53,9 @@ package org.tbyrne.acting.universal
 				}
 			}
 		}
-		public static function removeManager(scopeDisplay:IDisplayAsset):void{
+		public static function removeManager(scopeDisplay:IDisplayObject):void{
 			if(scopeDisplay){
-				var subject:IDisplayAsset = scopeDisplay;
+				var subject:IDisplayObject = scopeDisplay;
 				while(subject){
 					var manager:UniversalActManager = managers[subject];
 					if(manager){
@@ -147,10 +147,10 @@ package org.tbyrne.acting.universal
 				throw new Error("reaction has not been added");
 			}
 		}
-		private static function findManagerFor(scopeDisplay:IDisplayAsset, createRoot:Boolean):UniversalActManager{
+		private static function findManagerFor(scopeDisplay:IDisplayObject, createRoot:Boolean):UniversalActManager{
 			var manager:UniversalActManager;
 			if(scopeDisplay){
-				var subject:IDisplayAsset = scopeDisplay;
+				var subject:IDisplayObject = scopeDisplay;
 				while(subject){
 					manager = managers[subject];
 					if(manager)return manager;
@@ -163,7 +163,7 @@ package org.tbyrne.acting.universal
 			}
 			return managers[null];
 		}
-		private static function onActScopeDisplayChange(act:IUniversalAct, oldAsset:IDisplayAsset):void{
+		private static function onActScopeDisplayChange(act:IUniversalAct, oldAsset:IDisplayObject):void{
 			var oldManager:UniversalActManager = actMap[act];
 			var newManager:UniversalActManager = findManagerFor(act.scope, true);
 			if(oldManager!=newManager){
@@ -172,7 +172,7 @@ package org.tbyrne.acting.universal
 				actMap[act] = newManager;
 			}
 		}
-		private static function onReactionScopeDisplayChange(reaction:IActReaction, oldAsset:IDisplayAsset):void{
+		private static function onReactionScopeDisplayChange(reaction:IActReaction, oldAsset:IDisplayObject):void{
 			var oldManager:UniversalActManager = reactionMap[reaction];
 			var newManager:UniversalActManager = findManagerFor(reaction.asset, true);
 			if(oldManager!=newManager){

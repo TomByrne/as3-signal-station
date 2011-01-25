@@ -9,13 +9,13 @@ package org.tbyrne.display.assets.nativeAssets {
 	import org.tbyrne.acting.actTypes.IAct;
 	import org.tbyrne.acting.acts.Act;
 	import org.tbyrne.acting.acts.NativeAct;
-	import org.tbyrne.display.assets.assetTypes.IContainerAsset;
-	import org.tbyrne.display.assets.assetTypes.IDisplayAsset;
-	import org.tbyrne.display.assets.assetTypes.IStageAsset;
+	import org.tbyrne.display.assets.nativeTypes.IDisplayObject;
+	import org.tbyrne.display.assets.nativeTypes.IDisplayObjectContainer;
+	import org.tbyrne.display.assets.nativeTypes.IStage;
 	import org.tbyrne.instanceFactory.*;
 	
 	
-	public class DisplayObjectAsset extends NativeAsset implements IDisplayAsset, INativeAsset {
+	public class DisplayObjectAsset extends NativeAsset implements IDisplayObject, INativeAsset {
 		/**
 		 * @inheritDoc
 		 */
@@ -87,6 +87,7 @@ package org.tbyrne.display.assets.nativeAssets {
 					_displayObject.removeEventListener(Event.REMOVED_FROM_STAGE,handleRemovedToStage);
 				}
 				_displayObject = value;
+				super.display = value;
 				
 				if(_added)
 					_added.eventDispatcher = value;
@@ -121,9 +122,7 @@ package org.tbyrne.display.assets.nativeAssets {
 		protected var _origScaleX:Number;
 		protected var _origScaleY:Number;
 		
-		protected var _isAddedToStage:Boolean;
-		protected var _parent:IContainerAsset;
-		protected var _stageAsset:IStageAsset;
+		protected var _parent:IDisplayObjectContainer;
 		
 		
 		public function DisplayObjectAsset(factory:NativeAssetFactory=null){
@@ -177,12 +176,6 @@ package org.tbyrne.display.assets.nativeAssets {
 			checkInnerBounds();
 			return(_displayObject.mouseY-_innerBounds.y)/_displayObject.scaleY;
 		}
-		public function set visible(value:Boolean):void {
-			_displayObject.visible = value;
-		}
-		public function get visible():Boolean {
-			return _displayObject.visible;
-		}
 		public function set name(value:String):void {
 			_displayObject.name = value;
 		}
@@ -201,26 +194,6 @@ package org.tbyrne.display.assets.nativeAssets {
 		public function get blendMode():String {
 			return _displayObject.blendMode;
 		}
-		public function set x(value:Number):void {
-			if(pixelSnapping){
-				_displayObject.x = int(value+0.5);
-			}else{
-				_displayObject.x = value;
-			}
-		}
-		public function get x():Number {
-			return _displayObject.x;
-		}
-		public function set y(value:Number):void {
-			if(pixelSnapping){
-				_displayObject.y = int(value+0.5);
-			}else{
-				_displayObject.y = value;
-			}
-		}
-		public function get y():Number {
-			return _displayObject.y;
-		}
 		public function set scrollRect(value:Rectangle):void {
 			if(pixelSnapping && value){
 				value.x = int(value.x+0.5);
@@ -232,17 +205,6 @@ package org.tbyrne.display.assets.nativeAssets {
 		}
 		public function get scrollRect():Rectangle {
 			return _displayObject.scrollRect;
-		}
-		public function set width(value:Number):void {
-			if(checkInnerBounds()) {
-				if(pixelSnapping)value = int(value+0.5);
-				_displayObject.width = value;
-			} else {
-				_displayObject.scaleX = 1;
-			}
-		}
-		public function get width():Number {
-			return _displayObject.width;
 		}
 		public function set scaleX(value:Number):void {
 			_displayObject.scaleX = value;
@@ -275,29 +237,36 @@ package org.tbyrne.display.assets.nativeAssets {
 			return _displayObject;
 		}
 		
+		public function set filters(value:Array):void {
+			_displayObject.filters = value;
+		}
+		public function get filters():Array {
+			return _displayObject.filters;
+		}
 		
-		public function set height(value:Number):void {
+		override public function set height(value:Number):void {
 			if(checkInnerBounds()) {
-				if(pixelSnapping)value = int(value+0.5);
-				_displayObject.height = value;
+				super.height = value;
 			} else {
 				_displayObject.scaleY = 1;
 			}
 		}
-		
-		
-		public function get height():Number {
-			return _displayObject.height;
+		override public function set width(value:Number):void {
+			if(checkInnerBounds()) {
+				super.width = value;
+			} else {
+				_displayObject.scaleX = 1;
+			}
 		}
 		
 		
-		public function get parent():IContainerAsset {
-			if(_isAddedToStage && !_parent && !(this is IStageAsset)){
+		public function get parent():IDisplayObjectContainer {
+			if(_isAddedToStage && !_parent && !(this is IStage)){
 				_parent = _nativeFactory.getNew(_displayObject.parent);
 			}
 			return _parent;
 		}
-		public function set parent(value:IContainerAsset):void {
+		public function set parent(value:IDisplayObjectContainer):void {
 			_parent = value;
 			if(!value){
 				setAddedToStage(false);
@@ -305,19 +274,6 @@ package org.tbyrne.display.assets.nativeAssets {
 				if(_parent.stage) setAddedToStage(true);
 				else setAddedToStage(false);
 			}
-		}
-		public function get stage():IStageAsset {
-			if(_isAddedToStage && !_stageAsset){
-				var thisStage:IStageAsset = (this as IStageAsset);
-				if(thisStage){
-					_stageAsset = thisStage;
-				}else if(_parent){
-					_stageAsset = _parent.stage;
-				}else{
-					_stageAsset = _nativeFactory.getNew(_displayObject.stage);
-				}
-			}
-			return _stageAsset;
 		}
 		
 		protected function checkInnerBounds():Boolean {
@@ -354,7 +310,7 @@ package org.tbyrne.display.assets.nativeAssets {
 		public function localToGlobal(point:Point):Point {
 			return _displayObject.localToGlobal(point);
 		}
-		public function getBounds(space:IDisplayAsset):Rectangle {
+		public function getBounds(space:IDisplayObject):Rectangle {
 			var nativeAsset:INativeAsset = (space as INativeAsset);
 			return _displayObject.getBounds(nativeAsset.displayObject || space.bitmapDrawable as DisplayObject);
 		}
@@ -365,6 +321,15 @@ package org.tbyrne.display.assets.nativeAssets {
 		override public function reset():void {
 			//_forceTopLeft = true;
 			super.reset();
+		}
+		
+		
+		override protected function findStageRef():IStage{
+			if(_parent){
+				var parentStage:IStage = _parent.stage;
+				if(parentStage)return parentStage;
+			}
+			return super.findStageRef();
 		}
 	}
 }

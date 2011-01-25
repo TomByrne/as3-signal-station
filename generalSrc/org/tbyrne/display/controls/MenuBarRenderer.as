@@ -2,8 +2,8 @@ package org.tbyrne.display.controls
 {
 	import org.tbyrne.display.DisplayNamespace;
 	import org.tbyrne.display.actInfo.IMouseActInfo;
-	import org.tbyrne.display.assets.assetTypes.IDisplayAsset;
-	import org.tbyrne.display.assets.assetTypes.IInteractiveObjectAsset;
+	import org.tbyrne.display.assets.nativeTypes.IDisplayObject;
+	import org.tbyrne.display.assets.nativeTypes.IInteractiveObject;
 	import org.tbyrne.display.containers.ICascadingMenuBarRenderer;
 	
 	use namespace DisplayNamespace;
@@ -23,11 +23,11 @@ package org.tbyrne.display.controls
 		private var _isMenuOpen:Boolean;
 		
 		
-		public function MenuBarRenderer(asset:IDisplayAsset=null){
+		public function MenuBarRenderer(asset:IDisplayObject=null){
 			super(asset);
 			useDataForSelected = false;
 		}
-		override protected function onRollOver(from:IInteractiveObjectAsset, info:IMouseActInfo):void{
+		override protected function onRollOver(from:IInteractiveObject, info:IMouseActInfo):void{
 			super.onRollOver(from, info);
 			if(_isMenuOpen && _active){
 				selected = true;

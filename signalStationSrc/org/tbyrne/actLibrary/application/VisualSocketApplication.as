@@ -13,8 +13,8 @@ package org.tbyrne.actLibrary.application
 	import org.tbyrne.acting.actTypes.IAct;
 	import org.tbyrne.acting.acts.Act;
 	import org.tbyrne.acting.universal.UniversalActExecution;
-	import org.tbyrne.display.assets.assetTypes.IContainerAsset;
-	import org.tbyrne.display.assets.assetTypes.IInteractiveObjectAsset;
+	import org.tbyrne.display.assets.nativeTypes.IDisplayObjectContainer;
+	import org.tbyrne.display.assets.nativeTypes.IInteractiveObject;
 	
 	use namespace VisualSocketNamespace;
 	
@@ -32,7 +32,7 @@ package org.tbyrne.actLibrary.application
 		}
 		
 		
-		override public function set container(value:IContainerAsset) : void{
+		override public function set container(value:IDisplayObjectContainer) : void{
 			super.container = value;
 			_proxiedDisplaySocket.container = value;
 		}
@@ -100,7 +100,7 @@ package org.tbyrne.actLibrary.application
 			
 			/*CONFIG::debug
 			{
-				var onKeyDown:Function = function(e:KeyboardEvent, from:IInteractiveObjectAsset):void{
+				var onKeyDown:Function = function(e:KeyboardEvent, from:IInteractiveObject):void{
 					if(e.ctrlKey && e.altKey){
 						if(e.keyCode==79)VisualSocketOutliner.outlineSocket(_debugArea.graphics,_visSocketActor.rootSocketBundle);		// o
 					}

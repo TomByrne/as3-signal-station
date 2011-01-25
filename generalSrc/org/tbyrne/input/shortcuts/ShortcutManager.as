@@ -8,10 +8,10 @@ package org.tbyrne.input.shortcuts
 	import org.tbyrne.collections.linkedList.LinkedList;
 	import org.tbyrne.core.IApplication;
 	import org.tbyrne.display.actInfo.IKeyActInfo;
-	import org.tbyrne.display.assets.assetTypes.IContainerAsset;
-	import org.tbyrne.display.assets.assetTypes.IDisplayAsset;
-	import org.tbyrne.display.assets.assetTypes.IInteractiveObjectAsset;
-	import org.tbyrne.display.assets.assetTypes.IStageAsset;
+	import org.tbyrne.display.assets.nativeTypes.IDisplayObjectContainer;
+	import org.tbyrne.display.assets.nativeTypes.IDisplayObject;
+	import org.tbyrne.display.assets.nativeTypes.IInteractiveObject;
+	import org.tbyrne.display.assets.nativeTypes.IStage;
 	import org.tbyrne.display.assets.utils.isDescendant;
 	import org.tbyrne.display.core.IScopedObject;
 	import org.tbyrne.display.core.IScopedObjectRoot;
@@ -24,13 +24,13 @@ package org.tbyrne.input.shortcuts
 		protected static var _managers:Dictionary = new Dictionary();
 		protected static var _scopedObjectAssigner:ScopedObjectAssigner = new ScopedObjectAssigner();
 		
-		public static function addShortcutManager(keyDispatcher:IInteractiveObjectAsset):ShortcutManager{
+		public static function addShortcutManager(keyDispatcher:IInteractiveObject):ShortcutManager{
 			var manager:ShortcutManager = new ShortcutManager(keyDispatcher);
 			_managers[keyDispatcher] = manager;
 			_scopedObjectAssigner.addManager(manager);
 			return manager;
 		}
-		public static function removeShortcutManager(keyDispatcher:IInteractiveObjectAsset):void{
+		public static function removeShortcutManager(keyDispatcher:IInteractiveObject):void{
 			var manager:ShortcutManager = _managers[keyDispatcher];
 			_scopedObjectAssigner.removeManager(manager);
 			delete _managers[keyDispatcher];
@@ -54,54 +54,55 @@ package org.tbyrne.input.shortcuts
 		protected var _scopeChanged:Act;
 		
 		
-		public function get scope():IDisplayAsset{
+		public function get scope():IDisplayObject{
 			return keyDispatcher;
 		}
-		public function set scope(value:IDisplayAsset):void{
-			keyDispatcher = (value as IInteractiveObjectAsset);
+		public function set scope(value:IDisplayObject):void{
+			keyDispatcher = (value as IInteractiveObject);
 		}
-		public function get keyDispatcher():IInteractiveObjectAsset{
+		public function get keyDispatcher():IInteractiveObject{
 			return _keyDispatcher;
 		}
-		public function set keyDispatcher(value:IInteractiveObjectAsset):void{
+		public function set keyDispatcher(value:IInteractiveObject):void{
 			if(_keyDispatcher!=value){
 				/*if(_keyDispatcher){
 					_keyDispatcher.keyDown.removeHandler(onKeyDown);
 					_keyDispatcher.keyUp.removeHandler(onKeyUp);
 				}*/
 				_keyDispatcher = value;
-				_keyDispatcherCont = (value as IContainerAsset);
+				_keyDispatcherCont = (value as IDisplayObjectContainer);
 				/*if(_keyDispatcher){
 					_keyDispatcher.keyDown.addHandler(onKeyDown);
 					_keyDispatcher.keyUp.addHandler(onKeyUp);
 				}*/
 				_stageWatcher.bindable = value;
+				if(_scopeChanged)_scopeChanged.perform(this);
 			}
 		}
 		
-		protected var _keyDispatcher:IInteractiveObjectAsset;
-		protected var _keyDispatcherCont:IContainerAsset;
+		protected var _keyDispatcher:IInteractiveObject;
+		protected var _keyDispatcherCont:IDisplayObjectContainer;
 		//protected var _shortcuts:LinkedList;
 		protected var _shortcutTree:ScopedObjectTree;
 		protected var _capturingShortcuts:Dictionary;
 		protected var _downKeys:Dictionary = new Dictionary();
 		protected var _stageWatcher:PropertyWatcher;
 		
-		public function ShortcutManager(keyDispatcher:IInteractiveObjectAsset=null){
+		public function ShortcutManager(keyDispatcher:IInteractiveObject=null){
 			_stageWatcher = new PropertyWatcher("stage",setStage,null,unsetStage);
 			_capturingShortcuts = new Dictionary();
 			this.keyDispatcher = keyDispatcher;
 			_shortcutTree = new ScopedObjectTree();
 		}
-		protected function setStage(stage:IStageAsset):void{
+		protected function setStage(stage:IStage):void{
 			stage.keyDown.addHandler(onKeyDown);
 			stage.keyUp.addHandler(onKeyUp);
 		}
-		protected function unsetStage(stage:IStageAsset):void{
+		protected function unsetStage(stage:IStage):void{
 			stage.keyDown.removeHandler(onKeyDown);
 			stage.keyUp.removeHandler(onKeyUp);
 		}
-		protected function onKeyDown(from:IInteractiveObjectAsset, info:IKeyActInfo):void{
+		protected function onKeyDown(from:IInteractiveObject, info:IKeyActInfo):void{
 			if(_downKeys[info.keyCode]){
 				executeShortcuts(info, true, true);
 			}else{
@@ -109,7 +110,7 @@ package org.tbyrne.input.shortcuts
 				executeShortcuts(info, true, false);
 			}
 		}
-		protected function onKeyUp(from:IInteractiveObjectAsset, info:IKeyActInfo):void{
+		protected function onKeyUp(from:IInteractiveObject, info:IKeyActInfo):void{
 			if(_capturingShortcuts[info.keyCode]){
 				executeShortcuts(info, false, true);
 			}else{
@@ -122,7 +123,7 @@ package org.tbyrne.input.shortcuts
 				_shortcutTree.executeUpwardsFrom(info.keyTarget,methodClosure(match,info,isDown,isHolding));
 			}
 		}
-		protected function match(shortcut:IShortcutInputItem, forDisplay:IDisplayAsset, info:IKeyActInfo, isDown:Boolean, isHolding:Boolean):Boolean{
+		protected function match(shortcut:IShortcutInputItem, forDisplay:IDisplayObject, info:IKeyActInfo, isDown:Boolean, isHolding:Boolean):Boolean{
 			var typeMatched:Boolean = false;
 			var isDuringHold:Boolean = false;
 			switch(shortcut.shortcutType){

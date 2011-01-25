@@ -6,8 +6,8 @@ package org.tbyrne.display.transition
 	import flash.geom.Matrix;
 	import flash.geom.Rectangle;
 	
-	import org.tbyrne.display.assets.assetTypes.IBitmapAsset;
-	import org.tbyrne.display.assets.assetTypes.IDisplayAsset;
+	import org.tbyrne.display.assets.nativeTypes.IBitmap;
+	import org.tbyrne.display.assets.nativeTypes.IDisplayObject;
 	
 	/**
 	 * The ShutterTransition mimics the rotating shutters of some billboards.
@@ -42,7 +42,7 @@ package org.tbyrne.display.transition
 			if(shutterDirection)this.shutterDirection = shutterDirection;
 		}
 		
-		override public function beginTransition(start:IDisplayAsset, finish:IDisplayAsset, bitmap:IBitmapAsset, duration:Number):void{
+		override public function beginTransition(start:IDisplayObject, finish:IDisplayObject, bitmap:IBitmap, duration:Number):void{
 			shutters = [];
 			var ver:Boolean = direction==VERTICAL;
 			var totalSize:Number = (ver?bitmap.width:bitmap.height);
@@ -60,7 +60,7 @@ package org.tbyrne.display.transition
 				shutters.push(shutter);
 			}
 		}
-		override public function doTransition(start:IDisplayAsset, finish:IDisplayAsset, bitmap:IBitmapAsset, duration:Number, currentTime:Number):void{
+		override public function doTransition(start:IDisplayObject, finish:IDisplayObject, bitmap:IBitmap, duration:Number, currentTime:Number):void{
 			var bitmapMatrix:Matrix = bitmap.transform.concatenatedMatrix;
 			bitmapMatrix.invert();
 			
@@ -89,7 +89,7 @@ package org.tbyrne.display.transition
 				var pos:Number = (((fract-order)/fractPerShutter)*shutterDelay)+(fract*(1-shutterDelay));
 				pos = shutter.direction?1-pos:pos;
 				pos = Math.max(Math.min(pos,1),0);
-				var subject:IDisplayAsset = shutter.direction?finish:start;
+				var subject:IDisplayObject = shutter.direction?finish:start;
 				var rect:Rectangle = shutter.rect.clone();
 				var matrix:Matrix = subject.transform.concatenatedMatrix;
 				matrix.concat(bitmapMatrix);
@@ -141,7 +141,7 @@ package org.tbyrne.display.transition
 				bitmap.bitmapData.draw(subject.bitmapDrawable,matrix,color,null,rect,true);
 			}
 		}
-		override public function endTransition(start:IDisplayAsset, finish:IDisplayAsset, bitmap:IBitmapAsset, duration:Number):void{
+		override public function endTransition(start:IDisplayObject, finish:IDisplayObject, bitmap:IBitmap, duration:Number):void{
 		}
 		
 		private function transformColor(colorTrans:ColorTransform, color:Number, alpha:Number, pos:Number):void{

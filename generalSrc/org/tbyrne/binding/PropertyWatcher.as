@@ -87,11 +87,15 @@ package org.tbyrne.binding
 						_setHandler(value);
 					}
 				}else{
-					_setHandler(value);
+					if(_setHandler!=null)_setHandler(value);
+					else _updateHandler(null,value);
 				}
 			}else if(_valueSet){
 				if(_unsetHandler!=null)_unsetHandler(oldValue);
-				else _setHandler(value);
+				else{
+					if(_setHandler!=null)_setHandler(value);
+					else _updateHandler(null,value);
+				}
 			}
 			_valueSet = newValueSet;
 		}

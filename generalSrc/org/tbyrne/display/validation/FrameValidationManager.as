@@ -4,7 +4,7 @@ package org.tbyrne.display.validation
 	import flash.events.Event;
 	import flash.utils.Dictionary;
 	
-	import org.tbyrne.display.assets.assetTypes.IDisplayAsset;
+	import org.tbyrne.display.assets.nativeTypes.IDisplayObject;
 
 	public class FrameValidationManager
 	{
@@ -87,7 +87,7 @@ package org.tbyrne.display.validation
 			addToBundle(flag);
 			addToRuns(flag);
 		}
-		protected function onFlagAssetChanged(from:IFrameValidationFlag, oldAsset:IDisplayAsset):void{
+		protected function onFlagAssetChanged(from:IFrameValidationFlag, oldAsset:IDisplayObject):void{
 			var oldBundle:AssetBundle = bundleMap[oldAsset];
 			var oldRun:DrawRun;
 			
@@ -139,7 +139,7 @@ package org.tbyrne.display.validation
 			}
 		}
 		protected function addToHeirarchy(bundle:AssetBundle):void{
-			var subject:IDisplayAsset = bundle.asset;
+			var subject:IDisplayObject = bundle.asset;
 			var parentBundle:AssetBundle;
 			while(subject && !(parentBundle = bundleMap[subject.parent])){
 				subject = subject.parent;
@@ -186,8 +186,8 @@ package org.tbyrne.display.validation
 				}
 			}
 		}
-		protected function isDescendant(parent:IDisplayAsset, child:IDisplayAsset):Boolean{
-			var subject:IDisplayAsset = child.parent;
+		protected function isDescendant(parent:IDisplayObject, child:IDisplayObject):Boolean{
+			var subject:IDisplayObject = child.parent;
 			while(subject && subject!=parent){
 				subject = subject.parent;
 			}
@@ -197,12 +197,12 @@ package org.tbyrne.display.validation
 			var childRuns:Array;
 			var drawRun:DrawRun;
 			if(flag){
-				var asset:IDisplayAsset = flag.asset;
+				var asset:IDisplayObject = flag.asset;
 				var existingRun:DrawRun;
 				childRuns = [];
 				if(currentRunCount){
 					for each(drawRun in currentRuns){
-						var otherAsset:IDisplayAsset = drawRun.root.asset;
+						var otherAsset:IDisplayObject = drawRun.root.asset;
 						if(otherAsset){
 							if(otherAsset==asset || isDescendant(otherAsset,asset)){
 								existingRun = drawRun;
@@ -258,7 +258,7 @@ package org.tbyrne.display.validation
 				run.removePending(flag);
 			}
 		}
-		protected function findRunForAsset(asset:IDisplayAsset):DrawRun{
+		protected function findRunForAsset(asset:IDisplayObject):DrawRun{
 			if(currentRunCount && asset){
 				for each(var drawRun:DrawRun in currentRuns){
 					if(isDescendant(drawRun.root.asset,asset)){
@@ -289,14 +289,14 @@ import flash.utils.Dictionary;
 
 import org.tbyrne.acting.actTypes.IAct;
 import org.tbyrne.acting.acts.Act;
-import org.tbyrne.display.assets.assetTypes.IDisplayAsset;
+import org.tbyrne.display.assets.nativeTypes.IDisplayObject;
 import org.tbyrne.display.validation.IFrameValidationFlag;
 import org.tbyrne.hoborg.IPoolable;
 import org.tbyrne.hoborg.ObjectPool;
 
 class AssetBundle implements IPoolable{
 	private static const pool:ObjectPool = new ObjectPool(AssetBundle);
-	public static function getNew(asset:IDisplayAsset):AssetBundle{
+	public static function getNew(asset:IDisplayObject):AssetBundle{
 		var ret:AssetBundle = pool.takeObject();
 		ret.asset = asset;
 		return ret;
@@ -314,10 +314,10 @@ class AssetBundle implements IPoolable{
 		return validationFlags.length;
 	}
 	
-	public function get asset():IDisplayAsset{
+	public function get asset():IDisplayObject{
 		return _asset;
 	}
-	public function set asset(value:IDisplayAsset):void{
+	public function set asset(value:IDisplayObject):void{
 		if(_asset!=value){
 			if(_asset){
 				_asset.addedToStage.removeHandler(onAdded);
@@ -342,15 +342,15 @@ class AssetBundle implements IPoolable{
 	public var validationFlags:Array = [];
 	
 	protected var _addedToStage:Boolean;
-	protected var _asset:IDisplayAsset;
+	protected var _asset:IDisplayObject;
 	protected var _assetPosChanged:Act = new Act();
 	
 	
-	protected function onAdded(from:IDisplayAsset):void{
+	protected function onAdded(from:IDisplayObject):void{
 		_addedToStage = true;
 		_assetPosChanged.perform(this);
 	}
-	protected function onRemoved(from:IDisplayAsset):void{
+	protected function onRemoved(from:IDisplayObject):void{
 		_addedToStage = false;
 		_assetPosChanged.perform(this);
 	}

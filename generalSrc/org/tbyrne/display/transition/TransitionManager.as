@@ -1,6 +1,6 @@
 package org.tbyrne.display.transition
 {
-	import org.tbyrne.display.assets.assetTypes.IDisplayAsset;
+	import org.tbyrne.display.assets.nativeTypes.IDisplayObject;
 	
 	/**
 	 * The TransitionManager manages TransitionExecution objects, making sure that they're not trying to
@@ -20,7 +20,7 @@ package org.tbyrne.display.transition
 	{
 		private static var _executions:Array = [];
 		
-		public static function execute(start:IDisplayAsset, finish:IDisplayAsset, transitions:Array, easing:Function=null):TransitionExecution{
+		public static function execute(start:IDisplayObject, finish:IDisplayObject, transitions:Array, easing:Function=null):TransitionExecution{
 			var trans:TransitionExecution = findExecution(finish);
 			if(trans){
 				start = trans.endEarly();
@@ -49,7 +49,7 @@ package org.tbyrne.display.transition
 				transition.transitionEnd.removeHandler(onTransitionEnd);
 			}
 		}
-		private static function findExecution(visual:IDisplayAsset):TransitionExecution{
+		private static function findExecution(visual:IDisplayObject):TransitionExecution{
 			for each(var trans:TransitionExecution in _executions){
 				if(trans.startDisplay==visual || trans.finishDisplay==visual){
 					return trans;

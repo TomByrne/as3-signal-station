@@ -6,8 +6,8 @@ package org.tbyrne.debug.display
 	import org.tbyrne.data.dataTypes.IBitmapDataProvider;
 	import org.tbyrne.debug.data.coreTypes.ILayoutViewProvider;
 	import org.tbyrne.display.assets.AssetNames;
-	import org.tbyrne.display.assets.assetTypes.IBitmapAsset;
-	import org.tbyrne.display.assets.assetTypes.IDisplayAsset;
+	import org.tbyrne.display.assets.nativeTypes.IBitmap;
+	import org.tbyrne.display.assets.nativeTypes.IDisplayObject;
 	import org.tbyrne.display.controls.MenuBarRenderer;
 	import org.tbyrne.display.core.ILayoutView;
 	
@@ -39,7 +39,7 @@ package org.tbyrne.debug.display
 				}
 			}
 		}
-		override public function set asset(value:IDisplayAsset):void{
+		override public function set asset(value:IDisplayObject):void{
 			if(super.asset != value){
 				if(_layoutViewAsset && _containerAsset){
 					_containerAsset.removeAsset(_layoutViewAsset);
@@ -51,11 +51,11 @@ package org.tbyrne.debug.display
 			}
 		}
 		
-		private var _bitmap:IBitmapAsset;
+		private var _bitmap:IBitmap;
 		private var _bitmapDataProvider:IBitmapDataProvider;
 		
 		private var _layoutView:ILayoutView;
-		private var _layoutViewAsset:IDisplayAsset;
+		private var _layoutViewAsset:IDisplayObject;
 		private var _layoutViewProvider:ILayoutViewProvider;
 		
 		private var _bitmapPaddingTop:Number;
@@ -63,7 +63,7 @@ package org.tbyrne.debug.display
 		private var _bitmapPaddingLeft:Number;
 		private var _bitmapPaddingRight:Number;
 		
-		public function DebugItemRenderer(asset:IDisplayAsset=null){
+		public function DebugItemRenderer(asset:IDisplayObject=null){
 			super(asset);
 		}
 		override protected function init() : void{
@@ -74,7 +74,7 @@ package org.tbyrne.debug.display
 		override protected function bindToAsset() : void{
 			super.bindToAsset();
 			CONFIG::debug{
-				_bitmap = _containerAsset.takeAssetByName(AssetNames.DEBUG_ITEM_BITMAP,IBitmapAsset);
+				_bitmap = _containerAsset.takeAssetByName(AssetNames.DEBUG_ITEM_BITMAP,IBitmap);
 			}
 			_bitmapPaddingTop = _bitmap.y;
 			_bitmapPaddingLeft = _bitmap.x;
@@ -131,7 +131,7 @@ package org.tbyrne.debug.display
 									size.y-_bitmapPaddingTop-_bitmapPaddingBottom);
 			}
 		}
-		override protected function onChildAdded(e:Event, from:IDisplayAsset) : void{
+		override protected function onChildAdded(e:Event, from:IDisplayObject) : void{
 			super.onChildAdded(e, from);
 			if(_layoutViewAsset)_containerAsset.setAssetIndex(_layoutViewAsset,_containerAsset.numChildren-1);
 		}
@@ -163,7 +163,7 @@ package org.tbyrne.debug.display
 		protected function onViewAssetChanged(from:ILayoutView) : void{
 			setViewAsset(_layoutView.asset);
 		}
-		protected function setViewAsset(asset:IDisplayAsset) : void{
+		protected function setViewAsset(asset:IDisplayObject) : void{
 			if(_layoutViewAsset!=asset){
 				if(_layoutViewAsset && _containerAsset){
 					_containerAsset.removeAsset(_layoutViewAsset);

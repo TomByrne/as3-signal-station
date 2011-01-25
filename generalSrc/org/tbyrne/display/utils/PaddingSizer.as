@@ -2,10 +2,10 @@ package org.tbyrne.display.utils
 {
 	import org.tbyrne.acting.actTypes.IAct;
 	import org.tbyrne.acting.acts.Act;
-	import org.tbyrne.display.assets.assetTypes.IDisplayAsset;
+	import org.tbyrne.display.assets.nativeTypes.IDisplayObject;
 
 	/**
-	 * PaddingSizer sizes/positions a IDisplayAsset based on two sets of paddings.
+	 * PaddingSizer sizes/positions a IDisplayObject based on two sets of paddings.
 	 * The first set is the assumed paddings, these come from the skin/asset generally.
 	 * The second set overrides the first and is specified by the user/config/developer.
 	 * PaddingSizer doesn't do any processing till it's draw method is called. 
@@ -153,10 +153,10 @@ package org.tbyrne.display.utils
 		}
 		
 		
-		public function get targetDisplay():IDisplayAsset{
+		public function get targetDisplay():IDisplayObject{
 			return _targetDisplay;
 		}
-		public function set targetDisplay(value:IDisplayAsset):void{
+		public function set targetDisplay(value:IDisplayObject):void{
 			if(_targetDisplay!=value){
 				_targetDisplay = value;
 				_lastX = NaN;
@@ -167,7 +167,7 @@ package org.tbyrne.display.utils
 		}
 		
 		protected var _paddingChanged:Act;
-		private var _targetDisplay:IDisplayAsset;
+		private var _targetDisplay:IDisplayObject;
 		
 		private var _assumedPaddingRight:Number;
 		private var _assumedPaddingBottom:Number;

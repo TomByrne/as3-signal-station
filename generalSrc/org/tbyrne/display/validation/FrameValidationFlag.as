@@ -3,7 +3,7 @@ package org.tbyrne.display.validation
 	import org.tbyrne.acting.actTypes.IAct;
 	import org.tbyrne.acting.acts.Act;
 	import org.tbyrne.display.assets.assetTypes.IAsset;
-	import org.tbyrne.display.assets.assetTypes.IDisplayAsset;
+	import org.tbyrne.display.assets.nativeTypes.IDisplayObject;
 	import org.tbyrne.display.core.IView;
 
 
@@ -24,7 +24,7 @@ package org.tbyrne.display.validation
 			return _assetChanged;
 		}
 		
-		public function get asset():IDisplayAsset{
+		public function get asset():IDisplayObject{
 			return _asset;
 		}
 		public function get view():IView{
@@ -51,7 +51,7 @@ package org.tbyrne.display.validation
 		
 		
 		private var _view:IView;
-		private var _asset:IDisplayAsset;
+		private var _asset:IDisplayObject;
 		protected var _assetChanged:Act;
 		protected var _added:Boolean;
 		protected var _manager:FrameValidationManager;
@@ -71,9 +71,9 @@ package org.tbyrne.display.validation
 		protected function onAssetChanged(from:IView, oldAsset:IAsset):void{
 			setAsset(_view.asset);
 		}
-		protected function setAsset(asset:IDisplayAsset):void{
+		protected function setAsset(asset:IDisplayObject):void{
 			if(_asset!=asset){
-				var oldAsset:IDisplayAsset = _asset;
+				var oldAsset:IDisplayObject = _asset;
 				_asset = asset;
 				if(_assetChanged)_assetChanged.perform(this,oldAsset);
 				checkAdded();

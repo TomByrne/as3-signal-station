@@ -13,7 +13,7 @@ package org.tbyrne.debug.data.core
 	import org.tbyrne.data.dataTypes.ITriggerableAction;
 	import org.tbyrne.data.operators.StringProxy;
 	import org.tbyrne.debug.data.coreTypes.ILayoutViewProvider;
-	import org.tbyrne.display.assets.assetTypes.IDisplayAsset;
+	import org.tbyrne.display.assets.nativeTypes.IDisplayObject;
 	import org.tbyrne.display.core.ILayoutView;
 	
 	public class DebugData extends StringProxy implements IBooleanConsumer, IBooleanProvider, IDataProvider, IBitmapDataProvider, ITriggerableAction, ILayoutViewProvider
@@ -135,7 +135,7 @@ package org.tbyrne.debug.data.core
 				if(_booleanValueChanged)_booleanValueChanged.perform(this);
 			}
 		}
-		public function triggerAction(scopeDisplay:IDisplayAsset):void{
+		public function triggerAction(scopeDisplay:IDisplayObject):void{
 			if(_selectData)_selectData.triggerAction(scopeDisplay);
 		}
 		protected function isTogglable():Boolean{

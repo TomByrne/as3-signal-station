@@ -1,6 +1,6 @@
 package org.tbyrne.display.actInfo
 {
-	import org.tbyrne.display.assets.assetTypes.IDisplayAsset;
+	import org.tbyrne.display.assets.nativeTypes.IDisplayObject;
 
 	public interface IKeyActInfo
 	{
@@ -12,6 +12,6 @@ package org.tbyrne.display.actInfo
 		function get keyCode():uint;
 		function get keyLocation():uint;
 		
-		function get keyTarget():IDisplayAsset;
+		function get keyTarget():IDisplayObject;
 	}
 }

@@ -3,10 +3,10 @@ package org.tbyrne.display.assets.utils
 	import flash.display.*;
 	import flash.geom.*;
 	
-	import org.tbyrne.display.assets.assetTypes.IBitmapAsset;
-	import org.tbyrne.display.assets.assetTypes.IContainerAsset;
-	import org.tbyrne.display.assets.assetTypes.IDisplayAsset;
-	import org.tbyrne.display.assets.assetTypes.IStageAsset;
+	import org.tbyrne.display.assets.nativeTypes.IBitmap;
+	import org.tbyrne.display.assets.nativeTypes.IDisplayObjectContainer;
+	import org.tbyrne.display.assets.nativeTypes.IDisplayObject;
+	import org.tbyrne.display.assets.nativeTypes.IStage;
 	
 	/**
 	 * Creates a Bitmap copy of the supplied DisplayObject, with coordinates that match the actual visual
@@ -17,8 +17,8 @@ package org.tbyrne.display.assets.utils
 	 * to the supplied DisplayObject's parent.
 	 * @param ignoreColorTrans Set to true to avoid taking a snapshot with the DisplayObject's colorTransform applied.
 	 */
-	public function snapshot(displayObject:IDisplayAsset, nextParent:IContainerAsset=null, ignoreColorTrans:Boolean=false, cropToStage:Boolean=true):IBitmapAsset{
-		var stage:IStageAsset = displayObject.stage;
+	public function snapshot(displayObject:IDisplayObject, nextParent:IDisplayObjectContainer=null, ignoreColorTrans:Boolean=false, cropToStage:Boolean=true):IBitmap{
+		var stage:IStage = displayObject.stage;
 		var stageBounds:Rectangle = displayObject.getBounds(stage);
 		
 		if(cropToStage){
@@ -36,7 +36,7 @@ package org.tbyrne.display.assets.utils
 		matrix.ty = -selfTopLeft.y;
 		bitmapData.draw(displayObject.bitmapDrawable,matrix,displayObject.transform.colorTransform,displayObject.blendMode);
 		
-		var ret:IBitmapAsset = displayObject.factory.createBitmap();
+		var ret:IBitmap = displayObject.factory.createBitmap();
 		ret.bitmapData = bitmapData;
 		var point:Point = new Point(stageBounds.x,stageBounds.y);
 		

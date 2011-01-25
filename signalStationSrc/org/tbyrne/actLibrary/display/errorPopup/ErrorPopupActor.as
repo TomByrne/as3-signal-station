@@ -11,7 +11,7 @@ package org.tbyrne.actLibrary.display.errorPopup
 	import org.tbyrne.actLibrary.errors.actTypes.IErrorAct;
 	import org.tbyrne.acting.actTypes.IAct;
 	import org.tbyrne.acting.universal.UniversalActExecution;
-	import org.tbyrne.display.assets.assetTypes.IContainerAsset;
+	import org.tbyrne.display.assets.nativeTypes.IDisplayObjectContainer;
 	import org.tbyrne.display.popup.PopupInfo;
 	
 	public class ErrorPopupActor extends UniversalActorHelper
@@ -19,10 +19,10 @@ package org.tbyrne.actLibrary.display.errorPopup
 		public var defaultErrorDisplay:IErrorDisplay;
 		
 		
-		public function get popUpParent():IContainerAsset{
+		public function get popUpParent():IDisplayObjectContainer{
 			return _popupAct.parent;
 		}
-		public function set popUpParent(value:IContainerAsset):void{
+		public function set popUpParent(value:IDisplayObjectContainer):void{
 			_popupAct.parent = value;
 		}
 		

@@ -9,9 +9,9 @@ package org.tbyrne.display.controls
 	import org.tbyrne.acting.acts.Act;
 	import org.tbyrne.display.DisplayNamespace;
 	import org.tbyrne.display.actInfo.IMouseActInfo;
-	import org.tbyrne.display.assets.assetTypes.IDisplayAsset;
-	import org.tbyrne.display.assets.assetTypes.IInteractiveObjectAsset;
-	import org.tbyrne.display.assets.assetTypes.ISpriteAsset;
+	import org.tbyrne.display.assets.nativeTypes.IDisplayObject;
+	import org.tbyrne.display.assets.nativeTypes.IInteractiveObject;
+	import org.tbyrne.display.assets.nativeTypes.ISprite;
 	import org.tbyrne.display.constants.Direction;
 	import org.tbyrne.display.core.LayoutView;
 	import org.tbyrne.display.scrolling.IScrollMetrics;
@@ -180,7 +180,7 @@ package org.tbyrne.display.controls
 		protected var _foreButton:Button = new Button();
 		protected var _aftButton:Button = new Button();
 		
-		public function ScrollBar(asset:IDisplayAsset=null){
+		public function ScrollBar(asset:IDisplayObject=null){
 			super(asset);
 		}
 		override protected function init(): void{
@@ -198,14 +198,14 @@ package org.tbyrne.display.controls
 		}
 		
 		override protected function bindToAsset(): void{
-			_track.setAssetAndPosition(_containerAsset.takeAssetByName(TRACK_CHILD,ISpriteAsset));
-			_scrollThumb.setAssetAndPosition(_containerAsset.takeAssetByName(SCROLL_THUMB_CHILD,ISpriteAsset));
-			_foreButton.setAssetAndPosition(_containerAsset.takeAssetByName(FORE_BUTTON_CHILD,ISpriteAsset,true));
-			_aftButton.setAssetAndPosition(_containerAsset.takeAssetByName(AFT_BUTTON_CHILD,ISpriteAsset,true));
+			_track.setAssetAndPosition(_containerAsset.takeAssetByName(TRACK_CHILD,ISprite));
+			_scrollThumb.setAssetAndPosition(_containerAsset.takeAssetByName(SCROLL_THUMB_CHILD,ISprite));
+			_foreButton.setAssetAndPosition(_containerAsset.takeAssetByName(FORE_BUTTON_CHILD,ISprite,true));
+			_aftButton.setAssetAndPosition(_containerAsset.takeAssetByName(AFT_BUTTON_CHILD,ISprite,true));
 		}
 		override protected function unbindFromAsset(): void{
 			
-			var asset:IDisplayAsset = _track.asset;
+			var asset:IDisplayObject = _track.asset;
 			_track.asset = null;
 			_containerAsset.returnAsset(asset);
 			
@@ -516,7 +516,7 @@ package org.tbyrne.display.controls
 			validate();
 		}
 		
-		protected function endScroll(from:IInteractiveObjectAsset, info:IMouseActInfo):void{
+		protected function endScroll(from:IInteractiveObject, info:IMouseActInfo):void{
 			if(_scrollTimer){
 				_scrollTimer.stop();
 				_scrollTimer = null;

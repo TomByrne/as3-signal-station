@@ -1,6 +1,6 @@
 package org.tbyrne.display.containers
 {
-	import org.tbyrne.display.assets.assetTypes.IDisplayAsset;
+	import org.tbyrne.display.assets.nativeTypes.IDisplayObject;
 	import org.tbyrne.instanceFactory.IInstanceFactory;
 	
 	public class ListBox extends AbstractSelectableList
@@ -70,7 +70,7 @@ package org.tbyrne.display.containers
 		
 		
 		
-		public function ListBox(asset:IDisplayAsset=null){
+		public function ListBox(asset:IDisplayObject=null){
 			super(asset);
 		}
 		override protected function init() : void{

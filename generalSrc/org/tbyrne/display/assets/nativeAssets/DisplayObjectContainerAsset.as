@@ -12,14 +12,14 @@ package org.tbyrne.display.assets.nativeAssets
 	import org.tbyrne.acting.actTypes.IAct;
 	import org.tbyrne.acting.acts.NativeAct;
 	import org.tbyrne.display.assets.assetTypes.IAsset;
-	import org.tbyrne.display.assets.assetTypes.IContainerAsset;
-	import org.tbyrne.display.assets.assetTypes.IDisplayAsset;
+	import org.tbyrne.display.assets.nativeTypes.IDisplayObjectContainer;
+	import org.tbyrne.display.assets.nativeTypes.IDisplayObject;
 	import org.tbyrne.display.assets.states.IStateDef;
 	import org.tbyrne.display.assets.utils.isDescendant;
 	import org.tbyrne.display.utils.MovieClipUtils;
 	import org.tbyrne.hoborg.ObjectPool;
 	
-	public class DisplayObjectContainerAsset extends InteractiveObjectAsset implements IContainerAsset
+	public class DisplayObjectContainerAsset extends InteractiveObjectAsset implements IDisplayObjectContainer
 	{
 		private static var assignments:Dictionary = new Dictionary(true);
 		
@@ -63,7 +63,7 @@ package org.tbyrne.display.assets.nativeAssets
 		private var _mouseChildren:Boolean;
 		private var _displayObjectContainer:DisplayObjectContainer;
 		/*
-		mapped DisplayObject -> IDisplayAsset
+		mapped DisplayObject -> IDisplayObject
 		*/
 		private var _children:Dictionary = new Dictionary(true);
 		
@@ -71,7 +71,7 @@ package org.tbyrne.display.assets.nativeAssets
 			super(factory);
 		}
 		
-		public function getAssetIndex(asset:IDisplayAsset):int{
+		public function getAssetIndex(asset:IDisplayObject):int{
 			if(_displayObjectContainer){
 				var cast:DisplayObjectAsset = (asset as DisplayObjectAsset);
 				return _displayObjectContainer.getChildIndex(cast.displayObject);
@@ -87,7 +87,7 @@ package org.tbyrne.display.assets.nativeAssets
 				throw new Error("This method cannot be called before a displayObject is set");
 			}
 		}
-		public function contains(child:IDisplayAsset):Boolean{
+		public function contains(child:IDisplayObject):Boolean{
 			if(_displayObjectContainer){
 				var nativeAsset:INativeAsset = (child as INativeAsset);
 				if(child==this || (nativeAsset && _children[nativeAsset.displayObject])){
@@ -122,26 +122,26 @@ package org.tbyrne.display.assets.nativeAssets
 				throw new Error("This method cannot be called before a displayObject is set");
 			}
 		}
-		public function returnAsset(asset:IDisplayAsset):void{
+		public function returnAsset(asset:IDisplayObject):void{
 			// nothing to do
 		}
-		public function addAsset(asset:IDisplayAsset):void{
+		public function addAsset(asset:IDisplayObject):void{
 			var nativeAsset:INativeAsset = (asset as INativeAsset);
 			storeChildAsset(asset,nativeAsset.displayObject);
 			_displayObjectContainer.addChild(nativeAsset.displayObject);
 		}
-		public function removeAsset(asset:IDisplayAsset):void{
+		public function removeAsset(asset:IDisplayObject):void{
 			var nativeAsset:INativeAsset = (asset as INativeAsset);
 			_displayObjectContainer.removeChild(nativeAsset.displayObject);
 			removeChildAsset(asset,nativeAsset.displayObject);
 		}
-		public function addAssetAt(asset:IDisplayAsset, index:int):IDisplayAsset{
+		public function addAssetAt(asset:IDisplayObject, index:int):IDisplayObject{
 			var cast:DisplayObjectAsset = (asset as DisplayObjectAsset);
 			storeChildAsset(cast,cast.displayObject); //  this must happen before actual adding so that parent ref. exists for event handlers
 			_displayObjectContainer.addChildAt(cast.displayObject,index);
 			return asset;
 		}
-		public function getAssetAt(index:int):IDisplayAsset{
+		public function getAssetAt(index:int):IDisplayObject{
 			if(_displayObjectContainer){
 				var displayObject:DisplayObject = _displayObjectContainer.getChildByName(name);
 				var ret:DisplayObjectAsset = _children[displayObject];
@@ -154,7 +154,7 @@ package org.tbyrne.display.assets.nativeAssets
 				throw new Error("This method cannot be called before a displayObject is set");
 			}
 		}
-		public function setAssetIndex(asset:IDisplayAsset, index:int):void{
+		public function setAssetIndex(asset:IDisplayObject, index:int):void{
 			var cast:DisplayObjectAsset = (asset as DisplayObjectAsset);
 			_displayObjectContainer.setChildIndex(cast.displayObject,index);
 			storeChildAsset(cast,cast.displayObject);
@@ -162,19 +162,19 @@ package org.tbyrne.display.assets.nativeAssets
 		
 		override protected function _addStateList(stateList:Array):void{
 			super._addStateList(stateList);
-			for each(var child:IDisplayAsset in _children){
+			for each(var child:IDisplayObject in _children){
 				child.addStateList(stateList,true);
 			}
 		}
 		override protected function _removeStateList(stateList:Array):void{
 			super._removeStateList(stateList);
-			for each(var child:IDisplayAsset in _children){
+			for each(var child:IDisplayObject in _children){
 				child.removeStateList(stateList);
 			}
 		}
 		override public function reset():void{
 			super.reset();
-			for each(var child:IDisplayAsset in _children){
+			for each(var child:IDisplayObject in _children){
 				for each(var stateList:Array in _stateLists){
 					child.removeStateList(stateList);
 				}
@@ -183,7 +183,7 @@ package org.tbyrne.display.assets.nativeAssets
 			_children = new Dictionary(true);
 		}
 		
-		protected function storeChildAsset(child:IDisplayAsset, displayObject:DisplayObject):void{
+		protected function storeChildAsset(child:IDisplayObject, displayObject:DisplayObject):void{
 			if(!_children[displayObject]){
 				child.parent = this;
 				for each(var stateList:Array in _stateLists){
@@ -192,7 +192,7 @@ package org.tbyrne.display.assets.nativeAssets
 				_children[displayObject] = child;
 			}
 		}
-		protected function removeChildAsset(child:IDisplayAsset, displayObject:DisplayObject):void{
+		protected function removeChildAsset(child:IDisplayObject, displayObject:DisplayObject):void{
 			if(_children[displayObject]){
 				child.parent = null;
 				for each(var stateList:Array in _stateLists){
@@ -201,8 +201,8 @@ package org.tbyrne.display.assets.nativeAssets
 				delete _children[displayObject];
 			}
 		}
-		protected function findChildByName(name:String):IDisplayAsset{
-			for each(var child:IDisplayAsset in _children){
+		protected function findChildByName(name:String):IDisplayObject{
+			for each(var child:IDisplayObject in _children){
 				if(child.name==name){
 					return child;
 				}

@@ -3,7 +3,7 @@ package org.tbyrne.shortcuts
 	import org.puremvc.as3.interfaces.INotification;
 	import org.tbyrne.core.AbstractMediator;
 	import org.tbyrne.core.SignalStationMediatorNames;
-	import org.tbyrne.display.assets.assetTypes.IInteractiveObjectAsset;
+	import org.tbyrne.display.assets.nativeTypes.IInteractiveObject;
 	import org.tbyrne.input.shortcuts.IShortcutInputItem;
 	import org.tbyrne.input.shortcuts.ShortcutManager;
 	import org.tbyrne.mediatorTypes.IUIMediator;
@@ -25,7 +25,7 @@ package org.tbyrne.shortcuts
 		
 		private function checkKeyListener():void{
 			var uiMediator:IUIMediator = facade.retrieveMediator(SignalStationMediatorNames.UI) as IUIMediator;
-			_manager.keyDispatcher = uiMediator.mainUiDisplay as IInteractiveObjectAsset;
+			_manager.keyDispatcher = uiMediator.mainUiDisplay as IInteractiveObject;
 		}
 		
 		override public function onRemove():void{

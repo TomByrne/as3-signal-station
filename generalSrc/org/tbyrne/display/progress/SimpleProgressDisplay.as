@@ -5,7 +5,7 @@ package org.tbyrne.display.progress
 	import flash.text.*;
 	import flash.utils.getTimer;
 	
-	import org.tbyrne.display.assets.assetTypes.IDisplayAsset;
+	import org.tbyrne.display.assets.nativeTypes.IDisplayObject;
 	import org.tbyrne.display.assets.nativeAssets.NativeAssetFactory;
 	import org.tbyrne.display.assets.nativeAssets.SpriteAsset;
 
@@ -99,7 +99,7 @@ package org.tbyrne.display.progress
 		private var _transInRunning:Boolean;
 		private var _transOutRunning:Boolean;
 		
-		public function SimpleProgressDisplay(asset:IDisplayAsset=null){
+		public function SimpleProgressDisplay(asset:IDisplayObject=null){
 			super(asset);
 			backgroundAlpha = DEFAULT_BACKGROUND_ALPHA;
 		}

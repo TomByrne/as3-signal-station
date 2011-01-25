@@ -1,6 +1,6 @@
 package org.tbyrne.display.assets.schemaTypes
 {
-	import org.tbyrne.display.assets.assetTypes.IDisplayAsset;
+	import org.tbyrne.display.assets.nativeTypes.IDisplayObject;
 
 	/**
 	 * This is for non-input text

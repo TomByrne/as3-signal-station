@@ -7,8 +7,8 @@ package org.tbyrne.display.controls
 	import org.tbyrne.data.dataTypes.IBooleanProvider;
 	import org.tbyrne.display.DisplayNamespace;
 	import org.tbyrne.display.actInfo.IMouseActInfo;
-	import org.tbyrne.display.assets.assetTypes.IDisplayAsset;
-	import org.tbyrne.display.assets.assetTypes.IInteractiveObjectAsset;
+	import org.tbyrne.display.assets.nativeTypes.IDisplayObject;
+	import org.tbyrne.display.assets.nativeTypes.IInteractiveObject;
 	import org.tbyrne.display.assets.states.StateDef;
 	import org.tbyrne.display.containers.ISelectableRenderer;
 	import org.tbyrne.display.tabFocus.ITabFocusable;
@@ -123,7 +123,7 @@ package org.tbyrne.display.controls
 		
 		protected var _selectedState:StateDef = new StateDef([STATE_UNSELECTABLE,STATE_SELECTED,STATE_UNSELECTED],0);
 		
-		public function ToggleButton(asset:IDisplayAsset=null){
+		public function ToggleButton(asset:IDisplayObject=null){
 			super(asset);
 		}
 		override public function setSize(width:Number, height:Number):void{
@@ -155,7 +155,7 @@ package org.tbyrne.display.controls
 				_selectedState.selection = _booleanProvider.booleanValue?1:2;
 			}
 		}
-		override protected function onClick(from:IInteractiveObjectAsset, info:IMouseActInfo):void{
+		override protected function onClick(from:IInteractiveObject, info:IMouseActInfo):void{
 			if(_active){
 				selected = !selected;
 				

@@ -10,7 +10,7 @@ package org.tbyrne.media.image
 	import flash.net.URLRequest;
 	
 	import org.tbyrne.debug.logging.Log;
-	import org.tbyrne.display.assets.assetTypes.ILoaderAsset;
+	import org.tbyrne.display.assets.nativeTypes.ILoader;
 	import org.tbyrne.display.assets.nativeAssets.NativeAssetFactory;
 	import org.tbyrne.display.core.ILayoutView;
 	import org.tbyrne.display.layout.frame.FrameLayoutInfo;
@@ -58,7 +58,7 @@ package org.tbyrne.media.image
 		private var _smoothing:Boolean;
 		private var _imageUrl:String;
 		private var _urlLoader:URLLoader;
-		private var _protoLoader:ILoaderAsset;
+		private var _protoLoader:ILoader;
 		private var _loadStarted:Boolean;
 		private var _loaded:Boolean;
 		private var _displaysTaken:int = 0;
@@ -80,7 +80,7 @@ package org.tbyrne.media.image
 			_loaded = true;
 			for(var i:* in _allMediaDisplays){
 				var view:MediaView = (i as MediaView);
-				var loader:ILoaderAsset = (view.asset as ILoaderAsset);
+				var loader:ILoader = (view.asset as ILoader);
 				loader.loadBytes(_urlLoader.data);
 			}
 			setMemoryLoadProps(_urlLoader.bytesLoaded, _urlLoader.bytesTotal);
@@ -112,7 +112,7 @@ package org.tbyrne.media.image
 				_protoLoader = _nativeFactory.getNew(loader);
 				_protoLoader.contentLoaderInfo.addEventListener(Event.COMPLETE, onProtoLoaded);
 			}
-			var loaderAsset:ILoaderAsset = _nativeFactory.getNew(loader);
+			var loaderAsset:ILoader = _nativeFactory.getNew(loader);
 			var view:ImageView = new ImageView(loaderAsset,_measurements,smoothing);
 			view.layoutInfo = new FrameLayoutInfo();
 			return view;
@@ -121,7 +121,7 @@ package org.tbyrne.media.image
 			updateDisplayMeasurements(_protoLoader.content.width,_protoLoader.content.height);
 		}
 		override protected function destroyMediaDisplay(value:ILayoutView):void{
-			var loader:ILoaderAsset = value.asset as ILoaderAsset;
+			var loader:ILoader = value.asset as ILoader;
 			if(_protoLoader==loader){
 				_protoLoader.contentLoaderInfo.removeEventListener(Event.COMPLETE, onProtoLoaded);
 				_protoLoader = null;

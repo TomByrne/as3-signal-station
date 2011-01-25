@@ -11,8 +11,8 @@ package org.tbyrne.actLibrary.display.visualSockets.sockets
 	import org.tbyrne.acting.acts.Act;
 	import org.tbyrne.core.DelayedCall;
 	import org.tbyrne.display.assets.assetTypes.IAsset;
-	import org.tbyrne.display.assets.assetTypes.IContainerAsset;
-	import org.tbyrne.display.assets.assetTypes.IDisplayAsset;
+	import org.tbyrne.display.assets.nativeTypes.IDisplayObjectContainer;
+	import org.tbyrne.display.assets.nativeTypes.IDisplayObject;
 	import org.tbyrne.display.core.IOutroView;
 	import org.tbyrne.display.core.IScopedObject;
 	import org.tbyrne.display.core.IView;
@@ -50,22 +50,22 @@ package org.tbyrne.actLibrary.display.visualSockets.sockets
 		private var _plugMappers: Array;
 		private var _scopeDisplayMappers: Array;
 		private var _plugDisplay: IPlugDisplay;
-		private var _container:IContainerAsset;
+		private var _container:IDisplayObjectContainer;
 		private var _displayPosition:Rectangle = new Rectangle();
 		private var _introOutroOverlap:Number = 0;
 		private var _outroBegunAt:Number;
 		private var _outroLength:Number;
 		
-		private var _lastDisplayObject:IDisplayAsset;
-		private var _lastParent:IContainerAsset;
+		private var _lastDisplayObject:IDisplayObject;
+		private var _lastParent:IDisplayObjectContainer;
 		private var _lastDepth:int;
 
-		public function DisplaySocket(socketId: String = null, container:IContainerAsset=null, plugMappers:Array=null){
+		public function DisplaySocket(socketId: String = null, container:IDisplayObjectContainer=null, plugMappers:Array=null){
 			this.socketId = socketId;
 			this.container = container;
 			this.plugMappers = plugMappers;
 		}
-		public function get asset():IDisplayAsset{
+		public function get asset():IDisplayObject{
 			return _container;
 		}
 		/*
@@ -130,10 +130,10 @@ package org.tbyrne.actLibrary.display.visualSockets.sockets
 			
 		}
 		[Property(toString="true", clonable="true")]
-		public function get container(): IContainerAsset{
+		public function get container(): IDisplayObjectContainer{
 			return _container;
 		}
-		public function set container(value: IContainerAsset): void{
+		public function set container(value: IDisplayObjectContainer): void{
 			var depth:int = _displayDepth;
 			if (_plugDisplay && _container){
 				var remDepth:int = removeDisplay(_plugDisplay);
@@ -194,7 +194,7 @@ package org.tbyrne.actLibrary.display.visualSockets.sockets
 				invalidateMeasurements();
 			}
 		}
-		public function get layoutDisplay():IDisplayAsset{
+		public function get layoutDisplay():IDisplayObject{
 			return _plugDisplay?_plugDisplay.display:null;
 		}
 		override protected function measure():void{
@@ -240,7 +240,7 @@ package org.tbyrne.actLibrary.display.visualSockets.sockets
 			}
 			return depth;
 		}
-		protected function completeRemoveDisplay(displayObject:IDisplayAsset, container:IContainerAsset, originalParent:IContainerAsset, originalDepth:int):void{
+		protected function completeRemoveDisplay(displayObject:IDisplayObject, container:IDisplayObjectContainer, originalParent:IDisplayObjectContainer, originalDepth:int):void{
 			_outroBegunAt = NaN;
 			if(originalParent){
 				originalParent.addAssetAt(displayObject,originalDepth); 
@@ -266,7 +266,7 @@ package org.tbyrne.actLibrary.display.visualSockets.sockets
 			}
 			addDisplay(plugDisplay.display, depth);
 		}
-		protected function addDisplay(displayObject:IDisplayAsset, depth:int):void{
+		protected function addDisplay(displayObject:IDisplayObject, depth:int):void{
 			addDelay = null;
 			_outroBegunAt = NaN;
 			_lastDisplayObject = displayObject;

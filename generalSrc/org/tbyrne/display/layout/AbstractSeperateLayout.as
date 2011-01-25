@@ -96,6 +96,7 @@ package org.tbyrne.display.layout
 		override protected function measure() : void{
 			if(drawToMeasure()){
 				validate(true);
+				compileMeasurements();
 			}else{
 				for(var i:* in _invalidMeas){
 					var subject:ILayoutSubject = (i as ILayoutSubject);
@@ -116,7 +117,7 @@ package org.tbyrne.display.layout
 				if(meas.y<subjMeas.y)meas.y = subjMeas.y;
 			}
 			
-			//TODO: should we mask _measureFlag as valid
+			//TODO: should we mark _measureFlag as valid
 			if(_measurementsChanged && (_measurements.x!=oldMeasWidth || _measurements.y!=oldMeasHeight)){
 				_measurementsChanged.perform(this,oldMeasWidth,oldMeasHeight);
 			}

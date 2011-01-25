@@ -11,9 +11,9 @@ package org.tbyrne.display.controls
 	import org.tbyrne.data.dataTypes.IValueConsumer;
 	import org.tbyrne.display.DisplayNamespace;
 	import org.tbyrne.display.actInfo.IKeyActInfo;
-	import org.tbyrne.display.assets.assetTypes.IDisplayAsset;
-	import org.tbyrne.display.assets.assetTypes.IInteractiveObjectAsset;
-	import org.tbyrne.display.assets.assetTypes.ITextFieldAsset;
+	import org.tbyrne.display.assets.nativeTypes.IDisplayObject;
+	import org.tbyrne.display.assets.nativeTypes.IInteractiveObject;
+	import org.tbyrne.display.assets.nativeTypes.ITextField;
 	import org.tbyrne.display.assets.states.StateDef;
 	import org.tbyrne.display.tabFocus.ITabFocusable;
 	import org.tbyrne.display.tabFocus.InteractiveAssetFocusWrapper;
@@ -51,6 +51,15 @@ package org.tbyrne.display.controls
 				applyPrompt();
 			}
 		}
+		public function get displayAsPassword():Boolean{
+			return _displayAsPassword;
+		}
+		public function set displayAsPassword(value:Boolean):void{
+			if(_displayAsPassword!=value){
+				_displayAsPassword = value;
+				applyPrompt();
+			}
+		}
 		public function get maxChars():int{
 			return _maxChars;
 		}
@@ -68,7 +77,7 @@ package org.tbyrne.display.controls
 			checkIsBound();
 			return _tabFocusable;
 		}
-		override public function set asset(value:IDisplayAsset):void{
+		override public function set asset(value:IDisplayObject):void{
 			if(!(_stringProvider || _valueProvider))data = null;
 			super.asset = value;
 		}
@@ -106,14 +115,16 @@ package org.tbyrne.display.controls
 		protected var _assumedPrompt:String;
 		protected var _restrict:String;
 		protected var _maxChars:int = 0;
+		protected var _displayAsPassword:Boolean;
 		protected var _tabFocusable:InteractiveAssetFocusWrapper;
 		
 		protected var _stringConsumer:IStringConsumer;
 		protected var _valueConsumer:IValueConsumer;
 		
 		protected var _focusedState:StateDef = new StateDef([STATE_UNFOCUSED,STATE_FOCUSED],0);
+
 		
-		public function TextInput(asset:IDisplayAsset=null){
+		public function TextInput(asset:IDisplayObject=null){
 			super(asset);
 		}
 		/*override protected function bindToAsset() : void{
@@ -135,7 +146,7 @@ package org.tbyrne.display.controls
 			_labelField.type = (_active?TextFieldType.INPUT:TextFieldType.DYNAMIC);
 			_labelField.selectable = _active;
 		}
-		protected function onFocusIn(e:Event, from:IInteractiveObjectAsset) : void{
+		protected function onFocusIn(e:Event, from:IInteractiveObject) : void{
 			if(!_focused){
 				_focusedState.selection = 1;
 				_focused = true;
@@ -147,7 +158,7 @@ package org.tbyrne.display.controls
 				if(_focusedChanged)_focusedChanged.perform(this);
 			}
 		}
-		protected function onFocusOut(e:Event, from:IInteractiveObjectAsset) : void{
+		protected function onFocusOut(e:Event, from:IInteractiveObject) : void{
 			if(_focused){
 				_focusedState.selection = 0;
 				_focused = false;
@@ -158,12 +169,12 @@ package org.tbyrne.display.controls
 				if(_focusedChanged)_focusedChanged.perform(this);
 			}
 		}
-		protected function onKeyUp(from:IInteractiveObjectAsset, info:IKeyActInfo) : void{
+		protected function onKeyUp(from:IInteractiveObject, info:IKeyActInfo) : void{
 			if(info.charCode==Keyboard.ENTER && _enterKeyPressed){
 				_enterKeyPressed.perform(this);
 			}
 		}
-		protected function onTextChange(e:Event, from:ITextFieldAsset) : void{
+		protected function onTextChange(e:Event, from:ITextField) : void{
 			syncDataToField();
 		}
 		override protected function unbindFromAsset() : void{
@@ -199,9 +210,11 @@ package org.tbyrne.display.controls
 					_labelField.restrict = null;
 					_labelField.maxChars = 0;
 					_labelField.text = getValueOrAssumed(_prompt,_assumedPrompt,"");
+					_labelField.displayAsPassword = false;
 				}else{
 					_labelField.maxChars = _maxChars;
 					_labelField.restrict = _restrict;
+					_labelField.displayAsPassword = _displayAsPassword;
 				}
 			}
 		}

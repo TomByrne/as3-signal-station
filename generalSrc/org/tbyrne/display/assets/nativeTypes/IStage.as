@@ -1,23 +1,23 @@
-package org.tbyrne.display.assets.assetTypes
+package org.tbyrne.display.assets.nativeTypes
 {
 	import flash.display.LoaderInfo;
 	
 	import org.tbyrne.acting.actTypes.IAct;
 
-	public interface IStageAsset extends IContainerAsset
+	public interface IStage extends IDisplayObjectContainer
 	{
 		//TODO: change handler signature
 		/**
-		 * handler(e:Event, from:IStageAsset)
+		 * handler(from:IStage)
 		 */
 		function get resize():IAct;
 		/**
-		 * handler(e:Event, from:IStageAsset)
+		 * handler(from:IStage)
 		 */
 		function get fullScreen():IAct;
 		
-		function get focus():IInteractiveObjectAsset;
-		function set focus(value:IInteractiveObjectAsset):void;
+		function get focus():IInteractiveObject;
+		function set focus(value:IInteractiveObject):void;
 		
 		function get stageWidth():Number;
 		function get stageHeight():Number;
@@ -27,6 +27,8 @@ package org.tbyrne.display.assets.assetTypes
 		function set displayState(value:String):void;
 		function get displayState():String;
 		
-		function get loaderInfo():LoaderInfo
+		function get loaderInfo():LoaderInfo;
+		
+		function get nativeWindow():INativeWindow;
 	}
 }

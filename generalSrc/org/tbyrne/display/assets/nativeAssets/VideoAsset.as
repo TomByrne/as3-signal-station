@@ -4,9 +4,9 @@ package org.tbyrne.display.assets.nativeAssets
 	import flash.media.Video;
 	import flash.net.NetStream;
 	
-	import org.tbyrne.display.assets.assetTypes.IVideoAsset;
+	import org.tbyrne.display.assets.nativeTypes.IVideo;
 	
-	public class VideoAsset extends DisplayObjectAsset implements IVideoAsset
+	public class VideoAsset extends DisplayObjectAsset implements IVideo
 	{
 		public function get video():Video {
 			return _video;

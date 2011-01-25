@@ -1,21 +1,17 @@
 package org.tbyrne.display.assets.nativeAssets {
 	import flash.display.DisplayObject;
-	import flash.display.DisplayObjectContainer;
 	import flash.display.MovieClip;
 	import flash.display.Stage;
 	import flash.events.Event;
 	import flash.utils.Dictionary;
 	
 	import org.tbyrne.display.assets.assetTypes.IAsset;
-	import org.tbyrne.display.assets.assetTypes.IContainerAsset;
-	import org.tbyrne.display.assets.assetTypes.IDisplayAsset;
-	import org.tbyrne.display.assets.assetTypes.IMovieClipAsset;
+	import org.tbyrne.display.assets.nativeTypes.IMovieClip;
 	import org.tbyrne.display.assets.states.IStateDef;
 	import org.tbyrne.display.utils.MovieClipFrameAnalysis;
-	import org.tbyrne.display.validation.ValidationFlag;
 	
 	
-	public class MovieClipAsset extends SpriteAsset implements IMovieClipAsset {
+	public class MovieClipAsset extends SpriteAsset implements IMovieClip {
 		override public function set displayObject(value:DisplayObject):void{
 			if(super.displayObject!=value){
 				var assArray:Array;
@@ -78,6 +74,20 @@ package org.tbyrne.display.assets.nativeAssets {
 		override protected function isStateNameAvailable(stateName:String):Boolean{
 			return (_mainAnalysis.getFrameLabelDuration(stateName)!=-1);
 		}
+		override protected function prioritiseStates(newStates:Array):Array{
+			var positions:Array = [];
+			for each(var state:IStateDef in newStates){
+				var selection:String = state.options[state.selection];
+				var index:int = _mainAnalysis.getFrameLabelIndex(selection);
+				positions.push(index);
+			}
+			var indices:Array = positions.sort(Array.RETURNINDEXEDARRAY);
+			positions = []
+			for each(var i:int in indices){
+				positions.push(newStates[i]);
+			}
+			return positions;
+		}
 		override protected function applyState(state:IStateDef, stateName:String, appliedStates:Array):Number{
 			var ret:Number = super.applyState(state, stateName, appliedStates);
 			if(!appliedStates.length){
@@ -123,7 +133,7 @@ package org.tbyrne.display.assets.nativeAssets {
 			}
 		}
 		protected function addChild(target:MovieClip):void{
-			var asset:IMovieClipAsset = _nativeFactory.getExisting(target);
+			var asset:IMovieClip = _nativeFactory.getExisting(target);
 			if(!asset){
 				var frameAnalysis:MovieClipFrameAnalysis = MovieClipFrameAnalysis.getNew(target);
 				_childClips[target] = frameAnalysis;
@@ -142,7 +152,7 @@ package org.tbyrne.display.assets.nativeAssets {
 		protected function setAllStateListsIn(frameAnalysis:MovieClipFrameAnalysis, checkIfTaken:Boolean):void{
 			if(checkIfTaken){
 				// we check the movieclip to see if something has taken it as an asset after we stored it.
-				var asset:IMovieClipAsset = _nativeFactory.getExisting(frameAnalysis.movieClip);
+				var asset:IMovieClip = _nativeFactory.getExisting(frameAnalysis.movieClip);
 				if(asset){
 					if(!_toRemove)_toRemove = [];
 					_toRemove.push(frameAnalysis.movieClip);

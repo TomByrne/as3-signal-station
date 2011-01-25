@@ -12,8 +12,8 @@ package org.tbyrne.display.controls
 	import org.tbyrne.display.DisplayNamespace;
 	import org.tbyrne.display.assets.AssetNames;
 	import org.tbyrne.display.assets.assetTypes.IAsset;
-	import org.tbyrne.display.assets.assetTypes.IDisplayAsset;
-	import org.tbyrne.display.assets.assetTypes.ITextFieldAsset;
+	import org.tbyrne.display.assets.nativeTypes.IDisplayObject;
+	import org.tbyrne.display.assets.nativeTypes.ITextField;
 	import org.tbyrne.display.utils.PaddingSizer;
 	
 	use namespace DisplayNamespace;
@@ -100,11 +100,11 @@ package org.tbyrne.display.controls
 		protected var _stringData:String;
 		protected var _stringProvider:IStringProvider;
 		protected var _valueProvider:IValueProvider;
-		protected var _labelField:ITextFieldAsset;
+		protected var _labelField:ITextField;
 		
 		protected var _labelFieldSizer:PaddingSizer;
 		
-		public function TextLabel(asset:IDisplayAsset=null){
+		public function TextLabel(asset:IDisplayObject=null){
 			super(asset);
 		}
 		override protected function init():void{
@@ -145,11 +145,11 @@ package org.tbyrne.display.controls
 			applyFormat();
 		}
 		protected function bindTextField():void{
-			if(asset.conformsToType(ITextFieldAsset)){
-				_labelField = (asset as ITextFieldAsset);
+			if(asset.conformsToType(ITextField)){
+				_labelField = (asset as ITextField);
 			}
 			if(!_labelField){
-				_labelField = _containerAsset.takeAssetByName(AssetNames.LABEL_FIELD, ITextFieldAsset);
+				_labelField = _containerAsset.takeAssetByName(AssetNames.LABEL_FIELD, ITextField);
 			}
 			_assumedTextFormat = _labelField.defaultTextFormat;
 		}

@@ -5,8 +5,8 @@ package org.tbyrne.display.controls
 	
 	import org.tbyrne.data.dataTypes.INumberProvider;
 	import org.tbyrne.display.DisplayNamespace;
-	import org.tbyrne.display.assets.assetTypes.IDisplayAsset;
-	import org.tbyrne.display.assets.assetTypes.IInteractiveObjectAsset;
+	import org.tbyrne.display.assets.nativeTypes.IDisplayObject;
+	import org.tbyrne.display.assets.nativeTypes.IInteractiveObject;
 	import org.tbyrne.display.constants.Direction;
 	import org.tbyrne.display.layout.ILayoutSubject;
 	import org.tbyrne.media.video.IVideoSource;
@@ -48,9 +48,9 @@ package org.tbyrne.display.controls
 		
 		private var _videoSource:IVideoSource;
 		private var _slider:Slider;
-		private var _bufferedBar:IDisplayAsset;
-		private var _track:IDisplayAsset;
-		private var _thumb:IDisplayAsset;
+		private var _bufferedBar:IDisplayObject;
+		private var _track:IDisplayObject;
+		private var _thumb:IDisplayObject;
 		
 		public function BufferBar(){
 			super();
@@ -61,18 +61,18 @@ package org.tbyrne.display.controls
 		override protected function bindToAsset() : void{
 			_slider.asset = asset;
 			
-			_bufferedBar = _containerAsset.takeAssetByName(BUFFERED_BAR,IDisplayAsset,true);
+			_bufferedBar = _containerAsset.takeAssetByName(BUFFERED_BAR,IDisplayObject,true);
 			if(_bufferedBar){
-				var cast:IInteractiveObjectAsset = (_bufferedBar as IInteractiveObjectAsset);
+				var cast:IInteractiveObject = (_bufferedBar as IInteractiveObject);
 				if(cast)cast.mouseEnabled = false;
 			}
-			_track = _containerAsset.takeAssetByName(Slider.TRACK,IDisplayAsset);
-			_thumb = _containerAsset.takeAssetByName(Slider.THUMB,IDisplayAsset);
+			_track = _containerAsset.takeAssetByName(Slider.TRACK,IDisplayObject);
+			_thumb = _containerAsset.takeAssetByName(Slider.THUMB,IDisplayObject);
 		}
 		override protected function unbindFromAsset() : void{
 			
 			if(_bufferedBar){
-				var cast:IInteractiveObjectAsset = (_bufferedBar as IInteractiveObjectAsset);
+				var cast:IInteractiveObject = (_bufferedBar as IInteractiveObject);
 				if(cast)cast.mouseEnabled = true;
 				
 				_containerAsset.returnAsset(_bufferedBar);

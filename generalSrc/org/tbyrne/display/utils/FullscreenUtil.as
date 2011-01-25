@@ -6,9 +6,12 @@ package org.tbyrne.display.utils
 	
 	import org.tbyrne.acting.actTypes.IAct;
 	import org.tbyrne.acting.acts.Act;
-	import org.tbyrne.display.assets.assetTypes.IContainerAsset;
-	import org.tbyrne.display.assets.assetTypes.IStageAsset;
+	import org.tbyrne.core.DelayedCall;
+	import org.tbyrne.display.assets.nativeTypes.IDisplayObjectContainer;
+	import org.tbyrne.display.assets.nativeTypes.IStage;
 	import org.tbyrne.display.core.ILayoutView;
+	import org.tbyrne.display.core.IOutroView;
+	import org.tbyrne.display.core.IView;
 
 	public class FullscreenUtil
 	{
@@ -18,12 +21,21 @@ package org.tbyrne.display.utils
 		}
 		public function set view(value:ILayoutView):void{
 			if(_view!=value){
+				var delay:Number;
 				if(_view && _active && _view.asset){
-					removeFullscreen();
+					if(_pendingAdd){
+						_pendingAdd.clear();
+						delay = 0;
+					}else{
+						delay = removeFullscreen();
+					}
+				}else{
+					delay = 0;
 				}
 				_view = value;
+				_outroView = (_view as IOutroView);
 				if(_view && _active && _view.asset){
-					addFullscreen();
+					addFullscreen(delay);
 				}
 			}
 		}
@@ -35,8 +47,12 @@ package org.tbyrne.display.utils
 			if(_active!=value){
 				_active = value;
 				if(_view && _view.asset){
-					if(_active)addFullscreen();
-					else removeFullscreen();
+					if(_active)addFullscreen(0);
+					else if(_pendingAdd){
+						_pendingAdd.clear();
+					}else{
+						removeFullscreen();
+					}
 				}
 				if(_activeChange)_activeChange.perform(this,_active);
 			}
@@ -53,6 +69,34 @@ package org.tbyrne.display.utils
 			}
 		}
 		
+		
+		public function get stage():IStage{
+			return _stage;
+		}
+		public function set stage(value:IStage):void{
+			if(_stage!=value){
+				var wasActive:Boolean = active;
+				if(wasActive)active = false;
+				_stage = value;
+				if(wasActive)active = true;
+			}
+		}
+		
+		public function get parentContainer():IDisplayObjectContainer{
+			return _parentContainer;
+		}
+		public function set parentContainer(value:IDisplayObjectContainer):void{
+			if(_parentContainer!=value){
+				var wasActive:Boolean = active;
+				if(wasActive)active = false;
+				_parentContainer = value;
+				if(wasActive)active = true;
+			}
+		}
+		
+		private var _parentContainer:IDisplayObjectContainer;
+		private var _stage:IStage;
+		
 		/**
 		 * handler(from:FullscreenUtil, active:Boolean)
 		 */
@@ -63,47 +107,79 @@ package org.tbyrne.display.utils
 		
 		protected var _activeChange:Act;
 		
-		public var stage:IStageAsset;
-		
 		private var _fullScreenScale:Number = 1;
 		private var _active:Boolean;
 		private var _view:ILayoutView;
+		private var _outroView:IOutroView;
 		
-		private var _oldParent:IContainerAsset;
+		
+		private var _oldParent:IDisplayObjectContainer;
 		private var _oldDepth:int;
-		private var _lastStage:IStageAsset;
+		private var _lastContainer:IDisplayObjectContainer;
+		private var _lastStage:IStage;
+		private var _pendingAdd:DelayedCall;
 
 		public function FullscreenUtil(view:ILayoutView=null){
 			this.view = view;
 		}
-		protected function addFullscreen():void{
-			_lastStage = (stage?stage:_view.asset.stage);
-			_oldParent = _view.asset.parent;
-			if(_oldParent){
-				_oldDepth = _oldParent.getAssetIndex(_view.asset);
-				_oldParent.removeAsset(_view.asset);
+		protected function addFullscreen(delay:Number):void{
+			if(delay){
+				_pendingAdd = new DelayedCall(finaliseAdd,delay,true,[_view]);
+				_pendingAdd.begin();
+			}else{
+				finaliseAdd(_view);
 			}
-			TopLayerManager.add(_view.asset,_lastStage);
+		}
+		
+		private function finaliseAdd(view:ILayoutView):void{
+			_lastStage = (stage?stage:(view.asset.stage?view.asset.stage:_parentContainer.stage));
+			_lastContainer = (_parentContainer?_parentContainer:_lastStage);
+			_oldParent = view.asset.parent;
+			if(_oldParent){
+				_oldDepth = _oldParent.getAssetIndex(view.asset);
+				_oldParent.removeAsset(view.asset);
+			}
+			TopLayerManager.add(view.asset,_lastContainer);
 			checkSize();
 			
 			_lastStage.resize.addHandler(onResize);
-			_lastStage.displayState = StageDisplayState.FULL_SCREEN;
-			_lastStage.fullScreen.addHandler(onFullScreen);
-		}
-		protected function removeFullscreen():void{
-			_lastStage.resize.removeHandler(onResize);
-			_lastStage.fullScreen.removeHandler(onFullScreen);
+			if(stage){
+				stage.displayState = StageDisplayState.FULL_SCREEN;
+				stage.fullScreen.addHandler(onFullScreen);
+			}
 			
-			_lastStage.displayState = StageDisplayState.NORMAL;
+			_pendingAdd = null;
+		}
+		
+		protected function removeFullscreen():Number{
+			_lastStage.resize.removeHandler(onResize);
+			if(stage){
+				stage.fullScreen.removeHandler(onFullScreen);
+				stage.displayState = StageDisplayState.NORMAL;
+			}
 			
 			_lastStage = null;
-			TopLayerManager.remove(_view.asset);
-			if(_oldParent){
-				_oldParent.addAssetAt(_view.asset,_oldDepth);
+			_lastContainer = null;
+			
+			var ret:Number;
+			if(_outroView){
+				ret = _outroView.showOutro()
+				var removeCall:DelayedCall = new DelayedCall(finaliseRemove,ret,true,[_view,_oldDepth,_oldParent]);
+				removeCall.begin();
+			}else{
+				finaliseRemove(_view,_oldDepth,_oldParent);
+				ret = 0;
 			}
 			_oldParent = null;
+			return ret;
 		}
-		protected function onResize(e:Event, from:IStageAsset):void{
+		protected function finaliseRemove(view:IView, oldDepth:int, oldParent:IDisplayObjectContainer):void{
+			TopLayerManager.remove(view.asset);
+			if(_oldParent){
+				oldParent.addAssetAt(view.asset,oldDepth);
+			}
+		}
+		protected function onResize(from:IStage):void{
 			checkSize();
 		}
 		protected function checkSize():void{
@@ -111,7 +187,7 @@ package org.tbyrne.display.utils
 			_view.asset.scaleX = _fullScreenScale;
 			_view.asset.scaleY = _fullScreenScale;
 		}
-		protected function onFullScreen(e:Event, from:IStageAsset):void{
+		protected function onFullScreen(from:IStage):void{
 			active = (from.displayState==StageDisplayState.FULL_SCREEN);
 		}
 	}

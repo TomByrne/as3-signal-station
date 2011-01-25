@@ -5,8 +5,8 @@ package org.tbyrne.display.controls
 	import org.tbyrne.acting.acts.Act;
 	import org.tbyrne.core.DelayedCall;
 	import org.tbyrne.display.DisplayNamespace;
-	import org.tbyrne.display.assets.assetTypes.IDisplayAsset;
-	import org.tbyrne.display.assets.assetTypes.IInteractiveObjectAsset;
+	import org.tbyrne.display.assets.nativeTypes.IDisplayObject;
+	import org.tbyrne.display.assets.nativeTypes.IInteractiveObject;
 	import org.tbyrne.display.constants.Direction;
 	import org.tbyrne.display.utils.PaddingSizer;
 	
@@ -110,7 +110,7 @@ package org.tbyrne.display.controls
 		private var _trackButton:Button;
 		private var _progressTrack:Button;
 		private var _thumb:Button;
-		private var _track:IDisplayAsset;
+		private var _track:IDisplayObject;
 		private var _ignoreThumb:Boolean;
 		
 		private var _assumedDirection:String;
@@ -145,14 +145,14 @@ package org.tbyrne.display.controls
 		override protected function bindToAsset() : void{
 			super.bindToAsset();
 			
-			_track = _containerAsset.takeAssetByName(TRACK,IInteractiveObjectAsset);
+			_track = _containerAsset.takeAssetByName(TRACK,IInteractiveObject);
 			_trackButton.asset = _track;
 			
-			_progressTrack.asset = _containerAsset.takeAssetByName(PROGRESS_TRACK,IInteractiveObjectAsset,false);
+			_progressTrack.asset = _containerAsset.takeAssetByName(PROGRESS_TRACK,IInteractiveObject,false);
 			
 			_assumedDirection = (_track.width>_track.height?Direction.HORIZONTAL:Direction.VERTICAL);
 			
-			_thumb.asset = _containerAsset.takeAssetByName(THUMB,IInteractiveObjectAsset);
+			_thumb.asset = _containerAsset.takeAssetByName(THUMB,IInteractiveObject);
 			
 			_assumedThumbX = _thumb.asset.x;
 			_assumedThumbY = _thumb.asset.y;
@@ -265,7 +265,7 @@ package org.tbyrne.display.controls
 			
 			_progressTrack.validate();
 		}
-		override public function setAssetAndPosition(asset:IDisplayAsset) : void{
+		override public function setAssetAndPosition(asset:IDisplayObject) : void{
 			super.setAssetAndPosition(asset);
 			checkIsBound();
 		}

@@ -2,7 +2,7 @@ package org.tbyrne.debug.data.baseMetrics
 {
 	import flash.utils.getTimer;
 	
-	import org.tbyrne.display.assets.assetTypes.IStageAsset;
+	import org.tbyrne.display.assets.nativeTypes.IStage;
 	import org.tbyrne.debug.data.core.NumberMonitor;
 
 	public class RealFrameRate extends NumberMonitor

@@ -11,8 +11,8 @@ package org.tbyrne.actLibrary.display.visualSockets
 	import org.tbyrne.acting.universal.UniversalActExecution;
 	import org.tbyrne.acting.universal.reactions.MethodReaction;
 	import org.tbyrne.acting.universal.rules.ActInstanceRule;
-	import org.tbyrne.display.assets.assetTypes.IContainerAsset;
-	import org.tbyrne.display.assets.assetTypes.IDisplayAsset;
+	import org.tbyrne.display.assets.nativeTypes.IDisplayObjectContainer;
+	import org.tbyrne.display.assets.nativeTypes.IDisplayObject;
 	
 	public class SocketManager
 	{
@@ -20,8 +20,8 @@ package org.tbyrne.actLibrary.display.visualSockets
 		private static var displayToManager:Dictionary = new Dictionary();
 		private static var socketContainers:Dictionary = new Dictionary();
 		
-		internal static function setSocketDisplay(socketManager:SocketManager, display:IDisplayAsset):void{
-			var oldDisplay:IDisplayAsset = managerToDisplay[socketManager];
+		internal static function setSocketDisplay(socketManager:SocketManager, display:IDisplayObject):void{
+			var oldDisplay:IDisplayObject = managerToDisplay[socketManager];
 			if(oldDisplay != display){
 				var i:*;
 				var socketCont:ISocketContainer;
@@ -93,10 +93,10 @@ package org.tbyrne.actLibrary.display.visualSockets
 				socketContainers[socketContainer] = newManager;
 			}
 		}
-		private static function findManagerFor(scopeDisplay:IDisplayAsset):SocketManager{
+		private static function findManagerFor(scopeDisplay:IDisplayObject):SocketManager{
 			var manager:SocketManager;
 			if(scopeDisplay){
-				var subject:IDisplayAsset = scopeDisplay;
+				var subject:IDisplayObject = scopeDisplay;
 				while(subject){
 					manager = displayToManager[subject];
 					if(manager)return manager;
@@ -108,7 +108,7 @@ package org.tbyrne.actLibrary.display.visualSockets
 		
 		
 		// There doesn't appear to be a security checking method that doesn't involve error catching
-		static protected function securityCheck(displayObject:IDisplayAsset):Boolean{
+		static protected function securityCheck(displayObject:IDisplayObject):Boolean{
 			var loader:Loader = (displayObject as Loader);
 			if(loader && loader.contentLoaderInfo.url){
 				try{
@@ -129,8 +129,8 @@ package org.tbyrne.actLibrary.display.visualSockets
 		private var _parentContainer:ISocketContainer;
 		private var _fillingSocket: IDisplaySocket;
 		private var _childSockets:Dictionary;
-		private var _displayObject:IDisplayAsset;
-		private var _oldDisplayObject:IDisplayAsset;
+		private var _displayObject:IDisplayObject;
+		private var _oldDisplayObject:IDisplayObject;
 		private var _socketContainers:Dictionary = new Dictionary();
 		
 		//private var _beforeDisplayChange:AsynchronousAct;
@@ -287,7 +287,7 @@ package org.tbyrne.actLibrary.display.visualSockets
 			endHandler();
 		}
 		// TODO: get rid of this event shit
-		protected function setDisplayObject(displayObject:IDisplayAsset, removeRemoveListener:Boolean):void{
+		protected function setDisplayObject(displayObject:IDisplayObject, removeRemoveListener:Boolean):void{
 			completeRemoveListener();
 			if(_displayObject!=displayObject){
 				_beforeDisplayChange.asset = displayObject;
@@ -318,13 +318,13 @@ package org.tbyrne.actLibrary.display.visualSockets
 			}
 		}
 		/*protected function onAdded(e:SocketContainerEvent): void{
-			var cast:IDisplayAsset = (e.target as IDisplayAsset);
+			var cast:IDisplayObject = (e.target as IDisplayObject);
 			if(cast)findSocketContainers(cast,true);
 			addChildContainer(e.socketContainer);
 			e.stopImmediatePropagation();
 		}
 		protected function onRemoved(e:SocketContainerEvent): void{
-			var cast:IDisplayAsset = (e.target as IDisplayAsset);
+			var cast:IDisplayObject = (e.target as IDisplayObject);
 			if(cast)findSocketContainers(cast,false);
 			removeChildContainer(e.socketContainer);
 			e.stopImmediatePropagation();
@@ -355,11 +355,11 @@ package org.tbyrne.actLibrary.display.visualSockets
 			}
 			//e.stopImmediatePropagation();
 		}
-		/*protected function findSocketContainers(display:IDisplayAsset, add:Boolean): void{
-			var parent:IContainerAsset = (display as IContainerAsset);
+		/*protected function findSocketContainers(display:IDisplayObject, add:Boolean): void{
+			var parent:IDisplayObjectContainer = (display as IDisplayObjectContainer);
 			if(parent && securityCheck(parent)){
 				for(var i:int=0; i<parent.numChildren; i++){
-					var child:IDisplayAsset = parent.getAssetAt(i);
+					var child:IDisplayObject = parent.getAssetAt(i);
 					if(!(child is IPlugDisplay)){
 						findSocketContainers(child, add);
 					}

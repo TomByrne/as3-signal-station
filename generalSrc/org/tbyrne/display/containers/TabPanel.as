@@ -5,7 +5,7 @@ package org.tbyrne.display.containers
 	import flash.geom.Rectangle;
 	
 	import org.tbyrne.display.assets.assetTypes.IAsset;
-	import org.tbyrne.display.assets.assetTypes.IDisplayAsset;
+	import org.tbyrne.display.assets.nativeTypes.IDisplayObject;
 	import org.tbyrne.display.constants.Anchor;
 	import org.tbyrne.display.constants.Direction;
 	import org.tbyrne.display.core.ILayoutView;
@@ -66,21 +66,21 @@ package org.tbyrne.display.containers
 		
 		private var _panelDisplay:ILayoutView;
 		private var _castDisplay:LayoutView;
-		private var _panelAsset:IDisplayAsset;
-		private var _assumedPanelAsset:IDisplayAsset;
+		private var _panelAsset:IDisplayObject;
+		private var _assumedPanelAsset:IDisplayObject;
 		private var _panelDataField:String;
 		private var _listMeasure:Point;
 		private var _anchor:String = Anchor.TOP_LEFT;
 		private var _alignHorizontal:Boolean;
 		
-		public function TabPanel(asset:IDisplayAsset=null){
+		public function TabPanel(asset:IDisplayObject=null){
 			super(asset);
 			_listMeasure = new Point();
 			direction = Direction.HORIZONTAL;
 		}
 		override protected function bindToAsset() : void{
 			super.bindToAsset();
-			_assumedPanelAsset = _containerAsset.takeAssetByName(PANEL,IDisplayAsset,true);
+			_assumedPanelAsset = _containerAsset.takeAssetByName(PANEL,IDisplayObject,true);
 			checkAssumedPanelAsset();
 			if(_panelDisplay && _panelAsset){
 				_containerAsset.addAsset(_panelAsset);
@@ -242,7 +242,7 @@ package org.tbyrne.display.containers
 				_castDisplay.asset = _assumedPanelAsset;
 			}
 		}
-		protected function setPanelAsset(value:IDisplayAsset):void{
+		protected function setPanelAsset(value:IDisplayObject):void{
 			if(_panelAsset!=value){
 				if(_panelAsset && _containerAsset){
 					_containerAsset.removeAsset(_panelAsset);

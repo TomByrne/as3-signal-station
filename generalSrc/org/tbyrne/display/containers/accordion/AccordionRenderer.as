@@ -13,8 +13,8 @@ package org.tbyrne.display.containers.accordion
 	import org.tbyrne.data.dataTypes.IStringProvider;
 	import org.tbyrne.display.DisplayNamespace;
 	import org.tbyrne.display.assets.AssetNames;
-	import org.tbyrne.display.assets.assetTypes.IDisplayAsset;
-	import org.tbyrne.display.assets.assetTypes.IInteractiveObjectAsset;
+	import org.tbyrne.display.assets.nativeTypes.IDisplayObject;
+	import org.tbyrne.display.assets.nativeTypes.IInteractiveObject;
 	import org.tbyrne.display.assets.nativeAssets.actInfo.MouseActInfo;
 	import org.tbyrne.display.assets.states.StateDef;
 	import org.tbyrne.display.constants.Anchor;
@@ -169,7 +169,7 @@ package org.tbyrne.display.containers.accordion
 		
 		protected var _openState:StateDef = new StateDef([STATE_OPEN,STATE_CLOSED],0);
 		
-		public function AccordionRenderer(asset:IDisplayAsset=null){
+		public function AccordionRenderer(asset:IDisplayObject=null){
 			_label = new TextLabel();
 			super(asset);
 			_label.measurementsChanged.addHandler(onMeasChange);
@@ -206,7 +206,7 @@ package org.tbyrne.display.containers.accordion
 			}
 			_interactiveObjectAsset.clicked.addHandler(onAssetClick);
 			
-			var scrollBarAsset:IDisplayAsset = _containerAsset.takeAssetByName(AssetNames.SCROLL_BAR,IDisplayAsset,true);
+			var scrollBarAsset:IDisplayObject = _containerAsset.takeAssetByName(AssetNames.SCROLL_BAR,IDisplayObject,true);
 			if(scrollBarAsset){
 				if(!_scrollBar){
 					_scrollBar = new ScrollBar();
@@ -222,7 +222,7 @@ package org.tbyrne.display.containers.accordion
 				_scrollBar.asset = null;
 			}
 		}
-		protected function onAssetClick(from:IInteractiveObjectAsset, mouseInfo:MouseActInfo) : void{
+		protected function onAssetClick(from:IInteractiveObject, mouseInfo:MouseActInfo) : void{
 			// this allows data providers to ignore calls
 			var boolWas:Boolean = _booleanValue;
 			if(_booleanConsumer)_booleanConsumer.booleanValue = !booleanValue;

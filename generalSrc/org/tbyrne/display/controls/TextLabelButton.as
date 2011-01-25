@@ -4,7 +4,7 @@ package org.tbyrne.display.controls
 	import flash.geom.Rectangle;
 	
 	import org.tbyrne.display.assets.assetTypes.IAsset;
-	import org.tbyrne.display.assets.assetTypes.IDisplayAsset;
+	import org.tbyrne.display.assets.nativeTypes.IDisplayObject;
 	import org.tbyrne.display.layout.ILayoutSubject;
 	
 	public class TextLabelButton extends ToggleButton
@@ -53,7 +53,7 @@ package org.tbyrne.display.controls
 		
 		protected var _textLabel:TextLabel;
 		
-		public function TextLabelButton(asset:IDisplayAsset=null){
+		public function TextLabelButton(asset:IDisplayObject=null){
 			super(asset);
 			togglable = false;
 			createTextLabel();

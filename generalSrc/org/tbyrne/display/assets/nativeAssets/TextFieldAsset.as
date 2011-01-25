@@ -10,11 +10,11 @@ package org.tbyrne.display.assets.nativeAssets
 	import org.tbyrne.acting.actTypes.IAct;
 	import org.tbyrne.acting.acts.NativeAct;
 	import org.tbyrne.debug.logging.Log;
-	import org.tbyrne.display.assets.assetTypes.IDisplayAsset;
-	import org.tbyrne.display.assets.assetTypes.ITextFieldAsset;
+	import org.tbyrne.display.assets.nativeTypes.IDisplayObject;
+	import org.tbyrne.display.assets.nativeTypes.ITextField;
 	import org.tbyrne.display.assets.states.IStateDef;
 
-	public class TextFieldAsset extends InteractiveObjectAsset implements ITextFieldAsset
+	public class TextFieldAsset extends InteractiveObjectAsset implements ITextField
 	{
 		/**
 		 * @inheritDoc
@@ -133,6 +133,12 @@ package org.tbyrne.display.assets.nativeAssets
 		public function set wordWrap(value:Boolean):void{
 			_textField.wordWrap = value;
 		}
+		public function get displayAsPassword():Boolean{
+			return _textField.displayAsPassword;
+		}
+		public function set displayAsPassword(value:Boolean):void{
+			_textField.displayAsPassword = value;
+		}
 		public function get selectable():Boolean{
 			return _textField.selectable;
 		}
@@ -190,7 +196,7 @@ package org.tbyrne.display.assets.nativeAssets
 			super.onRemovedFromStage();
 			enterFrame.removeHandler(onFirstFrame);
 		}
-		protected function onFirstFrame(e:Event, from:IDisplayAsset):void {
+		protected function onFirstFrame(e:Event, from:IDisplayObject):void {
 			findAvailableStates();
 		}
 		

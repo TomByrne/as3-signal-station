@@ -1,7 +1,7 @@
-package org.tbyrne.display.assets.assetTypes
+package org.tbyrne.display.assets.nativeTypes
 {
 
-	public interface ISpriteAsset extends IContainerAsset
+	public interface ISprite extends IDisplayObjectContainer
 	{
 		function get useHandCursor():Boolean;
 		function set useHandCursor(value:Boolean):void;
@@ -9,7 +9,7 @@ package org.tbyrne.display.assets.assetTypes
 		function get buttonMode():Boolean;
 		function set buttonMode(value:Boolean):void;
 		
-		function get hitArea():ISpriteAsset;
-		function set hitArea(value:ISpriteAsset):void;
+		function get hitArea():ISprite;
+		function set hitArea(value:ISprite):void;
 	}
 }

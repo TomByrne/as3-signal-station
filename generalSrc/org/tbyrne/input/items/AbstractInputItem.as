@@ -6,7 +6,7 @@ package org.tbyrne.input.items
 	import org.tbyrne.data.dataTypes.IStringProvider;
 	import org.tbyrne.data.operators.StringProxy;
 	import org.tbyrne.display.actInfo.IKeyActInfo;
-	import org.tbyrne.display.assets.assetTypes.IDisplayAsset;
+	import org.tbyrne.display.assets.nativeTypes.IDisplayObject;
 	import org.tbyrne.display.core.IScopedObject;
 	import org.tbyrne.input.shortcuts.ShortcutLiterator;
 	import org.tbyrne.input.shortcuts.ShortcutType;
@@ -66,10 +66,10 @@ package org.tbyrne.input.items
 				}
 			}
 		}
-		public function set scope(value:IDisplayAsset):void{
+		public function set scope(value:IDisplayObject):void{
 			_scopedObject.scope = value;
 		}
-		public function get scope():IDisplayAsset{
+		public function get scope():IDisplayObject{
 			return _scopedObject?_scopedObject.scope:null;
 		}
 		
@@ -151,7 +151,7 @@ package org.tbyrne.input.items
 		
 		private var _blockAscendantShortcuts:Boolean = true;
 		private var _shortcutType:String = ShortcutType.ON_UP;
-		private var _scopeDisplay:IDisplayAsset;
+		private var _scopeDisplay:IDisplayObject;
 		private var _isActiveProvider:IBooleanProvider;
 		private var _isActive:Boolean = true;
 		
@@ -167,7 +167,7 @@ package org.tbyrne.input.items
 			super(stringProvider);
 			this.scopedObject = scopedObject;
 		}
-		protected function onScopeChanged(scopedObject:IScopedObject, oldScope:IDisplayAsset):void{
+		protected function onScopeChanged(scopedObject:IScopedObject, oldScope:IDisplayObject):void{
 			if(_scopeChanged)_scopeChanged.perform(this,oldScope);
 		}
 		
@@ -201,7 +201,7 @@ package org.tbyrne.input.items
 		protected function executeKeyUp(keyEventInfo:IKeyActInfo):void{
 			triggerAction(scope);
 		}
-		public function triggerAction(scopeDisplay:IDisplayAsset):void{
+		public function triggerAction(scopeDisplay:IDisplayObject):void{
 			// override me
 		}
 		

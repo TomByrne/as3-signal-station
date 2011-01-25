@@ -17,7 +17,7 @@ package org.tbyrne.actLibrary.data.actions
 	import org.tbyrne.data.actions.AbstractLink;
 	import org.tbyrne.data.dataTypes.IBooleanConsumer;
 	import org.tbyrne.data.dataTypes.IBooleanProvider;
-	import org.tbyrne.display.assets.assetTypes.IDisplayAsset;
+	import org.tbyrne.display.assets.nativeTypes.IDisplayObject;
 	
 	public class InternalLink extends AbstractLink implements IBooleanConsumer, IBooleanProvider
 	{
@@ -54,10 +54,10 @@ package org.tbyrne.actLibrary.data.actions
 				checkSelected();
 			}
 		}
-		public function get scopeDisplay():IDisplayAsset{
+		public function get scopeDisplay():IDisplayObject{
 			return _uniActorHelper.asset;
 		}
-		public function set scopeDisplay(value:IDisplayAsset):void{
+		public function set scopeDisplay(value:IDisplayObject):void{
 			_uniActorHelper.asset = value;
 		}
 		

@@ -3,8 +3,8 @@ package org.tbyrne.display.transition
 	import flash.geom.Matrix;
 	import flash.geom.Rectangle;
 	
-	import org.tbyrne.display.assets.assetTypes.IBitmapAsset;
-	import org.tbyrne.display.assets.assetTypes.IDisplayAsset;
+	import org.tbyrne.display.assets.nativeTypes.IBitmap;
+	import org.tbyrne.display.assets.nativeTypes.IDisplayObject;
 	
 	public class WipeTransition extends Transition
 	{
@@ -33,7 +33,7 @@ package org.tbyrne.display.transition
 		public var direction:String = LEFT;
 		
 		
-		override public function doTransition(start:IDisplayAsset, finish:IDisplayAsset, bitmap:IBitmapAsset, duration:Number, currentTime:Number):void{
+		override public function doTransition(start:IDisplayObject, finish:IDisplayObject, bitmap:IBitmap, duration:Number, currentTime:Number):void{
 			var dir:Number = (direction==UP || direction==LEFT?-1:1);
 			var vert:Boolean = (direction==UP || direction==DOWN);
 			

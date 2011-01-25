@@ -5,8 +5,8 @@ package org.tbyrne.media.image
 	import flash.geom.Point;
 	import flash.geom.Rectangle;
 	
-	import org.tbyrne.display.assets.assetTypes.IBitmapAsset;
-	import org.tbyrne.display.assets.assetTypes.ILoaderAsset;
+	import org.tbyrne.display.assets.nativeTypes.IBitmap;
+	import org.tbyrne.display.assets.nativeTypes.ILoader;
 	import org.tbyrne.media.MediaView;
 	
 	public class ImageView extends MediaView
@@ -24,7 +24,7 @@ package org.tbyrne.media.image
 		
 		private var _smoothing:Boolean;
 		
-		public function ImageView(asset:ILoaderAsset, measurements:Point, smoothing:Boolean){
+		public function ImageView(asset:ILoader, measurements:Point, smoothing:Boolean){
 			super(asset, measurements);
 			asset.contentLoaderInfo.addEventListener(Event.COMPLETE, onLoaderComplete);
 			this.smoothing = smoothing;
@@ -34,8 +34,8 @@ package org.tbyrne.media.image
 			applySmoothing();
 		}
 		protected function applySmoothing():void{
-			var loader:ILoaderAsset = (asset as ILoaderAsset);
-			var bitmap:IBitmapAsset = (loader.content as IBitmapAsset);
+			var loader:ILoader = (asset as ILoader);
+			var bitmap:IBitmap = (loader.content as IBitmap);
 			if(bitmap){
 				bitmap.smoothing = smoothing;
 			}

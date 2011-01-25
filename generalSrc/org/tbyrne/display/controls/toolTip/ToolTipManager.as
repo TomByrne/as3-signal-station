@@ -6,7 +6,7 @@ package org.tbyrne.display.controls.toolTip
 	
 	import org.tbyrne.core.DelayedCall;
 	import org.tbyrne.display.DisplayNamespace;
-	import org.tbyrne.display.assets.assetTypes.IDisplayAsset;
+	import org.tbyrne.display.assets.nativeTypes.IDisplayObject;
 	import org.tbyrne.display.constants.Anchor;
 	import org.tbyrne.display.controls.popout.PopoutDisplay;
 	import org.tbyrne.display.core.ILayoutView;
@@ -274,7 +274,7 @@ package org.tbyrne.display.controls.toolTip
 				_popoutDisplay.popoutShown = false;
 			}
 		}
-		protected function onAnchorAssetChanged(from:ILayoutView, oldAsset:IDisplayAsset):void{
+		protected function onAnchorAssetChanged(from:ILayoutView, oldAsset:IDisplayObject):void{
 			checkAsset();
 		}
 		protected function onDataAnchorChanged(from:IToolTipTrigger):void{

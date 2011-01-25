@@ -10,8 +10,8 @@ package org.tbyrne.debug
 	import org.tbyrne.debug.nodeTypes.IDebugNode;
 	import org.tbyrne.display.assets.AssetNames;
 	import org.tbyrne.display.assets.assetTypes.IAsset;
-	import org.tbyrne.display.assets.assetTypes.IContainerAsset;
-	import org.tbyrne.display.assets.assetTypes.IDisplayAsset;
+	import org.tbyrne.display.assets.nativeTypes.IDisplayObjectContainer;
+	import org.tbyrne.display.assets.nativeTypes.IDisplayObject;
 	import org.tbyrne.display.assets.schema.StandardAssetSchema;
 	import org.tbyrne.display.core.IScopedObject;
 	import org.tbyrne.display.core.IScopedObjectRoot;
@@ -65,13 +65,13 @@ package org.tbyrne.debug
 			return _scopeChanged;
 		}
 		
-		public function get scope():IDisplayAsset{
+		public function get scope():IDisplayObject{
 			return _debugDisplay.scope;
 		}
-		public function set scope(value:IDisplayAsset):void{
+		public function set scope(value:IDisplayObject):void{
 			_debugDisplay.scope = value;
 		}
-		public function set container(value:IContainerAsset):void{
+		public function set container(value:IDisplayObjectContainer):void{
 			if(_container != value){
 				if(_container)_container.removeAsset(_debugDisplay.asset);
 				_container = value;
@@ -81,11 +81,11 @@ package org.tbyrne.debug
 		
 		protected var _scopeChanged:Act;
 		private var _application:IApplication;
-		private var _container:IContainerAsset;
+		private var _container:IDisplayObjectContainer;
 		private var _debugDisplay:DebugDisplay;
 		
 		public function DebugManager(asset:IAsset=null, application:IApplication=null){
-			_debugDisplay = new DebugDisplay(asset as IDisplayAsset); // testing asset
+			_debugDisplay = new DebugDisplay(asset as IDisplayObject); // testing asset
 			_debugDisplay.scopeChanged.addHandler(onScopeChanged);
 			this.application = application;
 		}
@@ -101,7 +101,7 @@ package org.tbyrne.debug
 		public function setSize(width:Number, height:Number):void{
 			_debugDisplay.setSize(width, height);
 		}
-		public function onScopeChanged(from:DebugDisplay, oldScope:IDisplayAsset):void{
+		public function onScopeChanged(from:DebugDisplay, oldScope:IDisplayObject):void{
 			if(_scopeChanged)_scopeChanged.perform(this,oldScope);
 		}
 	}

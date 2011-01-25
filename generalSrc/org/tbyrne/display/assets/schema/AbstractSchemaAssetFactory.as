@@ -1,7 +1,8 @@
 package org.tbyrne.display.assets.schema
 {
 	import org.tbyrne.display.assets.IAssetFactory;
-	import org.tbyrne.display.assets.assetTypes.*;
+	import org.tbyrne.display.assets.assetTypes.IAsset;
+	import org.tbyrne.display.assets.nativeTypes.*;
 	import org.tbyrne.display.assets.schemaTypes.*;
 	import org.tbyrne.instanceFactory.IInstanceFactory;
 
@@ -23,23 +24,23 @@ package org.tbyrne.display.assets.schema
 		public function getCoreSkin(coreSkinLabel:String):IAsset{
 			return createAssetFromSchema(findSchemaWithin(_containerSchema, coreSkinLabel));
 		}
-		public function createContainer():IContainerAsset{
+		public function createContainer():IDisplayObjectContainer{
 			if(!_containerProto){
 				_containerProto = new ContainerAssetSchema();
 			}
-			return createAssetFromSchema(_containerProto) as IContainerAsset;
+			return createAssetFromSchema(_containerProto) as IDisplayObjectContainer;
 		}
-		public function createBitmap():IBitmapAsset{
+		public function createBitmap():IBitmap{
 			if(!_bitmapProto){
 				_bitmapProto = new BitmapAssetSchema();
 			}
-			return createAssetFromSchema(_bitmapProto) as IBitmapAsset;
+			return createAssetFromSchema(_bitmapProto) as IBitmap;
 		}
-		public function createHitArea():ISpriteAsset{
+		public function createHitArea():ISprite{
 			if(!_hitAreaProto){
 				_hitAreaProto = new RectangleAssetSchema(null,NaN,NaN,NaN,NaN,null,false);
 			}
-			return createAssetFromSchema(_hitAreaProto) as ISpriteAsset;
+			return createAssetFromSchema(_hitAreaProto) as ISprite;
 		}
 		public function destroyAsset(asset:IAsset):void{
 			throw new Error();

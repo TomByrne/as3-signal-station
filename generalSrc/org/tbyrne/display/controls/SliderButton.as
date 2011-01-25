@@ -8,8 +8,8 @@ package org.tbyrne.display.controls
 	import org.tbyrne.acting.actTypes.IAct;
 	import org.tbyrne.acting.acts.Act;
 	import org.tbyrne.display.actInfo.IMouseActInfo;
-	import org.tbyrne.display.assets.assetTypes.IDisplayAsset;
-	import org.tbyrne.display.assets.assetTypes.IInteractiveObjectAsset;
+	import org.tbyrne.display.assets.nativeTypes.IDisplayObject;
+	import org.tbyrne.display.assets.nativeTypes.IInteractiveObject;
 	import org.tbyrne.display.constants.Anchor;
 	import org.tbyrne.display.constants.Direction;
 	import org.tbyrne.tweening.LooseTween;
@@ -82,13 +82,13 @@ package org.tbyrne.display.controls
 		private var _openTween:LooseTween;
 		private var _sliderAnchor:String;
 		private var _slider:Slider;
-		private var _sliderAsset:IDisplayAsset;
+		private var _sliderAsset:IDisplayObject;
 		private var _openFract:Number = 0;
 		private var _assumedAnchor:String;
 		private var _scrollRect:Rectangle;
 		private var _mouseOver:Boolean;
 		
-		public function SliderButton(asset:IDisplayAsset=null){
+		public function SliderButton(asset:IDisplayObject=null){
 			super(asset);
 		}
 		override protected function init():void{
@@ -110,7 +110,7 @@ package org.tbyrne.display.controls
 		}
 		override protected function bindToAsset() : void{
 			super.bindToAsset();
-			_sliderAsset = _containerAsset.takeAssetByName(SLIDER_ASSET,IDisplayAsset,true);
+			_sliderAsset = _containerAsset.takeAssetByName(SLIDER_ASSET,IDisplayObject,true);
 			if(_sliderAsset){
 				_interactiveObjectAsset.mousedOver.addHandler(onMousedOver);
 				_interactiveObjectAsset.mousedOut.addHandler(onMousedOut);
@@ -185,13 +185,13 @@ package org.tbyrne.display.controls
 			_slider.asset.scrollRect = _scrollRect;
 		}
 		
-		protected function onMousedOver(from:IInteractiveObjectAsset, mouseActInfo:IMouseActInfo) : void{
+		protected function onMousedOver(from:IInteractiveObject, mouseActInfo:IMouseActInfo) : void{
 			if(_active){
 				transTo(1);
 				_mouseOver = true;
 			}
 		}
-		protected function onMousedOut(from:IInteractiveObjectAsset, mouseActInfo:IMouseActInfo) : void{
+		protected function onMousedOut(from:IInteractiveObject, mouseActInfo:IMouseActInfo) : void{
 			transTo(0,HIDE_DELAY);
 			_mouseOver = false;
 		}

@@ -8,7 +8,7 @@ package org.tbyrne.actLibrary.display.visualSockets.socketContainers
 	import org.tbyrne.acting.actTypes.IAct;
 	import org.tbyrne.acting.acts.Act;
 	import org.tbyrne.acting.universal.UniversalActExecution;
-	import org.tbyrne.display.assets.assetTypes.IContainerAsset;
+	import org.tbyrne.display.assets.nativeTypes.IDisplayObjectContainer;
 	import org.tbyrne.display.layout.list.ListLayoutInfo;
 	
 	public class SocketCollectionContainerHelper extends SocketContainerHelper
@@ -41,7 +41,7 @@ package org.tbyrne.actLibrary.display.visualSockets.socketContainers
 		public function get collectionSocketsChanged():IAct{
 			return _collectionSocketsChanged;
 		}
-		override public function set defaultContainer(value: IContainerAsset):void{
+		override public function set defaultContainer(value: IDisplayObjectContainer):void{
 			if(super.defaultContainer!=value){
 				for each(var socket:IDisplaySocket in _collectionSockets){
 					var cast:DisplaySocket = (socket as DisplaySocket);

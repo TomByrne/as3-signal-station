@@ -10,8 +10,8 @@ package org.tbyrne.actLibrary.display.transition
 	import org.tbyrne.actLibrary.display.transition.actTypes.IAdvancedTransitionAct;
 	import org.tbyrne.actLibrary.display.transition.actTypes.ITransitionAct;
 	import org.tbyrne.acting.universal.UniversalActExecution;
-	import org.tbyrne.display.assets.assetTypes.IContainerAsset;
-	import org.tbyrne.display.assets.assetTypes.IDisplayAsset;
+	import org.tbyrne.display.assets.nativeTypes.IDisplayObjectContainer;
+	import org.tbyrne.display.assets.nativeTypes.IDisplayObject;
 	import org.tbyrne.display.assets.utils.isDescendant;
 	import org.tbyrne.display.transition.TransitionExecution;
 	import org.tbyrne.display.transition.TransitionManager;
@@ -47,25 +47,25 @@ package org.tbyrne.actLibrary.display.transition
 		public function beforeTransition(cause:ITransitionAct):void{
 			if(cause.doTransition){
 				var adv:IAdvancedTransitionAct = (cause as IAdvancedTransitionAct);
-				var startDisplay:IDisplayAsset = (adv && adv.startDisplay?adv.startDisplay:(asset as IContainerAsset));
-				var endDisplay:IDisplayAsset = (adv && adv.endDisplay?adv.endDisplay:startDisplay);
-				var hiddenDisplay:IDisplayAsset;
+				var startDisplay:IDisplayObject = (adv && adv.startDisplay?adv.startDisplay:(asset as IDisplayObjectContainer));
+				var endDisplay:IDisplayObject = (adv && adv.endDisplay?adv.endDisplay:startDisplay);
+				var hiddenDisplay:IDisplayObject;
 				if(startDisplay && !alreadyTransitioning(startDisplay)){
-					var castStart:IContainerAsset = (startDisplay as IContainerAsset);
+					var castStart:IDisplayObjectContainer = (startDisplay as IDisplayObjectContainer);
 					if(castStart && isDescendant(castStart,endDisplay)){
 						endDisplay = startDisplay;
 					}else{
-						var castEnd:IContainerAsset = (endDisplay as IContainerAsset);
+						var castEnd:IDisplayObjectContainer = (endDisplay as IDisplayObjectContainer);
 						if(castEnd && isDescendant(castEnd,startDisplay)){
 							startDisplay = endDisplay;
 						}
 					}
 					if(startDisplay==endDisplay){
 						var depth:Number = 0;
-						var parent: IContainerAsset = null;
+						var parent: IDisplayObjectContainer = null;
 						var wasVisible:Boolean = startDisplay.visible && startDisplay.stage;
 						if (startDisplay == startDisplay.stage){
-							parent = startDisplay as IContainerAsset;
+							parent = startDisplay as IDisplayObjectContainer;
 							depth = parent.numChildren - 1;
 						}else{
 							parent = startDisplay.parent;
@@ -90,7 +90,7 @@ package org.tbyrne.actLibrary.display.transition
 				}
 			}
 		}
-		protected function alreadyTransitioning(startDisplay:IDisplayAsset):Boolean{
+		protected function alreadyTransitioning(startDisplay:IDisplayObject):Boolean{
 			for each(var transBundle:TransBundle in _snapshots){
 				if(transBundle.hiddenDisplay==startDisplay)return true;
 			}
@@ -134,17 +134,17 @@ package org.tbyrne.actLibrary.display.transition
 import flash.display.Bitmap;
 
 import org.tbyrne.acting.universal.UniversalActExecution;
-import org.tbyrne.display.assets.assetTypes.IDisplayAsset;
+import org.tbyrne.display.assets.nativeTypes.IDisplayObject;
 import org.tbyrne.display.transition.TransitionExecution;
 	
 class TransBundle{
-	public var startDisplay:IDisplayAsset;
-	public var endDisplay:IDisplayAsset;
-	public var hiddenDisplay:IDisplayAsset;
-	public var addedDisplay:IDisplayAsset;
+	public var startDisplay:IDisplayObject;
+	public var endDisplay:IDisplayObject;
+	public var hiddenDisplay:IDisplayObject;
+	public var addedDisplay:IDisplayObject;
 	public var execution:UniversalActExecution;
 	
-	public function TransBundle(startDisplay:IDisplayAsset, hiddenDisplay:IDisplayAsset, endDisplay:IDisplayAsset){
+	public function TransBundle(startDisplay:IDisplayObject, hiddenDisplay:IDisplayObject, endDisplay:IDisplayObject){
 		this.startDisplay = startDisplay;
 		this.endDisplay = endDisplay;
 		this.hiddenDisplay = hiddenDisplay;

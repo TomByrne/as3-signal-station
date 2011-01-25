@@ -4,8 +4,8 @@ package org.tbyrne.display.containers
 	import flash.display.Sprite;
 	import flash.geom.Rectangle;
 	
-	import org.tbyrne.display.assets.assetTypes.IContainerAsset;
-	import org.tbyrne.display.assets.assetTypes.IDisplayAsset;
+	import org.tbyrne.display.assets.nativeTypes.IDisplayObjectContainer;
+	import org.tbyrne.display.assets.nativeTypes.IDisplayObject;
 	import org.tbyrne.display.core.ILayoutView;
 	import org.tbyrne.display.layout.ILayoutSubject;
 	import org.tbyrne.display.layout.ProxyLayoutSubject;
@@ -57,14 +57,14 @@ package org.tbyrne.display.containers
 		protected var _mediaSourceDisplay:ILayoutView;
 		protected var _layoutProxy:ProxyLayoutSubject = new ProxyLayoutSubject();
 		protected var _layout:FrameLayout;
-		protected var _mediaContainer:IContainerAsset;
+		protected var _mediaContainer:IDisplayObjectContainer;
 		
 		protected var _scrollRect:Rectangle = new Rectangle();
 		
-		protected var _mediaBounds:IDisplayAsset;
+		protected var _mediaBounds:IDisplayObject;
 		protected var _assumedLayoutInfo:FrameLayoutInfo;
 		
-		public function MediaContainer(asset:IDisplayAsset=null){
+		public function MediaContainer(asset:IDisplayObject=null){
 			super(asset);
 			_layout = new FrameLayout(this)
 			_layout.addSubject(_layoutProxy);
@@ -77,7 +77,7 @@ package org.tbyrne.display.containers
 			super.bindToAsset()
 			_mediaContainer = _asset.factory.createContainer();
 			if(_mediaSourceDisplay)_mediaContainer.addAsset(_mediaSourceDisplay.asset);
-			_mediaBounds = _containerAsset.takeAssetByName(MEDIA_BOUNDS,IDisplayAsset,true);
+			_mediaBounds = _containerAsset.takeAssetByName(MEDIA_BOUNDS,IDisplayObject,true);
 			if(_mediaBounds){
 				if(!_assumedLayoutInfo){
 					_assumedLayoutInfo = new FrameLayoutInfo();

@@ -7,16 +7,16 @@ package org.tbyrne.actLibrary.display.visualSockets.plugs
 	import org.tbyrne.acting.acts.UniversalAct;
 	import org.tbyrne.acting.universal.UniversalActExecution;
 	import org.tbyrne.display.assets.assetTypes.IAsset;
-	import org.tbyrne.display.assets.assetTypes.IDisplayAsset;
+	import org.tbyrne.display.assets.nativeTypes.IDisplayObject;
 	import org.tbyrne.display.core.IOutroView;
 	import org.tbyrne.display.core.LayoutView;
 	
 	[Event(name="displayChanged",type="org.farmcode.actLibrary.display.visualSockets.events.PlugDisplayEvent")]
 	public class PlugDisplay extends LayoutView implements IOutroView, IPlugDisplay
 	{
-		override public function set asset(value:IDisplayAsset):void{
+		override public function set asset(value:IDisplayObject):void{
 			if(super.asset!=value){
-				var oldDisplay:IDisplayAsset = super.asset;
+				var oldDisplay:IDisplayObject = super.asset;
 				super.asset = value;
 				if(_displayChanged)_displayChanged.perform(this, oldDisplay, value);
 			}
@@ -31,7 +31,7 @@ package org.tbyrne.actLibrary.display.visualSockets.plugs
 				_initialDataSet = false;
 			}
 		}
-		public function get display():IDisplayAsset{
+		public function get display():IDisplayObject{
 			return asset;
 		}
 		
@@ -50,7 +50,7 @@ package org.tbyrne.actLibrary.display.visualSockets.plugs
 		private var _displaySocket:IDisplaySocket;
 		private var _initialDataSet:Boolean;
 		
-		public function PlugDisplay(asset:IDisplayAsset=null){
+		public function PlugDisplay(asset:IDisplayObject=null){
 			super(asset);
 		}
 		public function getDataProvider():*{

@@ -5,7 +5,7 @@ package org.tbyrne.actLibrary.core
 	import org.tbyrne.acting.metadata.MetadataActorRegistry;
 	import org.tbyrne.acting.universal.reactions.MethodReaction;
 	import org.tbyrne.acting.universal.rules.ActInstanceRule;
-	import org.tbyrne.display.assets.assetTypes.IDisplayAsset;
+	import org.tbyrne.display.assets.nativeTypes.IDisplayObject;
 	import org.tbyrne.display.core.IScopedObject;
 	import org.tbyrne.display.core.ScopedObject;
 	
@@ -18,7 +18,7 @@ package org.tbyrne.actLibrary.core
 	public class UniversalActorHelper extends ScopedObject
 	{
 		
-		override public function set asset(value:IDisplayAsset):void{
+		override public function set asset(value:IDisplayObject):void{
 			if(super.asset!=value){
 				if(_registered){
 					MetadataActorRegistry.changeActorDisplay(_metadataTarget,value);
@@ -71,7 +71,7 @@ package org.tbyrne.actLibrary.core
 				throw new Error("act hasn't been added");
 			}
 		}
-		public function assessMetadata(asset:IDisplayAsset=null):void{
+		public function assessMetadata(asset:IDisplayObject=null):void{
 			if(!asset)asset = _asset;
 			if(_registered){
 				if(!_metadataTarget || !asset){

@@ -1,6 +1,6 @@
 package org.tbyrne.display.progress
 {
-	import org.tbyrne.display.assets.assetTypes.IDisplayAsset;
+	import org.tbyrne.display.assets.nativeTypes.IDisplayObject;
 	import org.tbyrne.display.core.ILayoutView;
 	
 	public interface IProgressDisplay
@@ -10,7 +10,7 @@ package org.tbyrne.display.progress
 		function set progress(value:Number):void;
 		function set total(value:Number):void;
 		function set units(value:String):void;
-		function get display():IDisplayAsset;
+		function get display():IDisplayObject;
 		function get layoutView():ILayoutView;
 	}
 }

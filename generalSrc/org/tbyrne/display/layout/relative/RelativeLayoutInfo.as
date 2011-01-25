@@ -1,16 +1,16 @@
 package org.tbyrne.display.layout.relative
 {
 	import org.tbyrne.display.assets.assetTypes.IAsset;
-	import org.tbyrne.display.assets.assetTypes.IDisplayAsset;
+	import org.tbyrne.display.assets.nativeTypes.IDisplayObject;
 	import org.tbyrne.display.layout.core.ConstrainedLayoutInfo;
 	
 	public class RelativeLayoutInfo extends ConstrainedLayoutInfo implements IRelativeLayoutInfo
 	{
 		
-		public function get relativeTo():IDisplayAsset{
+		public function get relativeTo():IDisplayObject{
 			return _relativeTo;
 		}
-		public function set relativeTo(value:IDisplayAsset):void{
+		public function set relativeTo(value:IDisplayObject):void{
 			_relativeTo = value;
 		}
 		
@@ -38,9 +38,9 @@ package org.tbyrne.display.layout.relative
 		private var _keepWithinStageBounds:Boolean;
 		private var _relativeOffsetY:Number;
 		private var _relativeOffsetX:Number;
-		private var _relativeTo:IDisplayAsset;
+		private var _relativeTo:IDisplayObject;
 		
-		public function RelativeLayoutInfo(relativeTo:IDisplayAsset=null, keepWithinStageBounds:Boolean=true, relativeOffsetX:Number=NaN, relativeOffsetY:Number=NaN){
+		public function RelativeLayoutInfo(relativeTo:IDisplayObject=null, keepWithinStageBounds:Boolean=true, relativeOffsetX:Number=NaN, relativeOffsetY:Number=NaN){
 			this.relativeTo = relativeTo;
 			this.relativeOffsetX = relativeOffsetX;
 			this.relativeOffsetY = relativeOffsetY;

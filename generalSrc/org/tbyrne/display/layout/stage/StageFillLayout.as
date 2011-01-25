@@ -4,31 +4,31 @@ package org.tbyrne.display.layout.stage
 	import flash.geom.Point;
 	
 	import org.tbyrne.binding.PropertyWatcher;
-	import org.tbyrne.display.assets.assetTypes.IStageAsset;
+	import org.tbyrne.display.assets.nativeTypes.IStage;
 	import org.tbyrne.display.core.IView;
 	import org.tbyrne.display.layout.AbstractSeperateLayout;
 	import org.tbyrne.display.layout.ILayoutSubject;
 
 	public class StageFillLayout extends AbstractSeperateLayout
 	{
-		public function get stage():IStageAsset{
+		public function get stage():IStage{
 			return _stage;
 		}
 		
-		private var _stage:IStageAsset;
+		private var _stage:IStage;
 		
 		public function StageFillLayout(scopeView:IView=null){
 			super(scopeView);
 			new PropertyWatcher("scopeView.asset.stage",setStage,null,unsetStage,this);
 		}
-		protected function unsetStage(oldStage:IStageAsset):void{
+		protected function unsetStage(oldStage:IStage):void{
 			oldStage.resize.removeHandler(onStageResize);
 			_stage = null;
 		}
-		protected function setStage(stage:IStageAsset):void{
+		protected function setStage(stage:IStage):void{
 			_stage = stage;
 			stage.resize.addHandler(onStageResize);
-			onStageResize(null,stage);
+			onStageResize(stage);
 		}
 		override protected function drawToMeasure() : Boolean{
 			return false;
@@ -42,7 +42,7 @@ package org.tbyrne.display.layout.stage
 			subjMeas.x = meas.x;
 			subjMeas.y = meas.y;
 		}
-		protected function onStageResize(e:Event=null, from:IStageAsset=null) : void{
+		protected function onStageResize(from:IStage=null) : void{
 			_size.x = from.stageWidth;
 			_size.y = from.stageHeight;
 			invalidateSize();

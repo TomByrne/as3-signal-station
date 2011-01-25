@@ -2,7 +2,7 @@ package org.tbyrne.display.controls.toolTip
 {
 	import flash.geom.Point;
 	
-	import org.tbyrne.display.assets.assetTypes.ITextFieldAsset;
+	import org.tbyrne.display.assets.nativeTypes.ITextField;
 	import org.tbyrne.display.core.DrawableView;
 
 	public class ToolTipAnnotator extends DrawableView implements IToolTipManager
@@ -37,7 +37,7 @@ package org.tbyrne.display.controls.toolTip
 		private var _annotationPattern:String = DEFAULT_PATTERN;
 		private var _annotationType:String = NUMERIC_TYPE;
 		private var _tipTriggers:Array = [];
-		private var _textField:ITextFieldAsset;
+		private var _textField:ITextField;
 		
 		public function ToolTipAnnotator(){
 		}
@@ -52,7 +52,7 @@ package org.tbyrne.display.controls.toolTip
 		}
 		override protected function bindToAsset() : void{
 			super.bindToAsset();
-			_textField = _asset as ITextFieldAsset;
+			_textField = _asset as ITextField;
 		}
 		override protected function unbindFromAsset() : void{
 			super.unbindFromAsset();

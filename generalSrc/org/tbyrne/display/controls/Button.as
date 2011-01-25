@@ -11,10 +11,10 @@ package org.tbyrne.display.controls
 	import org.tbyrne.data.dataTypes.ITriggerableAction;
 	import org.tbyrne.display.DisplayNamespace;
 	import org.tbyrne.display.actInfo.IMouseActInfo;
-	import org.tbyrne.display.assets.assetTypes.IDisplayAsset;
-	import org.tbyrne.display.assets.assetTypes.IInteractiveObjectAsset;
-	import org.tbyrne.display.assets.assetTypes.ISpriteAsset;
-	import org.tbyrne.display.assets.assetTypes.IStageAsset;
+	import org.tbyrne.display.assets.nativeTypes.IDisplayObject;
+	import org.tbyrne.display.assets.nativeTypes.IInteractiveObject;
+	import org.tbyrne.display.assets.nativeTypes.ISprite;
+	import org.tbyrne.display.assets.nativeTypes.IStage;
 	import org.tbyrne.display.assets.states.StateDef;
 	
 	use namespace DisplayNamespace;
@@ -54,7 +54,7 @@ package org.tbyrne.display.controls
 			}
 		}
 		
-		override public function set asset(value:IDisplayAsset) : void{
+		override public function set asset(value:IDisplayObject) : void{
 			super.asset = value;
 			invalidateMeasurements();
 		}
@@ -138,12 +138,12 @@ package org.tbyrne.display.controls
 		protected var _over:Boolean;
 		protected var _down:Boolean;
 		
-		protected var _pressedStage:IStageAsset;
+		protected var _pressedStage:IStage;
 		
 		protected var _overState:StateDef = new StateDef([STATE_OVER,STATE_OUT],1);
 		protected var _downState:StateDef = new StateDef([STATE_DOWN,STATE_UP],1);
 		
-		protected var _interactiveArea:ISpriteAsset;
+		protected var _interactiveArea:ISprite;
 		
 		protected var _clicked:Act;
 		protected var _mousePressed:Act;
@@ -151,7 +151,7 @@ package org.tbyrne.display.controls
 		protected var _rolledOver:Act;
 		protected var _rolledOut:Act;
 		
-		public function Button(asset:IDisplayAsset=null){
+		public function Button(asset:IDisplayObject=null){
 			super(asset);
 		}
 		override protected function bindToAsset() : void{
@@ -187,7 +187,7 @@ package org.tbyrne.display.controls
 			_asset.added.removeHandler(onChildAdded);
 			super.unbindFromAsset();
 		}
-		protected function onChildAdded(e:Event, from:IDisplayAsset) : void{
+		protected function onChildAdded(e:Event, from:IDisplayObject) : void{
 			//TODO: when events are replaced with Info objects, do a check here to see if it's a descendant or not
 			_containerAsset.setAssetIndex(_interactiveArea,_containerAsset.numChildren-1);
 		}
@@ -200,7 +200,7 @@ package org.tbyrne.display.controls
 				_interactiveArea.setSize(meas.x/asset.scaleX,meas.y/asset.scaleY);
 			}
 		}
-		protected function onRollOver(from:IInteractiveObjectAsset, info:IMouseActInfo):void{
+		protected function onRollOver(from:IInteractiveObject, info:IMouseActInfo):void{
 			if(_active){
 				_overState.selection = 0;
 				_over = true;
@@ -209,7 +209,7 @@ package org.tbyrne.display.controls
 				}
 			}
 		}
-		protected function onRollOut(from:IInteractiveObjectAsset, info:IMouseActInfo):void{
+		protected function onRollOut(from:IInteractiveObject, info:IMouseActInfo):void{
 			if(_active){
 				_overState.selection = 1;
 				_over = false;
@@ -218,7 +218,7 @@ package org.tbyrne.display.controls
 				}
 			}
 		}
-		protected function onMouseDown(from:IInteractiveObjectAsset, info:IMouseActInfo):void{
+		protected function onMouseDown(from:IInteractiveObject, info:IMouseActInfo):void{
 			if(_active){
 				_pressedStage = asset.stage;
 				_pressedStage.mouseReleased.addHandler(onMouseUp);
@@ -227,7 +227,7 @@ package org.tbyrne.display.controls
 				if(_mousePressed)_mousePressed.perform(this);
 			}
 		}
-		protected function onMouseUp(from:IInteractiveObjectAsset, info:IMouseActInfo=null):void{
+		protected function onMouseUp(from:IInteractiveObject, info:IMouseActInfo=null):void{
 			_pressedStage.mouseReleased.removeHandler(onMouseUp);
 			if(_active){
 				_pressedStage = null;
@@ -236,11 +236,11 @@ package org.tbyrne.display.controls
 				if(_mouseReleased)_mouseReleased.perform(this);
 			}
 		}
-		protected function onClick(from:IInteractiveObjectAsset, info:IMouseActInfo):void{
+		protected function onClick(from:IInteractiveObject, info:IMouseActInfo):void{
 			if(_active){
 				var assetMatch:Boolean = (info.mouseTarget==_interactiveArea);
 				/*if(!assetMatch){
-					var cast:ISpriteAsset = (info.mouseTarget as ISpriteAsset);
+					var cast:ISprite = (info.mouseTarget as ISprite);
 					if(!cast || !cast.buttonMode){
 						assetMatch = true;
 					}

@@ -3,7 +3,7 @@ package org.tbyrne.display.core
 	import flash.utils.Dictionary;
 	
 	import org.tbyrne.display.DisplayNamespace;
-	import org.tbyrne.display.assets.assetTypes.IDisplayAsset;
+	import org.tbyrne.display.assets.nativeTypes.IDisplayObject;
 	
 	use namespace DisplayNamespace;
 
@@ -19,15 +19,15 @@ package org.tbyrne.display.core
 	public class ScopedObjectAssigner
 	{
 		// IScopedObjectRoot -> true
-		private static var managers:Dictionary = new Dictionary();
+		private var managers:Dictionary = new Dictionary();
 		// IScopedObject -> ScopedObjectBundle
-		private static var scopedObjects:Dictionary = new Dictionary();
-		// IDisplayAsset -> IScopedObjectRoot
-		private static var managerScopeMap:Dictionary = new Dictionary();
+		private var scopedObjects:Dictionary = new Dictionary();
+		// IDisplayObject -> IScopedObjectRoot
+		private var managerScopeMap:Dictionary = new Dictionary();
 		// IScopedObject -> IScopedObjectRoot
-		private static var scopedObjectMap:Dictionary = new Dictionary();
+		private var scopedObjectMap:Dictionary = new Dictionary();
 		// IScopedObjectRoot -> [IScopedObject]
-		private static var managerLists:Dictionary = new Dictionary();
+		private var managerLists:Dictionary = new Dictionary();
 		
 		public function addManager(manager:IScopedObjectRoot):void{
 			CONFIG::debug{
@@ -86,8 +86,8 @@ package org.tbyrne.display.core
 		
 		
 		
-		private function findManagerFor(asset:IDisplayAsset):IScopedObjectRoot{
-			var subject:IDisplayAsset = asset;
+		private function findManagerFor(asset:IDisplayObject):IScopedObjectRoot{
+			var subject:IDisplayObject = asset;
 			while(subject){
 				var manager:IScopedObjectRoot = managerScopeMap[subject];
 				if(manager)return manager;
@@ -95,7 +95,7 @@ package org.tbyrne.display.core
 			}
 			return null;
 		}
-		private function onManagerScopeChanged(manager:IScopedObjectRoot, oldScope:IDisplayAsset):void{
+		private function onManagerScopeChanged(manager:IScopedObjectRoot, oldScope:IDisplayObject):void{
 			if(oldScope)removeManagerScope(manager,oldScope);
 			if(manager.scope)addManager(manager);
 		}
@@ -129,7 +129,7 @@ package org.tbyrne.display.core
 				}
 			}
 		}
-		protected function removeManagerScope(manager:IScopedObjectRoot, fromScope:IDisplayAsset=null):void{
+		protected function removeManagerScope(manager:IScopedObjectRoot, fromScope:IDisplayObject=null):void{
 			if(!fromScope)fromScope = manager.scope;
 			delete managerScopeMap[manager.scope];
 			
@@ -156,7 +156,7 @@ package org.tbyrne.display.core
 			scopedObjectMap[scopedDisplay] = manager;
 			managerList.push(scopedDisplay);
 		}
-		private function onScopeDisplayChange(scopedDisplay:IScopedObject, oldScope:IDisplayAsset):void{
+		private function onScopeDisplayChange(scopedDisplay:IScopedObject, oldScope:IDisplayObject):void{
 			if(oldScope){
 				removeObjectScope(scopedDisplay,oldScope);
 			}
@@ -165,7 +165,7 @@ package org.tbyrne.display.core
 			}
 		}
 		protected function addObjectScope(scopedObject:IScopedObject):void{
-			var newScope:IDisplayAsset = scopedObject.scope;
+			var newScope:IDisplayObject = scopedObject.scope;
 			
 			var bundle:ScopedObjectBundle = scopedObjects[scopedObject];
 			newScope.addedToStage.addHandler(bundle.onScopeAdded);
@@ -177,7 +177,7 @@ package org.tbyrne.display.core
 				addToManager(scopedObject,manager,list);
 			}
 		}
-		protected function removeObjectScope(scopedObject:IScopedObject, fromScope:IDisplayAsset=null):void{
+		protected function removeObjectScope(scopedObject:IScopedObject, fromScope:IDisplayObject=null):void{
 			if(!fromScope)fromScope = scopedObject.scope;
 			
 			var bundle:ScopedObjectBundle = scopedObjects[scopedObject];
@@ -189,7 +189,7 @@ package org.tbyrne.display.core
 				removeFromManager(scopedObject,manager);
 			}
 		}
-		DisplayNamespace function onScopeAdded(scope:IDisplayAsset, scopedObject:IScopedObject):void{
+		DisplayNamespace function onScopeAdded(scope:IDisplayObject, scopedObject:IScopedObject):void{
 			if(!scopedObjectMap[scopedObject]){
 				var manager:IScopedObjectRoot = findManagerFor(scope);
 				if(manager){
@@ -198,7 +198,7 @@ package org.tbyrne.display.core
 				}
 			}
 		}
-		DisplayNamespace function onScopeRemoved(scope:IDisplayAsset, scopedObject:IScopedObject):void{
+		DisplayNamespace function onScopeRemoved(scope:IDisplayObject, scopedObject:IScopedObject):void{
 			var manager:IScopedObjectRoot = scopedObjectMap[scopedObject];
 			if(manager && manager!=findManagerFor(scope)){
 				removeFromManager(scopedObject, manager);
@@ -214,7 +214,7 @@ package org.tbyrne.display.core
 	}
 }
 import org.tbyrne.display.DisplayNamespace;
-import org.tbyrne.display.assets.assetTypes.IDisplayAsset;
+import org.tbyrne.display.assets.nativeTypes.IDisplayObject;
 import org.tbyrne.display.core.IScopedObject;
 import org.tbyrne.display.core.ScopedObjectAssigner;
 
@@ -228,10 +228,10 @@ class ScopedObjectBundle{
 		this.scopedObject = scopedObject;
 		this.assigner = assigner;
 	}
-	public function onScopeAdded(scope:IDisplayAsset):void{
+	public function onScopeAdded(scope:IDisplayObject):void{
 		assigner.onScopeAdded(scope, scopedObject);
 	}
-	public function onScopeRemoved(scope:IDisplayAsset):void{
+	public function onScopeRemoved(scope:IDisplayObject):void{
 		assigner.onScopeRemoved(scope, scopedObject);
 	}
 	public function release():void{

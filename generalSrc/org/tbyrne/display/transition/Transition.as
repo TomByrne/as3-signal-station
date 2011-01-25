@@ -1,7 +1,7 @@
 package org.tbyrne.display.transition
 {
-	import org.tbyrne.display.assets.assetTypes.IBitmapAsset;
-	import org.tbyrne.display.assets.assetTypes.IDisplayAsset;
+	import org.tbyrne.display.assets.nativeTypes.IBitmap;
+	import org.tbyrne.display.assets.nativeTypes.IDisplayObject;
 
 	public class Transition implements ITransition
 	{
@@ -25,13 +25,13 @@ package org.tbyrne.display.transition
 		private var _timing:String = TransitionTiming.CONCURRENT;
 		private var _duration:Number = 1000;
 		
-		public function beginTransition(start:IDisplayAsset, finish:IDisplayAsset, bitmap:IBitmapAsset, duration:Number):void{
+		public function beginTransition(start:IDisplayObject, finish:IDisplayObject, bitmap:IBitmap, duration:Number):void{
 		}
 		
-		public function doTransition(start:IDisplayAsset, finish:IDisplayAsset, bitmap:IBitmapAsset, duration:Number, currentTime:Number):void{
+		public function doTransition(start:IDisplayObject, finish:IDisplayObject, bitmap:IBitmap, duration:Number, currentTime:Number):void{
 		}
 		
-		public function endTransition(start:IDisplayAsset, finish:IDisplayAsset, bitmap:IBitmapAsset, duration:Number):void{
+		public function endTransition(start:IDisplayObject, finish:IDisplayObject, bitmap:IBitmap, duration:Number):void{
 		}
 		
 	}

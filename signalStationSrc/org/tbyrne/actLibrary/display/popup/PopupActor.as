@@ -10,14 +10,14 @@ package org.tbyrne.actLibrary.display.popup
 	import org.tbyrne.actLibrary.display.popup.actTypes.IRemoveAllPopupsAct;
 	import org.tbyrne.actLibrary.display.popup.actTypes.IRemovePopupAct;
 	import org.tbyrne.actLibrary.display.popup.acts.RemovePopupAct;
-	import org.tbyrne.display.assets.assetTypes.IContainerAsset;
-	import org.tbyrne.display.assets.assetTypes.IDisplayAsset;
+	import org.tbyrne.display.assets.nativeTypes.IDisplayObjectContainer;
+	import org.tbyrne.display.assets.nativeTypes.IDisplayObject;
 	import org.tbyrne.display.popup.IPopupInfo;
 	import org.tbyrne.instanceFactory.IInstanceFactory;
 
 	public class PopupActor extends UniversalActorHelper
 	{
-		override public function set asset(value:IDisplayAsset):void{
+		override public function set asset(value:IDisplayObject):void{
 			super.asset = value;
 			if(value){
 				for each(var cause:IAddPopupAct in _pendingPopUps){
@@ -66,7 +66,7 @@ package org.tbyrne.actLibrary.display.popup
 		public function addPopup(cause:IAddPopupAct):void{
 			var popupInfo:IPopupInfo = cause.popupInfo;
 			
-			var parent:IContainerAsset = (cause.parent || (_asset as IContainerAsset));
+			var parent:IDisplayObjectContainer = (cause.parent || (_asset as IDisplayObjectContainer));
 				
 			if(popupInfo.popupDisplay){
 				if(parent){

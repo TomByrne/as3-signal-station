@@ -10,9 +10,9 @@ package org.tbyrne.display.transition
 	
 	import org.tbyrne.acting.actTypes.IAct;
 	import org.tbyrne.acting.acts.Act;
-	import org.tbyrne.display.assets.assetTypes.IBitmapAsset;
-	import org.tbyrne.display.assets.assetTypes.IContainerAsset;
-	import org.tbyrne.display.assets.assetTypes.IDisplayAsset;
+	import org.tbyrne.display.assets.nativeTypes.IBitmap;
+	import org.tbyrne.display.assets.nativeTypes.IDisplayObjectContainer;
+	import org.tbyrne.display.assets.nativeTypes.IDisplayObject;
 	import org.tbyrne.display.assets.nativeAssets.NativeAsset;
 	import org.tbyrne.display.assets.utils.isDescendant;
 	
@@ -65,19 +65,19 @@ package org.tbyrne.display.transition
 		/**
 		 * The existing DisplayObject that the transition will transition from.
 		 */
-		public function set startDisplay(value:IDisplayAsset):void{
+		public function set startDisplay(value:IDisplayObject):void{
 			_startDisplay = value;
 		}
-		public function get startDisplay():IDisplayAsset{
+		public function get startDisplay():IDisplayObject{
 			return _startDisplay;
 		}
 		/**
 		 * The new DisplayObject that the transition will transition to.
 		 */
-		public function set finishDisplay(value:IDisplayAsset):void{
+		public function set finishDisplay(value:IDisplayObject):void{
 			_finishDisplay = value;
 		}
-		public function get finishDisplay():IDisplayAsset{
+		public function get finishDisplay():IDisplayObject{
 			return _finishDisplay;
 		}
 		/**
@@ -104,12 +104,12 @@ package org.tbyrne.display.transition
 		private var _transitions:Array;
 		private var _timedTransitions:Array;
 		private var _easing:Function;
-		private var _startDisplay:IDisplayAsset;
-		private var _finishDisplay:IDisplayAsset;
-		private var _renderArea:IBitmapAsset;
+		private var _startDisplay:IDisplayObject;
+		private var _finishDisplay:IDisplayObject;
+		private var _renderArea:IBitmap;
 		
 		// these are caches for transition itself
-		private var parent:IContainerAsset;
+		private var parent:IDisplayObjectContainer;
 		private var startTime:Number;
 		private var bounds:Rectangle;
 		
@@ -177,7 +177,7 @@ package org.tbyrne.display.transition
 				if(_transitionBegin)_transitionBegin.perform(this);
 			}
 		}
-		protected function getBounds(subject:IDisplayAsset, parent:IDisplayAsset):Rectangle{
+		protected function getBounds(subject:IDisplayObject, parent:IDisplayObject):Rectangle{
 			if(!subject.parent){
 				parent = subject;
 			}
@@ -196,7 +196,7 @@ package org.tbyrne.display.transition
 			}
 			return ret;
 		}
-		private function hiddenAdd(child:IDisplayAsset, parent:IContainerAsset, depth:int):void{
+		private function hiddenAdd(child:IDisplayObject, parent:IDisplayObjectContainer, depth:int):void{
 			child.visible = false;
 			if(parent!=child.parent){
 				if(child.parent){
@@ -244,7 +244,7 @@ package org.tbyrne.display.transition
 				_renderArea.bitmapData.fillRect(new Rectangle(0,0,1000,1000),0xffff0000);
 			}
 		}
-		internal function endEarly():IBitmapAsset{
+		internal function endEarly():IBitmap{
 			onEnd(false);
 			if(_transitionEnd)_transitionEnd.perform(this);
 			return _renderArea;

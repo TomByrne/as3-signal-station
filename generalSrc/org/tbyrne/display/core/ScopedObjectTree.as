@@ -2,7 +2,7 @@ package org.tbyrne.display.core
 {
 	import flash.utils.Dictionary;
 	
-	import org.tbyrne.display.assets.assetTypes.IDisplayAsset;
+	import org.tbyrne.display.assets.nativeTypes.IDisplayObject;
 	import org.tbyrne.display.core.IScopedObject;
 	
 	//@todo: Refactor FrameValidationManager to use this class
@@ -15,7 +15,7 @@ package org.tbyrne.display.core
 		// these are scoped objects whose scope haven't yet been checked
 		protected var _pendingScopedObjects:Vector.<IScopedObject> = new Vector.<IScopedObject>();
 		protected var _rootBundles:Vector.<AssetBundle> = new Vector.<AssetBundle>();
-		// mapped IDisplayAsset > AssetBundle
+		// mapped IDisplayObject > AssetBundle
 		protected var _assetToBundleMap:Dictionary = new Dictionary();
 		
 		public function ScopedObjectTree(){
@@ -59,10 +59,10 @@ package org.tbyrne.display.core
 		 * still be executed). The function should accept two parameters; firstly, the IScopedObject;
 		 * secondly, the specified IDispalyAsset.<br/>
 		 * For example:<br/>
-		 * <code>function checkScopedObject(scopedObject:IScopedObject, display:IDisplayAsset):Boolean</code>
+		 * <code>function checkScopedObject(scopedObject:IScopedObject, display:IDisplayObject):Boolean</code>
 		 * 
 		 */
-		public function executeUpwardsFrom(display:IDisplayAsset, func:Function):void{
+		public function executeUpwardsFrom(display:IDisplayObject, func:Function):void{
 			var bundle:AssetBundle = findFirstScopedAbove(display);
 			while(bundle){
 				var finished:Boolean = false;
@@ -81,12 +81,12 @@ package org.tbyrne.display.core
 		}
 		/**
 		 * 
-		 * @param display The IDisplayAsset for which the IScopedObjects shuold be found.
+		 * @param display The IDisplayObject for which the IScopedObjects shuold be found.
 		 * @return Returns the first bundle of IScopedObjects for the specified IDisplayObject
 		 * or it's ascendants.
 		 * 
 		 */
-		protected function findFirstScopedAbove(display:IDisplayAsset):AssetBundle{
+		protected function findFirstScopedAbove(display:IDisplayObject):AssetBundle{
 			assessAllScopedObject();
 			var bundle:AssetBundle = _assetToBundleMap[display];
 			if(bundle){
@@ -123,7 +123,7 @@ package org.tbyrne.display.core
 			scopedObject.scopeChanged.addHandler(onAssetChanged);
 			addToBundle(scopedObject);
 		}
-		protected function onAssetChanged(from:IScopedObject, oldAsset:IDisplayAsset):void{
+		protected function onAssetChanged(from:IScopedObject, oldAsset:IDisplayObject):void{
 			var oldBundle:AssetBundle = _assetToBundleMap[oldAsset];
 			removeFromBundle(from, oldBundle);
 			
@@ -154,7 +154,7 @@ package org.tbyrne.display.core
 			if(bundle.readyForExecution)addToHeirarchy(bundle);
 		}
 		protected function addToHeirarchy(bundle:AssetBundle):void{
-			var subject:IDisplayAsset = bundle.asset;
+			var subject:IDisplayObject = bundle.asset;
 			var parentBundle:AssetBundle;
 			while(subject && !(parentBundle = _assetToBundleMap[subject.parent])){
 				subject = subject.parent;
@@ -201,8 +201,8 @@ package org.tbyrne.display.core
 				}
 			}
 		}
-		protected function isDescendant(parent:IDisplayAsset, child:IDisplayAsset):Boolean{
-			var subject:IDisplayAsset = child.parent;
+		protected function isDescendant(parent:IDisplayObject, child:IDisplayObject):Boolean{
+			var subject:IDisplayObject = child.parent;
 			while(subject && subject!=parent){
 				subject = subject.parent;
 			}
@@ -214,14 +214,14 @@ import flash.utils.Dictionary;
 
 import org.tbyrne.acting.actTypes.IAct;
 import org.tbyrne.acting.acts.Act;
-import org.tbyrne.display.assets.assetTypes.IDisplayAsset;
+import org.tbyrne.display.assets.nativeTypes.IDisplayObject;
 import org.tbyrne.display.core.IScopedObject;
 import org.tbyrne.hoborg.IPoolable;
 import org.tbyrne.hoborg.ObjectPool;
 
 class AssetBundle implements IPoolable{
 	private static const pool:ObjectPool = new ObjectPool(AssetBundle);
-	public static function getNew(asset:IDisplayAsset):AssetBundle{
+	public static function getNew(asset:IDisplayObject):AssetBundle{
 		var ret:AssetBundle = pool.takeObject();
 		ret.asset = asset;
 		return ret;
@@ -239,10 +239,10 @@ class AssetBundle implements IPoolable{
 		return scopedObjects.length;
 	}
 	
-	public function get asset():IDisplayAsset{
+	public function get asset():IDisplayObject{
 		return _asset;
 	}
-	public function set asset(value:IDisplayAsset):void{
+	public function set asset(value:IDisplayObject):void{
 		if(_asset!=value){
 			if(_asset){
 				_asset.addedToStage.removeHandler(onAdded);
@@ -267,15 +267,15 @@ class AssetBundle implements IPoolable{
 	public var scopedObjects:Vector.<IScopedObject> = new Vector.<IScopedObject>();
 	
 	protected var _addedToStage:Boolean;
-	protected var _asset:IDisplayAsset;
+	protected var _asset:IDisplayObject;
 	protected var _assetPosChanged:Act = new Act();
 	
 	
-	protected function onAdded(from:IDisplayAsset):void{
+	protected function onAdded(from:IDisplayObject):void{
 		_addedToStage = true;
 		_assetPosChanged.perform(this);
 	}
-	protected function onRemoved(from:IDisplayAsset):void{
+	protected function onRemoved(from:IDisplayObject):void{
 		_addedToStage = false;
 		_assetPosChanged.perform(this);
 	}

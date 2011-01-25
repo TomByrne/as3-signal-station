@@ -16,7 +16,7 @@ package org.tbyrne.media.video
 	import org.tbyrne.data.core.NumberData;
 	import org.tbyrne.data.dataTypes.INumberData;
 	import org.tbyrne.data.dataTypes.INumberProvider;
-	import org.tbyrne.display.assets.assetTypes.IVideoAsset;
+	import org.tbyrne.display.assets.nativeTypes.IVideo;
 	import org.tbyrne.display.assets.nativeAssets.NativeAssetFactory;
 	import org.tbyrne.display.assets.nativeAssets.VideoAsset;
 	import org.tbyrne.display.core.ILayoutView;
@@ -223,7 +223,7 @@ package org.tbyrne.media.video
 				
 				for(var i:* in _allMediaDisplays){
 					var mediaView:MediaView = (i as MediaView);
-					(mediaView.asset as IVideoAsset).attachNetStream(null);
+					(mediaView.asset as IVideo).attachNetStream(null);
 				}
 			}
 		}
@@ -251,7 +251,7 @@ package org.tbyrne.media.video
 					assessBufferSize();
 					for(var i:* in _allMediaDisplays){
 						var mediaView:MediaView = (i as MediaView);
-						(mediaView.asset as IVideoAsset).attachNetStream(_netStream);
+						(mediaView.asset as IVideo).attachNetStream(_netStream);
 					}
 				}
 			}
@@ -348,7 +348,7 @@ package org.tbyrne.media.video
 			if(_streamStarted){
 				video.attachNetStream(_netStream);
 			}
-			var videoAsset:IVideoAsset = _nativeFactory.getNew(video);
+			var videoAsset:IVideo = _nativeFactory.getNew(video);
 			var display:MediaView = new MediaView(videoAsset,_measurements);
 			display.layoutInfo = new FrameLayoutInfo();
 			return display;

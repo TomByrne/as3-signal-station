@@ -9,8 +9,8 @@ package org.tbyrne.display.transition
 	import flash.geom.Rectangle;
 	import flash.utils.Dictionary;
 	
-	import org.tbyrne.display.assets.assetTypes.IBitmapAsset;
-	import org.tbyrne.display.assets.assetTypes.IDisplayAsset;
+	import org.tbyrne.display.assets.nativeTypes.IBitmap;
+	import org.tbyrne.display.assets.nativeTypes.IDisplayObject;
 	
 	public class IrisTransition extends Transition
 	{
@@ -34,14 +34,14 @@ package org.tbyrne.display.transition
 			this.reflect = reflect;
 		}
 		
-		override public function beginTransition(start:IDisplayAsset, finish:IDisplayAsset, bitmap:IBitmapAsset, duration:Number):void{
+		override public function beginTransition(start:IDisplayObject, finish:IDisplayObject, bitmap:IBitmap, duration:Number):void{
 			var bundle:BitmapBundle = new BitmapBundle();
 			bundle.drawArea = new BitmapData(bitmap.width,bitmap.height,true,0);
 			bundle.maskBitmapData = new BitmapData(bitmap.width,bitmap.height,false,0);
 			bundle.alphaBitmapData = new BitmapData(bitmap.width,bitmap.height,false,0);
 			bundles[start] = bundle;
 		}
-		override public function doTransition(start:IDisplayAsset, finish:IDisplayAsset, bitmap:IBitmapAsset, duration:Number, currentTime:Number):void{
+		override public function doTransition(start:IDisplayObject, finish:IDisplayObject, bitmap:IBitmap, duration:Number, currentTime:Number):void{
 			
 			var bitmapMatrix:Matrix = bitmap.transform.concatenatedMatrix;
 			bitmapMatrix.invert();
@@ -50,8 +50,8 @@ package org.tbyrne.display.transition
 			
 			var innerSizeFract:Number;
 			var outerSizeFract:Number;
-			var innerSubject:IDisplayAsset;
-			var outerSubject:IDisplayAsset;
+			var innerSubject:IDisplayObject;
+			var outerSubject:IDisplayObject;
 			if(direction==OUT){
 				innerSizeFract = currentTime/duration;
 				innerSubject = start;
@@ -95,7 +95,7 @@ package org.tbyrne.display.transition
 				
 			bitmap.bitmapData.draw(bundle.drawArea,null,finish.transform.colorTransform);
 		}
-		override public function endTransition(start:IDisplayAsset, finish:IDisplayAsset, bitmap:IBitmapAsset, duration:Number):void{
+		override public function endTransition(start:IDisplayObject, finish:IDisplayObject, bitmap:IBitmap, duration:Number):void{
 			var bundle:BitmapBundle = bundles[start];
 			bundle.drawArea.dispose();
 			bundle.maskBitmapData.dispose();

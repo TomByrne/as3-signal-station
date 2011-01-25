@@ -130,6 +130,9 @@ package org.tbyrne.display.assets
 			}
 			unapplyOldState(newMap, newStates);
 			var appliedStates:Array = [];
+			if(newStates.length>1){
+				newStates = prioritiseStates(newStates);
+			}
 			for each(state in newStates){
 				selName = state.options[state.selection];
 				_stateSelMap[state] = selName;
@@ -141,6 +144,11 @@ package org.tbyrne.display.assets
 			}
 			_appliedStates = appliedStates;
 		}
+		
+		protected function prioritiseStates(newStates:Array):Array{
+			return newStates;
+		}
+		
 		protected function unapplyOldState(newMap:Dictionary, newList:Array):void{
 			for each(var state:IStateDef in _appliedStates){
 				if(!newMap[state]){

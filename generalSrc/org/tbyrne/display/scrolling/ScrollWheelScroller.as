@@ -1,14 +1,14 @@
 package org.tbyrne.display.scrolling
 {
 	import org.tbyrne.display.actInfo.IMouseActInfo;
-	import org.tbyrne.display.assets.assetTypes.IInteractiveObjectAsset;
+	import org.tbyrne.display.assets.nativeTypes.IInteractiveObject;
 
 	public class ScrollWheelScroller
 	{
-		public function get display():IInteractiveObjectAsset{
+		public function get display():IInteractiveObject{
 			return _display;
 		}
-		public function set display(value:IInteractiveObjectAsset):void{
+		public function set display(value:IInteractiveObject):void{
 			if(_display!=value){
 				if(_display){
 					_display.mouseWheel.removeHandler(onMouseWheel);
@@ -22,13 +22,13 @@ package org.tbyrne.display.scrolling
 		
 		public var scrollMetrics:IScrollMetrics;
 		
-		private var _display:IInteractiveObjectAsset;
+		private var _display:IInteractiveObject;
 		
-		public function ScrollWheelScroller(display:IInteractiveObjectAsset=null, scrollMetrics:IScrollMetrics=null){
+		public function ScrollWheelScroller(display:IInteractiveObject=null, scrollMetrics:IScrollMetrics=null){
 			this.display = display;
 			this.scrollMetrics = scrollMetrics;
 		}
-		protected function onMouseWheel(from:IInteractiveObjectAsset, mouseActInfo:IMouseActInfo, delta:int):void{
+		protected function onMouseWheel(from:IInteractiveObject, mouseActInfo:IMouseActInfo, delta:int):void{
 			if(scrollMetrics){
 				// delta values vary great by browser/wmode, I prefer to use this mechanism, this means there will be no native acceleration.
 				delta = (delta>0?1:-1);

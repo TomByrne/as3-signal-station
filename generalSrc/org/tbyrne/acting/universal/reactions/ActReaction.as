@@ -5,7 +5,7 @@ package org.tbyrne.acting.universal.reactions
 	import org.tbyrne.acting.universal.UniversalActExecution;
 	import org.tbyrne.acting.universal.UniversalActManager;
 	import org.tbyrne.acting.universal.ruleTypes.IUniversalRule;
-	import org.tbyrne.display.assets.assetTypes.IDisplayAsset;
+	import org.tbyrne.display.assets.nativeTypes.IDisplayObject;
 	import org.tbyrne.display.core.ScopedObject;
 
 	public class ActReaction extends ScopedObject implements IActReaction
@@ -36,7 +36,7 @@ package org.tbyrne.acting.universal.reactions
 				UniversalActManager.removeReaction(this);
 			}
 		}
-		private function onDisplayChanged(from:ScopedObject, oldAsset:IDisplayAsset):void{
+		private function onDisplayChanged(from:ScopedObject, oldAsset:IDisplayObject):void{
 			if(_univAdded){
 				UniversalActManager.removeReaction(this);
 				UniversalActManager.addReaction(this);

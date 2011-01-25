@@ -14,7 +14,7 @@ package org.tbyrne.actLibrary.display.visualSockets.socketContainers
 	import org.tbyrne.acting.actTypes.IAct;
 	import org.tbyrne.acting.acts.Act;
 	import org.tbyrne.acting.universal.UniversalActExecution;
-	import org.tbyrne.display.assets.assetTypes.IContainerAsset;
+	import org.tbyrne.display.assets.nativeTypes.IDisplayObjectContainer;
 	import org.tbyrne.utils.ObjectUtils;
 
 	public class SocketContainerHelper extends UniversalActorHelper
@@ -37,7 +37,7 @@ package org.tbyrne.actLibrary.display.visualSockets.socketContainers
 		private var _dataPropertyBindings:Dictionary;
 		private var _childDataFilter:Dictionary;
 		//private var _added:Boolean;
-		private var _defaultContainer:IContainerAsset;
+		private var _defaultContainer:IDisplayObjectContainer;
 		private var _lookupFillActs:Array = [];
 		private var _fillActs:Array = [];
 		
@@ -74,10 +74,10 @@ package org.tbyrne.actLibrary.display.visualSockets.socketContainers
 				if(changed)_socketsChanged.perform(_socketContainer);
 			}
 		}
-		public function get defaultContainer(): IContainerAsset{
+		public function get defaultContainer(): IDisplayObjectContainer{
 			return this._defaultContainer;
 		}
-		public function set defaultContainer(value: IContainerAsset):void{
+		public function set defaultContainer(value: IDisplayObjectContainer):void{
 			if(_defaultContainer!=value){
 				for each(var socket:IDisplaySocket in _childSockets){
 					var cast:DisplaySocket = (socket as DisplaySocket);
@@ -112,7 +112,7 @@ package org.tbyrne.actLibrary.display.visualSockets.socketContainers
 				}
 			}
 		}
-		public function get display():IDisplayAsset{
+		public function get display():IDisplayObject{
 			return _display;
 		}*/
 		public function setDataProvider(value:*, execution:UniversalActExecution=null):void{

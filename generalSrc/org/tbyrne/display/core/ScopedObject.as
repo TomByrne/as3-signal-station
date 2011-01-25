@@ -4,14 +4,14 @@ package org.tbyrne.display.core
 	
 	import org.tbyrne.acting.actTypes.IAct;
 	import org.tbyrne.acting.acts.Act;
-	import org.tbyrne.display.assets.assetTypes.IDisplayAsset;
-	import org.tbyrne.display.assets.assetTypes.IStageAsset;
+	import org.tbyrne.display.assets.nativeTypes.IDisplayObject;
+	import org.tbyrne.display.assets.nativeTypes.IStage;
 	
 	public class ScopedObject extends View implements IScopedObject
 	{
 		protected var _addedChanged:Act;
 		protected var _active:Boolean = true;
-		protected var _assetStage:IStageAsset;
+		protected var _assetStage:IStage;
 		protected var _added:Boolean;
 		
 		
@@ -31,10 +31,10 @@ package org.tbyrne.display.core
 		
 		
 		
-		public function set scope(value:IDisplayAsset):void{
+		public function set scope(value:IDisplayObject):void{
 			asset = value;
 		}
-		public function get scope():IDisplayAsset{
+		public function get scope():IDisplayObject{
 			return asset;
 		}
 		
@@ -52,7 +52,7 @@ package org.tbyrne.display.core
 				checkAdded();
 			}
 		}
-		override public function set asset(value:IDisplayAsset):void{
+		override public function set asset(value:IDisplayObject):void{
 			if(_asset!=value){
 				if(_asset){
 					_asset.addedToStage.removeHandler(onAdded);
@@ -70,14 +70,14 @@ package org.tbyrne.display.core
 		}
 		
 		
-		public function ScopedObject(asset:IDisplayAsset=null){
+		public function ScopedObject(asset:IDisplayObject=null){
 			super(asset);
 		}
-		protected function setStage(stage:IStageAsset):void{
+		protected function setStage(stage:IStage):void{
 			_assetStage = stage;
 			checkAdded();
 		}
-		protected function onAdded(from:IDisplayAsset):void{
+		protected function onAdded(from:IDisplayObject):void{
 			/*
 			This conditional is here because if the asset property gets
 			set to null during a another handler of the addedToStage
@@ -88,7 +88,7 @@ package org.tbyrne.display.core
 				setStage(_asset.stage);
 			}
 		}
-		protected function onRemoved(from:IDisplayAsset):void{
+		protected function onRemoved(from:IDisplayObject):void{
 			setStage(null);
 		}
 		protected function checkAdded():void{

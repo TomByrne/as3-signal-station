@@ -3,9 +3,9 @@ package org.tbyrne.display.controls.popout {
 	
 	import org.tbyrne.display.actInfo.IMouseActInfo;
 	import org.tbyrne.display.assets.assetTypes.IAsset;
-	import org.tbyrne.display.assets.assetTypes.IContainerAsset;
-	import org.tbyrne.display.assets.assetTypes.IDisplayAsset;
-	import org.tbyrne.display.assets.assetTypes.IInteractiveObjectAsset;
+	import org.tbyrne.display.assets.nativeTypes.IDisplayObjectContainer;
+	import org.tbyrne.display.assets.nativeTypes.IDisplayObject;
+	import org.tbyrne.display.assets.nativeTypes.IInteractiveObject;
 	import org.tbyrne.display.assets.utils.isDescendant;
 	import org.tbyrne.display.constants.Anchor;
 	import org.tbyrne.display.containers.ListBox;
@@ -53,7 +53,7 @@ package org.tbyrne.display.controls.popout {
 		protected var _popoutDisplay:PopoutDisplay;
 		protected var _listBox:ListBox;
 		
-		public function PopoutList(asset:IDisplayAsset=null) {
+		public function PopoutList(asset:IDisplayObject=null) {
 			super(asset);
 			
 			_popoutDisplay=new PopoutDisplay();
@@ -75,14 +75,14 @@ package org.tbyrne.display.controls.popout {
 				asset.stage.mouseReleased.removeHandler(onMouseDown);
 			}
 		}
-		protected function onMouseDown(from:IInteractiveObjectAsset, info:IMouseActInfo):void {
+		protected function onMouseDown(from:IInteractiveObject, info:IMouseActInfo):void {
 			if(info.mouseTarget!=asset && !isDescendant(_containerAsset,info.mouseTarget) &&
-				info.mouseTarget!=_listBox.asset && !isDescendant(_listBox.asset as IContainerAsset,info.mouseTarget)){
+				info.mouseTarget!=_listBox.asset && !isDescendant(_listBox.asset as IDisplayObjectContainer,info.mouseTarget)){
 				_popoutDisplay.popoutShown = false;
 			}
 		}
 		override protected function bindToAsset():void {
-			var listAsset:IDisplayAsset = _containerAsset.takeAssetByName(LIST_CHILD,IDisplayAsset);
+			var listAsset:IDisplayObject = _containerAsset.takeAssetByName(LIST_CHILD,IDisplayObject);
 			_containerAsset.removeAsset(listAsset);
 			_listBox.asset=listAsset;
 			super.bindToAsset();

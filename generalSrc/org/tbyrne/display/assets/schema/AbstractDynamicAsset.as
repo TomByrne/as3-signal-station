@@ -24,13 +24,13 @@ package org.tbyrne.display.assets.schema
 	import org.tbyrne.debug.logging.Log;
 	import org.tbyrne.display.actInfo.IMouseActInfo;
 	import org.tbyrne.display.assets.IAssetFactory;
-	import org.tbyrne.display.assets.assetTypes.*;
 	import org.tbyrne.display.assets.nativeAssets.INativeAsset;
 	import org.tbyrne.display.assets.nativeAssets.actInfo.MouseActInfo;
+	import org.tbyrne.display.assets.nativeTypes.*;
 	import org.tbyrne.display.assets.schemaTypes.*;
 	import org.tbyrne.display.assets.utils.isDescendant;
 	
-	public class AbstractDynamicAsset extends AbstractSchemaBasedAsset implements ISpriteAsset, ITextFieldAsset, IBitmapAsset, INativeAsset
+	public class AbstractDynamicAsset extends AbstractSchemaBasedAsset implements ISprite, ITextField, IBitmap, INativeAsset
 	{
 		private static var DISPLAY_MAP:Dictionary = new Dictionary();
 		
@@ -69,16 +69,16 @@ package org.tbyrne.display.assets.schema
 		}
 		override public function conformsToType(type:Class):Boolean{
 			switch(type){
-				case ITextFieldAsset:
+				case ITextField:
 					return (_textField!=null);
-				case IBitmapAsset:
+				case IBitmap:
 					return (_bitmap!=null);
-				case IInteractiveObjectAsset:
+				case IInteractiveObject:
 					return (_interactiveObject!=null);
-				case ISpriteAsset:
-				case IContainerAsset:
+				case ISprite:
+				case IDisplayObjectContainer:
 					return (_sprite!=null);
-				case IDisplayAsset:
+				case IDisplayObject:
 					return (_displayObject!=null);
 			}
 			return super.conformsToType(type);
@@ -256,7 +256,7 @@ package org.tbyrne.display.assets.schema
 			}
 		}
 		public function addChildren(array:Array):void{
-			for each(var child:IDisplayAsset in array){
+			for each(var child:IDisplayObject in array){
 				addAsset(child);
 			}
 		}
@@ -278,7 +278,7 @@ package org.tbyrne.display.assets.schema
 		
 		
 		/*
-				IDisplayAsset implementation
+				IDisplayObject implementation
 		*/
 		
 		/**
@@ -334,8 +334,8 @@ package org.tbyrne.display.assets.schema
 		//protected var _forceTopLeft:Boolean = true;
 		
 		protected var _isAddedToStage:Boolean;
-		protected var _parent:IContainerAsset;
-		protected var _stage:IStageAsset;
+		protected var _parent:IDisplayObjectContainer;
+		protected var _stage:IStage;
 		
 		protected var _stageChanged:Act;
 		protected var _enterFrame:NativeAct;
@@ -428,6 +428,9 @@ package org.tbyrne.display.assets.schema
 		public function set blendMode(value:String):void{_displayObject.blendMode = value};
 		public function get blendMode():String{return _displayObject.blendMode};
 		
+		public function set filters(value:Array):void{_displayObject.filters = value};
+		public function get filters():Array{return _displayObject.filters};
+		
 		public function set scrollRect(value:Rectangle):void{_displayObject.scrollRect = value;}
 		public function get scrollRect():Rectangle{return _displayObject.scrollRect};
 		
@@ -436,20 +439,20 @@ package org.tbyrne.display.assets.schema
 		public function get bitmapDrawable():IBitmapDrawable{return _displayObject};
 		
 		
-		public function get parent():IContainerAsset {
+		public function get parent():IDisplayObjectContainer {
 			return _parent;
 		}
-		public function set parent(value:IContainerAsset):void {
+		public function set parent(value:IDisplayObjectContainer):void {
 			_parent = value;
 			if(!value)_stage = null;
 		}
-		public function get stage():IStageAsset {
+		public function get stage():IStage {
 			if(_isAddedToStage && !_stage){
-				var topParent:IContainerAsset = _parent;
+				var topParent:IDisplayObjectContainer = _parent;
 				while(topParent.parent){
 					topParent = topParent.parent;
 				}
-				_stage = (topParent as IStageAsset);
+				_stage = (topParent as IStage);
 			}
 			return _stage;
 		}
@@ -466,7 +469,7 @@ package org.tbyrne.display.assets.schema
 		public function localToGlobal(point:Point):Point {
 			return _displayObject.localToGlobal(point);
 		}
-		public function getBounds(space:IDisplayAsset):Rectangle {
+		public function getBounds(space:IDisplayObject):Rectangle {
 			var nativeAsset:INativeAsset = (space as INativeAsset);
 			if(nativeAsset){
 				return _displayObject.getBounds(nativeAsset.displayObject || space.bitmapDrawable as DisplayObject);
@@ -478,7 +481,7 @@ package org.tbyrne.display.assets.schema
 		
 		
 		/*
-				IInteractiveObjectAsset implementation
+				IInteractiveObject implementation
 		*/
 		
 		protected var _focusIn:NativeAct;
@@ -632,7 +635,7 @@ package org.tbyrne.display.assets.schema
 			if(_mouseWheel)_mouseWheel.perform(this,createMouseInfo(e),e.delta);
 		}
 		protected function createMouseInfo(e:MouseEvent):IMouseActInfo{
-			var target:IDisplayAsset = (e.target==_interactiveObject?this:DISPLAY_MAP[e.target]);
+			var target:IDisplayObject = (e.target==_interactiveObject?this:DISPLAY_MAP[e.target]);
 			return new MouseActInfo(target, e.altKey, e.ctrlKey, e.shiftKey);
 		}
 		
@@ -640,7 +643,7 @@ package org.tbyrne.display.assets.schema
 		
 		
 		/*
-				IContainerAsset implementation
+				IDisplayObjectContainer implementation
 		*/
 		
 		private var _children:Dictionary = new Dictionary();
@@ -648,7 +651,7 @@ package org.tbyrne.display.assets.schema
 		override protected function _addStateList(stateList:Array):void{
 			super._addStateList(stateList);
 			if(_sprite){
-				for each(var child:IDisplayAsset in _children){
+				for each(var child:IDisplayObject in _children){
 					child.addStateList(stateList,true);
 				}
 			}
@@ -656,7 +659,7 @@ package org.tbyrne.display.assets.schema
 		override protected function _removeStateList(stateList:Array):void{
 			super._removeStateList(stateList);
 			if(_sprite){
-				for each(var child:IDisplayAsset in _children){
+				for each(var child:IDisplayObject in _children){
 					child.removeStateList(stateList);
 				}
 			}
@@ -682,11 +685,11 @@ package org.tbyrne.display.assets.schema
 				return null;
 			}
 		}
-		public function returnAsset(asset:IDisplayAsset):void{
+		public function returnAsset(asset:IDisplayObject):void{
 			// ignore
 		}
 		
-		public function addAsset(asset:IDisplayAsset):void{
+		public function addAsset(asset:IDisplayObject):void{
 			var nativeAsset:INativeAsset = (asset as INativeAsset);
 			CONFIG::debug{
 				if(!asset)Log.log(Log.ERROR,"no asset provided");
@@ -700,7 +703,7 @@ package org.tbyrne.display.assets.schema
 				asset.addStateList(stateList,true);
 			}
 		}
-		public function addAssetAt(asset:IDisplayAsset, index:int):IDisplayAsset{
+		public function addAssetAt(asset:IDisplayObject, index:int):IDisplayObject{
 			var nativeAsset:INativeAsset = (asset as INativeAsset);
 			asset.parent = this;
 			_sprite.addChildAt(nativeAsset.displayObject,index);
@@ -710,7 +713,7 @@ package org.tbyrne.display.assets.schema
 			}
 			return asset;
 		}
-		public function removeAsset(asset:IDisplayAsset):void{
+		public function removeAsset(asset:IDisplayObject):void{
 			var nativeAsset:INativeAsset = (asset as INativeAsset);
 			for each(var stateList:Array in _stateLists){
 				asset.removeStateList(stateList);
@@ -724,7 +727,7 @@ package org.tbyrne.display.assets.schema
 			var display:DisplayObject = _sprite.getChildByName(name);
 			return _children[display]!=null;
 		}
-		public function contains(child:IDisplayAsset):Boolean{
+		public function contains(child:IDisplayObject):Boolean{
 			var nativeAsset:INativeAsset = (child as INativeAsset);
 			if(_children[nativeAsset.displayObject] || child==this){
 				return true;
@@ -737,15 +740,15 @@ package org.tbyrne.display.assets.schema
 			return isDescendant(this,child);
 		}
 		
-		public function getAssetIndex(asset:IDisplayAsset):int{
+		public function getAssetIndex(asset:IDisplayObject):int{
 			var nativeAsset:INativeAsset = (asset as INativeAsset);
 			return _sprite.getChildIndex(nativeAsset.displayObject);
 		}
-		public function setAssetIndex(asset:IDisplayAsset, index:int):void{
+		public function setAssetIndex(asset:IDisplayObject, index:int):void{
 			var nativeAsset:INativeAsset = (asset as INativeAsset);
 			_sprite.setChildIndex(nativeAsset.displayObject,index);
 		}
-		public function getAssetAt(index:int):IDisplayAsset{
+		public function getAssetAt(index:int):IDisplayObject{
 			var display:DisplayObject = _sprite.getChildAt(index);
 			return _children[display];
 		}
@@ -756,7 +759,7 @@ package org.tbyrne.display.assets.schema
 		public function get numChildren():int{return _sprite.numChildren}
 		
 		protected function removeAllChildren():void{
-			for each(var child:IDisplayAsset in _children){
+			for each(var child:IDisplayObject in _children){
 				var nativeAsset:INativeAsset = (child as INativeAsset);
 				for each(var stateList:Array in _stateLists){
 					child.removeStateList(stateList);
@@ -770,10 +773,10 @@ package org.tbyrne.display.assets.schema
 		
 		
 		/*
-		ISpriteAsset implementation
+		ISprite implementation
 		*/
 		
-		private var _hitArea:ISpriteAsset
+		private var _hitArea:ISprite
 		
 		public function get useHandCursor():Boolean{return _sprite.useHandCursor}
 		public function set useHandCursor(value:Boolean):void{_sprite.useHandCursor = value}
@@ -781,10 +784,10 @@ package org.tbyrne.display.assets.schema
 		public function get buttonMode():Boolean{return _sprite.buttonMode}
 		public function set buttonMode(value:Boolean):void{_sprite.buttonMode = value}
 		
-		public function get hitArea():ISpriteAsset{
+		public function get hitArea():ISprite{
 			return _hitArea;
 		}
-		public function set hitArea(value:ISpriteAsset):void{
+		public function set hitArea(value:ISprite):void{
 			var nativeAsset:INativeAsset = (value as INativeAsset);
 			_hitArea = value;
 			if(value && nativeAsset){
@@ -796,7 +799,7 @@ package org.tbyrne.display.assets.schema
 		
 		
 		/*
-			ITextFieldAsset implementation
+			ITextField implementation
 		*/
 		
 		protected var _change:Act;
@@ -821,6 +824,9 @@ package org.tbyrne.display.assets.schema
 		
 		public function set wordWrap(value:Boolean):void{_textField.wordWrap = value}
 		public function get wordWrap():Boolean{return _textField.wordWrap}
+		
+		public function set displayAsPassword(value:Boolean):void{_textField.displayAsPassword = value}
+		public function get displayAsPassword():Boolean{return _textField.displayAsPassword}
 		
 		public function set selectable(value:Boolean):void{_textField.selectable = value}
 		public function get selectable():Boolean{return _textField.selectable}
@@ -869,7 +875,7 @@ package org.tbyrne.display.assets.schema
 		
 		
 		/*
-			IBitmapAsset implementation
+			IBitmap implementation
 		*/
 		
 		public function get bitmapData():BitmapData{return _bitmap.bitmapData}

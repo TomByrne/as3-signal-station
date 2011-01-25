@@ -8,7 +8,7 @@ package org.tbyrne.display.controls
 	import flash.utils.Timer;
 	import flash.utils.getTimer;
 	
-	import org.tbyrne.display.assets.assetTypes.IDisplayAsset;
+	import org.tbyrne.display.assets.nativeTypes.IDisplayObject;
 	import org.tbyrne.display.constants.Direction;
 	import org.tbyrne.display.core.LayoutView;
 	import org.tbyrne.display.scrolling.IScrollMetrics;
@@ -56,7 +56,7 @@ package org.tbyrne.display.controls
 		
 		private var _scrollMetrics:IScrollMetrics;
 		
-		public function ScrollButtons(asset:IDisplayAsset=null){
+		public function ScrollButtons(asset:IDisplayObject=null){
 			_foreButton = new Button();
 			_foreButton.mousePressed.addHandler(onForeDown);
 			_foreButton.mouseReleased.addHandler(onButtonUp);
@@ -83,8 +83,8 @@ package org.tbyrne.display.controls
 		}
 		override protected function bindToAsset() : void{
 			super.bindToAsset();
-			_foreButton.asset = _containerAsset.takeAssetByName("foreButton",IDisplayAsset);
-			_aftButton.asset = _containerAsset.takeAssetByName("aftButton",IDisplayAsset);
+			_foreButton.asset = _containerAsset.takeAssetByName("foreButton",IDisplayObject);
+			_aftButton.asset = _containerAsset.takeAssetByName("aftButton",IDisplayObject);
 		}
 		override protected function unbindFromAsset() : void{
 			super.unbindFromAsset();

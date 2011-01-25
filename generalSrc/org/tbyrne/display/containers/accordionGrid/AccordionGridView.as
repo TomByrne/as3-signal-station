@@ -8,7 +8,7 @@ package org.tbyrne.display.containers.accordionGrid
 	import org.tbyrne.collections.IIterator;
 	import org.tbyrne.collections.IIterator2D;
 	import org.tbyrne.collections.linkedList.LinkedListConverter;
-	import org.tbyrne.display.assets.assetTypes.IDisplayAsset;
+	import org.tbyrne.display.assets.nativeTypes.IDisplayObject;
 	import org.tbyrne.display.constants.Direction;
 	import org.tbyrne.display.containers.accordion.AbstractAccordionView;
 	import org.tbyrne.display.core.ILayoutView;
@@ -139,7 +139,7 @@ package org.tbyrne.display.containers.accordionGrid
 		private var _gridDataField:String;
 		private var _gridRendererFactory:IInstanceFactory;
 		private var _assumedGridRendererFactory:SimpleInstanceFactory;
-		private var _assumedGridRendererAsset:IDisplayAsset;
+		private var _assumedGridRendererAsset:IDisplayObject;
 		
 		// mapped parentData > accordionGridRenderer
 		private var _accordDataToRend:Dictionary = new Dictionary();
@@ -172,7 +172,7 @@ package org.tbyrne.display.containers.accordionGrid
 		}
 		override protected function bindToAsset() : void{
 			super.bindToAsset();
-			_assumedGridRendererAsset = _containerAsset.takeAssetByName(CELL_RENDERER,IDisplayAsset,true);
+			_assumedGridRendererAsset = _containerAsset.takeAssetByName(CELL_RENDERER,IDisplayObject,true);
 			if(_assumedGridRendererAsset){
 				_containerAsset.removeAsset(_assumedGridRendererAsset);
 				assessGridFactory();

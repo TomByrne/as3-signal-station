@@ -4,8 +4,8 @@ package org.tbyrne.display.containers.accordionGrid
 	import flash.geom.Rectangle;
 	import flash.utils.Dictionary;
 	
-	import org.tbyrne.display.assets.assetTypes.IContainerAsset;
-	import org.tbyrne.display.assets.assetTypes.IDisplayAsset;
+	import org.tbyrne.display.assets.nativeTypes.IDisplayObjectContainer;
+	import org.tbyrne.display.assets.nativeTypes.IDisplayObject;
 	import org.tbyrne.display.constants.Anchor;
 	import org.tbyrne.display.containers.accordion.AccordionRenderer;
 	import org.tbyrne.display.core.ILayoutView;
@@ -25,8 +25,8 @@ package org.tbyrne.display.containers.accordionGrid
 		
 		private var _wipeFromTop:Boolean = true;
 		
-		private var _headerContainer:IContainerAsset;
-		private var _cellContainer:IContainerAsset;
+		private var _headerContainer:IDisplayObjectContainer;
+		private var _cellContainer:IDisplayObjectContainer;
 		private var _cellRenderers:Dictionary = new Dictionary();
 		private var _headerRenderers:Dictionary = new Dictionary();
 		
@@ -40,7 +40,7 @@ package org.tbyrne.display.containers.accordionGrid
 		private var _containerMeas:Rectangle = new Rectangle();
 		private var _containerMeasFlag:ValidationFlag = new ValidationFlag(checkCells,false);
 		
-		public function AccordionGridRenderer(asset:IDisplayAsset=null){
+		public function AccordionGridRenderer(asset:IDisplayObject=null){
 			super(asset);
 		}
 		

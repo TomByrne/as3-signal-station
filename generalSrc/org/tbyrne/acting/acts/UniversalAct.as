@@ -4,7 +4,7 @@ package org.tbyrne.acting.acts
 	import org.tbyrne.acting.actTypes.IUniversalAct;
 	import org.tbyrne.acting.universal.UniversalActManager;
 	import org.tbyrne.debug.logging.Log;
-	import org.tbyrne.display.assets.assetTypes.IDisplayAsset;
+	import org.tbyrne.display.assets.nativeTypes.IDisplayObject;
 	import org.tbyrne.display.core.ScopedObject;
 	
 	public class UniversalAct extends AsynchronousAct implements IUniversalAct
@@ -16,10 +16,10 @@ package org.tbyrne.acting.acts
 		public function set active(value:Boolean):void{
 			_scopedObject.active = value;
 		}
-		public function get scope():IDisplayAsset{
+		public function get scope():IDisplayObject{
 			return _scopedObject.scope;
 		}
-		public function set scope(value:IDisplayAsset):void{
+		public function set scope(value:IDisplayObject):void{
 			_scopedObject.asset = value;
 		}
 		
@@ -42,7 +42,7 @@ package org.tbyrne.acting.acts
 		private function onAddedChanged(from:ScopedObject):void{
 			addedToManager(_scopedObject.added);
 		}
-		private function onScopeChanged(from:ScopedObject, oldAsset:IDisplayAsset):void{
+		private function onScopeChanged(from:ScopedObject, oldAsset:IDisplayObject):void{
 			if(_scopedObject.asset){
 				if(_scopeChanged)_scopeChanged.perform(this, oldAsset);
 			}else{
@@ -60,7 +60,7 @@ package org.tbyrne.acting.acts
 			}
 		}
 		
-		public function temporaryPerform(scope:IDisplayAsset, ... params):void{
+		public function temporaryPerform(scope:IDisplayObject, ... params):void{
 			this.scope = scope;
 			perform.apply(null,params);
 			this.scope = null;

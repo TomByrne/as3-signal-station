@@ -11,23 +11,24 @@ package org.tbyrne.display.assets.nativeAssets
 	import org.tbyrne.acting.actTypes.IAct;
 	import org.tbyrne.acting.acts.NativeAct;
 	import org.tbyrne.display.assets.assetTypes.IAsset;
-	import org.tbyrne.display.assets.assetTypes.IInteractiveObjectAsset;
-	import org.tbyrne.display.assets.assetTypes.IStageAsset;
+	import org.tbyrne.display.assets.nativeTypes.IInteractiveObject;
+	import org.tbyrne.display.assets.nativeTypes.INativeWindow;
+	import org.tbyrne.display.assets.nativeTypes.IStage;
 
-	public class StageAsset extends DisplayObjectContainerAsset implements IStageAsset
+	public class StageAsset extends DisplayObjectContainerAsset implements IStage
 	{
 		/**
 		 * @inheritDoc
 		 */
 		public function get resize():IAct{
-			if(!_resize)_resize = new NativeAct(_stage,Event.RESIZE,[this]);
+			if(!_resize)_resize = new NativeAct(_stage,Event.RESIZE,[this],false);
 			return _resize;
 		}
 		/**
 		 * @inheritDoc
 		 */
 		public function get fullScreen():IAct{
-			if(!_fullScreen)_fullScreen = new NativeAct(_stage,FullScreenEvent.FULL_SCREEN,[this]);
+			if(!_fullScreen)_fullScreen = new NativeAct(_stage,FullScreenEvent.FULL_SCREEN,[this],false);
 			return _fullScreen;
 		}
 		
@@ -43,7 +44,7 @@ package org.tbyrne.display.assets.nativeAssets
 			}
 		}
 		
-		public function get focus():IInteractiveObjectAsset{
+		public function get focus():IInteractiveObject{
 			if(_focus && _focus.displayObject==_stage.focus){
 				return _focus;
 			}else if(_stage.focus){
@@ -53,7 +54,7 @@ package org.tbyrne.display.assets.nativeAssets
 				return null;
 			}
 		}
-		public function set focus(value:IInteractiveObjectAsset):void{
+		public function set focus(value:IInteractiveObject):void{
 			if(_focus!=value){
 				_focus = value as InteractiveObjectAsset;
 				_stage.focus = _focus?(_focus.displayObject as InteractiveObject):null;
@@ -77,6 +78,15 @@ package org.tbyrne.display.assets.nativeAssets
 		public function get loaderInfo():LoaderInfo{
 			return _stage.loaderInfo;
 		}
+		
+		public function get nativeWindow():INativeWindow {
+			if(!_nativeWindow){
+				_nativeWindow = _nativeFactory.getNew(_stage.nativeWindow);
+			}
+			return _nativeWindow;
+		}
+		
+		protected var _nativeWindow:INativeWindow
 		
 		private var _stage:Stage;
 		private var _focus:InteractiveObjectAsset;

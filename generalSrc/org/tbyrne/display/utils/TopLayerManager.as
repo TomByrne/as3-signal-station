@@ -1,91 +1,85 @@
 package org.tbyrne.display.utils
 {
 	import flash.display.DisplayObject;
-	import flash.display.Stage;
 	import flash.utils.Dictionary;
 	
-	import org.tbyrne.display.assets.assetTypes.IAsset;
-	import org.tbyrne.display.assets.assetTypes.IDisplayAsset;
-	import org.tbyrne.display.assets.assetTypes.IStageAsset;
+	import org.tbyrne.display.assets.nativeTypes.IDisplayObject;
+	import org.tbyrne.display.assets.nativeTypes.IDisplayObjectContainer;
 	
 	public class TopLayerManager
 	{
-		protected static var stageLookup:Dictionary = new Dictionary();
+		protected static var parentLookup:Dictionary = new Dictionary();
 		
-		public static function add(display:IDisplayAsset, stage:IStageAsset):void{
-			if(!stage)stage = display.stage;
-			if(stage){
-				var bundle:TopLayerBundle = stageLookup[stage];
+		public static function add(display:IDisplayObject, container:IDisplayObjectContainer):void{
+			if(!container)container = display.stage;
+			if(container){
+				var bundle:TopLayerBundle = parentLookup[container];
 				if(!bundle){
-					stageLookup[stage] = bundle = new TopLayerBundle(stage);
+					parentLookup[container] = bundle = new TopLayerBundle(container);
 				}
 				bundle.addDisplay(display);
 			}else{
-				throw new Error("TopLayerManager needs a reference to the stage");
+				throw new Error("TopLayerManager needs a reference to the container");
 			}
 		}
-		public static function remove(display:IDisplayAsset):void{
-			var stage:IStageAsset = display.stage;
-			var bundle:TopLayerBundle = stageLookup[stage];
+		public static function remove(display:IDisplayObject):void{
+			var container:IDisplayObjectContainer = display.parent;
+			var bundle:TopLayerBundle = parentLookup[container];
 			if(bundle.removeDisplay(display)){
-				delete stageLookup[stage];
+				delete parentLookup[container];
 				bundle.dispose();
 			}
 		}
 	}
 }
 import flash.display.DisplayObject;
-import flash.display.Sprite;
-import flash.display.Stage;
 import flash.events.Event;
 import flash.utils.Dictionary;
 
-import org.tbyrne.display.assets.assetTypes.IAsset;
-import org.tbyrne.display.assets.assetTypes.IContainerAsset;
-import org.tbyrne.display.assets.assetTypes.IDisplayAsset;
-import org.tbyrne.display.assets.assetTypes.IStageAsset;
+import org.tbyrne.display.assets.nativeTypes.IDisplayObject;
+import org.tbyrne.display.assets.nativeTypes.IDisplayObjectContainer;
 
 class TopLayerBundle{
-	private var stage:IStageAsset;
-	private var container:IContainerAsset;
+	private var outerContainer:IDisplayObjectContainer;
+	private var innerContainer:IDisplayObjectContainer;
 	private var displays:Dictionary = new Dictionary();
 	private var addedDisplays:int = 0;
 	
-	public function TopLayerBundle(stage:IStageAsset){
-		this.stage = stage;
-		container = stage.factory.createContainer();
-		container.mouseEnabled = false;
-		stage.addAsset(container);
-		stage.added.addHandler(onAdded);
+	public function TopLayerBundle(container:IDisplayObjectContainer){
+		this.outerContainer = container;
+		innerContainer = container.factory.createContainer();
+		innerContainer.mouseEnabled = false;
+		container.addAsset(innerContainer);
+		container.added.addHandler(onAdded);
 	}
-	public function addDisplay(display:IDisplayAsset):void{
+	public function addDisplay(display:IDisplayObject):void{
 		if(!displays[display]){
 			++addedDisplays;
 			displays[display] = true;
-			container.addAsset(display);
+			innerContainer.addAsset(display);
 		}
 	}
 	// returns true if it is now empty and should be removed
-	public function removeDisplay(display:IDisplayAsset):Boolean{
+	public function removeDisplay(display:IDisplayObject):Boolean{
 		if(displays[display]){
 			delete displays[display];
 			--addedDisplays;
-			container.removeAsset(display);
+			innerContainer.removeAsset(display);
 			return (addedDisplays==0);
 		}else{
 			return false;
 		}
 	}
 	public function dispose():void{
-		stage.added.removeHandler(onAdded);
-		stage.removeAsset(container);
-		stage.factory.destroyAsset(container);
-		stage = null;
+		outerContainer.added.removeHandler(onAdded);
+		outerContainer.removeAsset(innerContainer);
+		outerContainer.factory.destroyAsset(innerContainer);
+		outerContainer = null;
 	}
-	public function onAdded(e:Event, from:IStageAsset):void{
+	public function onAdded(e:Event, from:IDisplayObjectContainer):void{
 		var added:DisplayObject = (e.target as DisplayObject);
-		if(added.parent==stage){
-			stage.setAssetIndex(container,stage.numChildren-1);
+		if(added.parent==outerContainer){
+			outerContainer.setAssetIndex(innerContainer,outerContainer.numChildren-1);
 		}
 	}
 }

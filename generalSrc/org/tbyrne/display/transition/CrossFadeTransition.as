@@ -3,12 +3,12 @@ package org.tbyrne.display.transition
 	import flash.geom.ColorTransform;
 	import flash.geom.Matrix;
 	
-	import org.tbyrne.display.assets.assetTypes.IBitmapAsset;
-	import org.tbyrne.display.assets.assetTypes.IDisplayAsset;
+	import org.tbyrne.display.assets.nativeTypes.IBitmap;
+	import org.tbyrne.display.assets.nativeTypes.IDisplayObject;
 	
 	public class CrossFadeTransition extends Transition
 	{
-		override public function doTransition(start:IDisplayAsset, finish:IDisplayAsset, bitmap:IBitmapAsset, duration:Number, currentTime:Number):void{
+		override public function doTransition(start:IDisplayObject, finish:IDisplayObject, bitmap:IBitmap, duration:Number, currentTime:Number):void{
 			var bitmapMatrix:Matrix = bitmap.transform.concatenatedMatrix;
 			bitmapMatrix.invert();
 			

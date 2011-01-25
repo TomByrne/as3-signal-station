@@ -13,8 +13,8 @@ package org.tbyrne.debug.display
 	import org.tbyrne.core.EnterFrameHook;
 	import org.tbyrne.data.dataTypes.INumberProvider;
 	import org.tbyrne.display.assets.AssetNames;
-	import org.tbyrne.display.assets.assetTypes.IBitmapAsset;
-	import org.tbyrne.display.assets.assetTypes.IDisplayAsset;
+	import org.tbyrne.display.assets.nativeTypes.IBitmap;
+	import org.tbyrne.display.assets.nativeTypes.IDisplayObject;
 	import org.tbyrne.display.controls.Button;
 	import org.tbyrne.display.controls.TextLabelButton;
 	import org.tbyrne.display.core.LayoutView;
@@ -77,7 +77,7 @@ package org.tbyrne.debug.display
 			}
 		}
 		
-		private var _bitmap:IBitmapAsset;
+		private var _bitmap:IBitmap;
 		private var _copyButton:TextLabelButton;
 		private var _stackLayout:ListLayout;
 		
@@ -111,10 +111,10 @@ package org.tbyrne.debug.display
 		override protected function bindToAsset() : void{
 			super.bindToAsset();
 			CONFIG::debug{
-				_bitmap = _containerAsset.takeAssetByName(AssetNames.DEBUG_ITEM_BITMAP,IBitmapAsset);
+				_bitmap = _containerAsset.takeAssetByName(AssetNames.DEBUG_ITEM_BITMAP,IBitmap);
 				_bitmap.bitmapData = _bitmapData;
 				
-				_copyButton.asset = _containerAsset.takeAssetByName(AssetNames.DEBUG_GRAPH_COPY_BUTTON,IDisplayAsset);
+				_copyButton.asset = _containerAsset.takeAssetByName(AssetNames.DEBUG_GRAPH_COPY_BUTTON,IDisplayObject);
 			}
 		}
 		override protected function unbindFromAsset() : void{

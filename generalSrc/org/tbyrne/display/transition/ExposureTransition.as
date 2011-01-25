@@ -4,8 +4,8 @@ package org.tbyrne.display.transition
 	import flash.geom.Matrix;
 	import flash.geom.Rectangle;
 	
-	import org.tbyrne.display.assets.assetTypes.IBitmapAsset;
-	import org.tbyrne.display.assets.assetTypes.IDisplayAsset;
+	import org.tbyrne.display.assets.nativeTypes.IBitmap;
+	import org.tbyrne.display.assets.nativeTypes.IDisplayObject;
 	
 	public class ExposureTransition extends Transition
 	{
@@ -15,9 +15,9 @@ package org.tbyrne.display.transition
 			this.overExpose = overExpose;
 		}
 		
-		override public function doTransition(start:IDisplayAsset, finish:IDisplayAsset, bitmap:IBitmapAsset, duration:Number, currentTime:Number):void{
+		override public function doTransition(start:IDisplayObject, finish:IDisplayObject, bitmap:IBitmap, duration:Number, currentTime:Number):void{
 			var fract:Number = currentTime/duration;
-			var subject:IDisplayAsset;
+			var subject:IDisplayObject;
 			if(fract<=0.5){
 				fract = fract/0.5;
 				subject = start;

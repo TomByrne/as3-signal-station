@@ -5,8 +5,8 @@ package org.tbyrne.display.controls.toolTip
 	import flash.geom.Rectangle;
 	
 	import org.tbyrne.display.DisplayNamespace;
-	import org.tbyrne.display.assets.assetTypes.IDisplayAsset;
-	import org.tbyrne.display.assets.assetTypes.ISpriteAsset;
+	import org.tbyrne.display.assets.nativeTypes.IDisplayObject;
+	import org.tbyrne.display.assets.nativeTypes.ISprite;
 	import org.tbyrne.display.assets.states.StateDef;
 	import org.tbyrne.display.constants.Anchor;
 	import org.tbyrne.display.controls.TextLabel;
@@ -65,24 +65,24 @@ package org.tbyrne.display.controls.toolTip
 		private var _anchorView:ILayoutView;
 		private var _anchor:String;
 		private var _anchorState:StateDef = new StateDef([Anchor.TOP,Anchor.TOP_LEFT,Anchor.TOP_RIGHT,Anchor.LEFT,Anchor.RIGHT,Anchor.BOTTOM,Anchor.BOTTOM_LEFT,Anchor.BOTTOM_RIGHT]);
-		private var _arrow:IDisplayAsset;
+		private var _arrow:IDisplayObject;
 		
 		// often the asset will be scaled down to avoid screwing up it's parent assets initial measurements
 		private var _origScaleX:Number;
 		private var _origScaleY:Number;
 		
-		public function ToolTipDisplay(asset:IDisplayAsset=null){
+		public function ToolTipDisplay(asset:IDisplayObject=null){
 			super(asset);
 		}
 		protected function onAnchorSizeChanged(from:ILayoutView, oldWidth:Number, oldHeight:Number) : void{
 			invalidateSize();
 		}
-		protected function onAnchorAssetChanged(from:ILayoutView, oldAsset:IDisplayAsset) : void{
+		protected function onAnchorAssetChanged(from:ILayoutView, oldAsset:IDisplayObject) : void{
 			invalidateSize();
 		}
 		override protected function bindToAsset() : void{
 			super.bindToAsset();
-			_arrow = _containerAsset.takeAssetByName(ARROW_ASSET,IDisplayAsset,true);
+			_arrow = _containerAsset.takeAssetByName(ARROW_ASSET,IDisplayObject,true);
 			//if(_arrow)_arrow.forceTopLeft = false;
 			
 			_spriteAsset.mouseChildren = false;

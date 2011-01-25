@@ -1,7 +1,7 @@
 package org.tbyrne.debug.data.baseMetrics
 {
 	import org.tbyrne.data.dataTypes.ITriggerableAction;
-	import org.tbyrne.display.assets.assetTypes.IDisplayAsset;
+	import org.tbyrne.display.assets.nativeTypes.IDisplayObject;
 	import org.tbyrne.memory.garbageCollect;
 	
 	public class GarbageCollect implements ITriggerableAction
@@ -10,7 +10,7 @@ package org.tbyrne.debug.data.baseMetrics
 		{
 		}
 		
-		public function triggerAction(scopeDisplay:IDisplayAsset):void
+		public function triggerAction(scopeDisplay:IDisplayObject):void
 		{
 			garbageCollect();
 		}

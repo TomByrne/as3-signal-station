@@ -5,7 +5,7 @@ package org.tbyrne.display.controls.popout
 	import org.tbyrne.acting.actTypes.IAct;
 	import org.tbyrne.acting.acts.Act;
 	import org.tbyrne.core.DelayedCall;
-	import org.tbyrne.display.assets.assetTypes.IDisplayAsset;
+	import org.tbyrne.display.assets.nativeTypes.IDisplayObject;
 	import org.tbyrne.display.constants.Anchor;
 	import org.tbyrne.display.core.ILayoutView;
 	import org.tbyrne.display.core.IOutroView;
@@ -202,13 +202,13 @@ package org.tbyrne.display.controls.popout
 			_removeCall = null;
 			_added = false;
 		}
-		protected function onAssetChanged(from:ILayoutView, oldAsset:IDisplayAsset):void{
+		protected function onAssetChanged(from:ILayoutView, oldAsset:IDisplayObject):void{
 			if(_added){
 				if(oldAsset)TopLayerManager.remove(oldAsset);
 				if(_popout.asset)TopLayerManager.add(_popout.asset, _relativeLayout.stage);
 			}
 		}
-		protected function onRelativeAssetChanged(from:ILayoutView, oldAsset:IDisplayAsset):void{
+		protected function onRelativeAssetChanged(from:ILayoutView, oldAsset:IDisplayObject):void{
 			_relativeLayoutInfo.relativeTo = from.asset;
 			_relativeLayout.update();
 		}

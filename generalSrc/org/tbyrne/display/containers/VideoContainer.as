@@ -16,10 +16,10 @@ package org.tbyrne.display.containers
 	import org.tbyrne.display.DisplayNamespace;
 	import org.tbyrne.display.actInfo.IKeyActInfo;
 	import org.tbyrne.display.actInfo.IMouseActInfo;
-	import org.tbyrne.display.assets.assetTypes.IContainerAsset;
-	import org.tbyrne.display.assets.assetTypes.IDisplayAsset;
-	import org.tbyrne.display.assets.assetTypes.IInteractiveObjectAsset;
-	import org.tbyrne.display.assets.assetTypes.ISpriteAsset;
+	import org.tbyrne.display.assets.nativeTypes.IDisplayObjectContainer;
+	import org.tbyrne.display.assets.nativeTypes.IDisplayObject;
+	import org.tbyrne.display.assets.nativeTypes.IInteractiveObject;
+	import org.tbyrne.display.assets.nativeTypes.ISprite;
 	import org.tbyrne.display.controls.BufferBar;
 	import org.tbyrne.display.controls.Button;
 	import org.tbyrne.display.controls.Control;
@@ -170,12 +170,12 @@ package org.tbyrne.display.containers
 		protected var _fullscreenUtil:FullscreenUtil;
 		private var _mainLayout:CanvasLayout;
 		private var _contLayout:CanvasLayout;
-		private var _videoCover:ISpriteAsset;
+		private var _videoCover:ISprite;
 		private var _videoSource:IVideoSource;
 		
 		private var _volumeMemory:VolumeMemory;
 		
-		public function VideoContainer(asset:IDisplayAsset=null){
+		public function VideoContainer(asset:IDisplayObject=null){
 			super(asset);
 		}
 		override protected function init() : void{
@@ -191,7 +191,7 @@ package org.tbyrne.display.containers
 			_contLayout.scopeView = _controlContainer;
 			_hasControlCont = (_controlContainer && _controlContainer.asset);
 			if(_hasControlCont){
-				var interCont:IInteractiveObjectAsset = _controlContainer.asset as IInteractiveObjectAsset;
+				var interCont:IInteractiveObject = _controlContainer.asset as IInteractiveObject;
 				interCont.mousedOver.addHandler(onMousedOverCont);
 				interCont.mousedOut.addHandler(onMousedOutCont);
 			}
@@ -207,7 +207,7 @@ package org.tbyrne.display.containers
 				_muteButton.valueChangedByUser.addHandler(onVolumeSliderChange);
 			}
 			
-			var pauseAsset:IInteractiveObjectAsset = _containerAsset.takeAssetByName(CENTERED_PAUSE_BUTTON,IInteractiveObjectAsset,true);
+			var pauseAsset:IInteractiveObject = _containerAsset.takeAssetByName(CENTERED_PAUSE_BUTTON,IInteractiveObject,true);
 			if(pauseAsset){
 				if(!_centredPauseButton){
 					_centredPauseButton = new ToggleButton();
@@ -256,7 +256,7 @@ package org.tbyrne.display.containers
 				_videoProgressProviderPattern.stringValue = null;
 			}
 		}
-		protected function onKeyUp(from:IDisplayAsset, info:IKeyActInfo):void{
+		protected function onKeyUp(from:IDisplayObject, info:IKeyActInfo):void{
 			if(info.charCode==Keyboard.SPACE){
 				if(_videoSource){
 					_videoSource.playing = !_videoSource.playing;
@@ -285,14 +285,14 @@ package org.tbyrne.display.containers
 			return ret;
 		}
 		protected function bindView(layoutView:LayoutView, controlClass:Class, name:String, bindBothSides:Boolean):*{
-			var asset:IDisplayAsset = _containerAsset.takeAssetByName(name,IDisplayAsset,true);
+			var asset:IDisplayObject = _containerAsset.takeAssetByName(name,IDisplayObject,true);
 			var layout:CanvasLayout = _mainLayout;
-			var parent:IContainerAsset = _containerAsset;
+			var parent:IDisplayObjectContainer = _containerAsset;
 			var parentMeas:Point;
 			if(!asset){
 				if(_controlContainer && _controlContainer.asset){
-					parent = (_controlContainer.asset as IContainerAsset);
-					asset = parent.takeAssetByName(name,IDisplayAsset,true);
+					parent = (_controlContainer.asset as IDisplayObjectContainer);
+					asset = parent.takeAssetByName(name,IDisplayObject,true);
 					layout = _contLayout;
 					parentMeas = _controlContainer.measurements;
 				}
@@ -343,7 +343,7 @@ package org.tbyrne.display.containers
 			asset.factory.destroyAsset(_videoCover);
 			
 			if(_playPauseButton){
-				(_playPauseButton.asset as IInteractiveObjectAsset).mouseMoved.removeHandler(onVideoMouse);
+				(_playPauseButton.asset as IInteractiveObject).mouseMoved.removeHandler(onVideoMouse);
 				unbindView(_playPauseButton);
 			}
 			unbindView(_muteButton);
@@ -359,16 +359,16 @@ package org.tbyrne.display.containers
 			unbindView(_progressLabel);
 			
 			if(_hasControlCont){
-				var interCont:IInteractiveObjectAsset = _controlContainer.asset as IInteractiveObjectAsset;
+				var interCont:IInteractiveObject = _controlContainer.asset as IInteractiveObject;
 				interCont.mousedOver.addHandler(onMousedOverCont);
 				interCont.mousedOut.addHandler(onMousedOutCont);
 				unbindView(_controlContainer);
 			}
 		}
-		protected function onMousedOverCont(from:IInteractiveObjectAsset, mouseActInfo:IMouseActInfo):void{
+		protected function onMousedOverCont(from:IInteractiveObject, mouseActInfo:IMouseActInfo):void{
 			_mouseOverControls = true;
 		}
-		protected function onMousedOutCont(from:IInteractiveObjectAsset, mouseActInfo:IMouseActInfo):void{
+		protected function onMousedOutCont(from:IInteractiveObject, mouseActInfo:IMouseActInfo):void{
 			_mouseOverControls = false;
 			if(!_mouseActive)transTo(0);
 		}
@@ -445,7 +445,7 @@ package org.tbyrne.display.containers
 				_videoSource.playing = false;
 			}
 		}
-		protected function onFullscreenToggle(from:IInteractiveObjectAsset, mouseActInfo:IMouseActInfo):void{
+		protected function onFullscreenToggle(from:IInteractiveObject, mouseActInfo:IMouseActInfo):void{
 			checkFullScreenUtil();
 			_fullscreenUtil.active = !_fullscreenUtil.active;
 			if(_fullscreenButton)_fullscreenButton.selected = _fullscreenUtil.active;
@@ -523,13 +523,13 @@ package org.tbyrne.display.containers
 				}
 			}
 		}
-		protected function onVideoMouseOut(from:IInteractiveObjectAsset, mouseInfo:IMouseActInfo):void{
+		protected function onVideoMouseOut(from:IInteractiveObject, mouseInfo:IMouseActInfo):void{
 			_mouseOver = false;
 			Mouse.show();
 			activateMouse();
 			assessPlaying();
 		}
-		protected function onVideoMouse(from:IInteractiveObjectAsset, mouseInfo:IMouseActInfo):void{
+		protected function onVideoMouse(from:IInteractiveObject, mouseInfo:IMouseActInfo):void{
 			_mouseOver = true;
 			activateMouse();
 			assessPlaying();

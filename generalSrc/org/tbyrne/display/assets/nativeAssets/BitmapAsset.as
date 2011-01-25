@@ -4,9 +4,9 @@ package org.tbyrne.display.assets.nativeAssets
 	import flash.display.BitmapData;
 	import flash.display.DisplayObject;
 	
-	import org.tbyrne.display.assets.assetTypes.IBitmapAsset;
+	import org.tbyrne.display.assets.nativeTypes.IBitmap;
 	
-	public class BitmapAsset extends DisplayObjectAsset implements IBitmapAsset
+	public class BitmapAsset extends DisplayObjectAsset implements IBitmap
 	{
 		override public function set displayObject(value:DisplayObject):void{
 			if(super.displayObject!=value){

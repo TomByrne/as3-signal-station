@@ -17,8 +17,8 @@ package org.tbyrne.actLibrary.application
 	import org.tbyrne.debug.DebugManager;
 	import org.tbyrne.debug.data.core.DebugData;
 	import org.tbyrne.debug.nodes.DebugDataNode;
-	import org.tbyrne.display.assets.assetTypes.IContainerAsset;
-	import org.tbyrne.display.assets.assetTypes.IDisplayAsset;
+	import org.tbyrne.display.assets.nativeTypes.IDisplayObject;
+	import org.tbyrne.display.assets.nativeTypes.IDisplayObjectContainer;
 	import org.tbyrne.display.core.IScopedObject;
 	import org.tbyrne.threading.AbstractThread;
 	
@@ -46,12 +46,12 @@ package org.tbyrne.actLibrary.application
 				}
 			}
 		}
-		override public function set container(value:IContainerAsset):void{
+		override public function set container(value:IDisplayObjectContainer):void{
 			if(!_scopeDisplay)setScopeDisplay(value);
 			super.container = value;
 		}
 		
-		protected var _scopeDisplay:IDisplayAsset;
+		protected var _scopeDisplay:IDisplayObject;
 		protected var _siteStreamActor:SiteStreamActor;
 		protected var _configActor:ConfigActor;
 		protected var _swfAddressActor:SWFAddressActor;
@@ -128,13 +128,13 @@ package org.tbyrne.actLibrary.application
 		protected function addActor(actor:IScopedObject) : void{
 			_universalActorHelper.addChild(actor);
 		}
-		override protected function setAsset(value:IDisplayAsset) : void{
+		override protected function setAsset(value:IDisplayObject) : void{
 			if(_scopeDisplay==_asset)setScopeDisplay(null);
 			super.setAsset(value);
 			if(value)setScopeDisplay(value);
 			else if(!_scopeDisplay)setScopeDisplay(_container);
 		}
-		protected function setScopeDisplay(value:IDisplayAsset) : void{
+		protected function setScopeDisplay(value:IDisplayObject) : void{
 			if(_scopeDisplay!=value){
 				if(_scopeDisplay){
 					UniversalActManager.removeManager(_scopeDisplay);
@@ -163,7 +163,7 @@ package org.tbyrne.actLibrary.application
 			_appConfig = (object as IAppConfig);
 			
 			if(!_asset && _castMainView && _appConfig.assetFactory){
-				_castMainView.asset = _appConfig.assetFactory.getCoreSkin(getCoreSkinName()) as IDisplayAsset;
+				_castMainView.asset = _appConfig.assetFactory.getCoreSkin(getCoreSkinName()) as IDisplayObject;
 			}
 			
 			var act:IUniversalAct;

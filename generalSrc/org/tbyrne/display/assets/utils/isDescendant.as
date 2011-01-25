@@ -1,7 +1,7 @@
 package org.tbyrne.display.assets.utils
 {
-	import org.tbyrne.display.assets.assetTypes.IContainerAsset;
-	import org.tbyrne.display.assets.assetTypes.IDisplayAsset;
+	import org.tbyrne.display.assets.nativeTypes.IDisplayObjectContainer;
+	import org.tbyrne.display.assets.nativeTypes.IDisplayObject;
 
 	/**
 	 * Finds if the given descendant is within the given parent's display tree
@@ -11,8 +11,8 @@ package org.tbyrne.display.assets.utils
 	 * 
 	 * @return	true if the descendant was found in the parent's tree, false if not
 	 */
-	public function isDescendant(parent:IContainerAsset, decendant:IDisplayAsset):Boolean{
-		var subject:IDisplayAsset = decendant;
+	public function isDescendant(parent:IDisplayObjectContainer, decendant:IDisplayObject):Boolean{
+		var subject:IDisplayObject = decendant;
 		while(subject && subject!=decendant.stage){
 			subject = subject.parent;
 			if(subject==parent)return true;

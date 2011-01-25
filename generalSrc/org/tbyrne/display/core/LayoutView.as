@@ -9,14 +9,14 @@ package org.tbyrne.display.core
 	import org.tbyrne.acting.actTypes.IAct;
 	import org.tbyrne.acting.acts.Act;
 	import org.tbyrne.display.assets.assetTypes.IAsset;
-	import org.tbyrne.display.assets.assetTypes.IDisplayAsset;
+	import org.tbyrne.display.assets.nativeTypes.IDisplayObject;
 	import org.tbyrne.display.layout.core.ILayoutInfo;
 	import org.tbyrne.display.validation.FrameValidationFlag;
 	import org.tbyrne.display.validation.ValidationFlag;
 	
 	public class LayoutView extends DrawableView implements ILayoutView
 	{
-		override public function set asset(value:IDisplayAsset):void{
+		override public function set asset(value:IDisplayObject):void{
 			super.asset = value;
 			invalidateMeasurements();
 		}
@@ -85,7 +85,7 @@ package org.tbyrne.display.core
 		// mapped childView > assetName
 		private var _boundChildren:Dictionary = new Dictionary();
 		
-		public function LayoutView(asset:IDisplayAsset=null){
+		public function LayoutView(asset:IDisplayObject=null){
 			_measureFlag = new ValidationFlag(doMeasure, false);
 			if(!_measurements)_measurements = new Point();
 			super(asset);
@@ -101,7 +101,7 @@ package org.tbyrne.display.core
 		}
 		protected function bindChildAsset(childView:LayoutView, assetName:String, assetType:Class=null, setPosAlso:Boolean=false) : void{
 			if(!_boundChildren)_boundChildren = new Dictionary();
-			var asset:IDisplayAsset = _containerAsset.takeAssetByName(assetName,assetType);
+			var asset:IDisplayObject = _containerAsset.takeAssetByName(assetName,assetType);
 			if(setPosAlso){
 				childView.setAssetAndPosition(asset);
 			}else{
@@ -113,7 +113,7 @@ package org.tbyrne.display.core
 			if(_boundChildren){
 				for(var i:* in _boundChildren){
 					var child:LayoutView = (i as LayoutView);
-					var asset:IDisplayAsset = child.asset;
+					var asset:IDisplayObject = child.asset;
 					child.asset = null;
 					_containerAsset.returnAsset(asset);
 				}
@@ -169,7 +169,7 @@ package org.tbyrne.display.core
 			_sizeDrawFlag.validate(force);
 		}
 		
-		public function setAssetAndPosition(asset:IDisplayAsset):void{
+		public function setAssetAndPosition(asset:IDisplayObject):void{
 			this.asset = asset;
 			if(asset){
 				//_measureFlag.validate();

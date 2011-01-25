@@ -10,7 +10,7 @@ package org.tbyrne.actLibrary.external.config
 	import org.tbyrne.acting.ActingNamspace;
 	import org.tbyrne.acting.universal.UniversalActExecution;
 	import org.tbyrne.acting.universal.phases.ObjectPhases;
-	import org.tbyrne.display.assets.assetTypes.IStageAsset;
+	import org.tbyrne.display.assets.nativeTypes.IStage;
 	import org.tbyrne.utils.MethodCallQueue;
 	
 	use namespace ActingNamspace;
@@ -67,7 +67,7 @@ package org.tbyrne.actLibrary.external.config
 		}
 		
 		
-		override protected function setStage(stage:IStageAsset):void{
+		override protected function setStage(stage:IStage):void{
 			super.setStage(stage);
 			loaderInfo = (stage?stage.loaderInfo:null);
 			if(loaderInfo){

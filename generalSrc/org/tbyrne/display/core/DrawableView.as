@@ -8,10 +8,10 @@ package org.tbyrne.display.core
 	import org.tbyrne.acting.acts.Act;
 	import org.tbyrne.core.DelayedCall;
 	import org.tbyrne.display.assets.assetTypes.IAsset;
-	import org.tbyrne.display.assets.assetTypes.IContainerAsset;
-	import org.tbyrne.display.assets.assetTypes.IDisplayAsset;
-	import org.tbyrne.display.assets.assetTypes.IInteractiveObjectAsset;
-	import org.tbyrne.display.assets.assetTypes.ISpriteAsset;
+	import org.tbyrne.display.assets.nativeTypes.IDisplayObjectContainer;
+	import org.tbyrne.display.assets.nativeTypes.IDisplayObject;
+	import org.tbyrne.display.assets.nativeTypes.IInteractiveObject;
+	import org.tbyrne.display.assets.nativeTypes.ISprite;
 	import org.tbyrne.display.assets.states.StateDef;
 	import org.tbyrne.display.validation.FrameValidationFlag;
 	
@@ -20,7 +20,7 @@ package org.tbyrne.display.core
 		static private const OUTRO_FRAME_LABEL:String = "outro";
 		static private const INTRO_FRAME_LABEL:String = "intro";
 		
-		override public function set asset(value:IDisplayAsset):void{
+		override public function set asset(value:IDisplayObject):void{
 			if(_asset!=value){
 				if(_asset){
 					asset.addedToStage.removeHandler(onAddedToStage);
@@ -30,9 +30,9 @@ package org.tbyrne.display.core
 				var oldAsset:IAsset = _asset;
 				super.asset = value;
 				if(_asset){
-					_containerAsset = (value as IContainerAsset);
-					_spriteAsset = (value as ISpriteAsset);
-					_interactiveObjectAsset = (value as IInteractiveObjectAsset);
+					_containerAsset = (value as IDisplayObjectContainer);
+					_spriteAsset = (value as ISprite);
+					_interactiveObjectAsset = (value as IInteractiveObject);
 					asset.addedToStage.addHandler(onAddedToStage);
 					asset.removedFromStage.addHandler(onRemovedFromStage);
 				}else{
@@ -43,10 +43,10 @@ package org.tbyrne.display.core
 				invalidateAll();
 			}
 		}
-		public function get scope():IDisplayAsset{
+		public function get scope():IDisplayObject{
 			return asset;
 		}
-		public function set scope(value:IDisplayAsset):void{
+		public function set scope(value:IDisplayObject):void{
 			asset = value;
 		}
 		
@@ -62,9 +62,9 @@ package org.tbyrne.display.core
 			return asset && asset.stage;
 		}
 		
-		protected var _containerAsset:IContainerAsset;
-		protected var _interactiveObjectAsset:IInteractiveObjectAsset;
-		protected var _spriteAsset:ISpriteAsset;
+		protected var _containerAsset:IDisplayObjectContainer;
+		protected var _interactiveObjectAsset:IInteractiveObject;
+		protected var _spriteAsset:ISprite;
 		
 		protected var _inited:Boolean;
 		protected var _bound:Boolean;
@@ -80,7 +80,7 @@ package org.tbyrne.display.core
 		
 		private var _transState:StateDef = new StateDef([INTRO_FRAME_LABEL,OUTRO_FRAME_LABEL]);
 		
-		public function DrawableView(asset:IDisplayAsset=null){
+		public function DrawableView(asset:IDisplayObject=null){
 			_drawFlag = new FrameValidationFlag(this,validateAll,false);
 			super(asset);
 		}
@@ -119,7 +119,7 @@ package org.tbyrne.display.core
 				if(_resetAnimationsDelay){
 					_resetAnimationsDelay.clear();
 				}
-				_resetAnimationsDelay = new DelayedCall(resetAnimations,ret);
+				_resetAnimationsDelay = new DelayedCall(finaliseOutro,ret);
 				_resetAnimationsDelay.begin()
 				return ret;
 			}
@@ -129,7 +129,7 @@ package org.tbyrne.display.core
 			_transState.temporarySelect(1);
 			return _transState.stateChangeDuration;
 		}
-		protected function resetAnimations():void{
+		protected function finaliseOutro():void{
 			_outroShown = false;
 		}
 		

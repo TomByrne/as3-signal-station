@@ -34,8 +34,13 @@ package org.tbyrne.display.layout.frame
 				subject.setSize(framed.width,framed.height);
 				
 				if(subMeas){
-					subjMeas.x = subMeas.x+marginRect.x+marginRect.width;
-					subjMeas.y = subMeas.y+marginRect.y+marginRect.height;
+					var measW:Number = subMeas.x+marginRect.x+marginRect.width;
+					var measH:Number = subMeas.y+marginRect.y+marginRect.height;
+					if(subjMeas.x!=measW || subjMeas.y!=measH){
+						subjMeas.x = measW;
+						subjMeas.y = measH;
+						invalidateMeasurements();
+					}
 				}
 			}
 		}

@@ -3,7 +3,7 @@ package org.tbyrne.input.items
 	import org.puremvc.as3.interfaces.INotifier;
 	import org.tbyrne.data.dataTypes.IStringProvider;
 	import org.tbyrne.data.dataTypes.ITriggerableAction;
-	import org.tbyrne.display.assets.assetTypes.IDisplayAsset;
+	import org.tbyrne.display.assets.nativeTypes.IDisplayObject;
 	import org.tbyrne.input.menu.IMenuInputItem;
 	import org.tbyrne.input.shortcuts.IShortcutInputItem;
 
@@ -42,7 +42,7 @@ package org.tbyrne.input.items
 			this.notification = notification;
 			this.noteBody = noteBody;
 		}
-		override public function triggerAction(scopeDisplay:IDisplayAsset):void{
+		override public function triggerAction(scopeDisplay:IDisplayObject):void{
 			_notifier.sendNotification(_notification,_noteBody);
 		}
 	}

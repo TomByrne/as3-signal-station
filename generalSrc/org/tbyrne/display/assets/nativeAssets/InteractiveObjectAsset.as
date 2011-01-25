@@ -11,12 +11,12 @@ package org.tbyrne.display.assets.nativeAssets
 	import org.tbyrne.acting.acts.NativeAct;
 	import org.tbyrne.display.actInfo.IKeyActInfo;
 	import org.tbyrne.display.actInfo.IMouseActInfo;
-	import org.tbyrne.display.assets.assetTypes.IDisplayAsset;
-	import org.tbyrne.display.assets.assetTypes.IInteractiveObjectAsset;
+	import org.tbyrne.display.assets.nativeTypes.IDisplayObject;
+	import org.tbyrne.display.assets.nativeTypes.IInteractiveObject;
 	import org.tbyrne.display.assets.nativeAssets.actInfo.KeyActInfo;
 	import org.tbyrne.display.assets.nativeAssets.actInfo.MouseActInfo;
 
-	public class InteractiveObjectAsset extends DisplayObjectAsset implements IInteractiveObjectAsset
+	public class InteractiveObjectAsset extends DisplayObjectAsset implements IInteractiveObject
 	{
 		
 		/**
@@ -243,11 +243,11 @@ package org.tbyrne.display.assets.nativeAssets
 			if(_mouseWheel)_mouseWheel.perform(this,createMouseInfo(e),e.delta);
 		}
 		protected function createMouseInfo(e:MouseEvent):IMouseActInfo{
-			var target:IDisplayAsset = (e.target==_interactiveObject?this:_nativeFactory.getNew(e.target as DisplayObject));
+			var target:IDisplayObject = (e.target==_interactiveObject?this:_nativeFactory.getNew(e.target as DisplayObject));
 			return new MouseActInfo(target, e.altKey, e.ctrlKey, e.shiftKey);
 		}
 		protected function createKeyInfo(e:KeyboardEvent):IKeyActInfo{
-			var target:IDisplayAsset = (e.target==_interactiveObject?this:_nativeFactory.getNew(e.target as DisplayObject));
+			var target:IDisplayObject = (e.target==_interactiveObject?this:_nativeFactory.getNew(e.target as DisplayObject));
 			return new KeyActInfo(target, e.altKey, e.ctrlKey, e.shiftKey, e.charCode, e.keyCode, e.keyLocation);
 		}
 		

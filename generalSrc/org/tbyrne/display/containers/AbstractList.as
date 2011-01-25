@@ -6,8 +6,8 @@ package org.tbyrne.display.containers
 	
 	import org.tbyrne.display.DisplayNamespace;
 	import org.tbyrne.display.assets.AssetNames;
-	import org.tbyrne.display.assets.assetTypes.IContainerAsset;
-	import org.tbyrne.display.assets.assetTypes.IDisplayAsset;
+	import org.tbyrne.display.assets.nativeTypes.IDisplayObjectContainer;
+	import org.tbyrne.display.assets.nativeTypes.IDisplayObject;
 	import org.tbyrne.display.constants.Direction;
 	import org.tbyrne.display.controls.ListRenderer;
 	import org.tbyrne.display.controls.ScrollBar;
@@ -67,10 +67,10 @@ package org.tbyrne.display.containers
 		protected var _rendererFactory:IInstanceFactory;
 		protected var _scrollBar:ScrollBar;
 		protected var _layout:RendererGridLayout;
-		protected var _container:IContainerAsset;
+		protected var _container:IDisplayObjectContainer;
 		protected var _scrollBarShown:Boolean;
 		
-		protected var _assumedRendererAsset:IDisplayAsset;
+		protected var _assumedRendererAsset:IDisplayObject;
 		protected var _assumedAssetFactory:IInstanceFactory;
 		protected var _assumedRendererFactory:SimpleInstanceFactory;
 		protected var _scrollRect:Rectangle = new Rectangle();
@@ -85,7 +85,7 @@ package org.tbyrne.display.containers
 		
 		protected var _renderers:Array = [];
 		
-		public function AbstractList(asset:IDisplayAsset=null){
+		public function AbstractList(asset:IDisplayObject=null){
 			super(asset);
 		}
 		override protected function init() : void{
@@ -102,7 +102,7 @@ package org.tbyrne.display.containers
 		}
 		override protected function bindToAsset() : void{
 			super.bindToAsset();
-			var scrollBarAsset:IDisplayAsset = _containerAsset.takeAssetByName(AssetNames.SCROLL_BAR,IDisplayAsset,true);
+			var scrollBarAsset:IDisplayObject = _containerAsset.takeAssetByName(AssetNames.SCROLL_BAR,IDisplayObject,true);
 			if(scrollBarAsset){
 				if(!_scrollBar){
 					_scrollBar = new ScrollBar();
@@ -112,7 +112,7 @@ package org.tbyrne.display.containers
 				_scrollBar.scrollSubject = this;
 				setScrollBarMetrics(_layout.getScrollMetrics(_scrollBar.direction));
 			}
-			_assumedRendererAsset = _containerAsset.takeAssetByName(assumedRendererAssetName(),IDisplayAsset,true);
+			_assumedRendererAsset = _containerAsset.takeAssetByName(assumedRendererAssetName(),IDisplayObject,true);
 			if(_assumedRendererAsset){
 				_containerAsset.removeAsset(_assumedRendererAsset);
 				assessFactory();
@@ -312,7 +312,7 @@ package org.tbyrne.display.containers
 				}
 			}
 		}
-		protected function createAssumedAssetFactory(asset:IDisplayAsset):IInstanceFactory{
+		protected function createAssumedAssetFactory(asset:IDisplayObject):IInstanceFactory{
 			return asset.getCloneFactory();
 		}
 		protected function updateFactory(factory:IInstanceFactory, dataField:String):void{
