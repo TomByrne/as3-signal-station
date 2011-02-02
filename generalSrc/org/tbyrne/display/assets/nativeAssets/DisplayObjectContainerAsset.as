@@ -143,7 +143,7 @@ package org.tbyrne.display.assets.nativeAssets
 		}
 		public function getAssetAt(index:int):IDisplayObject{
 			if(_displayObjectContainer){
-				var displayObject:DisplayObject = _displayObjectContainer.getChildByName(name);
+				var displayObject:DisplayObject = _displayObjectContainer.getChildAt(index);
 				var ret:DisplayObjectAsset = _children[displayObject];
 				if(!ret){
 					ret = _nativeFactory.getNew(displayObject);

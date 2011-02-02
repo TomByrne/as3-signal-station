@@ -176,6 +176,8 @@ package org.tbyrne.display.core
 				//setDisplayPosition(asset.x,asset.y,_measurements.x,_measurements.y);
 				setPosition(asset.x,asset.y);
 				setSize(asset.naturalWidth,asset.naturalHeight);
+				asset.scaleX = 1;
+				asset.scaleY = 1;
 			}
 		}
 		final protected function doMeasure():void{
@@ -185,7 +187,7 @@ package org.tbyrne.display.core
 			_measuring = false;
 		}
 		protected function measure():void{
-			// override me, set _displayMeasurements.
+			// override me, set _measurements.x & _measurements.y.
 			if(asset){
 				_measurements.x = asset.naturalWidth;
 				_measurements.y = asset.naturalHeight;

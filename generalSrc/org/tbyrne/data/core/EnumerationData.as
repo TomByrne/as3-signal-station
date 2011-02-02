@@ -120,7 +120,8 @@ package org.tbyrne.data.core
 		private var _optionsCollection:ICollection;
 		private var _ignoreChanges:Boolean;
 		
-		public function EnumerationData(){
+		public function EnumerationData(options:*=null){
+			this.options = options;
 		}
 		
 		public function onCollectionChanged(from:ICollection, fromX:Number, toX:Number):void{

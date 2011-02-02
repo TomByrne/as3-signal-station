@@ -106,14 +106,14 @@ package org.tbyrne.display.assets.nativeAssets
 		 * @inheritDoc
 		 */
 		public function get focusIn():IAct{
-			if(!_focusIn)_focusIn = new NativeAct(_interactiveObject,FocusEvent.FOCUS_IN,[this]);
+			if(!_focusIn)_focusIn = new NativeAct(_interactiveObject,FocusEvent.FOCUS_IN,[this],false);
 			return _focusIn;
 		}
 		/**
 		 * @inheritDoc
 		 */
 		public function get focusOut():IAct{
-			if(!_focusOut)_focusOut = new NativeAct(_interactiveObject,FocusEvent.FOCUS_OUT,[this]);
+			if(!_focusOut)_focusOut = new NativeAct(_interactiveObject,FocusEvent.FOCUS_OUT,[this],false);
 			return _focusOut;
 		}
 		
@@ -190,6 +190,13 @@ package org.tbyrne.display.assets.nativeAssets
 		}
 		public function set tabIndex(value:int):void{
 			_interactiveObject.tabIndex = value;
+		}
+		
+		public function get focusRect():Object{
+			return _interactiveObject.focusRect;
+		}
+		public function set focusRect(value:Object):void{
+			_interactiveObject.focusRect = value;
 		}
 		
 		protected var _focusIn:NativeAct;

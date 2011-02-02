@@ -1,7 +1,6 @@
 package org.tbyrne.display.controls
 {
 	import flash.events.Event;
-	import flash.events.KeyboardEvent;
 	import flash.text.TextFieldType;
 	import flash.ui.Keyboard;
 	
@@ -74,7 +73,7 @@ package org.tbyrne.display.controls
 			return this._focused;
 		}
 		public function get tabFocusable(): ITabFocusable{
-			checkIsBound();
+			attemptInit();
 			return _tabFocusable;
 		}
 		override public function set asset(value:IDisplayObject):void{
@@ -127,9 +126,10 @@ package org.tbyrne.display.controls
 		public function TextInput(asset:IDisplayObject=null){
 			super(asset);
 		}
-		/*override protected function bindToAsset() : void{
-			super.bindToAsset();
-		}*/
+		override protected function init() : void{
+			super.init();
+			_tabFocusable = new InteractiveAssetFocusWrapper();
+		}
 		override protected function bindTextField():void{
 			super.bindTextField();
 			_assumedPrompt = _labelField.text;
@@ -140,13 +140,13 @@ package org.tbyrne.display.controls
 			_labelField.keyUp.addHandler(onKeyUp);
 			
 			_labelField.type = TextFieldType.INPUT;
-			_tabFocusable = new InteractiveAssetFocusWrapper(_labelField);
+			_tabFocusable.interactiveAsset = _labelField;
 			
 			
 			_labelField.type = (_active?TextFieldType.INPUT:TextFieldType.DYNAMIC);
 			_labelField.selectable = _active;
 		}
-		protected function onFocusIn(e:Event, from:IInteractiveObject) : void{
+		protected function onFocusIn(from:IInteractiveObject) : void{
 			if(!_focused){
 				_focusedState.selection = 1;
 				_focused = true;
@@ -158,7 +158,7 @@ package org.tbyrne.display.controls
 				if(_focusedChanged)_focusedChanged.perform(this);
 			}
 		}
-		protected function onFocusOut(e:Event, from:IInteractiveObject) : void{
+		protected function onFocusOut(from:IInteractiveObject) : void{
 			if(_focused){
 				_focusedState.selection = 0;
 				_focused = false;

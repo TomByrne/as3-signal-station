@@ -98,23 +98,6 @@ package org.tbyrne.display.controls.popout {
 		override protected function measure():void {
 			super.measure();
 			addListToMeas();
-			/*var alignArea:Rectangle = getListAlignMeas();
-			var listMeas:Point = _listBox.measurements;
-			switch(_listAnchor){
-				case Anchor.TOP:
-				case Anchor.CENTER:
-				case Anchor.BOTTOM:
-					if(alignArea.width>listMeas.x){
-						_measurements.x = alignArea.width;
-					}else{
-						_measurements.x = listMeas.x;
-					}
-					break;
-				default:
-					_measurements.x = alignArea.width+listMeas.x;
-					break;
-			}
-			_measurements.y = alignArea.height;*/
 		}
 		protected function addListToMeas():void {
 			var listMeas:Point = _listBox.measurements;
@@ -129,77 +112,7 @@ package org.tbyrne.display.controls.popout {
 			}
 		}
 		override protected function commitSize():void{
-			/*var listMeas:Point = _listBox.measurements;
-			var alignArea:Rectangle = getListAlignArea();
-			var useRect:Boolean = (alignArea!=null);
-			var x:Number;
-			var y:Number;
-			var minListWidth:Number;
-			switch(_listAnchor){
-				case Anchor.TOP:
-				case Anchor.TOP_LEFT:
-				case Anchor.TOP_RIGHT:
-					if(useRect){
-						y = alignArea.top-listMeas.y;
-						minListWidth = alignArea.width;
-					}else{
-						y = -listMeas.y;
-					}
-					break;
-				case Anchor.BOTTOM:
-				case Anchor.BOTTOM_LEFT:
-				case Anchor.BOTTOM_RIGHT:
-					if(useRect){
-						y = alignArea.bottom;
-						minListWidth = alignArea.width;
-					}else{
-						y = 0;
-					}
-					break;
-				default:
-					if(useRect){
-						if(_listAnchor==Anchor.CENTER){
-							minListWidth = alignArea.width;
-						}
-						y = (alignArea.y+alignArea.height/2)-(listMeas.y/2);
-					}else{
-						y = 0;
-					}
-			}
-			switch(_listAnchor){
-				case Anchor.LEFT:
-				case Anchor.TOP_LEFT:
-				case Anchor.BOTTOM_LEFT:
-					if(useRect){
-						x = alignArea.left-listMeas.x;
-					}else{
-						x = -listMeas.x;
-					}
-					break;
-				case Anchor.RIGHT:
-				case Anchor.TOP_RIGHT:
-				case Anchor.BOTTOM_RIGHT:
-					if(useRect){
-						x = alignArea.right;
-					}else{
-						x = 0;
-					}
-					break;
-				default:
-					x = 0;
-			}
-			_measureFlag.validate();
-			_popoutDisplay.popoutLayoutInfo.minWidth = minListWidth;
-			_popoutDisplay.popoutLayoutInfo.relativeOffsetX = x;
-			_popoutDisplay.popoutLayoutInfo.relativeOffsetY = y;
-			_popoutDisplay.popoutLayout.update();*/
 		}
-		/*protected function getListAlignArea():Rectangle{
-			return null;
-		}
-		protected function getListAlignMeas():Rectangle{
-			return null;
-		}*/
 		protected function onListMeasureChange(from:ILayoutSubject, oldWidth:Number, oldHeight:Number):void{
 			switch(_listAnchor){
 				case Anchor.TOP:

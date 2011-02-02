@@ -19,10 +19,12 @@ package org.tbyrne.display.tabFocus
 			}
 		}
 		override public function set tabIndex(value:int):void{
-			_interactiveAsset.tabIndex = value;
+			_tabIndex = value;
+			if(_interactiveAsset)_interactiveAsset.tabIndex = value;
 		}
 		override public function set tabEnabled(value:Boolean):void{
-			_interactiveAsset.tabEnabled = value;
+			_tabEnabled = value;
+			if(_interactiveAsset)_interactiveAsset.tabEnabled = value;
 		}
 		override public function get tabIndicesRequired():uint{
 			return 1;
@@ -38,28 +40,35 @@ package org.tbyrne.display.tabFocus
 					_interactiveAsset.focusOut.removeHandler(onFocusOut);
 					_interactiveAsset.addedToStage.removeHandler(onAddedToStage);
 					_interactiveAsset.removedFromStage.removeHandler(onRemovedFromStage);
+					if(_focused && _interactiveAsset.stage.focus == _interactiveAsset)_interactiveAsset.stage.focus = null;
 				}
 				_interactiveAsset = value;
 				if(_interactiveAsset){
+					_interactiveAsset.tabEnabled = _tabEnabled;
+					_interactiveAsset.tabIndex = _tabIndex;
 					_interactiveAsset.focusIn.addHandler(onFocusIn);
 					_interactiveAsset.focusOut.addHandler(onFocusOut);
 					_interactiveAsset.addedToStage.addHandler(onAddedToStage);
 					_interactiveAsset.removedFromStage.addHandler(onRemovedFromStage);
+					if(_focused && _interactiveAsset.stage)_interactiveAsset.stage.focus = _interactiveAsset;
 				}
 			}
 		}
 		
 		private var _interactiveAsset:IInteractiveObject;
 		private var _focused:Boolean;
+
+		private var _tabIndex:int;
+		private var _tabEnabled:Boolean = true;
 		
 		public function InteractiveAssetFocusWrapper(interactiveAsset:IInteractiveObject=null){
 			this.interactiveAsset = interactiveAsset;
 		}
-		public function onFocusIn(e:Event, from:IInteractiveObject):void{
+		public function onFocusIn(from:IInteractiveObject):void{
 			_focused = true;
 			if(_focusIn)_focusIn.perform(this);
 		}
-		public function onFocusOut(e:Event, from:IInteractiveObject):void{
+		public function onFocusOut(from:IInteractiveObject):void{
 			_focused = false;
 			if(_focusOut)_focusOut.perform(this);
 		}

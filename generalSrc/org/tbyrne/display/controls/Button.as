@@ -137,6 +137,7 @@ package org.tbyrne.display.controls
 		protected var _scaleAsset:Boolean = false;
 		protected var _over:Boolean;
 		protected var _down:Boolean;
+		protected var _focused:Boolean;
 		
 		protected var _pressedStage:IStage;
 		
@@ -150,6 +151,7 @@ package org.tbyrne.display.controls
 		protected var _mouseReleased:Act;
 		protected var _rolledOver:Act;
 		protected var _rolledOut:Act;
+
 		
 		public function Button(asset:IDisplayObject=null){
 			super(asset);
@@ -161,10 +163,13 @@ package org.tbyrne.display.controls
 			_interactiveArea = _asset.factory.createHitArea();
 			_containerAsset.addAsset(_interactiveArea);
 			
-			_interactiveArea.mouseReleased.addHandler(onMouseDown);
+			_interactiveArea.mousePressed.addHandler(onMouseDown);
 			_interactiveArea.rolledOver.addHandler(onRollOver);
 			_interactiveArea.rolledOut.addHandler(onRollOut);
+			_interactiveArea.focusIn.addHandler(onFocusIn);
+			_interactiveArea.focusOut.addHandler(onFocusOut);
 			_interactiveArea.clicked.addHandler(onClick);
+			_interactiveArea.focusRect = false;
 			
 			//_containerAsset.mouseChildren = false;
 			
@@ -175,10 +180,13 @@ package org.tbyrne.display.controls
 			if(down)onMouseUp(_interactiveArea);
 			_containerAsset.removeAsset(_interactiveArea);
 			
-			_interactiveArea.mouseReleased.removeHandler(onMouseDown);
+			_interactiveArea.mousePressed.removeHandler(onMouseDown);
 			_interactiveArea.rolledOver.removeHandler(onRollOver);
 			_interactiveArea.rolledOut.removeHandler(onRollOut);
+			_interactiveArea.focusIn.removeHandler(onFocusIn);
+			_interactiveArea.focusOut.removeHandler(onFocusOut);
 			_interactiveArea.clicked.removeHandler(onClick);
+			_interactiveArea.focusRect = null;
 			
 			_asset.factory.destroyAsset(_interactiveArea);
 			_interactiveArea = null;
@@ -202,8 +210,8 @@ package org.tbyrne.display.controls
 		}
 		protected function onRollOver(from:IInteractiveObject, info:IMouseActInfo):void{
 			if(_active){
-				_overState.selection = 0;
 				_over = true;
+				_overState.selection = (_over || _focused?0:1);
 				if(_rolledOver){
 					_rolledOver.perform(this);
 				}
@@ -211,11 +219,23 @@ package org.tbyrne.display.controls
 		}
 		protected function onRollOut(from:IInteractiveObject, info:IMouseActInfo):void{
 			if(_active){
-				_overState.selection = 1;
 				_over = false;
+				_overState.selection = (_over || _focused?0:1);
 				if(_rolledOut){
 					_rolledOut.perform(this);
 				}
+			}
+		}
+		protected function onFocusIn(from:IInteractiveObject):void{
+			if(_active){
+				_focused = true;
+				_overState.selection = (_over || _focused?0:1);
+			}
+		}
+		protected function onFocusOut(from:IInteractiveObject):void{
+			if(_active){
+				_focused = false;
+				_overState.selection = (_over || _focused?0:1);
 			}
 		}
 		protected function onMouseDown(from:IInteractiveObject, info:IMouseActInfo):void{

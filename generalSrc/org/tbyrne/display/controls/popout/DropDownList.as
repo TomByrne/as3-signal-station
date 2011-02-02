@@ -65,8 +65,7 @@ package org.tbyrne.display.controls.popout {
 		private var _selectedIndex:int=-2; // -1 is unselected (initially -2 so that -1 is seen as a change)
 		private var _selectedData:*;
 		private var _textLabelButton:TextLabelButton;
-		//private var _listAlignArea:Rectangle = new Rectangle();
-		//private var _listAlignMeas:Rectangle = new Rectangle();
+		private var _proxyStringProvider:ProxyStringProvider;
 		
 		private var _selectionChangeAct:Act = new Act(); 
 		
@@ -76,8 +75,10 @@ package org.tbyrne.display.controls.popout {
 			_textLabelButton.useDataForSelected = false;
 			_textLabelButton.measurementsChanged.addHandler(onTextMeasureChange);
 			_textLabelButton.clicked.addHandler(onButtonClicked);
-			//textLabelButton.addEventListener(ValidationEvent.VALIDATION_VALUE_CHANGED, onButtonClicked);
 			_listBox.selectionChangeAct.addHandler(onListSelect);
+			
+			_proxyStringProvider = new ProxyStringProvider();
+			_textLabelButton.data = _proxyStringProvider;
 		}
 		protected function onListSelect(list:ListBox, selectedIndices:Array, selectedData:Dictionary):void {
 			assessSelected();
@@ -101,6 +102,24 @@ package org.tbyrne.display.controls.popout {
 			super.unbindFromAsset();
 			_textLabelButton.asset=null;
 		}
+		override public function setAssetAndPosition(asset:IDisplayObject):void{
+			this.asset = asset;
+			if(asset){
+				checkIsBound();
+				var boundsAsset:IDisplayObject;
+				if(_backing){
+					// this avoids the list asset affecting the position/size
+					boundsAsset = _backing;
+				}else{
+					boundsAsset = asset;
+				}
+				setPosition(asset.x,asset.y);
+				setSize(boundsAsset.naturalWidth,boundsAsset.naturalHeight);
+				asset.scaleX = 1;
+				asset.scaleY = 1;
+			}
+		}
+		
 		override public function setPosition(x:Number, y:Number) : void{
 			super.setPosition(x,y);
 			_textLabelButton.setPosition(x,y);
@@ -115,23 +134,6 @@ package org.tbyrne.display.controls.popout {
 		protected function onTextMeasureChange(from:ILayoutSubject, oldWidth:Number, oldHeight:Number):void{
 			invalidateMeasurements();
 		}
-		/*override protected function getListAlignArea():void{
-			var labelMeas:Point = _textLabelButton.measurements;
-			_measurements.x = labelMeas.x;
-			_measurements.y = labelMeas.y;
-			addListToMeas();
-		}*/
-		/*override protected function getListAlignArea():Rectangle{
-			_listAlignArea.width = displayPosition.width;
-			_listAlignArea.height = displayPosition.height;
-			return _listAlignArea;
-		}
-		override protected function getListAlignMeas():Rectangle{
-			checkIsBound();
-			_listAlignMeas.width = textLabelButton.measurements.x;
-			_listAlignMeas.height = textLabelButton.measurements.y;
-			return _listAlignMeas;
-		}*/
 		override protected function closeOnClickOutside():Boolean{
 			return true;
 		}
@@ -141,13 +143,81 @@ package org.tbyrne.display.controls.popout {
 				_selectedIndex = newIndex;
 				if(_selectedIndex==-1){
 					_selectedData = null;
-					_textLabelButton.data = prompt;
+					_proxyStringProvider.data = prompt;
 				}else{
 					_selectedData = _listBox.selectedData[_selectedIndex];
-					_textLabelButton.data = _selectedData;
+					_proxyStringProvider.data = _selectedData;
 				}
 				_selectionChangeAct.perform(this,_selectedIndex,_selectedData);
 			}
 		}
 	}
+}
+import org.tbyrne.acting.actTypes.IAct;
+import org.tbyrne.acting.acts.Act;
+import org.tbyrne.data.dataTypes.IStringProvider;
+
+class ProxyStringProvider implements IStringProvider{
+	
+	/**
+	 * @inheritDoc
+	 */
+	public function get valueChanged():IAct{
+		return stringValueChanged;
+	}
+	/**
+	 * @inheritDoc
+	 */
+	public function get stringValueChanged():IAct{
+		return ((_stringValueChanged) || (_stringValueChanged = new Act()));
+	}
+	
+	protected var _stringValueChanged:Act;
+	
+	
+	public function get value():*{
+		return _stringValue;
+	}
+	public function get stringValue():String{
+		return _stringValue;
+	}
+	
+	
+	
+	public function get data():*{
+		return _stringProvider;
+	}
+	public function set data(value:*):void{
+		if(_stringProvider!=value){
+			if(_stringProvider){
+				_stringProvider.stringValueChanged.removeHandler(onStringProvChanged);
+			}
+			_data = value;
+			_stringProvider = value as IStringProvider;
+			if(_stringProvider){
+				setStringValue(_stringProvider.stringValue);
+				_stringProvider.stringValueChanged.addHandler(onStringProvChanged);
+			}else if(_data!=null){
+				setStringValue(String(_data));
+			}else{
+				setStringValue(null);
+			}
+		}
+	}
+	
+	
+	private var _data:*;
+	private var _stringProvider:IStringProvider;
+	private var _stringValue:String;
+	
+	private function setStringValue(value:String):void{
+		if(_stringValue!=value){
+			_stringValue = value;
+			if(_stringValueChanged)_stringValueChanged.perform(this);
+		}
+	}
+	private function onStringProvChanged(from:IStringProvider):void{
+		setStringValue(_stringProvider.stringValue);
+	}
+		
 }

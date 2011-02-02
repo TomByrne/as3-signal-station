@@ -25,6 +25,9 @@ package org.tbyrne.data.core
 				if(_stringValueChanged)_stringValueChanged.perform(this);
 			}
 		}
+		override public function set booleanValue(value:Boolean):void{
+			super.booleanValue = value;
+		}
 		
 		/**
 		 * @inheritDoc
@@ -38,8 +41,9 @@ package org.tbyrne.data.core
 		private var _stringValue:String;
 		private var _value:*;
 		
-		public function EnumerationOption()
+		public function EnumerationOption(stringValue:String=null)
 		{
+			this.stringValue = stringValue;
 		}
 	}
 }

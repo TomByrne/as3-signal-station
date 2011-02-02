@@ -68,7 +68,7 @@ package org.tbyrne.display.layout
 				_measurements.x = _forceMeasurements.x;
 				_measurements.y = _forceMeasurements.y;
 			}else{
-				var meas:Point = _target.measurements;
+				var meas:Point = _target?_target.measurements:null;
 				if(meas){
 					_measurements.x = meas.x;
 					_measurements.y = meas.y;

@@ -17,6 +17,9 @@ package org.tbyrne.display.assets.nativeTypes
 		function get tabIndex():int;
 		function set tabIndex(value:int):void;
 		
+		function get focusRect():Object;
+		function set focusRect(value:Object):void;
+		
 		
 		/**
 		 * handler(from:IInteractiveObject, mouseActInfo:IMouseActInfo)
@@ -61,11 +64,11 @@ package org.tbyrne.display.assets.nativeTypes
 		
 		
 		/**
-		 * handler(e:FocusEvent, from:IInteractiveObject)
+		 * handler(from:IInteractiveObject)
 		 */
 		function get focusIn():IAct;
 		/**
-		 * handler(e:FocusEvent, from:IInteractiveObject)
+		 * handler(from:IInteractiveObject)
 		 */
 		function get focusOut():IAct;
 		

@@ -139,7 +139,7 @@ package org.tbyrne.display.containers
 		}
 		override protected function commitSize():void{
 			measurements; // this will force measurements to be valid
-			positionBacking(size.x,size.y);
+			sizeBacking(size.x,size.y);
 			
 			var listX:Number;
 			var listY:Number;

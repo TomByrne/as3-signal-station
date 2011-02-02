@@ -139,7 +139,13 @@ package org.tbyrne.styles
 				className = selector.substring(0,pipeIndex);
 				styleName = selector.substring(pipeIndex+1);
 			}
-			var classMatch:Boolean = (!className || (ReflectionUtils.getClassName(stylable)==className));
+			var classMatch:Boolean;
+			if(className){
+				var klass:Class = ReflectionUtils.getClassByName(className);
+				classMatch = stylable is klass;
+			}else{
+				classMatch = true;
+			}
 			var styleMatch:Boolean = (!styleName || (stylable.styleNames.indexOf(styleName)!=-1));
 			return (classMatch && styleMatch);
 		}

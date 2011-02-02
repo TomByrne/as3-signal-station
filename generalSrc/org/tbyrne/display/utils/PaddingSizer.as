@@ -74,9 +74,6 @@ package org.tbyrne.display.utils
 		public function set assumedPaddingRight(value:Number):void{
 			if(_assumedPaddingRight!=value){
 				_assumedPaddingRight = value;
-				if(!isNaN(_explicitPaddingRight)){
-					_paddingRight = (isNaN(value)?0:value);
-				}
 				if(isNaN(_explicitPaddingRight)){
 					var newVal:Number = (isNaN(value)?0:value);
 					if(_paddingRight != newVal){
@@ -95,8 +92,17 @@ package org.tbyrne.display.utils
 		public function set explicitPaddingTop(value:Number):void{
 			if(_explicitPaddingTop!=value){
 				_explicitPaddingTop = value;
-				if(!isNaN(value) && _paddingTop != value){
-					_paddingTop = value;
+				
+				var newValue:Number;
+				if(!isNaN(value)){
+					newValue = value;
+				}else if(!isNaN(_assumedPaddingTop)){
+					newValue = _assumedPaddingTop;
+				}else{
+					newValue = 0;
+				}
+				if(_paddingTop != newValue){
+					_paddingTop = newValue;
 					if(_paddingChanged)_paddingChanged.perform(this);
 				}
 			}
@@ -107,8 +113,17 @@ package org.tbyrne.display.utils
 		public function set explicitPaddingLeft(value:Number):void{
 			if(_explicitPaddingLeft!=value){
 				_explicitPaddingLeft = value;
-				if(!isNaN(value) && _paddingLeft != value){
-					_paddingLeft = value;
+				
+				var newValue:Number;
+				if(!isNaN(value)){
+					newValue = value;
+				}else if(!isNaN(_assumedPaddingLeft)){
+					newValue = _assumedPaddingLeft;
+				}else{
+					newValue = 0;
+				}
+				if(_paddingLeft != newValue){
+					_paddingLeft = newValue;
 					if(_paddingChanged)_paddingChanged.perform(this);
 				}
 			}
@@ -119,8 +134,17 @@ package org.tbyrne.display.utils
 		public function set explicitPaddingBottom(value:Number):void{
 			if(_explicitPaddingBottom!=value){
 				_explicitPaddingBottom = value;
-				if(!isNaN(value) && _paddingBottom != value){
-					_paddingBottom = value;
+				
+				var newValue:Number;
+				if(!isNaN(value)){
+					newValue = value;
+				}else if(!isNaN(_assumedPaddingBottom)){
+					newValue = _assumedPaddingBottom;
+				}else{
+					newValue = 0;
+				}
+				if(_paddingBottom != newValue){
+					_paddingBottom = newValue;
 					if(_paddingChanged)_paddingChanged.perform(this);
 				}
 			}
@@ -131,8 +155,17 @@ package org.tbyrne.display.utils
 		public function set explicitPaddingRight(value:Number):void{
 			if(_explicitPaddingRight!=value){
 				_explicitPaddingRight = value;
-				if(!isNaN(value) && _paddingRight != value){
-					_paddingRight = value;
+				
+				var newValue:Number;
+				if(!isNaN(value)){
+					newValue = value;
+				}else if(!isNaN(_assumedPaddingRight)){
+					newValue = _assumedPaddingRight;
+				}else{
+					newValue = 0;
+				}
+				if(_paddingRight != newValue){
+					_paddingRight = newValue;
 					if(_paddingChanged)_paddingChanged.perform(this);
 				}
 			}

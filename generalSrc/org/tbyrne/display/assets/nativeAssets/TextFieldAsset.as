@@ -105,9 +105,6 @@ package org.tbyrne.display.assets.nativeAssets
 		}
 		public function set htmlText(value:String):void{
 			_textField.htmlText = value;
-			if(_lastFormat){
-				_textField.setTextFormat(_lastFormat);
-			}
 		}
 		public function get embedFonts():Boolean{
 			return _textField.embedFonts;
@@ -196,7 +193,7 @@ package org.tbyrne.display.assets.nativeAssets
 			super.onRemovedFromStage();
 			enterFrame.removeHandler(onFirstFrame);
 		}
-		protected function onFirstFrame(e:Event, from:IDisplayObject):void {
+		protected function onFirstFrame(from:IDisplayObject):void {
 			findAvailableStates();
 		}
 		
@@ -205,6 +202,9 @@ package org.tbyrne.display.assets.nativeAssets
 		}
 		public function setSelection(beginIndex:int, endIndex:int):void{
 			_textField.setSelection(beginIndex, endIndex);
+		}
+		public function appendText(text:String):void{
+			_textField.appendText(text);
 		}
 		override protected function isStateNameAvailable(stateName:String):Boolean {
 			// (_textField.parent is MovieClip) is the cheapest way to check if the parent is dynamic (there could be a better way long term).

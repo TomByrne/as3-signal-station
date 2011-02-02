@@ -91,7 +91,7 @@ package org.tbyrne.display.assets.nativeAssets {
 		override protected function applyState(state:IStateDef, stateName:String, appliedStates:Array):Number{
 			var ret:Number = super.applyState(state, stateName, appliedStates);
 			if(!appliedStates.length){
-				var thisRet:int = _mainAnalysis.playFrameLabel(stateName);
+				var thisRet:Number = _mainAnalysis.playFrameLabel(stateName);
 				var stage:Stage = _movieClip.stage;
 				if(stage && thisRet!=-1) {
 					thisRet = (thisRet/stage.frameRate);

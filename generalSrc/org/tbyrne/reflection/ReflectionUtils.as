@@ -14,6 +14,7 @@
 		/**
 		 * Provides a more informative error message and takes care of casting
 		 */
+		// @todo cache results
 		public static function getClassByName(name: String): Class
 		{
 			var type: Class = null;

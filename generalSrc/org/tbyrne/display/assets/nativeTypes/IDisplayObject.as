@@ -7,8 +7,8 @@ package org.tbyrne.display.assets.nativeTypes
 	import flash.geom.Transform;
 	
 	import org.tbyrne.acting.actTypes.IAct;
-	import org.tbyrne.instanceFactory.IInstanceFactory;
 	import org.tbyrne.display.assets.assetTypes.IBaseDisplayAsset;
+	import org.tbyrne.instanceFactory.IInstanceFactory;
 
 	public interface IDisplayObject extends IBaseDisplayAsset
 	{
@@ -33,6 +33,9 @@ package org.tbyrne.display.assets.nativeTypes
 		
 		function set alpha(value:Number):void;
 		function get alpha():Number;
+		
+		function set mask(value:IDisplayObject):void;
+		function get mask():IDisplayObject;
 		
 		function set blendMode(value:String):void;
 		function get blendMode():String;
@@ -71,7 +74,7 @@ package org.tbyrne.display.assets.nativeTypes
 		 */
 		function get removed():IAct;
 		/**
-		 * handler(e:Event, from:IAsset)
+		 * handler(from:IAsset)
 		 */
 		function get enterFrame():IAct;
 		

@@ -3,6 +3,7 @@ package org.tbyrne.display.utils
 	import flash.display.StageDisplayState;
 	import flash.events.Event;
 	import flash.events.FullScreenEvent;
+	import flash.geom.Point;
 	
 	import org.tbyrne.acting.actTypes.IAct;
 	import org.tbyrne.acting.acts.Act;
@@ -15,6 +16,8 @@ package org.tbyrne.display.utils
 
 	public class FullscreenUtil
 	{
+		private static var ORIGIN:Point = new Point();
+		
 		
 		public function get view():ILayoutView{
 			return _view;
@@ -183,7 +186,13 @@ package org.tbyrne.display.utils
 			checkSize();
 		}
 		protected function checkSize():void{
-			_view.setSize(_lastStage.stageWidth/_fullScreenScale,_lastStage.stageHeight/_fullScreenScale);
+			var offset:Point;
+			if(_lastContainer!=_lastStage){
+				offset = _lastContainer.localToGlobal(ORIGIN);
+			}else{
+				offset = ORIGIN;
+			}
+			_view.setSize((_lastStage.stageWidth-offset.x)/_fullScreenScale,(_lastStage.stageHeight-offset.y)/_fullScreenScale);
 			_view.asset.scaleX = _fullScreenScale;
 			_view.asset.scaleY = _fullScreenScale;
 		}

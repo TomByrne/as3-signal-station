@@ -183,6 +183,9 @@ package org.tbyrne.display.controls
 		public function ScrollBar(asset:IDisplayObject=null){
 			super(asset);
 		}
+		override protected function attemptInit():void{
+			super.attemptInit();
+		}
 		override protected function init(): void{
 			super.init();
 			
@@ -198,12 +201,15 @@ package org.tbyrne.display.controls
 		}
 		
 		override protected function bindToAsset(): void{
+			super.bindToAsset()
+			
 			_track.setAssetAndPosition(_containerAsset.takeAssetByName(TRACK_CHILD,ISprite));
 			_scrollThumb.setAssetAndPosition(_containerAsset.takeAssetByName(SCROLL_THUMB_CHILD,ISprite));
 			_foreButton.setAssetAndPosition(_containerAsset.takeAssetByName(FORE_BUTTON_CHILD,ISprite,true));
 			_aftButton.setAssetAndPosition(_containerAsset.takeAssetByName(AFT_BUTTON_CHILD,ISprite,true));
 		}
 		override protected function unbindFromAsset(): void{
+			super.unbindFromAsset();
 			
 			var asset:IDisplayObject = _track.asset;
 			_track.asset = null;
@@ -481,12 +487,12 @@ package org.tbyrne.display.controls
 			}
 			scrollToMouse();
 			asset.stage.mouseMoved.addHandler(scrollToMouse);
-			asset.stage.mousePressed.addHandler(endDrag);
+			asset.stage.mouseReleased.addHandler(endDrag);
 		}
 		protected function endDrag(... params):void{
 			scrollToMouse();
 			asset.stage.mouseMoved.removeHandler(scrollToMouse);
-			asset.stage.mousePressed.removeHandler(endDrag);
+			asset.stage.mouseReleased.removeHandler(endDrag);
 			_dragOffset = NaN;
 		}
 		
@@ -498,7 +504,7 @@ package org.tbyrne.display.controls
 				_scrollTimer.addEventListener(TimerEvent.TIMER_COMPLETE,beginFrameScroll);
 				_scrollTimer.start();
 				
-				asset.stage.mousePressed.addHandler(endScroll);
+				asset.stage.mouseReleased.addHandler(endScroll);
 			}
 		}
 		protected function beginFrameScroll(e:Event):void{
@@ -521,7 +527,7 @@ package org.tbyrne.display.controls
 				_scrollTimer.stop();
 				_scrollTimer = null;
 			}
-			asset.stage.mousePressed.removeHandler(endScroll);
+			asset.stage.mouseReleased.removeHandler(endScroll);
 		}
 		protected function onScrollMetricsChanged(from:IScrollMetrics):void{
 			invalidateSize();

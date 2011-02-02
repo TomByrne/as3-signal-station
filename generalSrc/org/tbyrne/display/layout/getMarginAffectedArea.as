@@ -21,14 +21,25 @@ package org.tbyrne.display.layout{
 			marginRight = 0;
 			marginBottom = 0;
 		}
-		fillRect.x = positionX+marginLeft;
-		fillRect.y = positionY+marginTop;
-		fillRect.width = sizeX-marginLeft-marginRight;
-		fillRect.height = sizeY-marginTop-marginBottom;
+		if(sizeX>marginLeft+marginRight){
+			fillRect.x = positionX+marginLeft;
+			fillRect.width = sizeX-marginLeft-marginRight;
+		}else{
+			fillRect.x = positionX+sizeX/2;
+			fillRect.width = 0;
+		}
+		
+		if(sizeX>marginTop+marginBottom){
+			fillRect.y = positionY+marginTop;
+			fillRect.height = sizeY-marginTop-marginBottom;
+		}else{
+			fillRect.y = positionY+sizeY/2;
+			fillRect.height = 0;
+		}
 		
 		if(marginRect){
-			marginRect.x = marginTop;
-			marginRect.y = marginLeft;
+			marginRect.x = marginLeft;
+			marginRect.y = marginTop;
 			marginRect.width = marginRight;
 			marginRect.height = marginBottom;
 		}

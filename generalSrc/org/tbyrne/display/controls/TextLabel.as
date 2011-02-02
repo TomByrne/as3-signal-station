@@ -53,6 +53,7 @@ package org.tbyrne.display.controls
 		}
 		
 		public function get paddingTop():Number{
+			attemptInit();
 			return _labelFieldSizer.explicitPaddingTop;
 		}
 		public function set paddingTop(value:Number):void{
@@ -65,6 +66,7 @@ package org.tbyrne.display.controls
 			return _labelFieldSizer.explicitPaddingBottom;
 		}
 		public function set paddingBottom(value:Number):void{
+			attemptInit();
 			_labelFieldSizer.explicitPaddingBottom = value;
 		}
 		
@@ -73,6 +75,7 @@ package org.tbyrne.display.controls
 			return _labelFieldSizer.explicitPaddingLeft;
 		}
 		public function set paddingLeft(value:Number):void{
+			attemptInit();
 			_labelFieldSizer.explicitPaddingLeft = value;
 		}
 		
@@ -81,6 +84,7 @@ package org.tbyrne.display.controls
 			return _labelFieldSizer.explicitPaddingRight;
 		}
 		public function set paddingRight(value:Number):void{
+			attemptInit();
 			_labelFieldSizer.explicitPaddingRight = value;
 		}
 		public function get textFormat():TextFormat{
@@ -93,6 +97,20 @@ package org.tbyrne.display.controls
 			}
 		}
 		
+		public function get multiline():Boolean{
+			return _multiline;
+		}
+		public function set multiline(value:Boolean):void{
+			if(_multiline!=value){
+				_multiline = value;
+				if(_labelField){
+					_labelField.multiline = _multiline;
+					_labelField.wordWrap = _multiline;
+				}
+			}
+		}
+		
+		private var _multiline:Boolean;
 		protected var _textFormat:TextFormat;
 		protected var _assumedTextFormat:TextFormat;
 		
@@ -121,6 +139,8 @@ package org.tbyrne.display.controls
 		override protected function bindToAsset():void{
 			super.bindToAsset();
 			bindTextField();
+			_labelField.multiline = _multiline;
+			_labelField.wordWrap = _multiline;
 			if(!_data && _labelField.text.length)_data = _labelField.text;
 			if(_backing){
 				
@@ -180,6 +200,7 @@ package org.tbyrne.display.controls
 				var textWas:String = _labelField.htmlText;
 				var measText:String = getMeasurementText();
 				var widthWas:Number = _labelField.width;
+				if(measText!=textWas)_labelField.htmlText = measText;
 				if(measWidth){
 					if(_backing)_labelField.width = _backing.naturalWidth-_labelFieldSizer.paddingLeft-_labelFieldSizer.paddingRight+TextFieldGutter.TEXT_FIELD_GUTTER*2;
 					else _labelField.width = _labelField.naturalWidth;
@@ -208,7 +229,7 @@ package org.tbyrne.display.controls
 				var format:TextFormat = getValueOrAssumed(_textFormat,_assumedTextFormat);
 				if(format){
 					_labelField.defaultTextFormat = format;
-					_labelField.setTextFormat(format);
+					//_labelField.setTextFormat(format);
 				}
 			}
 		}

@@ -124,7 +124,7 @@ package org.tbyrne.display.layout
 		}
 		protected final function validateAll():void{
 			for each(var frameValidationFlag:FrameValidationFlag in _childDrawFlags){
-				frameValidationFlag.validate();
+				frameValidationFlag.validate(true);
 			}
 		}
 		

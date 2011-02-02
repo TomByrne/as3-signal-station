@@ -53,7 +53,7 @@ package org.tbyrne.display.assets.nativeAssets {
 		 */
 		public function get enterFrame():IAct {
 			if(!_enterFrame)
-				_enterFrame = new NativeAct(_displayObject, Event.ENTER_FRAME, [this]);
+				_enterFrame = new NativeAct(_displayObject, Event.ENTER_FRAME, [this], false);
 			return _enterFrame;
 		}
 		
@@ -123,6 +123,7 @@ package org.tbyrne.display.assets.nativeAssets {
 		protected var _origScaleY:Number;
 		
 		protected var _parent:IDisplayObjectContainer;
+		protected var _mask:IDisplayObject;
 		
 		
 		public function DisplayObjectAsset(factory:NativeAssetFactory=null){
@@ -136,15 +137,16 @@ package org.tbyrne.display.assets.nativeAssets {
 		}
 		protected function setAddedToStage(value:Boolean):void{
 			if(_isAddedToStage!=value){
+				if(!value){
+					// call this before setting isAddedToStage to allow stage getter to work from handlers.
+					onRemovedFromStage();
+					if(_stageChanged)_stageChanged.perform(this);
+				}
 				_isAddedToStage = value;
 				if(value){
 					onAddedToStage();
 					if(_stageChanged)_stageChanged.perform(this);
 					if(_addedToStage)_addedToStage.perform(this);
-				}else{
-					onRemovedFromStage();
-					if(_stageChanged)_stageChanged.perform(this);
-					if(_removedFromStage)_removedFromStage.perform(this);
 				}
 			}
 		}
@@ -259,6 +261,20 @@ package org.tbyrne.display.assets.nativeAssets {
 			}
 		}
 		
+		
+		public function set mask(value:IDisplayObject):void {
+			if(_mask != value){
+				_mask = value;
+				var castMask:INativeAsset = (value as INativeAsset);
+				_displayObject.mask = (castMask?castMask.displayObject:null);
+			}
+		}
+		public function get mask():IDisplayObject {
+			if(!_mask && _displayObject.mask){
+				_mask = _nativeFactory.getNew(_displayObject.mask);
+			}
+			return _mask;
+		}
 		
 		public function get parent():IDisplayObjectContainer {
 			if(_isAddedToStage && !_parent && !(this is IStage)){

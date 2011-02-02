@@ -143,7 +143,7 @@ package org.tbyrne.display.utils
 			}
 		}
 		
-		protected function onFocusIn(e:Event, from:IInteractiveObject):void{
+		protected function onFocusIn(from:IInteractiveObject):void{
 			assessSelection();
 		}
 		protected function onClick(from:IInteractiveObject, info:IMouseActInfo):void{

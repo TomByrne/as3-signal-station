@@ -63,5 +63,6 @@ package org.tbyrne.display.assets.nativeTypes
 		
 		function setTextFormat(format:TextFormat, beginIndex:int  = -1, endIndex:int  = -1):void;
 		function setSelection(beginIndex:int, endIndex:int):void;
+		function appendText(text:String):void;
 	}
 }

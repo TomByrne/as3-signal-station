@@ -316,7 +316,7 @@ package org.tbyrne.display.assets.schema
 		 */
 		public function get enterFrame():IAct {
 			if(!_enterFrame)
-				_enterFrame = new NativeAct(_displayObject, Event.ENTER_FRAME, [this]);
+				_enterFrame = new NativeAct(_displayObject, Event.ENTER_FRAME, [this], false);
 			return _enterFrame;
 		}
 		/**
@@ -336,6 +336,7 @@ package org.tbyrne.display.assets.schema
 		protected var _isAddedToStage:Boolean;
 		protected var _parent:IDisplayObjectContainer;
 		protected var _stage:IStage;
+		protected var _mask:IDisplayObject;
 		
 		protected var _stageChanged:Act;
 		protected var _enterFrame:NativeAct;
@@ -439,6 +440,16 @@ package org.tbyrne.display.assets.schema
 		public function get bitmapDrawable():IBitmapDrawable{return _displayObject};
 		
 		
+		public function set mask(value:IDisplayObject):void {
+			if(_mask != value){
+				_mask = value;
+				var castMask:INativeAsset = (value as INativeAsset);
+				_displayObject.mask = (castMask?castMask.displayObject:null);
+			}
+		}
+		public function get mask():IDisplayObject {
+			return _mask;
+		}
 		public function get parent():IDisplayObjectContainer {
 			return _parent;
 		}
@@ -588,14 +599,14 @@ package org.tbyrne.display.assets.schema
 		 * @inheritDoc
 		 */
 		public function get focusIn():IAct{
-			if(!_focusIn)_focusIn = new NativeAct(_interactiveObject,FocusEvent.FOCUS_IN,[this]);
+			if(!_focusIn)_focusIn = new NativeAct(_interactiveObject,FocusEvent.FOCUS_IN,[this], false);
 			return _focusIn;
 		}
 		/**
 		 * @inheritDoc
 		 */
 		public function get focusOut():IAct{
-			if(!_focusOut)_focusOut = new NativeAct(_interactiveObject,FocusEvent.FOCUS_OUT,[this]);
+			if(!_focusOut)_focusOut = new NativeAct(_interactiveObject,FocusEvent.FOCUS_OUT,[this], false);
 			return _focusOut;
 		}
 		/**
@@ -624,6 +635,9 @@ package org.tbyrne.display.assets.schema
 		
 		public function get tabIndex():int{return _interactiveObject.tabIndex};
 		public function set tabIndex(value:int):void{_interactiveObject.tabIndex = value};
+		
+		public function get focusRect():Object{return _interactiveObject.focusRect};
+		public function set focusRect(value:Object):void{_interactiveObject.focusRect = value};
 		
 		private function onMouseEvent(e:MouseEvent):void{
 			var act:Act = this["_"+e.type];
@@ -870,6 +884,9 @@ package org.tbyrne.display.assets.schema
 		}
 		public function setSelection(beginIndex:int, endIndex:int):void{
 			_textField.setSelection(beginIndex, endIndex);
+		}
+		public function appendText(text:String):void{
+			_textField.appendText(text);
 		}
 		
 		

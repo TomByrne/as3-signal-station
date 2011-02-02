@@ -165,7 +165,7 @@ package org.tbyrne.debug.display
 			var size:Point = size;
 			var meas:Point = measurements;
 			drawListAndScrollbar(size.x,meas.y);
-			positionBacking(size.x,meas.y);
+			sizeBacking(size.x,meas.y);
 			if(_application){
 				_application.setSize(size.x,size.y-meas.y);
 			}

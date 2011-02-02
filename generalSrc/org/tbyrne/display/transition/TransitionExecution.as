@@ -208,7 +208,7 @@ package org.tbyrne.display.transition
 				parent.addAssetAt(child,depth);
 			}
 		}
-		private function doFrame(e:Event, from:NativeAsset):void{
+		private function doFrame(from:NativeAsset):void{
 			_renderArea.bitmapData.lock()
 			if(parent.stage==parent){
 				_renderArea.visible = false;

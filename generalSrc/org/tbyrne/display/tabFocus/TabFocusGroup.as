@@ -161,8 +161,6 @@ package org.tbyrne.display.tabFocus
 		
 		
 		public function _addTabFocusable(tabFocusable:ITabFocusable, index:uint):void{
-			//tabFocusable.addEventListener(FocusEvent.FOCUS_IN, onFocusIn);
-			//tabFocusable.addEventListener(FocusEvent.FOCUS_OUT, onFocusOut);
 			tabFocusable.focusIn.addHandler(onFocusIn);
 			tabFocusable.focusOut.addHandler(onFocusOut);
 			_tabFocusableElements.splice(index,0,tabFocusable);
@@ -180,8 +178,6 @@ package org.tbyrne.display.tabFocus
 		public function _removeItem(index:uint):void{
 			_rawElements.splice(index,1);
 			var tabFocusable:ITabFocusable = _tabFocusableElements.splice(index,1)[0];
-			//tabFocusable.removeEventListener(FocusEvent.FOCUS_IN, onFocusIn);
-			//tabFocusable.removeEventListener(FocusEvent.FOCUS_OUT, onFocusOut);
 			tabFocusable.focusIn.removeHandler(onFocusIn);
 			tabFocusable.focusOut.removeHandler(onFocusOut);
 			clearTabFocusable(tabFocusable);
@@ -194,7 +190,7 @@ package org.tbyrne.display.tabFocus
 				_tabIndicesFlag.validate();
 			}
 		}
-		protected function onFocusIn(e:Event, from:ITabFocusable):void{
+		protected function onFocusIn(from:ITabFocusable):void{
 			if(_doFocusOutCall){
 				_doFocusOutCall.clear();
 				_doFocusOutCall = null;
@@ -202,7 +198,7 @@ package org.tbyrne.display.tabFocus
 			_focusedItem = from;
 			focused = true;
 		}
-		protected function onFocusOut(e:Event, from:ITabFocusable):void{
+		protected function onFocusOut(from:ITabFocusable):void{
 			if(focused){
 				_doFocusOutCall = new DelayedCall(commitFocusOut,1,false);
 				_doFocusOutCall.begin();

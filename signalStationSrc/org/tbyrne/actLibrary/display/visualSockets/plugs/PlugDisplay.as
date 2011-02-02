@@ -67,7 +67,7 @@ package org.tbyrne.actLibrary.display.visualSockets.plugs
 				}
 			}
 		}
-		override protected function onAddedToStage(from:IAsset):void{
+		override protected function onAddedToStage(from:IAsset=null):void{
 			super.onAddedToStage(from);
 			if(_initialDataSet)validate();
 		}

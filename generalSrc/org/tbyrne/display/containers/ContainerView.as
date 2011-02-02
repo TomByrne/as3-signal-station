@@ -40,9 +40,9 @@ package org.tbyrne.display.containers
 			}
 		}
 		override protected function commitSize():void{
-			positionBacking(size.x,size.y);
+			sizeBacking(size.x,size.y);
 		}
-		protected function positionBacking(width:Number, height:Number):void{
+		protected function sizeBacking(width:Number, height:Number):void{
 			if(_backing){
 				_backing.setSize(width,height);
 			}

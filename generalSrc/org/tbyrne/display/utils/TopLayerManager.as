@@ -23,7 +23,7 @@ package org.tbyrne.display.utils
 			}
 		}
 		public static function remove(display:IDisplayObject):void{
-			var container:IDisplayObjectContainer = display.parent;
+			var container:IDisplayObjectContainer = display.parent.parent;
 			var bundle:TopLayerBundle = parentLookup[container];
 			if(bundle.removeDisplay(display)){
 				delete parentLookup[container];

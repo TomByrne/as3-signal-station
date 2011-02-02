@@ -8,8 +8,8 @@ package org.tbyrne.display.core
 	import org.tbyrne.acting.acts.Act;
 	import org.tbyrne.core.DelayedCall;
 	import org.tbyrne.display.assets.assetTypes.IAsset;
-	import org.tbyrne.display.assets.nativeTypes.IDisplayObjectContainer;
 	import org.tbyrne.display.assets.nativeTypes.IDisplayObject;
+	import org.tbyrne.display.assets.nativeTypes.IDisplayObjectContainer;
 	import org.tbyrne.display.assets.nativeTypes.IInteractiveObject;
 	import org.tbyrne.display.assets.nativeTypes.ISprite;
 	import org.tbyrne.display.assets.states.StateDef;
@@ -25,20 +25,27 @@ package org.tbyrne.display.core
 				if(_asset){
 					asset.addedToStage.removeHandler(onAddedToStage);
 					asset.removedFromStage.removeHandler(onRemovedFromStage);
+					if(value.stage){
+						onRemovedFromStage();
+					}
 				}
 				checkIsUnbound();
-				var oldAsset:IAsset = _asset;
-				super.asset = value;
-				if(_asset){
+				if(value){
 					_containerAsset = (value as IDisplayObjectContainer);
 					_spriteAsset = (value as ISprite);
 					_interactiveObjectAsset = (value as IInteractiveObject);
-					asset.addedToStage.addHandler(onAddedToStage);
-					asset.removedFromStage.addHandler(onRemovedFromStage);
 				}else{
 					_containerAsset = null;
 					_interactiveObjectAsset = null;
 					_spriteAsset = null;
+				}
+				super.asset = value;
+				if(value){
+					value.addedToStage.addHandler(onAddedToStage);
+					value.removedFromStage.addHandler(onRemovedFromStage);
+					if(value.stage){
+						onAddedToStage();
+					}
 				}
 				invalidateAll();
 			}
@@ -89,7 +96,7 @@ package org.tbyrne.display.core
 			_childDrawFlags.push(frameValidationFlag);
 		}
 		
-		final protected function attemptInit() : void{
+		protected function attemptInit() : void{
 			if(!_inited){
 				_inited = true;
 				init();
@@ -173,7 +180,6 @@ package org.tbyrne.display.core
 			if(!_bound && _asset){
 				_bound = true;
 				bindToAsset();
-				if(autoIntro())showIntro();
 			}
 		}
 		protected function checkIsUnbound():void{
@@ -182,11 +188,11 @@ package org.tbyrne.display.core
 				_bound = false;
 			}
 		}
-		protected function onAddedToStage(from:IAsset):void{
+		protected function onAddedToStage(from:IAsset=null):void{
 			validate();
 			if(autoIntro())showIntro();
 		}
-		protected function onRemovedFromStage(from:IAsset):void{
+		protected function onRemovedFromStage(from:IAsset=null):void{
 			_introShown = false;
 			_outroShown = false;
 		}
