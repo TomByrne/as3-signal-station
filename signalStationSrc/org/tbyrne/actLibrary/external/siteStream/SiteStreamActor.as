@@ -99,12 +99,12 @@ package org.tbyrne.actLibrary.external.siteStream
 		}
 		
 		[ActRule(ActClassRule)]
-		[ActReaction(phases="{lookupObjectPhases}")]
+		[ActReaction(phases="<lookupObjectPhases>")]
 		public function lookupObject(cause:ILookupObjectPathAct):void{
 			if(cause.lookupObject)cause.lookupObjectPath = siteStream.getPath(cause.lookupObject);
 		}
 		[ActRule(ActClassRule)]
-		[ActReaction(phases="{resolvePathsPhases}")]
+		[ActReaction(phases="<resolvePathsPhases>")]
 		public function resolvePaths(execution:UniversalActExecution, cause:IResolvePathsAct):void{
 			var request: LoadRequest = this.loadRequests[cause];
 			if (request){
@@ -135,12 +135,12 @@ package org.tbyrne.actLibrary.external.siteStream
 			delete this.loadRequests[cause];
 		}
 		[ActRule(ActClassRule)]
-		[ActReaction(phases="{releasePathPhases}")]
+		[ActReaction(phases="<releasePathPhases>")]
 		public function releasePath(cause:IReleasePathAct):void{
 			siteStream.releaseObject(cause.releasePath);
 		}
 		[ActRule(ActClassRule)]
-		[ActReaction(phases="{releaseObjectPhases}")]
+		[ActReaction(phases="<releaseObjectPhases>")]
 		public function releaseObject(cause:IReleaseObjectAct):void{
 			var path:String = siteStream.getPath(cause.releaseObject);
 			if(path)siteStream.releaseObject(path);

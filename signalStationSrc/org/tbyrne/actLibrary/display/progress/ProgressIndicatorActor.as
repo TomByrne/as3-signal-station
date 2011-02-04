@@ -107,7 +107,7 @@ package org.tbyrne.actLibrary.display.progress
 		}
 		
 		public var beforeProcessBefore:Array = [LogicPhases.PROCESS_COMMAND];
-		[ActRule(ActClassRule,beforePhases="{beforeProcessBefore}")]
+		[ActRule(ActClassRule,beforePhases="<beforeProcessBefore>")]
 		public function beforeProcess(execution:UniversalActExecution, cause:IExecutionProgressAct):void{
 			if(!_executionMap[execution]){
 				var bundle:ProgressExecutionBundle = ProgressExecutionBundle.getNew(cause,execution);
@@ -132,7 +132,7 @@ package org.tbyrne.actLibrary.display.progress
 			execution.continueExecution();
 		}
 		public var afterProcessAfter:Array = [LogicPhases.PROCESS_COMMAND];
-		[ActRule(ActClassRule,beforePhases="{afterProcessAfter}")]
+		[ActRule(ActClassRule,beforePhases="<afterProcessAfter>")]
 		public function afterProcess(execution:UniversalActExecution, cause:IExecutionProgressAct):void{
 			var bundle:ProgressExecutionBundle = _executionMap[execution];
 			if(bundle){

@@ -44,7 +44,7 @@ package org.tbyrne.actLibrary.display.errorPopup
 		}
 		
 		public var onErrorBeforePhases:Array = [ErrorPhases.ERROR_DISPLAY];
-		[ActRule(ActClassRule,beforePhases="{onErrorBeforePhases}")]
+		[ActRule(ActClassRule,beforePhases="<onErrorBeforePhases>")]
 		public function onError(execution:UniversalActExecution, cause:IErrorAct):void{
 			var details:ErrorDetails = _errorDetailsMap[cause.errorType];
 			if (details == null && cause is IDetailedErrorAct){

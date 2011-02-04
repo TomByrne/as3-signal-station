@@ -26,12 +26,12 @@ package org.tbyrne.actLibrary.external.browser
 		
 		public var navigatePhases:Array = [BrowserPhases.NAVIGATE_TO_URL];
 		[ActRule(ActClassRule)]
-		[ActReaction(phases="{navigatePhases}")]
+		[ActReaction(phases="<navigatePhases>")]
 		public function onNavigateToURL(cause:INavigateToURLAct):void{
 			navigateToURL(new URLRequest(cause.linkUrl), cause.targetWindow);
 		}
 		[ActRule(ActClassRule)]
-		[ActReaction(phases="{navigatePhases}")]
+		[ActReaction(phases="<navigatePhases>")]
 		public function onOpenBrowserWindow(execution:UniversalActExecution, cause:IOpenBrowserWindowAct):void{
 			var optionsStr:String = "'";
 			if(cause.windowWidth && !isNaN(cause.windowWidth))optionsStr += "width="+cause.windowWidth+",";
@@ -55,7 +55,7 @@ package org.tbyrne.actLibrary.external.browser
 		}
 		public var addCallbackPhases:Array = [BrowserPhases.ADD_CALLBACK];
 		[ActRule(ActClassRule)]
-		[ActReaction(phases="{addCallbackPhases}")]
+		[ActReaction(phases="<addCallbackPhases>")]
 		public function onAddCallback(cause:IAddExternalCallbackHandlerAct):void{
 			if(!_addedHandlers)_addedHandlers = new Dictionary();
 			if(ExternalInterface.available && (!cause.onlyAddIfNotAlready || !_addedHandlers[cause.callbackName])){
@@ -69,7 +69,7 @@ package org.tbyrne.actLibrary.external.browser
 		
 		public var javascriptCallPhases:Array = [BrowserPhases.JAVASCRIPT_CALL];
 		[ActRule(ActClassRule)]
-		[ActReaction(phases="{javascriptCallPhases}")]
+		[ActReaction(phases="<javascriptCallPhases>")]
 		public function onJavaScriptCall(cause:IJavaScriptCallAct):void{
 			if(ExternalInterface.available){
 				var args:Array = [cause.methodName].concat(cause.parameters);
@@ -82,7 +82,7 @@ package org.tbyrne.actLibrary.external.browser
 		}
 		public var getCurrentURLPhases:Array = [BrowserPhases.GET_CURRENT_URL];
 		[ActRule(ActClassRule)]
-		[ActReaction(phases="{getCurrentURLPhases}")]
+		[ActReaction(phases="<getCurrentURLPhases>")]
 		public function onGetCurrentURL(cause:IGetCurrentURLAct):void{
 			if(ExternalInterface.available){
 				cause.currentURL = ExternalInterface.call("function(){return document.location.href}");

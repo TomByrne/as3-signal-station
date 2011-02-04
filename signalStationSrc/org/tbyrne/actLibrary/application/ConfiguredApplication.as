@@ -154,7 +154,7 @@ package org.tbyrne.actLibrary.application
 		
 		public var retrieveConfigAct:ResolvePathsAct = new ResolvePathsAct([""]);
 		public var loadConfigAfterPhases:Array = [SiteStreamPhases.RESOLVE_PATHS];
-		[ActRule(ActInstanceRule,act="{retrieveConfigAct}",afterPhases="{loadConfigAfterPhases}")]
+		[ActRule(ActInstanceRule,act="<retrieveConfigAct>",afterPhases="<loadConfigAfterPhases>")]
 		public function onConfigRetrieved(execution:UniversalActExecution, cause:ResolvePathsAct): void{
 			setRootObject(execution,cause.resolvedObjects[cause.resolvePaths[0]]);
 			execution.continueExecution();
@@ -177,7 +177,7 @@ package org.tbyrne.actLibrary.application
 		protected function getCoreSkinName():String{
 			throw new Error("getCoreSkinName should be overriden");
 		}
-		protected function temporaryPerformAct(act:IUniversalAct, execution:UniversalActExecution):void{
+		protected function temporaryPerformAct(act:IUniversalAct, execution:UniversalActExecution=null):void{
 			act.scope = _asset;
 			act.perform(execution);
 			act.scope = null;

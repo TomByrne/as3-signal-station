@@ -20,7 +20,7 @@ package org.tbyrne.actLibrary.errors
 			metadataTarget = this;
 		}
 		[ActRule(ActClassRule)]
-		[ActReaction(phases="{errorDisplayPhases}")]
+		[ActReaction(phases="<errorDisplayPhases>")]
 		public function onActExecute(execution:UniversalActExecution, cause:IErrorAct):void{
 			if(cause && execution.reactionCount==1){
 				var detailed:IDetailedErrorAct = (cause as IDetailedErrorAct);

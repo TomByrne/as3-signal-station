@@ -36,8 +36,8 @@ package org.tbyrne.actLibrary.external.config
 		
 		public var getParamPhases:Array = [ConfigPhases.GET_PARAM];
 		public var getParamBeforePhases:Array = [ObjectPhases.REFERENCE_RESOLVED];
-		[ActRule(ActClassRule,beforePhases="{getParamBeforePhases}")]
-		[ActReaction(phases="{getParamPhases}")]
+		[ActRule(ActClassRule,beforePhases="<getParamBeforePhases>")]
+		[ActReaction(phases="<getParamPhases>")]
 		public function onGetParam(execution:UniversalActExecution, cause:IGetConfigParamAct):void{
 			if(loaderInfo){
 				cause.value = getParam(cause.paramName);;
@@ -49,14 +49,14 @@ package org.tbyrne.actLibrary.external.config
 		
 		public var setDefaultParamPhases:Array = [ConfigPhases.SET_DEFAULT_PARAM];
 		[ActRule(ActClassRule)]
-		[ActReaction(phases="{setDefaultParamPhases}")]
+		[ActReaction(phases="<setDefaultParamPhases>")]
 		public function setDefaultParam(cause:ISetDefaultConfigParamAct):void{
 			defaultConfigs[cause.paramName] = cause.value;
 		}
 		
 		public var setParamPhases:Array = [ConfigPhases.SET_PARAM];
 		[ActRule(ActClassRule)]
-		[ActReaction(phases="{setParamPhases}")]
+		[ActReaction(phases="<setParamPhases>")]
 		public function setParam(execution:UniversalActExecution, cause:ISetConfigParamAct):void{
 			if(loaderInfo){
 				loaderInfo.parameters[cause.paramName] = cause.value;

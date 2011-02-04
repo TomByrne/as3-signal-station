@@ -29,6 +29,12 @@ package org.tbyrne.display.layout.grid
 		public function set pixelFlow(value:Boolean):void{
 			super._pixelFlow = value;
 		}
+		public function get renderersSameSize():Boolean{
+			return _renderersSameSize;
+		}
+		public function set renderersSameSize(value:Boolean):void{
+			_renderersSameSize = value;
+		}
 		public function get columnWidths():Array{
 			return super._columnWidths;
 		}
@@ -303,6 +309,10 @@ package org.tbyrne.display.layout.grid
 				invalidateSize();
 			}
 		}
+		override protected function getChildKeyCount():int{
+			getChildKeys();
+			return _cellKeyCount;
+		}
 		override protected function getChildKeys() : Dictionary{
 			if(!_dataChecked && _dataProviderCollection){
 				_dataChecked = true;
@@ -311,6 +321,7 @@ package org.tbyrne.display.layout.grid
 				var i:int=0;
 				var data:*;
 				if(iterator2D){
+					_anyGridInfos = true;
 					while(data = iterator2D.next()){
 						_dataIndices[data] = i;
 						_dataMap[i] = data;
@@ -318,6 +329,7 @@ package org.tbyrne.display.layout.grid
 						++i;
 					}
 				}else{
+					_anyGridInfos = false;
 					while(data = iterator.next()){
 						_dataIndices[data] = i;
 						_dataMap[i] = data;

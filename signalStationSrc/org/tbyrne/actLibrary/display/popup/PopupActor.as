@@ -62,7 +62,7 @@ package org.tbyrne.actLibrary.display.popup
 		
 		public var addPopupPhases:Array = [PopupPhases.ADD_POPUP,DisplayPhases.DISPLAY_ADDED,DisplayPhases.DISPLAY_CHANGED];
 		[ActRule(ActClassRule)]
-		[ActReaction(phases="{addPopupPhases}")]
+		[ActReaction(phases="<addPopupPhases>")]
 		public function addPopup(cause:IAddPopupAct):void{
 			var popupInfo:IPopupInfo = cause.popupInfo;
 			
@@ -81,7 +81,7 @@ package org.tbyrne.actLibrary.display.popup
 		
 		public var removePopupPhases:Array = [PopupPhases.REMOVE_POPUP,DisplayPhases.DISPLAY_REMOVED,DisplayPhases.DISPLAY_CHANGED];
 		[ActRule(ActClassRule)]
-		[ActReaction(phases="{removePopupPhases}")]
+		[ActReaction(phases="<removePopupPhases>")]
 		public function removePopup(cause:IRemovePopupAct):void{
 			var popupInfo:IPopupInfo = cause.popupInfo;
 			
@@ -97,7 +97,7 @@ package org.tbyrne.actLibrary.display.popup
 		}
 		
 		[ActRule(ActClassRule)]
-		[ActReaction(phases="{removePopupPhases}")]
+		[ActReaction(phases="<removePopupPhases>")]
 		public function removeAllPopups(cause:IRemoveAllPopupsAct):void{
 			popupManager.removeAllPopups();
 		}

@@ -146,6 +146,11 @@ package org.tbyrne.acting.universal
 			execution.completeAct.addHandler(onExecutionComplete);
 			_executions[execution] = true;
 			++_executionCount;
+			CONFIG::debug{
+				if(execution.reactionCount==0 && String(execution.act).indexOf("Method")==-1){
+					trace("WARNING: UniversalAct without reactions that doesn't appear to call a method: "+execution.act);
+				}
+			}
 			if(parentExecution){
 				var reaction:NestedExecutionReaction = new NestedExecutionReaction(execution);
 				parentExecution.addReaction(reaction,reaction.immediateRule);

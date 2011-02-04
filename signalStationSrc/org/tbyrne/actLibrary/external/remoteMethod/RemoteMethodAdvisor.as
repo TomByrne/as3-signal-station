@@ -52,14 +52,14 @@ package org.tbyrne.actLibrary.external.remoteMethod
 		
 		public var addConnectionPhases:Array = [RemoteMethodPhases.ADD_CONNECTION];
 		[ActRule(ActClassRule)]
-		[ActReaction(phases="{addConnectionPhases}")]
+		[ActReaction(phases="<addConnectionPhases>")]
 		public function onAddConnection(cause:IAddConnectionAct):void{
 			setConnection(cause.connectionId,cause.connection);
 		}
 		
 		public var setCredentialsPhases:Array = [RemoteMethodPhases.SET_CREDENTIALS];
 		[ActRule(ActClassRule)]
-		[ActReaction(phases="{setCredentialsPhases}")]
+		[ActReaction(phases="<setCredentialsPhases>")]
 		public function onSetCredentials(cause:ISetCredentialsAct):void{
 			var connection:IConnection = findConnection(cause.connectionId);
 			connection.setCredentials(cause.userId,cause.password);
@@ -67,7 +67,7 @@ package org.tbyrne.actLibrary.external.remoteMethod
 		
 		public var remoteCallPhases:Array = [RemoteMethodPhases.REMOTE_CALL,LogicPhases.PROCESS_COMMAND];
 		[ActRule(ActClassRule)]
-		[ActReaction(phases="{remoteCallPhases}")]
+		[ActReaction(phases="<remoteCallPhases>")]
 		public function onRemoteCall(execution:UniversalActExecution, cause:IRemoteCallAct):void{
 			var connection:IConnection = findConnection(cause.connectionId);
 			connection.execute(execution,cause);

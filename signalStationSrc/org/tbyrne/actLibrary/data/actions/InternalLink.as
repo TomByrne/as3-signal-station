@@ -107,7 +107,7 @@ package org.tbyrne.actLibrary.data.actions
 			checkSelected();
 		}
 		public var setAddressAfterPhases:Array = [SWFAddressPhases.SET_SWF_ADDRESS];
-		[ActRule(ActClassRule,afterPhases="{setAddressAfterPhases}")]
+		[ActRule(ActClassRule,afterPhases="<setAddressAfterPhases>")]
 		public function onSetSWFAddress(cause:ISetSWFAddressAct):void{
 			_currentSwfAddress = SWFAddressUtilities.strictCheck(cause.swfAddress,true,true);
 			checkSelected();

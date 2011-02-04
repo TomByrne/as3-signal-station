@@ -19,7 +19,7 @@ package org.tbyrne.acting.metadata
 	{
 		private static const REQUIRED_META_TAGS: Array = ["ActRule","ActReaction"];
 		private static const DEFAULT_RULE_PACKAGE: String = "org.tbyrne.acting.universal.rules.";
-		private static const PROPERTY_MATCHER:RegExp = /\{([\w\.]+)\}/;
+		private static const PROPERTY_MATCHER:RegExp = /<([\w\.]+)>/;
 		
 		private static var actMap:Dictionary = new Dictionary();
 		

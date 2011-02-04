@@ -80,8 +80,8 @@ package org.tbyrne.actLibrary.application
 		
 		public var swfAddressChangedPhases:Array = [AppStatePhases.SET_APP_STATE];
 		public var swfAddressChangedAfterPhases:Array = [SWFAddressPhases.SET_SWF_ADDRESS];
-		[ActRule(ActClassRule,afterPhases="{swfAddressChangedAfterPhases}")]
-		[ActReaction(phases="{swfAddressChangedPhases}")]
+		[ActRule(ActClassRule,afterPhases="<swfAddressChangedAfterPhases>")]
+		[ActReaction(phases="<swfAddressChangedPhases>")]
 		public function swfAddressChanged(execution:UniversalActExecution, cause:ISetSWFAddressAct):void{
 			// onlyIfNotSet is tested to see if this was the act fired by onCurrentPageRetrieved
 			if(cause!=_setSWFAddressAct || cause.onlyIfNotSet){
@@ -94,8 +94,8 @@ package org.tbyrne.actLibrary.application
 		
 		public var serialisedStateChangedPhases:Array = [SWFAddressPhases.SET_SWF_ADDRESS];
 		public var serialisedStateChangedAfterPhases:Array = [AppStatePhases.SET_SERIALISED_STATE];
-		[ActRule(ActClassRule,afterPhases="{serialisedStateChangedAfterPhases}")]
-		[ActReaction(phases="{serialisedStateChangedPhases}")]
+		[ActRule(ActClassRule,afterPhases="<serialisedStateChangedAfterPhases>")]
+		[ActReaction(phases="<serialisedStateChangedPhases>")]
 		public function serialisedStateChanged(execution:UniversalActExecution, cause:ISetSerialisedStateAct):void{
 			
 			if(cause!=_setSerialisedStateAct){

@@ -40,7 +40,7 @@ package org.tbyrne.display.containers
 			}
 		}
 		override protected function commitSize():void{
-			sizeBacking(size.x,size.y);
+			sizeBacking(_size.x,_size.y);
 		}
 		protected function sizeBacking(width:Number, height:Number):void{
 			if(_backing){

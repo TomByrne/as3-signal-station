@@ -3,10 +3,11 @@ package org.tbyrne.data.core
 	import org.tbyrne.acting.actTypes.IAct;
 	import org.tbyrne.acting.acts.Act;
 	import org.tbyrne.data.dataTypes.IStringConsumer;
+	import org.tbyrne.data.dataTypes.IStringData;
 	import org.tbyrne.data.dataTypes.IStringProvider;
 	import org.tbyrne.data.dataTypes.IValueProvider;
 
-	public class StringData implements IStringConsumer, IStringProvider, IValueProvider
+	public class StringData implements IStringConsumer, IStringProvider, IValueProvider, IStringData
 	{
 		
 		public function get stringValue():String{

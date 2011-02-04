@@ -43,7 +43,7 @@ package org.tbyrne.actLibrary.display.transition
 		}
 		
 		public var beforeTransitionBeforePhases:Array = [DisplayPhases.DISPLAY_CHANGED];
-		[ActRule(ActClassRule,beforePhases="{beforeTransitionBeforePhases}")]
+		[ActRule(ActClassRule,beforePhases="<beforeTransitionBeforePhases>")]
 		public function beforeTransition(cause:ITransitionAct):void{
 			if(cause.doTransition){
 				var adv:IAdvancedTransitionAct = (cause as IAdvancedTransitionAct);
@@ -100,8 +100,8 @@ package org.tbyrne.actLibrary.display.transition
 		
 		public var transitionPhases:Array = [TransitionPhases.TRANSITION];
 		public var transitionAfterPhases:Array = [DisplayPhases.DISPLAY_CHANGED];
-		[ActRule(ActClassRule,afterPhases="{transitionAfterPhases}")]
-		[ActReaction(phases="{transitionPhases}")]
+		[ActRule(ActClassRule,afterPhases="<transitionAfterPhases>")]
+		[ActReaction(phases="<transitionPhases>")]
 		public function transition(execution:UniversalActExecution, cause:ITransitionAct):void{
 			var bundle:TransBundle = _snapshots[cause];
 			if(bundle){

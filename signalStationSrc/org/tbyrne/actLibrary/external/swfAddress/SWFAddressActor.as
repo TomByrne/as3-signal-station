@@ -90,8 +90,8 @@ package org.tbyrne.actLibrary.external.swfAddress
 		
 		public var getSWFAddressPhases:Array = [SWFAddressPhases.GET_SWF_ADDRESS];
 		public var getSWFAddressBeforePhases:Array = [SWFAddressPhases.SET_SWF_ADDRESS];
-		[ActRule(ActClassRule,beforePhases="{getSWFAddressBeforePhases}")]
-		[ActReaction(phases="{getSWFAddressPhases}")]
+		[ActRule(ActClassRule,beforePhases="<getSWFAddressBeforePhases>")]
+		[ActReaction(phases="<getSWFAddressPhases>")]
 		public function getSWFAddress(cause:IGetSWFAddressAct):void{
 			if(!(cause is ISetSWFAddressAct) && cause!=_setSWFAddressAct){
 				fillGetSWFAddress(cause);
@@ -100,7 +100,7 @@ package org.tbyrne.actLibrary.external.swfAddress
 		
 		public var setSWFAddressPhases:Array = [SWFAddressPhases.SET_SWF_ADDRESS];
 		[ActRule(ActClassRule)]
-		[ActReaction(phases="{setSWFAddressPhases}")]
+		[ActReaction(phases="<setSWFAddressPhases>")]
 		public function setSWFAddress(execution:UniversalActExecution, cause:ISetSWFAddressAct):void{
 			if(cause!=_setSWFAddressAct){
 				var cast:IGetSWFAddressAct = (cause as IGetSWFAddressAct);

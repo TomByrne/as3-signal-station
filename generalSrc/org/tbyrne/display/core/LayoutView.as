@@ -90,8 +90,8 @@ package org.tbyrne.display.core
 			if(!_measurements)_measurements = new Point();
 			super(asset);
 			
-			addDrawFlag(_posDrawFlag = new FrameValidationFlag(this,commitPosition,true));
-			addDrawFlag(_sizeDrawFlag = new FrameValidationFlag(this,commitSize,true));
+			addDrawFlag(_posDrawFlag = new FrameValidationFlag(this,commitPosition,false));
+			addDrawFlag(_sizeDrawFlag = new FrameValidationFlag(this,commitSize,false));
 		}
 		
 		override protected function unbindFromAsset():void{

@@ -49,7 +49,7 @@ package org.tbyrne.actLibrary.application.states
 		
 		public var setSerialisedStatePhases:Array = [AppStatePhases.SET_SERIALISED_STATE];
 		[ActRule(ActClassRule)]
-		[ActReaction(phases="{setSerialisedStatePhases}")]
+		[ActReaction(phases="<setSerialisedStatePhases>")]
 		public function setSerialisedState(execution:UniversalActExecution, cause:ISetSerialisedStateAct):void{
 			
 			if(cause!=_setSerialisedStateAct){
@@ -63,7 +63,7 @@ package org.tbyrne.actLibrary.application.states
 		
 		public var setAppStatesPhases:Array = [AppStatePhases.SET_APP_STATES];
 		[ActRule(ActClassRule)]
-		[ActReaction(phases="{setAppStatesPhases}")]
+		[ActReaction(phases="<setAppStatesPhases>")]
 		public function setStates(execution:UniversalActExecution, cause:ISetAppStatesAct):void{
 			_states = cause.states;
 			commitState(execution);
@@ -85,7 +85,7 @@ package org.tbyrne.actLibrary.application.states
 		}
 		public var setAppStatePhases:Array = [AppStatePhases.SET_APP_STATE,LogicPhases.PROCESS_COMMAND];
 		[ActRule(ActClassRule)]
-		[ActReaction(phases="{setAppStatePhases}")]
+		[ActReaction(phases="<setAppStatePhases>")]
 		public function setAppState(execution:UniversalActExecution, cause:ISetAppStateAct): void{
 			if(!cause.appStateMatch){
 				throw new Error("WebAppAdvisor.afterSetState: no appStateMatch in act: "+cause);

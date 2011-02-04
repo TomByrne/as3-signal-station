@@ -2,6 +2,7 @@ package org.tbyrne.display.layout.grid
 {
 	import flash.geom.Point;
 	import flash.utils.Dictionary;
+	import flash.utils.getTimer;
 	
 	import org.tbyrne.acting.actTypes.IAct;
 	import org.tbyrne.acting.acts.Act;
@@ -238,7 +239,17 @@ package org.tbyrne.display.layout.grid
 		protected function set _pixelFlow(value:Boolean):void{
 			if(__pixelFlow!=value){
 				__pixelFlow = value;
-				_cellPosFlag.invalidate();
+				_cellMappingFlag.invalidate();
+				invalidateSize();
+			}
+		}
+		protected function get _renderersSameSize():Boolean{
+			return __renderersSameSize;
+		}
+		protected function set _renderersSameSize(value:Boolean):void{
+			if(__renderersSameSize!=value){
+				__renderersSameSize = value;
+				_cellMeasFlag.invalidate();
 				invalidateSize();
 			}
 		}
@@ -254,7 +265,9 @@ package org.tbyrne.display.layout.grid
 		protected var _mouseWheel:Act;
 		
 		protected var __pixelFlow:Boolean;
+		protected var __renderersSameSize:Boolean;
 		
+		protected var _sameCellMeas:Point; // when renderersSameSize is true the first measurement is stored here
 		protected var _cellMeasCache:Dictionary = new Dictionary(true);
 		protected var _cellPosCache:Array;
 		
@@ -263,10 +276,10 @@ package org.tbyrne.display.layout.grid
 		protected var _ignoreScrollChanges:Boolean;
 		
 		protected var _propsFlag:ValidationFlag = new ValidationFlag(validateProps,false);
+		protected var _cellMeasFlag:ValidationFlag = new ValidationFlag(validateCellMeas,false);
 		protected var _cellMappingFlag:ValidationFlag = new ValidationFlag(validateCellMapping,false);
 		protected var _breadthScrollFlag:ValidationFlag = new ValidationFlag(validateBreadthScroll,false);
 		protected var _lengthScrollFlag:ValidationFlag = new ValidationFlag(validateLengthScroll,false);
-		protected var _cellMeasFlag:ValidationFlag = new ValidationFlag(validateCellMeas,false);
 		protected var _cellPosFlag:ValidationFlag = new ValidationFlag(validateCellPos,false);
 		
 		protected var _verticalAxis:GridAxis;
@@ -274,6 +287,11 @@ package org.tbyrne.display.layout.grid
 		
 		protected var _breadthAxis:GridAxis;
 		protected var _lengthAxis:GridAxis;
+		
+		protected var _subjectCount:int;
+		
+		// we can optimise heavily if no IGridLayoutInfo objects are added, we track that here
+		protected var _anyGridInfos:Boolean;
 		
 		protected var _subjMeasChanged:Dictionary = new Dictionary();
 		
@@ -296,6 +314,20 @@ package org.tbyrne.display.layout.grid
 			_verticalAxis = new GridAxis("y"/*,"height"*/,"rowIndex");
 		}
 		
+		override public function addSubject(subject:ILayoutSubject):Boolean{
+			if(super.addSubject(subject)){
+				if(!_anyGridInfos){
+					if(subject.layoutInfo is IGridLayoutInfo){
+						// this gets set back to false if the unoptimised version runs and notices no IGridLayoutInfos
+						_anyGridInfos = true;
+					}
+				}
+				++_subjectCount;
+				return true;
+			}else{
+				return false;
+			}
+		}
 		override public function removeSubject(subject:ILayoutSubject):Boolean{
 			if(super.removeSubject(subject)){
 				var cast:IGridLayoutSubject = (subject as IGridLayoutSubject);
@@ -303,6 +335,7 @@ package org.tbyrne.display.layout.grid
 					cast.columnIndex = -1;
 					cast.rowIndex = -1;
 				}
+				--_subjectCount;
 				return true;
 			}
 			return false;
@@ -315,6 +348,9 @@ package org.tbyrne.display.layout.grid
 		 */
 		protected function getChildKeys():Dictionary{
 			return _subjects;
+		}
+		protected function getChildKeyCount():int{
+			return _subjectCount;
 		}
 		/**
 		 * Whether to remeasure this key.
@@ -376,8 +412,14 @@ package org.tbyrne.display.layout.grid
 		protected function validateCellMeas():void{
 			var keys:Dictionary = getChildKeys();
 			for(var key:* in keys){
-				if(remeasureChild(key)){
-					_cellMeasCache[key] = getChildMeasurement(key);
+				var childMeas:Point = getChildMeasurement(key);
+				if(_renderersSameSize){
+					_sameCellMeas = childMeas;
+					break;
+				}else{
+					if(remeasureChild(key)){
+						_cellMeasCache[key] = childMeas;
+					}
 				}
 			}
 			_subjMeasChanged = new Dictionary();
@@ -399,32 +441,83 @@ package org.tbyrne.display.layout.grid
 			_breadthAxis.maxCellSizes = [];
 			_lengthAxis.maxCellSizes = [];
 			
+			// this can save a lot of time for big data sets
+			if(!_size.x && !_size.y)return;
+			
+			var pixelFlow:Boolean = _pixelFlow;
+			
 			var breadthStackMax:Number;
-			if(_pixelFlow){
+			if(pixelFlow){
 				breadthStackMax = _size[_breadthAxis.coordRef]-_breadthAxis.foreMargin-_breadthAxis.aftMargin+_breadthAxis.gap;
+			}
+			
+			var hasMaxBreadthCount:Boolean = _breadthAxis.hasMaxCount;
+			var maxBreadthCount:int = _breadthAxis.maxCount;
+			var hasBreadthCellSizes:Boolean = _breadthAxis.hasCellSizes;
+			var renderersSameSize:Boolean = _renderersSameSize;
+			var newAnyGridInfos:Boolean;
+			
+			var ignoreMaxCalcs:Boolean;
+			
+			if(renderersSameSize && pixelFlow){
+				// in this case we can treat pixel flowing more like column flowing
+				var sameMeasBreadth:Number = _sameCellMeas[_breadthAxis.coordRef];
+				var sameMeasLength:Number = _sameCellMeas[_lengthAxis.coordRef];
+				
+				var maxBreadth:int = int(breadthStackMax/(sameMeasBreadth+_breadthAxis.gap));
+				if(!hasMaxBreadthCount || maxBreadthCount>maxBreadth){
+					maxBreadthCount = maxBreadth;
+				}
+				pixelFlow = false;
+				hasMaxBreadthCount = true;
+				
+				
+				// optimised way of finding max breadth/lengths
+				var maxLength:int = int(getChildKeyCount()/maxBreadth);
+				if(maxLength%1)maxLength += 1; // round up
+				
+				for(i=0; i<maxBreadthCount; ++i){
+					_breadthAxis.maxCellSizes[i] = sameMeasBreadth;
+				}
+				for(i=0; i<maxLength; ++i){
+					_lengthAxis.maxCellSizes[i] = sameMeasLength;
+				}
+				ignoreMaxCalcs = true;
 			}
 			
 			var keys:Dictionary = getChildKeys();
 			for(var key:* in keys){
-				var subMeas:Point = _cellMeasCache[key];
-				// derive grid position
+				var subMeas:Point;
+				if(renderersSameSize){
+					subMeas = _sameCellMeas;
+				}else{
+					subMeas = _cellMeasCache[key];
+				}
+				
+				// if cell has specific grid position, we get it here
 				var breadthIndex:int;
 				var lengthIndex:int;
 				var posFound:Boolean = false;
 				var layoutInfo:ILayoutInfo = getChildLayoutInfo(key);
-				var gridLayout:IGridLayoutInfo = (layoutInfo as IGridLayoutInfo);
-				if(gridLayout){
-					if(_isVertical){
-						breadthIndex = gridLayout.rowIndex;
-						lengthIndex = gridLayout.columnIndex;
-					}else{
-						breadthIndex = gridLayout.columnIndex;
-						lengthIndex = gridLayout.rowIndex;
-					}
-					if(lengthIndex!=-1){
-						posFound = true;
+				
+				if(_anyGridInfos){
+					var gridLayout:IGridLayoutInfo = (layoutInfo as IGridLayoutInfo);
+					if(gridLayout){
+						newAnyGridInfos = true;
+						if(_isVertical){
+							breadthIndex = gridLayout.rowIndex;
+							lengthIndex = gridLayout.columnIndex;
+						}else{
+							breadthIndex = gridLayout.columnIndex;
+							lengthIndex = gridLayout.rowIndex;
+						}
+						if(lengthIndex!=-1){
+							posFound = true;
+						}
 					}
 				}
+				
+				// if not we attempt to treat it as an item in a list (which will flow to fill the grid)
 				if(!posFound){
 					var listLayout:IListLayoutInfo = (layoutInfo as IListLayoutInfo);
 					if(listLayout){
@@ -433,55 +526,77 @@ package org.tbyrne.display.layout.grid
 						posFound = true;
 					}
 				}
+				
+				// if either of these succeeded and the cell has measurements we attmpet to position it in the visible grid
 				if(subMeas && posFound){
 					var subLengthDim:Number = subMeas[_lengthAxis.coordRef];
 					var subBreadthDim:Number = subMeas[_breadthAxis.coordRef];
 					var breadthIndices:Array;
-					// do flowing behaviour
 					var doFlow:Boolean;
-					if(_breadthAxis.hasMaxCount && breadthIndex>=_breadthAxis.maxCount){
+					
+					// if there's a maximum amount of columns/rows, we loop it here
+					if(hasMaxBreadthCount && breadthIndex>=maxBreadthCount){
 						doFlow = true;
-						lengthIndex += Math.floor(breadthIndex/_breadthAxis.maxCount);
-						breadthIndex = breadthIndex%_breadthAxis.maxCount;
+						lengthIndex += Math.floor(breadthIndex/maxBreadthCount);
+						breadthIndex = breadthIndex%maxBreadthCount;
 					}
-					if(breadthIndex==-1 || doFlow || _pixelFlow){
+					
+					/*
+					Looping behaviour starts here:
+					If there's still no breathIndex (it had an unknown/unfilled ILayoutInfo) we use pixelFlowing
+					behaviour (this is uncommon).
+					If the maximimum rows/cols were reached and therefore this cell was was wrapped then we also run
+					through this logic.
+					
+					It continually wraps until it finds a row/col where it'll fit (some cells can already be filled
+					by previous IGridLayoutInfo cells)
+					*/
+					if(breadthIndex==-1 || doFlow || pixelFlow){
 						var satisfied:Boolean = false;
+						
+						if(breadthIndex==-1){
+							breadthIndex = 0;
+						}
+						
 						while(!satisfied){
 							breadthIndices = _cellPosCache[lengthIndex];
 							var breadthTotal:int;
 							if(!breadthIndices){
-								if(_breadthAxis.hasMaxCount){
+								// if this row/col hasn't been encountered yet we create a position cache for it
+								if(hasMaxBreadthCount){
 									_cellPosCache[lengthIndex] = breadthIndices = [];
-									breadthTotal = _breadthAxis.maxCount;
-								}else{
-									breadthIndex = 0;
-									satisfied = true;
-									break;
+									breadthTotal = maxBreadthCount;
 								}
+								satisfied = true;
+								break;
 							}else{
-								if(_breadthAxis.hasMaxCount && _breadthAxis.maxCount>breadthIndices.length){
-									breadthTotal = _breadthAxis.maxCount;
+								if(hasMaxBreadthCount && maxBreadthCount>breadthIndices.length){
+									breadthTotal = maxBreadthCount;
 								}else{
 									// plus an extra one to give it room to wrap into
 									breadthTotal = breadthIndices.length+2;
 								}
 							}
 							if(!satisfied){
-								if(breadthIndex==-1){
-									breadthIndex = 0;
-								}
 								var breadthStack:Number = 0;
+								
+								// loop through cells already added to this row to get total size up to intended index
 								for(i=0; i<breadthTotal; i++){
 									var otherKey:* = breadthIndices[i];
 									var doWrap:Boolean = false;
 									
-									if(_pixelFlow){
+									if(pixelFlow){
+										// add to the stack and work out whether it needs to wrap (by pixel)
 										var cellBreadth:Number = NaN;
-										if(_breadthAxis.hasCellSizes){
+										if(hasBreadthCellSizes){
 											cellBreadth = _breadthAxis.cellSizes[i%_breadthAxis.cellSizesCount];
 										}else if(otherKey!=null){
 											cellBreadth = _cellMeasCache[otherKey][_breadthAxis.coordRef];
 										}else{
+											/*
+											@TODO: this is an assumption. If a later cell fills this slot with
+											different measurements to the current cell, it will fail.
+											*/
 											cellBreadth = subMeas[_breadthAxis.coordRef];
 										}
 										breadthStack += cellBreadth+_breadthAxis.gap;
@@ -490,15 +605,16 @@ package org.tbyrne.display.layout.grid
 										}
 									}
 									
-									if(i>=breadthIndex){
-										if(otherKey==null && !doWrap){
+									// i>=breadthIndex tests whether we've yet passed the intended cell location
+									if(!doWrap && i>=breadthIndex){
+										if(_breadthAxis.hasMaxCount && i>=maxBreadthCount){
+											// if we have exceeded the max cols/rows we wrap
+											doWrap = true;
+										}else if(otherKey==null){
+											// else if slot is unoccupied we take it
 											breadthIndex = i;
 											satisfied = true;
 											break;
-										}else{
-											if(_breadthAxis.hasMaxCount && i>=_breadthAxis.maxCount){
-												doWrap = true;
-											}
 										}
 									}
 									if(doWrap){
@@ -521,17 +637,22 @@ package org.tbyrne.display.layout.grid
 						breadthIndices[breadthIndex] = key;
 					}
 					
-					// store measurements against grid position
-					var currentMaxLength:Number = _lengthAxis.maxCellSizes[lengthIndex];
-					if(isNaN(currentMaxLength) || currentMaxLength<subLengthDim){
-						_lengthAxis.maxCellSizes[lengthIndex] = subLengthDim;
-					}
-					var currentMaxBredth:Number = _breadthAxis.maxCellSizes[breadthIndex];
-					if(isNaN(currentMaxBredth) || currentMaxBredth<subBreadthDim){
-						_breadthAxis.maxCellSizes[breadthIndex] = subBreadthDim;
+					if(!ignoreMaxCalcs){
+						// store measurements against grid position
+						var currentMaxLength:Number = _lengthAxis.maxCellSizes[lengthIndex];
+						if(isNaN(currentMaxLength) || currentMaxLength<subLengthDim){
+							_lengthAxis.maxCellSizes[lengthIndex] = subLengthDim;
+						}
+						var currentMaxBredth:Number = _breadthAxis.maxCellSizes[breadthIndex];
+						if(isNaN(currentMaxBredth) || currentMaxBredth<subBreadthDim){
+							_breadthAxis.maxCellSizes[breadthIndex] = subBreadthDim;
+						}
 					}
 				}
 			}
+			_anyGridInfos = newAnyGridInfos;
+			
+			// if specific sizes have been set for rows/cols, we replace the calculated maxs here 
 			var maxLengthMeas:Number = _lengthAxis.foreMargin+_lengthAxis.aftMargin+(_lengthAxis.maxCellSizes.length-1)*_lengthAxis.gap;
 			for(i=0; i<_lengthAxis.maxCellSizes.length; i++){
 				subLengthDim = _lengthAxis.maxCellSizes[i];
@@ -550,7 +671,7 @@ package org.tbyrne.display.layout.grid
 				subBreadthDim = _breadthAxis.maxCellSizes[i];
 				maxBreadthMeas += (isNaN(subBreadthDim)?0:subBreadthDim);
 				
-				if(_breadthAxis.hasCellSizes){
+				if(hasBreadthCellSizes){
 					var specBreadth:Number = _breadthAxis.cellSizes[i%_breadthAxis.cellSizesCount];
 					if(!isNaN(specBreadth)){
 						_breadthAxis.maxCellSizes[i] = specBreadth;

@@ -67,7 +67,7 @@ package org.tbyrne.actLibrary.display.visualSockets
 		
 		public var contentRequestPhases:Array = [VisualSocketPhases.FILL_SOCKET];
 		[ActRule(ActClassRule)]
-		[ActReaction(phases="{contentRequestPhases}")]
+		[ActReaction(phases="<contentRequestPhases>")]
 		public function onContentRequest(execution:UniversalActExecution, cause:IFillSocketAct):void{
 			if(!_rootSocketBundle){
 				_pendingFillSockets.addMethodCall([execution,cause]);

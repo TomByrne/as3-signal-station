@@ -26,7 +26,7 @@ package org.tbyrne.actLibrary.sound
 		
 		public var changeTransitionPhases:Array = [SoundPhases.CHANGE_TRANS_SETTINGS];
 		[ActRule(ActClassRule)]
-		[ActReaction(phases="{changeTransitionPhases}")]
+		[ActReaction(phases="<changeTransitionPhases>")]
 		public function onChangeTransition(cause:ISetTransitionSettingsAct):void{
 			_soundManager.fadeDuration = cause.time;
 			_soundManager.fadeEasing = cause.easing;
@@ -34,14 +34,14 @@ package org.tbyrne.actLibrary.sound
 		
 		public var changeSettingsIdPhases:Array = [SoundPhases.CHANGE_SETTINGS_ID];
 		[ActRule(ActClassRule)]
-		[ActReaction(phases="{changeSettingsIdPhases}")]
+		[ActReaction(phases="<changeSettingsIdPhases>")]
 		public function onChangeSettingsId(cause:IChangeSoundSettingsIdAct):void{
 			_soundManager.changeSettingDetails(cause.id, cause.path, cause.storageEnabled, cause.loadFromSettings);
 		}
 		
 		public var changeVolumePhases:Array = [SoundPhases.CHANGE_VOLUME];
 		[ActRule(ActClassRule)]
-		[ActReaction(phases="{changeVolumePhases}")]
+		[ActReaction(phases="<changeVolumePhases>")]
 		public function onChangeVolume(cause:IChangeVolumeAct):void{
 			_soundManager.globalVolume = cause.volume;
 			_soundManager.muted = cause.muted;
@@ -49,28 +49,28 @@ package org.tbyrne.actLibrary.sound
 
 		public var addSoundGroupPhases:Array = [SoundPhases.ADD_SOUND_GROUP];
 		[ActRule(ActClassRule)]
-		[ActReaction(phases="{addSoundGroupPhases}")]
+		[ActReaction(phases="<addSoundGroupPhases>")]
 		public function onAddSoundGroup(cause:IAddSoundGroupAct):void{
 			_soundManager.addGroupSettings(cause.soundGroup,cause.soundGroupSettings);
 		}
 		
 		public var removeSoundGroupPhases:Array = [SoundPhases.REMOVE_SOUND_GROUP];
 		[ActRule(ActClassRule)]
-		[ActReaction(phases="{removeSoundGroupPhases}")]
+		[ActReaction(phases="<removeSoundGroupPhases>")]
 		public function onRemoveSoundGroup(cause:IAddSoundGroupAct):void{
 			_soundManager.removeGroupSettings(cause.soundGroup);
 		}
 		
 		public var removeSoundPhases:Array = [SoundPhases.REMOVE_SOUND];
 		[ActRule(ActClassRule)]
-		[ActReaction(phases="{removeSoundPhases}")]
+		[ActReaction(phases="<removeSoundPhases>")]
 		public function onRemoveSound(cause:IRemoveSoundAct):void{
 			_soundManager.removeSound(cause.soundControl);
 		}
 		
 		public var addSoundPhases:Array = [SoundPhases.ADD_SOUND];
 		[ActRule(ActClassRule)]
-		[ActReaction(phases="{addSoundPhases}")]
+		[ActReaction(phases="<addSoundPhases>")]
 		public function onAddSound(execution:UniversalActExecution, cause:IAddSoundAct):void{
 			// TODO: Bug here if sound is discarded immediately by sound manager (e.g. if postpone = false and doesn't play)
 			var control:ISoundControl = cause.soundControl;
