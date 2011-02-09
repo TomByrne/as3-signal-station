@@ -59,6 +59,7 @@ package org.tbyrne.display.containers
 		private static const TRANS_DURATION:Number = 0.25;
 		
 		override public function set mediaSource(value:IMediaSource):void{
+			attemptInit()
 			if(super.mediaSource != value){
 				if(_videoSource){
 					_videoSource.playingChanged.removeHandler(onPlayingChanged);

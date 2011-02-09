@@ -4,8 +4,8 @@ package org.tbyrne.display.containers
 	import flash.display.Sprite;
 	import flash.geom.Rectangle;
 	
-	import org.tbyrne.display.assets.nativeTypes.IDisplayObjectContainer;
 	import org.tbyrne.display.assets.nativeTypes.IDisplayObject;
+	import org.tbyrne.display.assets.nativeTypes.IDisplayObjectContainer;
 	import org.tbyrne.display.core.ILayoutView;
 	import org.tbyrne.display.layout.ILayoutSubject;
 	import org.tbyrne.display.layout.ProxyLayoutSubject;
@@ -26,18 +26,20 @@ package org.tbyrne.display.containers
 		public function set mediaSource(value:IMediaSource):void{
 			if(_mediaSource!=value){
 				if(_mediaSource){
+					_mediaSourceDisplay.assetChanged.removeHandler(onMediaAssetChanged);
 					_mediaSource.returnMediaDisplay(_mediaSourceDisplay);
-					if(_mediaContainer)_mediaContainer.removeAsset(_mediaSourceDisplay.asset);
 					_mediaSourceDisplay = null;
 				}
 				_mediaSource = value;
 				if(_mediaSource){
 					_mediaSourceDisplay = _mediaSource.takeMediaDisplay();
-					if(_mediaContainer)_mediaContainer.addAsset(_mediaSourceDisplay.asset);
+					setMediaAsset(_mediaSourceDisplay.asset);
+					_mediaSourceDisplay.assetChanged.addHandler(onMediaAssetChanged);
 					_layoutProxy.target = _mediaSourceDisplay;
 					invalidateSize();
 				}else{
 					_layoutProxy.target = null;
+					setMediaAsset(null);
 				}
 			}
 		}
@@ -55,6 +57,7 @@ package org.tbyrne.display.containers
 		protected var _mediaSource:IMediaSource;
 		protected var _mediaLayoutInfo:ILayoutInfo;
 		protected var _mediaSourceDisplay:ILayoutView;
+		protected var _mediaSourceDisplayAsset:IDisplayObject;
 		protected var _layoutProxy:ProxyLayoutSubject = new ProxyLayoutSubject();
 		protected var _layout:FrameLayout;
 		protected var _mediaContainer:IDisplayObjectContainer;
@@ -76,7 +79,7 @@ package org.tbyrne.display.containers
 		override protected function bindToAsset() : void{
 			super.bindToAsset()
 			_mediaContainer = _asset.factory.createContainer();
-			if(_mediaSourceDisplay)_mediaContainer.addAsset(_mediaSourceDisplay.asset);
+			if(_mediaSourceDisplayAsset)_mediaContainer.addAsset(_mediaSourceDisplayAsset);
 			_mediaBounds = _containerAsset.takeAssetByName(MEDIA_BOUNDS,IDisplayObject,true);
 			if(_mediaBounds){
 				if(!_assumedLayoutInfo){
@@ -102,7 +105,7 @@ package org.tbyrne.display.containers
 			super.unbindFromAsset();
 			_containerAsset.removeAsset(_mediaContainer);
 			
-			if(_mediaSourceDisplay)_mediaContainer.removeAsset(_mediaSourceDisplay.asset);
+			if(_mediaSourceDisplayAsset)_mediaContainer.removeAsset(_mediaSourceDisplayAsset);
 			_asset.factory.destroyAsset(_mediaContainer);
 		}
 		override protected function measure() : void{
@@ -122,5 +125,23 @@ package org.tbyrne.display.containers
 				_mediaBounds.setSizeAndPos(_scrollRect.x,_scrollRect.y,_scrollRect.width,_scrollRect.height);
 			}
 		}
+		
+		protected function onMediaAssetChanged(from:ILayoutView, oldAsset:IDisplayObject):void{
+			setMediaAsset(_mediaSourceDisplay.asset);
+			validateSize(true);
+		}
+		
+		protected function setMediaAsset(asset:IDisplayObject):void{
+			if(_mediaSourceDisplayAsset != asset){
+				if(_mediaSourceDisplayAsset && _mediaContainer){
+					_mediaContainer.removeAsset(_mediaSourceDisplayAsset);
+				}
+				_mediaSourceDisplayAsset = asset;
+				if(_mediaSourceDisplayAsset && _mediaContainer){
+					_mediaContainer.addAsset(_mediaSourceDisplayAsset);
+				}
+			}
+		}
+		
 	}
 }

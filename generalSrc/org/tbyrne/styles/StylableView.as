@@ -41,8 +41,8 @@ package org.tbyrne.styles
 			StyleManager.addStylable(this);
 		}
 		override protected function unbindFromAsset() : void{
-			super.unbindFromAsset();
 			StyleManager.removeStylable(this);
+			super.unbindFromAsset();
 		}
 		
 		

@@ -75,12 +75,12 @@ package org.tbyrne.display.core
 					throw new Error("scopedObject has not been added");
 				}
 			}
-			bundle.release();
-			delete scopedObjects[scopedObject];
-			scopedObject.scopeChanged.removeHandler(onScopeDisplayChange);
 			if(scopedObject.scope){
 				removeObjectScope(scopedObject);
 			}
+			bundle.release();
+			delete scopedObjects[scopedObject];
+			scopedObject.scopeChanged.removeHandler(onScopeDisplayChange);
 		}
 		
 		
@@ -169,7 +169,7 @@ package org.tbyrne.display.core
 			
 			var bundle:ScopedObjectBundle = scopedObjects[scopedObject];
 			newScope.addedToStage.addHandler(bundle.onScopeAdded);
-			newScope.addedToStage.addHandler(bundle.onScopeRemoved);
+			newScope.removedFromStage.addHandler(bundle.onScopeRemoved);
 			
 			var manager:IScopedObjectRoot = findManagerFor(newScope);
 			if(manager){
@@ -182,7 +182,7 @@ package org.tbyrne.display.core
 			
 			var bundle:ScopedObjectBundle = scopedObjects[scopedObject];
 			fromScope.addedToStage.removeHandler(bundle.onScopeAdded);
-			fromScope.addedToStage.removeHandler(bundle.onScopeRemoved);
+			fromScope.removedFromStage.removeHandler(bundle.onScopeRemoved);
 			
 			var manager:IScopedObjectRoot = scopedObjectMap[scopedObject];
 			if(manager){

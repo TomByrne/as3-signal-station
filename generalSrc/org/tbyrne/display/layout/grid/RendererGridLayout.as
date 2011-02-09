@@ -579,6 +579,10 @@ package org.tbyrne.display.layout.grid
 				var total:Number = 0;
 				var foundPixMax:Boolean;
 				
+				if(isNaN(scrollMetrics.scrollValue)){
+					scrollMetrics.scrollValue = 0;
+				}
+				
 				var scrollByPxValue:int = scrollMetrics.scrollValue;
 				if(scrollByPxValue<scrollMetrics.minimum || isNaN(scrollByPxValue))scrollByPxValue = scrollMetrics.minimum;
 				else if(scrollByPxValue>scrollMetrics.maximum-scrollMetrics.pageSize)scrollByPxValue = scrollMetrics.maximum-scrollMetrics.pageSize;
@@ -604,12 +608,12 @@ package org.tbyrne.display.layout.grid
 						comparePixScroll = stack+measurement;
 						newIndex = i;
 					}
-					stack += measurement;
 					if(!isNaN(pixScroll) && newIndexMax==-1 && stack>realDim+comparePixScroll){
-						// find the last visible row
+						// find the first row after all visible rows
 						newIndexMax = i;
 						if(foundPixMax)break;
 					}
+					stack += measurement;
 					if(!foundPixMax && (stack>pixScrollMax || i==axis.maxCellSizes.length-1)){
 						// find the first visible row
 						foundPixMax = true;

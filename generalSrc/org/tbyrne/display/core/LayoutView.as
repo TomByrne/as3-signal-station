@@ -170,7 +170,6 @@ package org.tbyrne.display.core
 		}
 		
 		public function setAssetAndPosition(asset:IDisplayObject):void{
-			this.asset = asset;
 			if(asset){
 				//_measureFlag.validate();
 				//setDisplayPosition(asset.x,asset.y,_measurements.x,_measurements.y);
@@ -179,6 +178,7 @@ package org.tbyrne.display.core
 				asset.scaleX = 1;
 				asset.scaleY = 1;
 			}
+			this.asset = asset;
 		}
 		final protected function doMeasure():void{
 			attemptInit();

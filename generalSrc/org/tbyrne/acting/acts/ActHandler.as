@@ -38,6 +38,8 @@ package org.tbyrne.acting.acts
 			handler = null;
 			additionalArguments = null;
 			pool.unshift(this);
+			checkExecutions = false;
+			_executions = 0;
 		}
 	}
 }

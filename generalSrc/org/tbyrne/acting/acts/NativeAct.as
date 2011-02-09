@@ -2,6 +2,7 @@ package org.tbyrne.acting.acts
 {
 	import flash.events.Event;
 	import flash.events.IEventDispatcher;
+	import flash.utils.Dictionary;
 
 	public class NativeAct extends Act
 	{

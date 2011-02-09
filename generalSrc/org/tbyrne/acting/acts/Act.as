@@ -136,6 +136,9 @@ package org.tbyrne.acting.acts
 					_handlers = new Array();
 					_handlerIndices = new Dictionary();
 				}
+				if(_toRemove){
+					_toRemove = [];
+				}
 				setHandlerCount(0);
 			}
 		}

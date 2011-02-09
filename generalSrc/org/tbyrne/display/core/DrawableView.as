@@ -25,7 +25,7 @@ package org.tbyrne.display.core
 				if(_asset){
 					asset.addedToStage.removeHandler(onAddedToStage);
 					asset.removedFromStage.removeHandler(onRemovedFromStage);
-					if(value.stage){
+					if(_asset.stage){
 						onRemovedFromStage();
 					}
 				}
