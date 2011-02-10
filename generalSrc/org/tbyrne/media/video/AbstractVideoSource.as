@@ -13,12 +13,14 @@ package org.tbyrne.media.video
 	import org.tbyrne.acting.actTypes.IAct;
 	import org.tbyrne.acting.acts.Act;
 	import org.tbyrne.core.DelayedCall;
+	import org.tbyrne.data.core.BooleanData;
 	import org.tbyrne.data.core.NumberData;
+	import org.tbyrne.data.dataTypes.IBooleanData;
 	import org.tbyrne.data.dataTypes.INumberData;
 	import org.tbyrne.data.dataTypes.INumberProvider;
-	import org.tbyrne.display.assets.nativeTypes.IVideo;
 	import org.tbyrne.display.assets.nativeAssets.NativeAssetFactory;
 	import org.tbyrne.display.assets.nativeAssets.VideoAsset;
+	import org.tbyrne.display.assets.nativeTypes.IVideo;
 	import org.tbyrne.display.core.ILayoutView;
 	import org.tbyrne.display.layout.frame.FrameLayoutInfo;
 	import org.tbyrne.media.MediaSource;
@@ -54,15 +56,6 @@ package org.tbyrne.media.video
 			if(!_volumeChanged)_volumeChanged = new Act();
 			return _volumeChanged;
 		}
-		
-		/**
-		 * @inheritDoc
-		 */
-		public function get mutedChanged():IAct{
-			if(!_mutedChanged)_mutedChanged = new Act();
-			return _mutedChanged;
-		}
-		
 		
 		public function get playing():Boolean{
 			return _playing;
@@ -113,15 +106,8 @@ package org.tbyrne.media.video
 			}
 		}
 		
-		public function get muted():Boolean{
+		public function get muted():IBooleanData{
 			return _muted;
-		}
-		public function set muted(value:Boolean):void{
-			if(_muted!=value){
-				_muted = value;
-				assessVolume();
-				if(_mutedChanged)_mutedChanged.perform(this);
-			}
 		}
 		/**
 		 * useTotalForProgress determines whether the progress properties
@@ -139,12 +125,12 @@ package org.tbyrne.media.video
 		
 		protected var _streamStarted:Boolean;
 		protected var _volume:Number = 1;
-		protected var _muted:Boolean;
 		protected var _buffered:Boolean;
 		protected var _playing:Boolean;
 		protected var _useTotalForProgress:Boolean = true;
 		protected var _smallBuffer:Number;
 		protected var _displaysTaken:int = 0;
+		protected var _muted:BooleanData;
 		
 		protected var _loadingStartAt:Number;
 		protected var _loadingByteOffset:Number;
@@ -171,7 +157,6 @@ package org.tbyrne.media.video
 		protected var _volumeChanged:Act;
 		protected var _bufferedChanged:Act;
 		protected var _playingChanged:Act;
-		protected var _mutedChanged:Act;
 		
 		public function AbstractVideoSource(){
 			super();
@@ -183,7 +168,14 @@ package org.tbyrne.media.video
 			
 			_totalTime = new NumberData();
 			
+			_muted = new BooleanData(false);
+			_muted.booleanValueChanged.addHandler(onMutedChanged);
+			
 			_nativeFactory = new NativeAssetFactory();
+		}
+		
+		protected function onMutedChanged(from:IBooleanData):void{
+			assessVolume();
 		}
 		
 		protected function onCurrentTimeChanged(from:NumberData):void{
@@ -361,7 +353,7 @@ package org.tbyrne.media.video
 		}
 		protected function assessVolume():void{
 			if(_streamStarted){
-				_netStream.soundTransform = new SoundTransform(_muted && _displaysTaken>0?0:_volume);
+				_netStream.soundTransform = new SoundTransform(_muted.booleanValue && _displaysTaken>0?0:_volume);
 			}
 		}
 		protected function assessBufferSize():void{

@@ -3,10 +3,11 @@ package org.tbyrne.data.core
 	import org.tbyrne.acting.actTypes.IAct;
 	import org.tbyrne.acting.acts.Act;
 	import org.tbyrne.data.dataTypes.IBooleanConsumer;
+	import org.tbyrne.data.dataTypes.IBooleanData;
 	import org.tbyrne.data.dataTypes.IBooleanProvider;
 	import org.tbyrne.data.dataTypes.IValueProvider;
 	
-	public class BooleanData implements IBooleanConsumer, IBooleanProvider, IValueProvider
+	public class BooleanData implements IBooleanData, IBooleanConsumer, IBooleanProvider, IValueProvider
 	{
 		
 		public function get value():*{

@@ -3,7 +3,6 @@ package org.tbyrne.display.containers
 	import fl.transitions.easing.Regular;
 	
 	import flash.events.Event;
-	import flash.events.KeyboardEvent;
 	import flash.events.TimerEvent;
 	import flash.geom.Point;
 	import flash.geom.Rectangle;
@@ -12,14 +11,18 @@ package org.tbyrne.display.containers
 	import flash.utils.Timer;
 	
 	import org.goasap.events.GoEvent;
+	import org.tbyrne.data.core.BooleanData;
 	import org.tbyrne.data.core.StringData;
+	import org.tbyrne.data.dataTypes.IBooleanData;
+	import org.tbyrne.data.dataTypes.IBooleanProvider;
 	import org.tbyrne.display.DisplayNamespace;
 	import org.tbyrne.display.actInfo.IKeyActInfo;
 	import org.tbyrne.display.actInfo.IMouseActInfo;
-	import org.tbyrne.display.assets.nativeTypes.IDisplayObjectContainer;
 	import org.tbyrne.display.assets.nativeTypes.IDisplayObject;
+	import org.tbyrne.display.assets.nativeTypes.IDisplayObjectContainer;
 	import org.tbyrne.display.assets.nativeTypes.IInteractiveObject;
 	import org.tbyrne.display.assets.nativeTypes.ISprite;
+	import org.tbyrne.display.assets.states.StateDef;
 	import org.tbyrne.display.controls.BufferBar;
 	import org.tbyrne.display.controls.Button;
 	import org.tbyrne.display.controls.Control;
@@ -30,7 +33,6 @@ package org.tbyrne.display.containers
 	import org.tbyrne.display.core.LayoutView;
 	import org.tbyrne.display.layout.canvas.CanvasLayout;
 	import org.tbyrne.display.layout.canvas.CanvasLayoutInfo;
-	import org.tbyrne.display.utils.FullscreenUtil;
 	import org.tbyrne.formatters.patternFormatters.VideoProgressFormatter;
 	import org.tbyrne.media.IMediaSource;
 	import org.tbyrne.media.video.IVideoSource;
@@ -53,6 +55,9 @@ package org.tbyrne.display.containers
 		DisplayNamespace static const CENTERED_PAUSE_BUTTON:String = "centredPauseButton";
 		DisplayNamespace static const PROGRESS_LABEL:String = "progressLabel";
 		
+		DisplayNamespace static const STATE_FULL_SCREEN:String = "fullScreen";
+		DisplayNamespace static const STATE_NOT_FULL_SCREEN:String = "notFullScreen";
+		
 		
 		DisplayNamespace static const DEFAULT_DISABLE_TIME:Number = 1;
 		// the amount of time in seconds it takes the control container to move in or out.
@@ -64,16 +69,17 @@ package org.tbyrne.display.containers
 				if(_videoSource){
 					_videoSource.playingChanged.removeHandler(onPlayingChanged);
 					_videoSource.volumeChanged.removeHandler(onDataChanged);
-					_videoSource.mutedChanged.removeHandler(onDataChanged);
+					_videoSource.muted.booleanValueChanged.removeHandler(onMuteChanged);
 					if(_videoProgressProvider)_videoProgressProvider.videoSource = null;
 				}
 				super.mediaSource = value;
 				_videoSource = (value as IVideoSource);
 				_volumeMemory.videoSource = _videoSource;
 				if(_videoSource){
+					if(_muteButton)_muteButton.data = _videoSource.muted;
 					_videoSource.playingChanged.addHandler(onPlayingChanged);
 					_videoSource.volumeChanged.addHandler(onDataChanged);
-					_videoSource.mutedChanged.addHandler(onDataChanged);
+					_videoSource.muted.booleanValueChanged.addHandler(onMuteChanged);
 					if(_videoProgressProvider)_videoProgressProvider.videoSource = _videoSource;
 					syncToData();
 					if(!_bound){
@@ -81,10 +87,13 @@ package org.tbyrne.display.containers
 					}else if(_hasControlCont){
 						transTo(1);
 					}
-				}else if(!_bound){
-					_openFract = 0;
-				}else if(_hasControlCont){
-					transTo(0);
+				}else{
+					if(_muteButton)_muteButton.data = null;
+					if(!_bound){
+						_openFract = 0;
+					}else if(_hasControlCont){
+						transTo(0);
+					}
 				}
 			}
 		}
@@ -102,12 +111,6 @@ package org.tbyrne.display.containers
 					activateMouse();
 				}
 			}
-		}
-		public function get fullScreenScale():Number{
-			return _fullscreenUtil.fullScreenScale;
-		}
-		public function set fullScreenScale(value:Number):void{
-			_fullscreenUtil.fullScreenScale = value;
 		}
 		
 		/**
@@ -133,9 +136,14 @@ package org.tbyrne.display.containers
 			}
 		}
 		
-		DisplayNamespace function get fullscreenUtil():FullscreenUtil{
-			checkFullScreenUtil();
-			return _fullscreenUtil;
+		/**
+		 * This exposes whether this videos full screen button is selected,
+		 * which can be used in conjunction with a class like FullscreenUtil
+		 * to achieve full screen functionality.
+		 */
+		public function get fullScreenSelected():IBooleanProvider{
+			attemptInit();
+			return _fullScreenSelected;
 		}
 		
 		private var _disableTime:Number = DEFAULT_DISABLE_TIME;
@@ -149,7 +157,7 @@ package org.tbyrne.display.containers
 		
 		protected var _playPauseButton:ToggleButton;
 		protected var _stopButton:Button;
-		protected var _fullscreenButton:ToggleButton;
+		protected var _fullScreenButton:ToggleButton;
 		protected var _rewindButton:Button;
 		protected var _centredPauseButton:ToggleButton;
 		protected var _muteButton:SliderButton;
@@ -168,22 +176,34 @@ package org.tbyrne.display.containers
 		private var _mouseOverControls:Boolean;
 		
 		private var _progressLabelPattern:String;
-		protected var _fullscreenUtil:FullscreenUtil;
 		private var _mainLayout:CanvasLayout;
 		private var _contLayout:CanvasLayout;
 		private var _videoCover:ISprite;
 		private var _videoSource:IVideoSource;
 		
 		private var _volumeMemory:VolumeMemory;
+		private var _fullScreenSelected:BooleanData;
+		
+		protected var _fullScreenState:StateDef = new StateDef([STATE_NOT_FULL_SCREEN,STATE_FULL_SCREEN],0);
+		protected var _childStateList:Array = [_fullScreenState];
 		
 		public function VideoContainer(asset:IDisplayObject=null){
 			super(asset);
+		}
+		override protected function fillStateList(fill:Array):Array{
+			fill = super.fillStateList(fill);
+			fill.push(_fullScreenState);
+			return fill;
 		}
 		override protected function init() : void{
 			super.init();
 			_volumeMemory = new VolumeMemory();
 			_mainLayout = new CanvasLayout(this);
 			_contLayout = new CanvasLayout();
+			
+			
+			_fullScreenSelected = new BooleanData();
+			_fullScreenSelected.booleanValueChanged.addHandler(onFullscreenChange);
 		}
 		override protected function bindToAsset() : void{
 			super.bindToAsset();
@@ -199,14 +219,13 @@ package org.tbyrne.display.containers
 			
 			_playPauseButton = bindButton(_playPauseButton, ToggleButton, PLAY_PAUSE_BUTTON,onPlayPauseClick);
 			_stopButton = bindButton(_stopButton, Button, STOP_BUTTON,onStopClick);
-			_fullscreenButton = bindButton(_fullscreenButton, ToggleButton,FULLSCREEN_BUTTON,onFullscreenClick);
 			_rewindButton = bindButton(_rewindButton, Button,REWIND_BUTTON,onRewindClick);
 			
-			var hadMuteButton:Boolean = (_muteButton!=null);
-			_muteButton = bindButton(_muteButton, SliderButton,MUTE_BUTTON,onMuteClick);
-			if(_muteButton && !hadMuteButton){
-				_muteButton.valueChangedByUser.addHandler(onVolumeSliderChange);
-			}
+			_fullScreenButton = bindView(_fullScreenButton, ToggleButton,FULLSCREEN_BUTTON,false);
+			if(_fullScreenButton)_fullScreenButton.data = _fullScreenSelected;
+			
+			_muteButton = bindView(_muteButton, SliderButton,MUTE_BUTTON, false);
+			if(_muteButton && _videoSource)_muteButton.data = _videoSource.muted;
 			
 			var pauseAsset:IInteractiveObject = _containerAsset.takeAssetByName(CENTERED_PAUSE_BUTTON,IInteractiveObject,true);
 			if(pauseAsset){
@@ -274,7 +293,6 @@ package org.tbyrne.display.containers
 					_volumeSlider.value = _videoSource.volume;
 				}
 				if(_muteButton){
-					_muteButton.selected = _videoSource.muted;
 					_muteButton.value = _videoSource.volume;
 				}
 				assessPlaying();
@@ -301,6 +319,7 @@ package org.tbyrne.display.containers
 				parentMeas = new Point(_backing.width,_backing.height);
 			}
 			if(asset){
+				asset.addStateList(_childStateList,false);
 				if(!layoutView){
 					layoutView = new controlClass();
 					layout.addSubject(layoutView);
@@ -347,9 +366,12 @@ package org.tbyrne.display.containers
 				(_playPauseButton.asset as IInteractiveObject).mouseMoved.removeHandler(onVideoMouse);
 				unbindView(_playPauseButton);
 			}
-			unbindView(_muteButton);
+			if(_muteButton){
+				_muteButton.data = null;
+				unbindView(_muteButton);
+			}
 			unbindView(_stopButton);
-			unbindView(_fullscreenButton);
+			unbindView(_fullScreenButton);
 			unbindView(_centredPauseButton);
 			unbindView(_volumeSlider);
 			unbindView(_bufferBar);
@@ -377,6 +399,7 @@ package org.tbyrne.display.containers
 			if(layoutView){
 				layoutView.asset.parent.returnAsset(layoutView.asset);
 				layoutView.asset = null;
+				layoutView.asset.removeStateList(_childStateList);
 			}
 		}
 		override protected function commitSize():void{
@@ -447,22 +470,24 @@ package org.tbyrne.display.containers
 			}
 		}
 		protected function onFullscreenToggle(from:IInteractiveObject, mouseActInfo:IMouseActInfo):void{
-			checkFullScreenUtil();
-			_fullscreenUtil.active = !_fullscreenUtil.active;
-			if(_fullscreenButton)_fullscreenButton.selected = _fullscreenUtil.active;
+			//checkFullScreenUtil();
+			//_fullscreenUtil.active = !_fullscreenUtil.active;
+			_fullScreenSelected.booleanValue = !_fullScreenSelected.booleanValue;
+			//if(_fullScreenButton)_fullScreenButton.selected = _fullScreenSelected.booleanValue;
 		}
-		protected function onFullscreenClick(from:ToggleButton):void{
-			checkFullScreenUtil();
-			_fullscreenUtil.active = from.selected;
-		}
-		protected function checkFullScreenUtil():void{
+		/*protected function onFullscreenClick(from:ToggleButton):void{
+			//checkFullScreenUtil();
+			_fullScreenSelected.booleanValue = from.selected;
+		}*/
+		/*protected function checkFullScreenUtil():void{
 			if(!_fullscreenUtil){
 				_fullscreenUtil = new FullscreenUtil(this);
 				_fullscreenUtil.activeChange.addHandler(onFullscreenChange);
 			}
-		}
-		protected function onFullscreenChange(from:FullscreenUtil, active:Boolean):void{
-			if(_fullscreenButton)_fullscreenButton.selected = active;
+		}*/
+		protected function onFullscreenChange(from:BooleanData):void{
+			//if(_fullScreenButton)_fullScreenButton.selected = _fullScreenSelected.booleanValue;
+			_fullScreenState.selection = (_fullScreenSelected.booleanValue?1:0);
 		}
 		protected function onRewindClick(from:Button):void{
 			if(_videoSource){
@@ -472,14 +497,14 @@ package org.tbyrne.display.containers
 		protected function onPlayingChanged(from:IVideoSource):void{
 			assessPlaying();
 		}
-		protected function onDataChanged(from:IVideoSource):void{
+		protected function onDataChanged(... params):void{
 			syncToData();
 		}
 		protected function assessPlaying():void{
 			var isPlaying:Boolean = (_videoSource && _videoSource.playing);
 			if(_playPauseButton)_playPauseButton.selected = isPlaying;
 				
-			setControlsActive([_playPauseButton,_rewindButton,_muteButton,_stopButton,_fullscreenButton,_volumeSlider,_bufferBar,_progressLabel],_videoSource && (!isPlaying || _mouseActive));
+			setControlsActive([_playPauseButton,_rewindButton,_muteButton,_stopButton,_fullScreenButton,_volumeSlider,_bufferBar,_progressLabel],_videoSource && (!isPlaying || _mouseActive));
 			
 			if(_centredPauseButton){
 				_centredPauseButton.selected = isPlaying;
@@ -501,27 +526,21 @@ package org.tbyrne.display.containers
 				}
 			}
 		}
-		protected function assessMuted():void{
-			if(_videoSource){
-				if(_muteButton)_muteButton.selected = _videoSource.muted;
-			}
-		}
 		protected function onVolumeSliderChange(from:Control, value:Number):void{
 			if(_videoSource){
-				if(value || _videoSource.muted){
+				if(value || _videoSource.muted.booleanValue){
 					_videoSource.volume = value;
 				}else{
-					_videoSource.muted = true;
+					_videoSource.muted.booleanValue = true;
 				}
 			}
 		}
-		protected function onMuteClick(from:ToggleButton):void{
+		protected function onMuteChanged(from:IBooleanData):void{
 			if(_videoSource){
-				_videoSource.muted = !_videoSource.muted;
-				_muteButton.selected = _videoSource.muted;
-				if(!_videoSource.muted && _videoSource.volume<=0){
+				if(!_videoSource.muted.booleanValue && _videoSource.volume<=0){
 					_videoSource.volume = 1;
 				}
+				syncToData();
 			}
 		}
 		protected function onVideoMouseOut(from:IInteractiveObject, mouseInfo:IMouseActInfo):void{

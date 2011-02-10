@@ -205,8 +205,13 @@ package org.tbyrne.display.core
 			_measureFlag.invalidate();
 			if(!_measuring){
 				if(_measurementsChanged)_measurementsChanged.perform(this,_lastMeasX,_lastMeasY);
-				_lastMeasX = _measurements.x;
-				_lastMeasY = _measurements.y;
+				if(_measurements){
+					_lastMeasX = _measurements.x;
+					_lastMeasY = _measurements.y;
+				}else{
+					_lastMeasX = NaN;
+					_lastMeasY = NaN;
+				}
 			}
 		}
 	}

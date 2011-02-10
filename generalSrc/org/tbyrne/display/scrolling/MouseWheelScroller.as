@@ -3,29 +3,29 @@ package org.tbyrne.display.scrolling
 	import org.tbyrne.display.actInfo.IMouseActInfo;
 	import org.tbyrne.display.assets.nativeTypes.IInteractiveObject;
 
-	public class ScrollWheelScroller
+	public class MouseWheelScroller
 	{
-		public function get display():IInteractiveObject{
-			return _display;
+		public function get interactiveObject():IInteractiveObject{
+			return _interactiveObject;
 		}
-		public function set display(value:IInteractiveObject):void{
-			if(_display!=value){
-				if(_display){
-					_display.mouseWheel.removeHandler(onMouseWheel);
+		public function set interactiveObject(value:IInteractiveObject):void{
+			if(_interactiveObject!=value){
+				if(_interactiveObject){
+					_interactiveObject.mouseWheel.removeHandler(onMouseWheel);
 				}
-				_display = value;
-				if(_display){
-					_display.mouseWheel.addHandler(onMouseWheel);
+				_interactiveObject = value;
+				if(_interactiveObject){
+					_interactiveObject.mouseWheel.addHandler(onMouseWheel);
 				}
 			}
 		}
 		
 		public var scrollMetrics:IScrollMetrics;
 		
-		private var _display:IInteractiveObject;
+		private var _interactiveObject:IInteractiveObject;
 		
-		public function ScrollWheelScroller(display:IInteractiveObject=null, scrollMetrics:IScrollMetrics=null){
-			this.display = display;
+		public function MouseWheelScroller(interactiveObject:IInteractiveObject=null, scrollMetrics:IScrollMetrics=null){
+			this.interactiveObject = interactiveObject;
 			this.scrollMetrics = scrollMetrics;
 		}
 		protected function onMouseWheel(from:IInteractiveObject, mouseActInfo:IMouseActInfo, delta:int):void{

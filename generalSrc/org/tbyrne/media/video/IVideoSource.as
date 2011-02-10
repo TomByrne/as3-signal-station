@@ -1,6 +1,7 @@
 package org.tbyrne.media.video
 {
 	import org.tbyrne.acting.actTypes.IAct;
+	import org.tbyrne.data.dataTypes.IBooleanData;
 	import org.tbyrne.data.dataTypes.INumberData;
 	import org.tbyrne.data.dataTypes.INumberProvider;
 	import org.tbyrne.media.IMediaSource;
@@ -35,12 +36,7 @@ package org.tbyrne.media.video
 		function set volume(value:Number):void;
 		function get volume():Number;
 		
-		/**
-		 * handler(from:IVideoSource)
-		 */
-		function get mutedChanged():IAct;
-		function set muted(value:Boolean):void;
-		function get muted():Boolean;
+		function get muted():IBooleanData;
 		
 	}
 }

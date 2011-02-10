@@ -21,10 +21,12 @@ package org.tbyrne.display.controls
 	
 	public class Button extends Control
 	{
-		DisplayNamespace static var STATE_OVER:String = "mouseOver";
-		DisplayNamespace static var STATE_OUT:String = "mouseOut";
-		DisplayNamespace static var STATE_DOWN:String = "mouseDown";
-		DisplayNamespace static var STATE_UP:String = "mouseUp";
+		private static var DUMMY_POINT:Point = new Point();
+		
+		DisplayNamespace static const STATE_OVER:String = "mouseOver";
+		DisplayNamespace static const STATE_OUT:String = "mouseOut";
+		DisplayNamespace static const STATE_DOWN:String = "mouseDown";
+		DisplayNamespace static const STATE_UP:String = "mouseUp";
 		
 		
 		public function get data():*{
@@ -130,6 +132,15 @@ package org.tbyrne.display.controls
 			}
 		}
 		
+		/**
+		 * This is a number representing the amount of pixels the mouse can move between
+		 * pressing and releasing before it is no longer considered a click (the release
+		 * act will still fire).
+		 * 
+		 * @default 10
+		 */
+		public var dragAvoidanceDist:Number = 10;
+		
 		protected var _data:*;
 		protected var _triggerableData:ITriggerableAction;
 		
@@ -151,7 +162,9 @@ package org.tbyrne.display.controls
 		protected var _mouseReleased:Act;
 		protected var _rolledOver:Act;
 		protected var _rolledOut:Act;
-
+		
+		protected var _ignoreClick:Boolean;
+		protected var _pressedPos:Point;
 		
 		public function Button(asset:IDisplayObject=null){
 			super(asset);
@@ -241,13 +254,29 @@ package org.tbyrne.display.controls
 		protected function onMouseDown(from:IInteractiveObject, info:IMouseActInfo):void{
 			if(_active){
 				_pressedStage = asset.stage;
+				_pressedStage.mouseMoved.addHandler(onMouseMove);
 				_pressedStage.mouseReleased.addHandler(onMouseUp);
+				
 				_downState.selection = 0;
 				_down = true;
 				if(_mousePressed)_mousePressed.perform(this);
+				
+				_ignoreClick = false;
+				if(!_pressedPos)_pressedPos = new Point();
+				_pressedPos.x = _asset.stage.mouseX;
+				_pressedPos.y = _asset.stage.mouseY;
+			}
+		}
+		protected function onMouseMove(from:IInteractiveObject, info:IMouseActInfo=null):void{
+			DUMMY_POINT.x = _asset.stage.mouseX;
+			DUMMY_POINT.y = _asset.stage.mouseY;
+			if(Point.distance(_pressedPos,DUMMY_POINT)>dragAvoidanceDist){
+				_pressedStage.mouseMoved.removeHandler(onMouseMove);
+				_ignoreClick = true;
 			}
 		}
 		protected function onMouseUp(from:IInteractiveObject, info:IMouseActInfo=null):void{
+			_pressedStage.mouseMoved.removeHandler(onMouseMove);
 			_pressedStage.mouseReleased.removeHandler(onMouseUp);
 			if(_active){
 				_pressedStage = null;
@@ -258,16 +287,20 @@ package org.tbyrne.display.controls
 		}
 		protected function onClick(from:IInteractiveObject, info:IMouseActInfo):void{
 			if(_active){
-				var assetMatch:Boolean = (info.mouseTarget==_interactiveArea);
-				/*if(!assetMatch){
-					var cast:ISprite = (info.mouseTarget as ISprite);
-					if(!cast || !cast.buttonMode){
-						assetMatch = true;
+				if(_ignoreClick){
+					_ignoreClick = false;
+				}else{
+					var assetMatch:Boolean = (info.mouseTarget==_interactiveArea);
+					/*if(!assetMatch){
+						var cast:ISprite = (info.mouseTarget as ISprite);
+						if(!cast || !cast.buttonMode){
+							assetMatch = true;
+						}
+					}*/
+					if(assetMatch){
+						if(_clicked)_clicked.perform(this);
+						if(_triggerableData)_triggerableData.triggerAction(asset);
 					}
-				}*/
-				if(assetMatch){
-					if(_clicked)_clicked.perform(this);
-					if(_triggerableData)_triggerableData.triggerAction(asset);
 				}
 			}
 		}

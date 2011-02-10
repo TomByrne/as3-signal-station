@@ -8,7 +8,7 @@ package org.tbyrne.data.dataTypes
 		function get stringValue():String;
 		
 		/**
-		 * handler(from:IStringProvider)
+		 * handler(from:IStringData)
 		 */
 		function get stringValueChanged():IAct;
 	}

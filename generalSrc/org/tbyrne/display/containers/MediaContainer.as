@@ -6,6 +6,7 @@ package org.tbyrne.display.containers
 	
 	import org.tbyrne.display.assets.nativeTypes.IDisplayObject;
 	import org.tbyrne.display.assets.nativeTypes.IDisplayObjectContainer;
+	import org.tbyrne.display.assets.nativeTypes.ILoader;
 	import org.tbyrne.display.core.ILayoutView;
 	import org.tbyrne.display.layout.ILayoutSubject;
 	import org.tbyrne.display.layout.ProxyLayoutSubject;
@@ -117,10 +118,11 @@ package org.tbyrne.display.containers
 			_layout.setSize(size.x,size.y);
 			getMarginAffectedArea(0,0,size.x,size.y, _layoutProxy.layoutInfo, _scrollRect);
 			
-			_scrollRect.x -= position.x;
-			_scrollRect.y -= position.y;
+			//_scrollRect.x -= position.x;
+			//_scrollRect.y -= position.y;
 			_mediaContainer.setPosition(_scrollRect.x,_scrollRect.y);
 			_mediaContainer.scrollRect = _scrollRect;
+			
 			if(_mediaBounds){
 				_mediaBounds.setSizeAndPos(_scrollRect.x,_scrollRect.y,_scrollRect.width,_scrollRect.height);
 			}
@@ -142,6 +144,5 @@ package org.tbyrne.display.containers
 				}
 			}
 		}
-		
 	}
 }

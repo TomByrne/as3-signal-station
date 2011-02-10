@@ -124,6 +124,9 @@ package org.tbyrne.display.controls
 		public function set hideWhenUnusable(to:Boolean):void{
 			if(_hideWhenUnusable != to){
 				this._hideWhenUnusable = to;
+				if((!_hideWhenUnusable && _isUsable) || (_hideWhenUnusable && !_isUsable)){
+					invalidateMeasurements();
+				}
 				invalidateSize();
 			}
 		}
@@ -243,6 +246,13 @@ package org.tbyrne.display.controls
 				_measurements.y = Math.max(thumbMeas.y, trackMeas.y, foreMeas.y, aftMeas.y);
 				_measurements.x = foreMeas.x+aftMeas.x;
 			}
+			if(_hideWhenUnusable && !_isUsable){
+				if(_direction==Direction.VERTICAL){
+					_measurements.x = 0;
+				}else{
+					_measurements.y = 0;
+				}
+			}
 		}
 		
 		public function setToMinimum(): void {
@@ -273,16 +283,17 @@ package org.tbyrne.display.controls
 			if(!_isUsable){
 				rawRatio = ratio = 0;
 				// Only change the visibility if the user has asked us to manage the visibility
-				if(this.hideWhenUnusable){
+				if(this.hideWhenUnusable && asset.visible){
 					asset.visible = false
+					invalidateMeasurements();
 				}
 			}else{
 				rawRatio = (_scrollMetrics.scrollValue-minimum)/scope;
 				ratio = (scope?Math.min(Math.max(rawRatio,0),1):0);
 				// Only change the visibility if the user has asked us to manage the visibility
-				if (this.hideWhenUnusable)
-				{
+				if (this.hideWhenUnusable && !asset.visible){
 					asset.visible = true;
+					invalidateMeasurements();
 				}
 			}
 			var sizeFraction:Number = (maximum>minimum?pageSize/(maximum-minimum):1);
@@ -530,6 +541,7 @@ package org.tbyrne.display.controls
 			asset.stage.mouseReleased.removeHandler(endScroll);
 		}
 		protected function onScrollMetricsChanged(from:IScrollMetrics):void{
+			if(_hideWhenUnusable)invalidateMeasurements();
 			invalidateSize();
 		}
 		protected function scrollMetricsEqual(scrollMatricsA:IScrollMetrics, scrollMatricsB:IScrollMetrics):Boolean{

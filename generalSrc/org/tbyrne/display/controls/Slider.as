@@ -76,6 +76,7 @@ package org.tbyrne.display.controls
 			}
 		}
 		override public function set active(value:Boolean):void{
+			attemptInit();
 			super.active = value;
 			_trackButton.active = value;
 			_thumb.active = value;

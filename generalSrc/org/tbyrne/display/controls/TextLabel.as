@@ -1,9 +1,6 @@
 package org.tbyrne.display.controls
 {
-	import flash.display.DisplayObject;
 	import flash.display.TextFieldGutter;
-	import flash.geom.Rectangle;
-	import flash.text.TextField;
 	import flash.text.TextFormat;
 	
 	import org.tbyrne.data.core.StringData;
@@ -11,7 +8,6 @@ package org.tbyrne.display.controls
 	import org.tbyrne.data.dataTypes.IValueProvider;
 	import org.tbyrne.display.DisplayNamespace;
 	import org.tbyrne.display.assets.AssetNames;
-	import org.tbyrne.display.assets.assetTypes.IAsset;
 	import org.tbyrne.display.assets.nativeTypes.IDisplayObject;
 	import org.tbyrne.display.assets.nativeTypes.ITextField;
 	import org.tbyrne.display.utils.PaddingSizer;
@@ -21,9 +17,11 @@ package org.tbyrne.display.controls
 	public class TextLabel extends Control
 	{
 		public function get stringData():String{
+			checkIsBound();
 			return _stringData;
 		}
 		public function get data():*{
+			checkIsBound();
 			return _data;
 		}
 		public function set data(value:*):void{
@@ -107,6 +105,7 @@ package org.tbyrne.display.controls
 					_labelField.multiline = _multiline;
 					_labelField.wordWrap = _multiline;
 				}
+				invalidateMeasurements();
 			}
 		}
 		
@@ -141,7 +140,10 @@ package org.tbyrne.display.controls
 			bindTextField();
 			_labelField.multiline = _multiline;
 			_labelField.wordWrap = _multiline;
-			if(!_data && _labelField.text.length)_data = _labelField.text;
+			if(!_data && _labelField.text.length){
+				_data = _labelField.htmlText;
+				_stringData = _data;
+			}
 			if(_backing){
 				
 				var operableHeight:Number = _labelField.naturalHeight-TextFieldGutter.TEXT_FIELD_GUTTER*2;
@@ -200,6 +202,8 @@ package org.tbyrne.display.controls
 				var textWas:String = _labelField.htmlText;
 				var measText:String = getMeasurementText();
 				var widthWas:Number = _labelField.width;
+				var heightWas:Number = _labelField.height;
+				
 				if(measText!=textWas)_labelField.htmlText = measText;
 				if(measWidth){
 					if(_backing)_labelField.width = _backing.naturalWidth-_labelFieldSizer.paddingLeft-_labelFieldSizer.paddingRight+TextFieldGutter.TEXT_FIELD_GUTTER*2;
@@ -207,19 +211,27 @@ package org.tbyrne.display.controls
 					
 					_measurements.x = _labelField.textWidth+_labelFieldSizer.paddingLeft+_labelFieldSizer.paddingRight;
 				}else{
-					_measurements.x = _labelField.naturalWidth+_labelFieldSizer.paddingLeft+_labelFieldSizer.paddingRight;
-					_labelField.width = _labelField.naturalWidth;
+					_measurements.x = _size.x;
+					_labelField.width = _size.x-_labelFieldSizer.paddingLeft-_labelFieldSizer.paddingRight;
+					_labelField.height = _labelField.textHeight+TextFieldGutter.TEXT_FIELD_GUTTER*2; // if height is less than one line then wrapping doesn't occur
 				}
 				_measurements.y = _labelField.textHeight+_labelFieldSizer.paddingTop+_labelFieldSizer.paddingBottom;
 				
 				_labelField.width = widthWas;
+				_labelField.height = heightWas;
 				if(measText!=textWas)_labelField.htmlText = textWas;
 			}else{
 				invalidateMeasurements();
 			}
 		}
+		override public function setSize(width:Number, height:Number):void{
+			if(useMeasuredWidth() && width!=_size.x){
+				invalidateMeasurements();
+			}
+			super.setSize(width, height);
+		}
 		protected function useMeasuredWidth():Boolean{
-			return (!_labelField.multiline);
+			return (!multiline);
 		}
 		protected function getMeasurementText():String{
 			return _labelField.htmlText;

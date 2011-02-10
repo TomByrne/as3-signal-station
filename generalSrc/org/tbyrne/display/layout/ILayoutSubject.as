@@ -20,7 +20,7 @@ package org.tbyrne.display.layout
 		function get position():Point;
 		function setPosition(x:Number, y:Number):void;
 		/**
-		 * handler(from:ILayoutSubject, oldWidth:Number, oldHeight:Number)
+		 * handler(from:ILayoutSubject, oldX:Number, oldY:Number)
 		 */
 		function get positionChanged():IAct;
 		

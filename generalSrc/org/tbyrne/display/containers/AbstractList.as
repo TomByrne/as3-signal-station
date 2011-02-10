@@ -18,7 +18,7 @@ package org.tbyrne.display.containers
 	import org.tbyrne.display.scrolling.IScrollMetrics;
 	import org.tbyrne.display.scrolling.IScrollable;
 	import org.tbyrne.display.scrolling.ScrollMultiplier;
-	import org.tbyrne.display.scrolling.ScrollWheelScroller;
+	import org.tbyrne.display.scrolling.MouseWheelScroller;
 	import org.tbyrne.instanceFactory.IInstanceFactory;
 	import org.tbyrne.instanceFactory.MultiInstanceFactory;
 	import org.tbyrne.instanceFactory.SimpleInstanceFactory;
@@ -75,7 +75,7 @@ package org.tbyrne.display.containers
 		protected var _assumedRendererFactory:SimpleInstanceFactory;
 		protected var _scrollRect:Rectangle = new Rectangle();
 		protected var _scrollMetrics:IScrollMetrics;
-		protected var _mouseWheelScroller:ScrollWheelScroller;
+		protected var _mouseWheelScroller:MouseWheelScroller;
 		
 		protected var _factoryAssumedAssetSet:Boolean;
 		protected var _factoryAssumedAssetProps:Dictionary;
@@ -95,7 +95,7 @@ package org.tbyrne.display.containers
 			_layout.addRendererAct.addHandler(onAddRenderer);
 			_layout.removeRendererAct.addHandler(onRemoveRenderer);
 			
-			_mouseWheelScroller = new ScrollWheelScroller();
+			_mouseWheelScroller = new MouseWheelScroller();
 		}
 		protected function createLayout() : void{
 			_layout = new RendererGridLayout(this);
@@ -129,7 +129,7 @@ package org.tbyrne.display.containers
 				wheelDirection = _layout.flowDirection;
 			}
 			_mouseWheelScroller.scrollMetrics = getScrollMetrics(wheelDirection);
-			_mouseWheelScroller.display = _interactiveObjectAsset;
+			_mouseWheelScroller.interactiveObject = _interactiveObjectAsset;
 		}
 		protected function setScrollBarMetrics(scrollMetrics:IScrollMetrics):void{
 			if(_scrollMetrics!=scrollMetrics){
@@ -175,7 +175,7 @@ package org.tbyrne.display.containers
 			_containerAsset.factory.destroyAsset(_container);
 			_container = null;
 			
-			_mouseWheelScroller.display = null;
+			_mouseWheelScroller.interactiveObject = null;
 		}
 		protected function onLayoutMeasChange(from:ILayoutSubject, oldWidth:Number, oldHeight:Number) : void{
 			invalidateMeasurements();
