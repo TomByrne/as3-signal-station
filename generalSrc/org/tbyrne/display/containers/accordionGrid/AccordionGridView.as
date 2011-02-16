@@ -172,7 +172,7 @@ package org.tbyrne.display.containers.accordionGrid
 		}
 		override protected function bindToAsset() : void{
 			super.bindToAsset();
-			_assumedGridRendererAsset = _containerAsset.takeAssetByName(CELL_RENDERER,IDisplayObject,true);
+			_assumedGridRendererAsset = _containerAsset.takeAssetByName(CELL_RENDERER,true);
 			if(_assumedGridRendererAsset){
 				_containerAsset.removeAsset(_assumedGridRendererAsset);
 				assessGridFactory();

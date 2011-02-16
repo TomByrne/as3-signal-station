@@ -13,10 +13,6 @@ package org.tbyrne.collections
 		 */
 		function current():*;
 		/**
-		 * Resets the iterator.
-		 */
-		function reset():void;
-		/**
 		 * Release the iterator.
 		 */
 		function release():void;

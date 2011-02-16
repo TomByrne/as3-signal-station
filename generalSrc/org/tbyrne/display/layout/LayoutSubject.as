@@ -67,7 +67,7 @@ package org.tbyrne.display.layout
 		private var _posDrawFlag:FrameValidationFlag;
 		private var _drawFlag:FrameValidationFlag;
 		
-		private var _scopeView:IView;
+		protected var _scopeView:IView;
 		
 		protected var _layoutInfo:ILayoutInfo;
 		protected var _size:Point = new Point();

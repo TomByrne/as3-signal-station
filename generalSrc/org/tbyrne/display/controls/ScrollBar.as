@@ -206,10 +206,10 @@ package org.tbyrne.display.controls
 		override protected function bindToAsset(): void{
 			super.bindToAsset()
 			
-			_track.setAssetAndPosition(_containerAsset.takeAssetByName(TRACK_CHILD,ISprite));
-			_scrollThumb.setAssetAndPosition(_containerAsset.takeAssetByName(SCROLL_THUMB_CHILD,ISprite));
-			_foreButton.setAssetAndPosition(_containerAsset.takeAssetByName(FORE_BUTTON_CHILD,ISprite,true));
-			_aftButton.setAssetAndPosition(_containerAsset.takeAssetByName(AFT_BUTTON_CHILD,ISprite,true));
+			_track.setAssetAndPosition(_containerAsset.takeAssetByName(TRACK_CHILD));
+			_scrollThumb.setAssetAndPosition(_containerAsset.takeAssetByName(SCROLL_THUMB_CHILD));
+			_foreButton.setAssetAndPosition(_containerAsset.takeAssetByName(FORE_BUTTON_CHILD,true));
+			_aftButton.setAssetAndPosition(_containerAsset.takeAssetByName(AFT_BUTTON_CHILD,true));
 		}
 		override protected function unbindFromAsset(): void{
 			super.unbindFromAsset();

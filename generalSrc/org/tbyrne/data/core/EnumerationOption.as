@@ -41,9 +41,11 @@ package org.tbyrne.data.core
 		private var _stringValue:String;
 		private var _value:*;
 		
-		public function EnumerationOption(stringValue:String=null)
+		public function EnumerationOption(stringValue:String=null, booleanValue:Boolean=false, value:*=null)
 		{
+			super(booleanValue);
 			this.stringValue = stringValue;
+			this.value = value;
 		}
 	}
 }

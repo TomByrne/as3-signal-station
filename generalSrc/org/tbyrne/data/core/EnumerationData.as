@@ -7,9 +7,10 @@ package org.tbyrne.data.core
 	import org.tbyrne.collections.linkedList.LinkedListConverter;
 	import org.tbyrne.data.dataTypes.IBooleanConsumer;
 	import org.tbyrne.data.dataTypes.IBooleanProvider;
+	import org.tbyrne.data.dataTypes.IValueConsumer;
 	import org.tbyrne.data.dataTypes.IValueProvider;
 	
-	public class EnumerationData implements IValueProvider, ICollection
+	public class EnumerationData implements IValueProvider, IValueConsumer, ICollection
 	{
 		
 		public function get options():*{
@@ -49,7 +50,7 @@ package org.tbyrne.data.core
 							provider = (current as IBooleanProvider);
 							if(provider){
 								if(!found && provider.booleanValue){
-									value = provider;
+									setSelectedOption(provider);
 									found = true;
 								}
 								provider.booleanValueChanged.addHandler(onSelectionChanged);
@@ -103,6 +104,8 @@ package org.tbyrne.data.core
 			}
 		}
 		
+		public var allowNullSelection:Boolean = true;
+		
 		
 		/**
 		 * @inheritDoc
@@ -132,39 +135,44 @@ package org.tbyrne.data.core
 		}
 		protected function setSelectedOption(value:*):void{
 			if(_optionsCollection){
-				var iterator:IIterator = _optionsCollection.getIterator();
-				var current:*;
 				var consumer:IBooleanConsumer;
-				var found:Boolean;
-				
-				_ignoreChanges = true;
-				while(current = iterator.next()){
-					consumer = (current as IBooleanConsumer);
-					var selected:Boolean = (current==value);
-					if(selected){
-						found = true;
-						selected = true;
-					}
-					if(consumer){
-						consumer.booleanValue = selected;
-					}
-				}
-				iterator.release();
-				_ignoreChanges = false;
-				
-				if(!found)value = null;
-				if(_selectedOption!=value){
-					if(_selectedOptionValueProvider){
-						_selectedOptionValueProvider.valueChanged.removeHandler(onValueChanged);
-					}
-					_selectedOption = value;
-					if(_selectedOption){
-						_selectedOptionValueProvider = (_selectedOption as IValueProvider);
-						if(_selectedOptionValueProvider){
-							_selectedOptionValueProvider.valueChanged.addHandler(onValueChanged);
+				if(allowNullSelection || value!=null){
+					var iterator:IIterator = _optionsCollection.getIterator();
+					var current:*;
+					var found:Boolean;
+					
+					_ignoreChanges = true;
+					while(current = iterator.next()){
+						consumer = (current as IBooleanConsumer);
+						var selected:Boolean = (current==value);
+						if(selected){
+							found = true;
+							//selected = true;
 						}
-						if(_valueChanged)_valueChanged.perform(this);
+						if(consumer){
+							consumer.booleanValue = selected;
+						}
 					}
+					iterator.release();
+					_ignoreChanges = false;
+					
+					if(!found)value = null;
+					if(_selectedOption!=value){
+						if(_selectedOptionValueProvider){
+							_selectedOptionValueProvider.valueChanged.removeHandler(onValueChanged);
+						}
+						_selectedOption = value;
+						if(_selectedOption){
+							_selectedOptionValueProvider = (_selectedOption as IValueProvider);
+							if(_selectedOptionValueProvider){
+								_selectedOptionValueProvider.valueChanged.addHandler(onValueChanged);
+							}
+							if(_valueChanged)_valueChanged.perform(this);
+						}
+					}
+				}else if(_selectedOptionValueProvider){
+					consumer = (_selectedOptionValueProvider as IBooleanConsumer)
+					if(consumer)consumer.booleanValue = true;
 				}
 			}
 		}

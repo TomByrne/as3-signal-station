@@ -64,7 +64,7 @@ package org.tbyrne.display.utils
 			super(asset);
 		}
 		override protected function bindToAsset() : void{
-			_textField = _containerAsset.takeAssetByName(AssetNames.LABEL_FIELD, ITextField);
+			_textField = _containerAsset.takeAssetByName(AssetNames.LABEL_FIELD);
 			_textField.clicked.addHandler(onClick);
 			_textField.keyUp.addHandler(onKeyUp);
 			_textField.focusIn.addHandler(onFocusIn);

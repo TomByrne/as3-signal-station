@@ -12,8 +12,8 @@ package org.tbyrne.display.assets.nativeAssets
 	import org.tbyrne.acting.actTypes.IAct;
 	import org.tbyrne.acting.acts.NativeAct;
 	import org.tbyrne.display.assets.assetTypes.IAsset;
-	import org.tbyrne.display.assets.nativeTypes.IDisplayObjectContainer;
 	import org.tbyrne.display.assets.nativeTypes.IDisplayObject;
+	import org.tbyrne.display.assets.nativeTypes.IDisplayObjectContainer;
 	import org.tbyrne.display.assets.states.IStateDef;
 	import org.tbyrne.display.assets.utils.isDescendant;
 	import org.tbyrne.display.utils.MovieClipUtils;
@@ -32,6 +32,13 @@ package org.tbyrne.display.assets.nativeAssets
 					assArray.splice(index,1);
 					if(!assArray.length){
 						delete assignments[_displayObjectContainer];
+					}
+					for each(var child:IDisplayObject in _children){
+						for each(var stateList:Array in _stateLists){
+							child.removeStateList(stateList);
+						}
+						child.parent = null;
+						_nativeFactory.destroyAsset(child);
 					}
 					_children = new Dictionary();
 				}
@@ -104,7 +111,7 @@ package org.tbyrne.display.assets.nativeAssets
 			}
 		}
 		
-		public function takeAssetByName(name:String, type:Class, optional:Boolean=false):*{
+		public function takeAssetByName(name:String, optional:Boolean=false):*{
 			if(_displayObjectContainer){
 				var displayObject:DisplayObject = _displayObjectContainer.getChildByName(name);
 				if(displayObject){
@@ -178,6 +185,7 @@ package org.tbyrne.display.assets.nativeAssets
 				for each(var stateList:Array in _stateLists){
 					child.removeStateList(stateList);
 				}
+				child.parent = null;
 				_nativeFactory.destroyAsset(child);
 			}
 			_children = new Dictionary(true);

@@ -42,9 +42,12 @@ package org.tbyrne.display.layout
 				if(_target){
 					_target.measurementsChanged.removeHandler(onMeasurementsChanged);
 					oldMeas = _target.measurements;
+					if(_scopeView==_target){
+						setScopeView(null);
+					}
 				}
 				_target = value;
-				setScopeView(value as ILayoutView);
+				if(!_scopeView)setScopeView(value as ILayoutView);
 				if(_target){
 					_target.setPosition(_position.x,_position.y);
 					_target.setSize(_size.x,_size.y);

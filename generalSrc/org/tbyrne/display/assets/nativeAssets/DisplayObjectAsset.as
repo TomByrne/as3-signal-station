@@ -283,12 +283,14 @@ package org.tbyrne.display.assets.nativeAssets {
 			return _parent;
 		}
 		public function set parent(value:IDisplayObjectContainer):void {
-			_parent = value;
-			if(!value){
-				setAddedToStage(false);
-			}else{
-				if(_parent.stage) setAddedToStage(true);
-				else setAddedToStage(false);
+			if(_parent != value){
+				_parent = value;
+				if(!value){
+					setAddedToStage(false);
+				}else{
+					if(_parent.stage) setAddedToStage(true);
+					else setAddedToStage(false);
+				}
 			}
 		}
 		

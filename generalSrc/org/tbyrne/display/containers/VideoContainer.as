@@ -227,7 +227,7 @@ package org.tbyrne.display.containers
 			_muteButton = bindView(_muteButton, SliderButton,MUTE_BUTTON, false);
 			if(_muteButton && _videoSource)_muteButton.data = _videoSource.muted;
 			
-			var pauseAsset:IInteractiveObject = _containerAsset.takeAssetByName(CENTERED_PAUSE_BUTTON,IInteractiveObject,true);
+			var pauseAsset:IInteractiveObject = _containerAsset.takeAssetByName(CENTERED_PAUSE_BUTTON,true);
 			if(pauseAsset){
 				if(!_centredPauseButton){
 					_centredPauseButton = new ToggleButton();
@@ -304,14 +304,14 @@ package org.tbyrne.display.containers
 			return ret;
 		}
 		protected function bindView(layoutView:LayoutView, controlClass:Class, name:String, bindBothSides:Boolean):*{
-			var asset:IDisplayObject = _containerAsset.takeAssetByName(name,IDisplayObject,true);
+			var asset:IDisplayObject = _containerAsset.takeAssetByName(name,true);
 			var layout:CanvasLayout = _mainLayout;
 			var parent:IDisplayObjectContainer = _containerAsset;
 			var parentMeas:Point;
 			if(!asset){
 				if(_controlContainer && _controlContainer.asset){
 					parent = (_controlContainer.asset as IDisplayObjectContainer);
-					asset = parent.takeAssetByName(name,IDisplayObject,true);
+					asset = parent.takeAssetByName(name,true);
 					layout = _contLayout;
 					parentMeas = _controlContainer.measurements;
 				}
@@ -398,8 +398,8 @@ package org.tbyrne.display.containers
 		protected function unbindView(layoutView:LayoutView):void{
 			if(layoutView){
 				layoutView.asset.parent.returnAsset(layoutView.asset);
-				layoutView.asset = null;
 				layoutView.asset.removeStateList(_childStateList);
+				layoutView.asset = null;
 			}
 		}
 		override protected function commitSize():void{

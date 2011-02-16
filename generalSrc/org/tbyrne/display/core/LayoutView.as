@@ -97,17 +97,20 @@ package org.tbyrne.display.core
 		override protected function unbindFromAsset():void{
 			super.unbindFromAsset();
 			_posDrawFlag.invalidate();
+			invalidateSize();
 			unbindChildren();
 		}
-		protected function bindChildAsset(childView:LayoutView, assetName:String, assetType:Class=null, setPosAlso:Boolean=false) : void{
+		protected function bindChildAsset(childView:LayoutView, assetName:String, setPosAlso:Boolean=false, optional:Boolean=false) : void{
 			if(!_boundChildren)_boundChildren = new Dictionary();
-			var asset:IDisplayObject = _containerAsset.takeAssetByName(assetName,assetType);
-			if(setPosAlso){
-				childView.setAssetAndPosition(asset);
-			}else{
-				childView.asset = asset;
+			var asset:IDisplayObject = _containerAsset.takeAssetByName(assetName,optional);
+			if(asset){
+				if(setPosAlso){
+					childView.setAssetAndPosition(asset);
+				}else{
+					childView.asset = asset;
+				}
+				_boundChildren[childView] = assetName;
 			}
-			_boundChildren[childView] = assetName;
 		}
 		protected function unbindChildren():void{
 			if(_boundChildren){
@@ -167,6 +170,9 @@ package org.tbyrne.display.core
 		}
 		protected function validateSize(force:Boolean): void{
 			_sizeDrawFlag.validate(force);
+		}
+		protected function validateMeas(force:Boolean): void{
+			_measureFlag.validate(force);
 		}
 		
 		public function setAssetAndPosition(asset:IDisplayObject):void{

@@ -82,7 +82,7 @@ package org.tbyrne.display.controls.popout {
 			}
 		}
 		override protected function bindToAsset():void {
-			var listAsset:IDisplayObject = _containerAsset.takeAssetByName(LIST_CHILD,IDisplayObject);
+			var listAsset:IDisplayObject = _containerAsset.takeAssetByName(LIST_CHILD);
 			_containerAsset.removeAsset(listAsset);
 			_listBox.asset=listAsset;
 			super.bindToAsset();

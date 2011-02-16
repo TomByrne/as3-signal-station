@@ -19,7 +19,7 @@ package org.tbyrne.display.containers
 		override protected function bindToAsset() : void{
 			super.bindToAsset();
 			if(_containerAsset){
-				_backing = _containerAsset.takeAssetByName(AssetNames.BACKING,IAsset,true);
+				_backing = _containerAsset.takeAssetByName(AssetNames.BACKING,true);
 				if(_backing)_backing.setPosition(0,0);
 			}
 		}

@@ -178,6 +178,7 @@ package org.tbyrne.display.core
 		}
 		protected function checkIsBound():void{
 			if(!_bound && _asset){
+				attemptInit();
 				_bound = true;
 				bindToAsset();
 			}

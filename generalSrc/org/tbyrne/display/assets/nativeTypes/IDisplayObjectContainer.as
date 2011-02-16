@@ -2,7 +2,7 @@ package org.tbyrne.display.assets.nativeTypes
 {
 	public interface IDisplayObjectContainer extends IInteractiveObject
 	{
-		function takeAssetByName(name:String, type:Class, optional:Boolean=false):*;
+		function takeAssetByName(name:String, optional:Boolean=false):*;
 		function returnAsset(asset:IDisplayObject):void;
 		
 		function addAsset(asset:IDisplayObject):void;

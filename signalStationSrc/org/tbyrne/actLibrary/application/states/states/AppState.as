@@ -24,7 +24,9 @@ package org.tbyrne.actLibrary.application.states.states
 				}else{
 					var matchStr:String = AppStateConstants.LABEL_RECON.replace("$name",prop);
 					var matcher:RegExp = new RegExp(matchStr);
-					var replaceStr:String = AppStateConstants.LABEL_RECON_REPLACE.replace("$value",match.parameters[prop]);
+					var replaceWith:String = match.parameters[prop];
+					if(replaceWith==null)replaceWith = "";
+					var replaceStr:String = AppStateConstants.LABEL_RECON_REPLACE.replace("$value",replaceWith);
 					ret = ret.replace(matcher,replaceStr);
 				}
 			}

@@ -259,7 +259,7 @@ package org.tbyrne.display.containers
 		}
 		override protected function updateFactory(factory:IInstanceFactory, dataField:String):void{
 			super.updateFactory(factory, dataField);
-			if(_protoRenderer){
+			if(_protoRenderer && _layout.dataField){
 				_protoRenderer[_layout.dataField] = null;
 				_protoRenderer = null;
 			}

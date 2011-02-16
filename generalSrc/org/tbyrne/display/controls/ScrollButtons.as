@@ -83,8 +83,8 @@ package org.tbyrne.display.controls
 		}
 		override protected function bindToAsset() : void{
 			super.bindToAsset();
-			_foreButton.asset = _containerAsset.takeAssetByName("foreButton",IDisplayObject);
-			_aftButton.asset = _containerAsset.takeAssetByName("aftButton",IDisplayObject);
+			_foreButton.asset = _containerAsset.takeAssetByName("foreButton");
+			_aftButton.asset = _containerAsset.takeAssetByName("aftButton");
 		}
 		override protected function unbindFromAsset() : void{
 			super.unbindFromAsset();

@@ -10,8 +10,8 @@ package org.tbyrne.media.image
 	import flash.net.URLRequest;
 	
 	import org.tbyrne.debug.logging.Log;
-	import org.tbyrne.display.assets.nativeTypes.ILoader;
 	import org.tbyrne.display.assets.nativeAssets.NativeAssetFactory;
+	import org.tbyrne.display.assets.nativeTypes.ILoader;
 	import org.tbyrne.display.core.ILayoutView;
 	import org.tbyrne.display.layout.frame.FrameLayoutInfo;
 	import org.tbyrne.media.MediaSource;
@@ -64,7 +64,7 @@ package org.tbyrne.media.image
 		private var _displaysTaken:int = 0;
 		private var _nativeFactory:NativeAssetFactory;
 		
-		public function ImageSource(url:String=null){
+		public function ImageSource(url:String=null, smoothing:Boolean=true){
 			super();
 			_loadUnits.stringValue = LOAD_UNITS;
 			_urlLoader = new URLLoader();
@@ -75,6 +75,7 @@ package org.tbyrne.media.image
 			_urlLoader.addEventListener(SecurityErrorEvent.SECURITY_ERROR, onError);
 			this.imageUrl = url;
 			_nativeFactory = new NativeAssetFactory();
+			this.smoothing = smoothing;
 		}
 		protected function onLoadComplete(e:Event):void{
 			_loaded = true;

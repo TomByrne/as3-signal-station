@@ -111,10 +111,10 @@ package org.tbyrne.debug.display
 		override protected function bindToAsset() : void{
 			super.bindToAsset();
 			CONFIG::debug{
-				_bitmap = _containerAsset.takeAssetByName(AssetNames.DEBUG_ITEM_BITMAP,IBitmap);
+				_bitmap = _containerAsset.takeAssetByName(AssetNames.DEBUG_ITEM_BITMAP);
 				_bitmap.bitmapData = _bitmapData;
 				
-				_copyButton.asset = _containerAsset.takeAssetByName(AssetNames.DEBUG_GRAPH_COPY_BUTTON,IDisplayObject);
+				_copyButton.asset = _containerAsset.takeAssetByName(AssetNames.DEBUG_GRAPH_COPY_BUTTON);
 			}
 		}
 		override protected function unbindFromAsset() : void{

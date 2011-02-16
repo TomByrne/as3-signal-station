@@ -110,7 +110,7 @@ package org.tbyrne.display.controls
 		}
 		override protected function bindToAsset() : void{
 			super.bindToAsset();
-			_sliderAsset = _containerAsset.takeAssetByName(SLIDER_ASSET,IDisplayObject,true);
+			_sliderAsset = _containerAsset.takeAssetByName(SLIDER_ASSET,true);
 			if(_sliderAsset){
 				_interactiveObjectAsset.mousedOver.addHandler(onMousedOver);
 				_interactiveObjectAsset.mousedOut.addHandler(onMousedOut);

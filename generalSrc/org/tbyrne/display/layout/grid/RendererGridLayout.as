@@ -381,7 +381,7 @@ package org.tbyrne.display.layout.grid
 			return (!_cellMeasCache[key]);
 		}
 		override protected function getChildMeasurement(key:*) : Point{
-			if(key>=_dataCount){
+			if(key>=_dataCount && !_renderersSameSize){
 				return null;
 			}
 			var data:* = _dataMap[key];

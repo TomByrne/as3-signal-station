@@ -68,7 +68,7 @@ package org.tbyrne.display.containers
 		}
 		override protected function bindToAsset() : void{
 			super.bindToAsset();
-			_assumedListAsset = _containerAsset.takeAssetByName(AssetNames.CHILD_LIST,IDisplayObject,true);
+			_assumedListAsset = _containerAsset.takeAssetByName(AssetNames.CHILD_LIST,true);
 			if(_assumedListAsset){
 				_containerAsset.removeAsset(_assumedListAsset);
 				assessListFactory();

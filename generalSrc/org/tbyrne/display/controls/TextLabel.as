@@ -171,7 +171,7 @@ package org.tbyrne.display.controls
 				_labelField = (asset as ITextField);
 			}
 			if(!_labelField){
-				_labelField = _containerAsset.takeAssetByName(AssetNames.LABEL_FIELD, ITextField);
+				_labelField = _containerAsset.takeAssetByName(AssetNames.LABEL_FIELD);
 			}
 			_assumedTextFormat = _labelField.defaultTextFormat;
 		}
@@ -211,6 +211,7 @@ package org.tbyrne.display.controls
 					
 					_measurements.x = _labelField.textWidth+_labelFieldSizer.paddingLeft+_labelFieldSizer.paddingRight;
 				}else{
+					var width:Number = (_size.x>0?_size.x:_asset.naturalWidth);
 					_measurements.x = _size.x;
 					_labelField.width = _size.x-_labelFieldSizer.paddingLeft-_labelFieldSizer.paddingRight;
 					_labelField.height = _labelField.textHeight+TextFieldGutter.TEXT_FIELD_GUTTER*2; // if height is less than one line then wrapping doesn't occur

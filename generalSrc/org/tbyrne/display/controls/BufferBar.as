@@ -61,13 +61,13 @@ package org.tbyrne.display.controls
 		override protected function bindToAsset() : void{
 			_slider.asset = asset;
 			
-			_bufferedBar = _containerAsset.takeAssetByName(BUFFERED_BAR,IDisplayObject,true);
+			_bufferedBar = _containerAsset.takeAssetByName(BUFFERED_BAR,true);
 			if(_bufferedBar){
 				var cast:IInteractiveObject = (_bufferedBar as IInteractiveObject);
 				if(cast)cast.mouseEnabled = false;
 			}
-			_track = _containerAsset.takeAssetByName(Slider.TRACK,IDisplayObject);
-			_thumb = _containerAsset.takeAssetByName(Slider.THUMB,IDisplayObject);
+			_track = _containerAsset.takeAssetByName(Slider.TRACK);
+			_thumb = _containerAsset.takeAssetByName(Slider.THUMB);
 		}
 		override protected function unbindFromAsset() : void{
 			

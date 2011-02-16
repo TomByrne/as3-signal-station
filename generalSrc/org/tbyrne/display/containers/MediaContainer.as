@@ -81,7 +81,7 @@ package org.tbyrne.display.containers
 			super.bindToAsset()
 			_mediaContainer = _asset.factory.createContainer();
 			if(_mediaSourceDisplayAsset)_mediaContainer.addAsset(_mediaSourceDisplayAsset);
-			_mediaBounds = _containerAsset.takeAssetByName(MEDIA_BOUNDS,IDisplayObject,true);
+			_mediaBounds = _containerAsset.takeAssetByName(MEDIA_BOUNDS,true);
 			if(_mediaBounds){
 				if(!_assumedLayoutInfo){
 					_assumedLayoutInfo = new FrameLayoutInfo();
@@ -135,11 +135,11 @@ package org.tbyrne.display.containers
 		
 		protected function setMediaAsset(asset:IDisplayObject):void{
 			if(_mediaSourceDisplayAsset != asset){
-				if(_mediaSourceDisplayAsset && _mediaContainer){
+				if(_mediaSourceDisplayAsset && _bound){
 					_mediaContainer.removeAsset(_mediaSourceDisplayAsset);
 				}
 				_mediaSourceDisplayAsset = asset;
-				if(_mediaSourceDisplayAsset && _mediaContainer){
+				if(_mediaSourceDisplayAsset && _bound){
 					_mediaContainer.addAsset(_mediaSourceDisplayAsset);
 				}
 			}

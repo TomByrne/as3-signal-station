@@ -13,6 +13,7 @@ package org.tbyrne.display.controls
 			return _columnIndex;
 		}
 		public function set columnIndex(value:int):void{
+			attemptInit();
 			if(_columnIndex!=value){
 				_columnIndex = value;
 				_oddEvenColumnState.selection = value%1;
@@ -23,6 +24,7 @@ package org.tbyrne.display.controls
 			return _rowIndex;
 		}
 		public function set rowIndex(value:int):void{
+			attemptInit();
 			if(_rowIndex!=value){
 				_rowIndex = value;
 				_oddEvenRowState.selection = value%1;

@@ -103,14 +103,18 @@ package org.tbyrne.display.scrolling
 				}
 			}
 			if(_dragging){
-				var newDif:Number = ((_pressedScrollValue+dif) - _scrollMetrics.scrollValue);
+				value = _pressedScrollValue+dif;
+				if(value<_scrollMetrics.minimum)value = _scrollMetrics.minimum;
+				if(value>_scrollMetrics.maximum)value = _scrollMetrics.maximum;
+				
+				var newDif:Number = (value - _scrollMetrics.scrollValue);
 				_velocityRecordings.unshift(newDif);
 				while(_velocityRecordings.length>_velocityRecordingFrames){
 					_velocityRecordings.pop();
 				}
 				
 				_ignoreChanges = true;
-				_scrollMetrics.scrollValue = _pressedScrollValue+dif;
+				_scrollMetrics.scrollValue = value;
 				_ignoreChanges = false;
 				
 			}

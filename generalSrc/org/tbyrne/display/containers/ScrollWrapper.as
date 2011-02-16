@@ -4,13 +4,10 @@ package org.tbyrne.display.containers
 	import flash.geom.Point;
 	import flash.geom.Rectangle;
 	
-	import org.tbyrne.acting.actTypes.IAct;
-	import org.tbyrne.acting.acts.Act;
 	import org.tbyrne.binding.PropertyWatcher;
-	import org.tbyrne.display.actInfo.IMouseActInfo;
 	import org.tbyrne.display.assets.nativeTypes.IDisplayObject;
-	import org.tbyrne.display.assets.nativeTypes.IInteractiveObject;
 	import org.tbyrne.display.constants.Direction;
+	import org.tbyrne.display.core.ILayoutView;
 	import org.tbyrne.display.core.IView;
 	import org.tbyrne.display.layout.ILayoutSubject;
 	import org.tbyrne.display.layout.ProxyLayoutSubject;
@@ -48,19 +45,31 @@ package org.tbyrne.display.containers
 			}
 		}
 		
+		public function get targetAsset():IDisplayObject{
+			return _targetAsset;
+		}
+		public function set targetAsset(value:IDisplayObject):void{
+			if(_targetAsset!=value){
+				_targetAsset = value;
+				checkScrolling();
+			}
+		}
+		
+		private var _targetAsset:IDisplayObject;
 		private var _ignoreMetricsChanges:Boolean;
 		private var _allowHorizontalScroll:Boolean = true;
 		private var _allowVerticalScroll:Boolean = true;
 		private var _target:ILayoutSubject;
 		private var _targetView:IView;
-		private var _targetAsset:IInteractiveObject;
+		private var _assumedTargetAsset:IDisplayObject;
 		private var _vScrollMetrics:ScrollMetrics = new ScrollMetrics(0,0,0);
 		private var _hScrollMetrics:ScrollMetrics = new ScrollMetrics(0,0,0);
 		private var _scrollRect:Rectangle = new Rectangle();
 		
 		private var _assetBinding:PropertyWatcher;
 		
-		public function ScrollWrapper(target:ILayoutSubject=null){
+		public function ScrollWrapper(target:ILayoutSubject=null, scopeView:ILayoutView=null){
+			setScopeView(scopeView);
 			_assetBinding = new PropertyWatcher("asset",null, changeAsset);
 			this.target = target;
 			
@@ -81,7 +90,8 @@ package org.tbyrne.display.containers
 			}
 		}
 		override protected function validatePosition():void{
-			_targetAsset.setPosition(_position.x,_position.y);
+			var asset:IDisplayObject = (_targetAsset || _assumedTargetAsset);
+			asset.setPosition(_position.x,_position.y);
 		}
 		override protected function validateSize():void{
 			_ignoreMetricsChanges = true;
@@ -161,15 +171,16 @@ package org.tbyrne.display.containers
 			_ignoreMetricsChanges = false;
 		}
 		protected function changeAsset(oldValue:IDisplayObject, newValue:IDisplayObject):void{
-			if(_targetAsset){
-				_targetAsset.scrollRect = null;
+			if(_assumedTargetAsset){
+				_assumedTargetAsset.scrollRect = null;
 			}
-			_targetAsset = (newValue as IInteractiveObject);
-			checkScrolling();
+			_assumedTargetAsset = (newValue as IDisplayObject);
+			if(!_targetAsset)checkScrolling();
 		}
 		protected function setScrollRect(rect:Rectangle):void{
-			if(_targetAsset){
-				_targetAsset.scrollRect = rect;
+			var asset:IDisplayObject = (_targetAsset || _assumedTargetAsset);
+			if(asset){
+				asset.scrollRect = rect;
 			}
 		}
 		private function onVMetricsChanged(from:ScrollMetrics):void{

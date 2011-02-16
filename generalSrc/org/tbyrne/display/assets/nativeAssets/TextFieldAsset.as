@@ -206,6 +206,9 @@ package org.tbyrne.display.assets.nativeAssets
 		public function appendText(text:String):void{
 			_textField.appendText(text);
 		}
+		public function getCharIndexAtPoint(x:Number, y:Number):int{
+			return _textField.getCharIndexAtPoint(x,y);
+		}
 		override protected function isStateNameAvailable(stateName:String):Boolean {
 			// (_textField.parent is MovieClip) is the cheapest way to check if the parent is dynamic (there could be a better way long term).
 			if(_textField.name && _textField.parent && (_textField.parent is MovieClip)){

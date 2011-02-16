@@ -30,6 +30,7 @@ package org.tbyrne.display.validation
 		
 		protected var _validator:Function;
 		protected var _valid:Boolean;
+		protected var _executing:Boolean;
 		
 		public function ValidationFlag(validator:Function, valid: Boolean, parameters:Array=null){
 			_valid = valid;
@@ -37,17 +38,19 @@ package org.tbyrne.display.validation
 			this.parameters = parameters;
 		}
 		public function invalidate():void{
-			if(_valid){
+			if(_valid && !_executing){
 				_valid = false;
 				if(_invalidateAct)_invalidateAct.perform(this);
 			}
 		}
 		public function validate(force:Boolean=false):void{
 			if(force || !_valid){
+				_valid = true;
+				_executing = true;
 				if(parameters)_validator.apply(null,parameters);
 				else _validator();
+				_executing = false;
 				
-				_valid = true;
 				if(_validateAct)_validateAct.perform(this);
 			}
 		}

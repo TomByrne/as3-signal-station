@@ -47,5 +47,9 @@ package org.tbyrne.display.layout.list
 		public function set direction(value:String):void{
 			_flowDirection = value;
 		}
+		
+		override protected function doLayout():void{
+			super.doLayout()
+		}
 	}
 }

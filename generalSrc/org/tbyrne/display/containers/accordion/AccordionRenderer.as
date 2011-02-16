@@ -206,7 +206,7 @@ package org.tbyrne.display.containers.accordion
 			}
 			_interactiveObjectAsset.clicked.addHandler(onAssetClick);
 			
-			var scrollBarAsset:IDisplayObject = _containerAsset.takeAssetByName(AssetNames.SCROLL_BAR,IDisplayObject,true);
+			var scrollBarAsset:IDisplayObject = _containerAsset.takeAssetByName(AssetNames.SCROLL_BAR,true);
 			if(scrollBarAsset){
 				if(!_scrollBar){
 					_scrollBar = new ScrollBar();

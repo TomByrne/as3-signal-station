@@ -146,14 +146,14 @@ package org.tbyrne.display.controls
 		override protected function bindToAsset() : void{
 			super.bindToAsset();
 			
-			_track = _containerAsset.takeAssetByName(TRACK,IInteractiveObject);
+			_track = _containerAsset.takeAssetByName(TRACK);
 			_trackButton.asset = _track;
 			
-			_progressTrack.asset = _containerAsset.takeAssetByName(PROGRESS_TRACK,IInteractiveObject,false);
+			_progressTrack.asset = _containerAsset.takeAssetByName(PROGRESS_TRACK,false);
 			
 			_assumedDirection = (_track.width>_track.height?Direction.HORIZONTAL:Direction.VERTICAL);
 			
-			_thumb.asset = _containerAsset.takeAssetByName(THUMB,IInteractiveObject);
+			_thumb.asset = _containerAsset.takeAssetByName(THUMB);
 			
 			_assumedThumbX = _thumb.asset.x;
 			_assumedThumbY = _thumb.asset.y;

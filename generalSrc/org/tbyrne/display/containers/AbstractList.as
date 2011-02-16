@@ -102,7 +102,7 @@ package org.tbyrne.display.containers
 		}
 		override protected function bindToAsset() : void{
 			super.bindToAsset();
-			var scrollBarAsset:IDisplayObject = _containerAsset.takeAssetByName(AssetNames.SCROLL_BAR,IDisplayObject,true);
+			var scrollBarAsset:IDisplayObject = _containerAsset.takeAssetByName(AssetNames.SCROLL_BAR,true);
 			if(scrollBarAsset){
 				if(!_scrollBar){
 					_scrollBar = new ScrollBar();
@@ -112,7 +112,7 @@ package org.tbyrne.display.containers
 				_scrollBar.scrollSubject = this;
 				setScrollBarMetrics(_layout.getScrollMetrics(_scrollBar.direction));
 			}
-			_assumedRendererAsset = _containerAsset.takeAssetByName(assumedRendererAssetName(),IDisplayObject,true);
+			_assumedRendererAsset = _containerAsset.takeAssetByName(assumedRendererAssetName(),true);
 			if(_assumedRendererAsset){
 				_containerAsset.removeAsset(_assumedRendererAsset);
 				assessFactory();

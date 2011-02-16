@@ -73,10 +73,26 @@ package org.tbyrne.display.validation
 		}
 		protected function setAsset(asset:IDisplayObject):void{
 			if(_asset!=asset){
+				
+				if(_added && !(_allowAddWithoutAsset || asset)){
+					// remove before changing asset to allow manager to lookup by asset
+					setAdded(false);
+				}
+				
 				var oldAsset:IDisplayObject = _asset;
 				_asset = asset;
+				
+				
+				/*
+				dispatch event after removing now unadded flags to avoid manager handling event
+				dispatch event before adding new added flags to avoid manager handling event
+				if is added and remains so, only dispatch event (no add or remove)
+				*/
 				if(_assetChanged)_assetChanged.perform(this,oldAsset);
-				checkAdded();
+				
+				if(!_added && readyForExecution){
+					setAdded(true);
+				}
 			}
 		}
 		private function checkAdded():void{
@@ -104,8 +120,10 @@ package org.tbyrne.display.validation
 		}
 		public function execute():void{
 			_valid = true;
+			_executing = true;
 			if(parameters)_validator.apply(null,parameters);
 			else _validator();
+			_executing = false;
 		}
 		override public function release():void{
 			super.release();

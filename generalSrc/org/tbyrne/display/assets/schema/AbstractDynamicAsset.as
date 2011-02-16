@@ -678,7 +678,7 @@ package org.tbyrne.display.assets.schema
 				}
 			}
 		}
-		public function takeAssetByName(name:String, type:Class, optional:Boolean=false):*{
+		public function takeAssetByName(name:String, optional:Boolean=false):*{
 			var display:DisplayObject = _sprite.getChildByName(name);
 			var ret:AbstractDynamicAsset =  _children[display];
 			if(!ret && _schema.fallbackToGroup){
@@ -689,14 +689,8 @@ package org.tbyrne.display.assets.schema
 			}
 			if(!ret && !optional){
 				throw new Error("Child with name "+name+" not found");
-			}else if(ret){
-				if(ret is type){
-					return ret;
-				}else{
-					throw new Error("Child "+name+" didn't match type "+type);
-				}
 			}else{
-				return null;
+				return ret;
 			}
 		}
 		public function returnAsset(asset:IDisplayObject):void{
@@ -887,6 +881,9 @@ package org.tbyrne.display.assets.schema
 		}
 		public function appendText(text:String):void{
 			_textField.appendText(text);
+		}
+		public function getCharIndexAtPoint(x:Number, y:Number):int{
+			return _textField.getCharIndexAtPoint(x, y);
 		}
 		
 		

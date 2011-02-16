@@ -148,6 +148,7 @@ package org.tbyrne.display.controls
 		protected var _scaleAsset:Boolean = false;
 		protected var _over:Boolean;
 		protected var _down:Boolean;
+		protected var _acceptClick:Boolean;
 		protected var _focused:Boolean;
 		
 		protected var _pressedStage:IStage;
@@ -163,7 +164,6 @@ package org.tbyrne.display.controls
 		protected var _rolledOver:Act;
 		protected var _rolledOut:Act;
 		
-		protected var _ignoreClick:Boolean;
 		protected var _pressedPos:Point;
 		
 		public function Button(asset:IDisplayObject=null){
@@ -171,10 +171,10 @@ package org.tbyrne.display.controls
 		}
 		override protected function bindToAsset() : void{
 			super.bindToAsset();
-			_asset.added.addHandler(onChildAdded);
 			
 			_interactiveArea = _asset.factory.createHitArea();
 			_containerAsset.addAsset(_interactiveArea);
+			_asset.added.addHandler(onChildAdded);
 			
 			_interactiveArea.mousePressed.addHandler(onMouseDown);
 			_interactiveArea.rolledOver.addHandler(onRollOver);
@@ -190,7 +190,9 @@ package org.tbyrne.display.controls
 			_interactiveArea.useHandCursor = (_active && _useHandCursor);
 		}
 		override protected function unbindFromAsset() : void{
-			if(down)onMouseUp(_interactiveArea);
+			if(down)killMouseDown();
+			if(_over)onRollOut(_interactiveArea);
+			_asset.added.removeHandler(onChildAdded);
 			_containerAsset.removeAsset(_interactiveArea);
 			
 			_interactiveArea.mousePressed.removeHandler(onMouseDown);
@@ -205,7 +207,6 @@ package org.tbyrne.display.controls
 			_interactiveArea = null;
 			
 			//_containerAsset.mouseChildren = true;
-			_asset.added.removeHandler(onChildAdded);
 			super.unbindFromAsset();
 		}
 		protected function onChildAdded(e:Event, from:IDisplayObject) : void{
@@ -230,7 +231,7 @@ package org.tbyrne.display.controls
 				}
 			}
 		}
-		protected function onRollOut(from:IInteractiveObject, info:IMouseActInfo):void{
+		protected function onRollOut(from:IInteractiveObject, info:IMouseActInfo=null):void{
 			if(_active){
 				_over = false;
 				_overState.selection = (_over || _focused?0:1);
@@ -259,9 +260,9 @@ package org.tbyrne.display.controls
 				
 				_downState.selection = 0;
 				_down = true;
+				_acceptClick = true;
 				if(_mousePressed)_mousePressed.perform(this);
 				
-				_ignoreClick = false;
 				if(!_pressedPos)_pressedPos = new Point();
 				_pressedPos.x = _asset.stage.mouseX;
 				_pressedPos.y = _asset.stage.mouseY;
@@ -271,11 +272,15 @@ package org.tbyrne.display.controls
 			DUMMY_POINT.x = _asset.stage.mouseX;
 			DUMMY_POINT.y = _asset.stage.mouseY;
 			if(Point.distance(_pressedPos,DUMMY_POINT)>dragAvoidanceDist){
-				_pressedStage.mouseMoved.removeHandler(onMouseMove);
-				_ignoreClick = true;
+				_acceptClick = false;
+				killMouseDown();
 			}
 		}
 		protected function onMouseUp(from:IInteractiveObject, info:IMouseActInfo=null):void{
+			killMouseDown();
+		}
+		
+		protected function killMouseDown():void{
 			_pressedStage.mouseMoved.removeHandler(onMouseMove);
 			_pressedStage.mouseReleased.removeHandler(onMouseUp);
 			if(_active){
@@ -285,24 +290,22 @@ package org.tbyrne.display.controls
 				if(_mouseReleased)_mouseReleased.perform(this);
 			}
 		}
+		
 		protected function onClick(from:IInteractiveObject, info:IMouseActInfo):void{
-			if(_active){
-				if(_ignoreClick){
-					_ignoreClick = false;
-				}else{
-					var assetMatch:Boolean = (info.mouseTarget==_interactiveArea);
-					/*if(!assetMatch){
-						var cast:ISprite = (info.mouseTarget as ISprite);
-						if(!cast || !cast.buttonMode){
-							assetMatch = true;
-						}
-					}*/
-					if(assetMatch){
-						if(_clicked)_clicked.perform(this);
-						if(_triggerableData)_triggerableData.triggerAction(asset);
+			if(_active && _acceptClick){
+				var assetMatch:Boolean = (info.mouseTarget==_interactiveArea);
+				/*if(!assetMatch){
+					var cast:ISprite = (info.mouseTarget as ISprite);
+					if(!cast || !cast.buttonMode){
+						assetMatch = true;
 					}
+				}*/
+				if(assetMatch){
+					if(_clicked)_clicked.perform(this);
+					if(_triggerableData)_triggerableData.triggerAction(asset);
 				}
 			}
+			_acceptClick = false;
 		}
 		
 		override protected function fillStateList(fill:Array):Array{

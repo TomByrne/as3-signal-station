@@ -134,7 +134,7 @@ package org.tbyrne.debug.display
 			if(_application)_application.container = _containerAsset;
 			
 			CONFIG::debug{
-				_graph.asset = _containerAsset.takeAssetByName(AssetNames.DEBUG_GRAPH_DISPLAY,IDisplayObjectContainer);
+				_graph.asset = _containerAsset.takeAssetByName(AssetNames.DEBUG_GRAPH_DISPLAY);
 			}
 			_containerAsset.removeAsset(_graph.asset);
 			_graphData.layoutView = _graph;

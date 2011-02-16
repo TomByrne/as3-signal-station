@@ -74,7 +74,7 @@ package org.tbyrne.debug.display
 		override protected function bindToAsset() : void{
 			super.bindToAsset();
 			CONFIG::debug{
-				_bitmap = _containerAsset.takeAssetByName(AssetNames.DEBUG_ITEM_BITMAP,IBitmap);
+				_bitmap = _containerAsset.takeAssetByName(AssetNames.DEBUG_ITEM_BITMAP);
 			}
 			_bitmapPaddingTop = _bitmap.y;
 			_bitmapPaddingLeft = _bitmap.x;

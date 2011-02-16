@@ -409,6 +409,7 @@ package org.tbyrne.display.layout.grid
 			_cellPosFlag.invalidate();
 		}
 		protected function validateCellMeas():void{
+			_sameCellMeas = null;
 			var keys:Dictionary = getChildKeys();
 			for(var key:* in keys){
 				var childMeas:Point = getChildMeasurement(key);

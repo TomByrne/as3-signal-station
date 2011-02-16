@@ -82,7 +82,7 @@ package org.tbyrne.display.controls.toolTip
 		}
 		override protected function bindToAsset() : void{
 			super.bindToAsset();
-			_arrow = _containerAsset.takeAssetByName(ARROW_ASSET,IDisplayObject,true);
+			_arrow = _containerAsset.takeAssetByName(ARROW_ASSET,true);
 			//if(_arrow)_arrow.forceTopLeft = false;
 			
 			_spriteAsset.mouseChildren = false;

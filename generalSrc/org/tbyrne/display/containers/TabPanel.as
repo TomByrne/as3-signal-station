@@ -80,7 +80,7 @@ package org.tbyrne.display.containers
 		}
 		override protected function bindToAsset() : void{
 			super.bindToAsset();
-			_assumedPanelAsset = _containerAsset.takeAssetByName(PANEL,IDisplayObject,true);
+			_assumedPanelAsset = _containerAsset.takeAssetByName(PANEL,true);
 			checkAssumedPanelAsset();
 			if(_panelDisplay && _panelAsset){
 				_containerAsset.addAsset(_panelAsset);
