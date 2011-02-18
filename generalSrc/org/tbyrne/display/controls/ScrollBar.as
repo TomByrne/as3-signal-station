@@ -272,9 +272,22 @@ package org.tbyrne.display.controls
 		}
 		override protected function commitSize():void{
 			
-			var minimum:Number = _scrollMetrics.minimum;
-			var maximum:Number = _scrollMetrics.maximum;
-			var pageSize:Number = _scrollMetrics.pageSize;
+			var minimum:Number;
+			var maximum:Number;
+			var pageSize:Number;
+			var scrollValue:Number;
+			
+			if(_scrollMetrics){
+				minimum = _scrollMetrics.minimum;
+				maximum = _scrollMetrics.maximum;
+				pageSize = _scrollMetrics.pageSize;
+				scrollValue = _scrollMetrics.scrollValue;
+			}else{
+				minimum = 0;
+				maximum = 1;
+				pageSize = 1;
+				scrollValue = 0;
+			}
 			
 			var scope:Number = (maximum-pageSize-minimum);
 			var rawRatio:Number;
