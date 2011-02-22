@@ -3,7 +3,6 @@ package org.tbyrne.display.layout.grid
 	import flash.geom.Point;
 	import flash.geom.Rectangle;
 	import flash.utils.Dictionary;
-	import flash.utils.getTimer;
 	
 	import org.tbyrne.acting.actTypes.IAct;
 	import org.tbyrne.acting.acts.Act;
@@ -648,7 +647,8 @@ package org.tbyrne.display.layout.grid
 				}
 				if(_protoRenderer){
 					var defaultDim:Number = _protoRenderer.measurements[axis.coordRef];
-					var leftOver:Number = (realDim-axis.foreMargin+axis.gap-pixScrollMax);
+					var leftOver:Number = (realDim-axis.foreMargin-axis.aftMargin-pixScrollMax);
+					
 					if(leftOver>0){
 						var defMax:int = max+int(leftOver/(defaultDim+axis.gap));
 						if(max<defMax){

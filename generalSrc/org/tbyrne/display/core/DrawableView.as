@@ -78,7 +78,7 @@ package org.tbyrne.display.core
 		protected var _introShown:Boolean;
 		protected var _outroShown:Boolean;
 		protected var _playAssetLabelDelay:DelayedCall;
-		private var _resetAnimationsDelay:DelayedCall;
+		private var _finaliseOutroDelay:DelayedCall;
 		protected var _stateList:Array;
 		protected var _drawFlag:FrameValidationFlag;
 		protected var _revertParentStateLists:Boolean;
@@ -110,6 +110,10 @@ package org.tbyrne.display.core
 		}
 		public final function showIntro():void{
 			if(asset && asset.stage && !_introShown){
+				if(_finaliseOutroDelay){
+					_finaliseOutroDelay.clear();
+					finaliseOutro();
+				}
 				_introShown = true;
 				_outroShown = false;
 				doShowIntro();
@@ -123,11 +127,11 @@ package org.tbyrne.display.core
 				_outroShown = true;
 				_introShown = false;
 				var ret:Number = doShowOutro();
-				if(_resetAnimationsDelay){
-					_resetAnimationsDelay.clear();
+				if(_finaliseOutroDelay){
+					_finaliseOutroDelay.clear();
 				}
-				_resetAnimationsDelay = new DelayedCall(finaliseOutro,ret);
-				_resetAnimationsDelay.begin()
+				_finaliseOutroDelay = new DelayedCall(finaliseOutro,ret);
+				_finaliseOutroDelay.begin()
 				return ret;
 			}
 			return 0;
@@ -138,6 +142,7 @@ package org.tbyrne.display.core
 		}
 		protected function finaliseOutro():void{
 			_outroShown = false;
+			_finaliseOutroDelay = null;
 		}
 		
 		/**

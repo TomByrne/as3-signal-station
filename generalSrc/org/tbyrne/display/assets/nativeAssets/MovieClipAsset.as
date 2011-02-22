@@ -75,10 +75,13 @@ package org.tbyrne.display.assets.nativeAssets {
 			return (_mainAnalysis.getFrameLabelDuration(stateName)!=-1);
 		}
 		override protected function prioritiseStates(newStates:Array):Array{
+			return prioritiseMCStates(newStates,_mainAnalysis);
+		}
+		protected function prioritiseMCStates(newStates:Array, analysis:MovieClipFrameAnalysis):Array{
 			var positions:Array = [];
 			for each(var state:IStateDef in newStates){
 				var selection:String = state.options[state.selection];
-				var index:int = _mainAnalysis.getFrameLabelIndex(selection);
+				var index:int = analysis.getFrameLabelIndex(selection);
 				positions.push(index);
 			}
 			var indices:Array = positions.sort(Array.RETURNINDEXEDARRAY);
@@ -159,25 +162,35 @@ package org.tbyrne.display.assets.nativeAssets {
 					return;
 				}
 			}
+			var newStates:Array;
+			var state:IStateDef;
+			var stateName:String;
 			for each(var stateList:Array in _stateLists){
-				for each(var state:IStateDef in stateList){
+				for each(state in stateList){
 					if(state.selection!=-1){
-						var stateName:String = state.options[state.selection];
+						stateName = state.options[state.selection];
 						if(stateName){ //  some dynamic assets use null states to allow default styles
-							var duration:int = frameAnalysis.playFrameLabel(stateName);
-							if(duration!=-1){
-								var stage:Stage = frameAnalysis.movieClip.stage;
-								if(stage) {
-									var time:Number = (duration/stage.frameRate);
-									if(state.stateChangeDuration<time){
-										state.stateChangeDuration = time;
-									}
-								}
-								return;
+							if(frameAnalysis.getFrameLabelDuration(stateName)!=-1){
+								if(!newStates)newStates = [];
+								newStates.push(state);
 							}
 						}
 					}
 				}
+			}
+			if(newStates){
+				newStates = prioritiseMCStates(newStates,frameAnalysis);
+				state = newStates[0];
+				stateName = state.options[state.selection];
+				var duration:int = frameAnalysis.playFrameLabel(stateName);
+				var stage:Stage = frameAnalysis.movieClip.stage;
+				if(stage) {
+					var time:Number = (duration/stage.frameRate);
+					if(state.stateChangeDuration<time){
+						state.stateChangeDuration = time;
+					}
+				}
+				return;
 			}
 		}
 	}
