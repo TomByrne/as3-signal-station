@@ -85,7 +85,7 @@
     <!--<target name="compileSWF">
     	<mxmlc file="${file}" output="${output}" link-report="${linkReport}" load-externs="${loadExterns}" debug="${debug}" incremental="true">
             <load-config filename="${FLEX_HOME}/frameworks/flex-config.xml"/>
-            <load-config filename="flexConfig.xml"/>
+            <load-config filename="webConfig.xml"/>
         	
     		<define name="CONFIG::debug" value="false"/>
     		

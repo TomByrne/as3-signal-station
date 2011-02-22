@@ -7,19 +7,29 @@
 			<name>Trigger</name>
 			<name>Property</name>
 		</keep-as3-metadata>
+		
 		<define>
         	<name>CONFIG::debug</name>
         	<value>false</value>
     	</define>
 		
+		<define>
+        	<name>PLATFORM::web</name>
+        	<value>false</value>
+    	</define>
+		
+		<define>
+        	<name>PLATFORM::air</name>
+        	<value>true</value>
+    	</define>
+		
 		<warn-assignment-within-conditional>false</warn-assignment-within-conditional>
+		<warn-no-constructor>false</warn-no-constructor>
 	 </compiler>
 	 
 	 <metadata>
-		<title>Wiggles World</title>
-		<description>http://www.wigglesworld.com.au</description>
-		<publisher>The Farm Digital</publisher>
-		<creator>Dominic the Gnome</creator>
+		<publisher>tbyrne.org</publisher>
+		<creator>Thomas Byrne</creator>
 		<language>EN</language>
 	 </metadata>
 </flex-config>

@@ -79,11 +79,15 @@ package org.tbyrne.display.assets.nativeAssets
 			return _stage.loaderInfo;
 		}
 		
+		PLATFORM::air{
+			
 		public function get nativeWindow():INativeWindow {
 			if(!_nativeWindow){
 				_nativeWindow = _nativeFactory.getNew(_stage.nativeWindow);
 			}
 			return _nativeWindow;
+		}
+		
 		}
 		
 		protected var _nativeWindow:INativeWindow

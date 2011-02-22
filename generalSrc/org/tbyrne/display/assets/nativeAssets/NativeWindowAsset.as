@@ -114,8 +114,7 @@ package org.tbyrne.display.assets.nativeAssets
 		override internal function set display(value:*):void{
 			displayObject = value as NativeWindow;
 		}
-		
-		
+			
 		public function get displayObject():NativeWindow{
 			return _nativeWindow;
 		}

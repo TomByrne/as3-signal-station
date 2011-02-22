@@ -29,6 +29,10 @@ package org.tbyrne.display.assets.nativeTypes
 		
 		function get loaderInfo():LoaderInfo;
 		
+		PLATFORM::air{
+		
 		function get nativeWindow():INativeWindow;
+		
+		}
 	}
 }

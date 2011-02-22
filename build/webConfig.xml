@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+
+<flex-config>
+	 <compiler>
+		<keep-as3-metadata>
+			<name>Advice</name>
+			<name>Trigger</name>
+			<name>Property</name>
+		</keep-as3-metadata>
+		
+		<define>
+        	<name>CONFIG::debug</name>
+        	<value>false</value>
+    	</define>
+		
+		<define>
+        	<name>PLATFORM::web</name>
+        	<value>true</value>
+    	</define>
+		
+		<define>
+        	<name>PLATFORM::air</name>
+        	<value>false</value>
+    	</define>
+		
+		<warn-assignment-within-conditional>false</warn-assignment-within-conditional>
+		<warn-no-constructor>false</warn-no-constructor>
+	 </compiler>
+	 
+	 <metadata>
+		<publisher>tbyrne.org</publisher>
+		<creator>Thomas Byrne</creator>
+		<language>EN</language>
+	 </metadata>
+</flex-config>

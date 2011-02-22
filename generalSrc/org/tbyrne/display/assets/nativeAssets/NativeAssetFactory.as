@@ -2,9 +2,6 @@ package org.tbyrne.display.assets.nativeAssets
 {
 	import flash.display.*;
 	import flash.media.Video;
-	import flash.system.Capabilities;
-	import flash.system.PlayerTypes;
-	import flash.system.System;
 	import flash.text.TextField;
 	import flash.utils.Dictionary;
 	
@@ -84,7 +81,7 @@ package org.tbyrne.display.assets.nativeAssets
 						new TypeBundle(VideoAsset, [IVideo], Video),
 						new TypeBundle(DisplayObjectAsset, [IDisplayObject], Shape)];
 			
-			if(Capabilities.playerType==PlayerTypes.DESKTOP){
+			PLATFORM::air{
 				bundles.push(new TypeBundle(NativeWindowAsset, [INativeWindow], NativeWindow));
 			}
 		}
