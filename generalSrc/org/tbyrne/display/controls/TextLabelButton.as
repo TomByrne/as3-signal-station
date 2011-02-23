@@ -55,7 +55,6 @@ package org.tbyrne.display.controls
 		
 		public function TextLabelButton(asset:IDisplayObject=null){
 			super(asset);
-			togglable = false;
 			createTextLabel();
 			_textLabel.measurementsChanged.addHandler(onMeasurementsChange);
 		}

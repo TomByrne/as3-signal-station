@@ -296,7 +296,6 @@ package org.tbyrne.display.containers
 			var factory:SimpleInstanceFactory = new SimpleInstanceFactory(getAssumedRendererClass());
 			factory.useChildFactories = true;
 			factory.instanceProperties = new Dictionary();
-			factory.instanceProperties["togglable"] = true;
 			checkAssetFactory();
 			factory.instanceProperties["asset"] = _assumedAssetFactory;
 			return factory;

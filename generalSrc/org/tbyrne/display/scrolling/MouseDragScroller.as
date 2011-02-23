@@ -105,7 +105,7 @@ package org.tbyrne.display.scrolling
 			if(_dragging){
 				value = _pressedScrollValue+dif;
 				if(value<_scrollMetrics.minimum)value = _scrollMetrics.minimum;
-				if(value>_scrollMetrics.maximum)value = _scrollMetrics.maximum;
+				if(value>_scrollMetrics.maximum-_scrollMetrics.pageSize)value = _scrollMetrics.maximum-_scrollMetrics.pageSize;
 				
 				var newDif:Number = (value - _scrollMetrics.scrollValue);
 				_velocityRecordings.unshift(newDif);
@@ -124,20 +124,23 @@ package org.tbyrne.display.scrolling
 			EnterFrameHook.getAct().removeHandler(doDrag);
 			
 			if(_dragging){
-				_dragVelocity = 0;
-				var total:int = 0;
-				for(var i:int; i<_velocityRecordings.length; ++i){
-					var recording:Number = _velocityRecordings[i];
-					_dragVelocity += recording*(_velocityRecordings.length-i);
-					total += (_velocityRecordings.length-i);;
-				}
-				_dragVelocity /= total;
-				_snapVelocity = 0;
-				
 				_dragging = false;
 				
-				_lastTime = getTimer();
-				EnterFrameHook.getAct().addHandler(doVelocity);
+				if(_scrollMetrics.maximum-_scrollMetrics.minimum>_scrollMetrics.pageSize){
+					_dragVelocity = 0;
+					var total:int = 0;
+					for(var i:int; i<_velocityRecordings.length; ++i){
+						var recording:Number = _velocityRecordings[i];
+						_dragVelocity += recording*(_velocityRecordings.length-i);
+						total += (_velocityRecordings.length-i);;
+					}
+					_dragVelocity /= total;
+					_snapVelocity = 0;
+					
+					
+					_lastTime = getTimer();
+					EnterFrameHook.getAct().addHandler(doVelocity);
+				}
 			}
 		}
 		protected function cancelDrag():void{
@@ -152,15 +155,26 @@ package org.tbyrne.display.scrolling
 			
 			var velocity:Number;
 			var newScrollValue:Number = _scrollMetrics.scrollValue + _dragVelocity;
+			
 			if(!isNaN(snappingInterval) && _dragVelocity<snappingVelThreshold){
 				if(newScrollValue<_scrollMetrics.minimum){
 					newScrollValue = _scrollMetrics.minimum;
-				}else if(newScrollValue>_scrollMetrics.maximum){
-					newScrollValue =_scrollMetrics.maximum;
+				}else if(newScrollValue>_scrollMetrics.maximum-_scrollMetrics.pageSize){
+					newScrollValue =_scrollMetrics.maximum-_scrollMetrics.pageSize;
 				}
 				
 				var nearest:Number = int(newScrollValue/snappingInterval+0.5)*snappingInterval;
 				var dif:Number = nearest-newScrollValue;
+				
+				// check whether the maximum value is a more appropriate place to snap to
+				var absRoundDif:Number = (dif<0?-dif:dif);
+				var endDif:Number = (_scrollMetrics.maximum-_scrollMetrics.pageSize-newScrollValue);
+				var absEndDif:Number = (endDif<0?-endDif:endDif);
+				if(endDif<absRoundDif){
+					nearest = _scrollMetrics.maximum-_scrollMetrics.pageSize;
+					dif = endDif;
+				}
+				
 				
 				var difFract:Number = dif/(snappingInterval/2);
 				_snapVelocity = difFract*snappingInfluence;
@@ -177,8 +191,8 @@ package org.tbyrne.display.scrolling
 			if(newScrollValue<_scrollMetrics.minimum){
 				newScrollValue = _scrollMetrics.minimum;
 				_dragVelocity = 0;
-			}else if(newScrollValue>_scrollMetrics.maximum){
-				newScrollValue =_scrollMetrics.maximum;
+			}else if(newScrollValue>_scrollMetrics.maximum-_scrollMetrics.pageSize){
+				newScrollValue =_scrollMetrics.maximum-_scrollMetrics.pageSize;
 				_dragVelocity = 0;
 			}
 			

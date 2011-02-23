@@ -69,7 +69,6 @@ package org.tbyrne.debug.display
 		override protected function init() : void{
 			super.init();
 			padding = 3;
-			togglable = true;
 		}
 		override protected function bindToAsset() : void{
 			super.bindToAsset();

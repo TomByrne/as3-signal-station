@@ -39,15 +39,6 @@ package org.tbyrne.display.controls
 			}
 		}
 		
-		public function get togglable():Boolean{
-			return _togglable;
-		}
-		public function set togglable(value:Boolean):void{
-			if(_togglable!=value){
-				_togglable = value;
-				assessSelectedState();
-			}
-		}
 		public function get tabFocusable(): ITabFocusable{
 			checkIsBound();
 			if(!_tabFocusable)_tabFocusable = new InteractiveAssetFocusWrapper(_interactiveObjectAsset);
@@ -117,7 +108,6 @@ package org.tbyrne.display.controls
 		private var _booleanProvider:IBooleanProvider;
 		private var _booleanConsumer:IBooleanConsumer;
 		protected var _selected:Boolean;
-		private var _togglable:Boolean = true;
 		private var _tabFocusable:InteractiveAssetFocusWrapper;
 		private var _ignoreDataChanges:Boolean;
 		

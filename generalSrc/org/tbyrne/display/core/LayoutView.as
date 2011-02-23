@@ -165,11 +165,29 @@ package org.tbyrne.display.core
 		protected function invalidatePos(): void{
 			_posDrawFlag.invalidate();
 		}
+		protected function validatePos(force:Boolean): void{
+			_posDrawFlag.validate(force);
+		}
+		
 		protected function invalidateSize(): void{
 			_sizeDrawFlag.invalidate();
 		}
 		protected function validateSize(force:Boolean): void{
 			_sizeDrawFlag.validate(force);
+		}
+		
+		protected function invalidateMeasurements():void{
+			_measureFlag.invalidate();
+			if(!_measuring){
+				if(_measurementsChanged)_measurementsChanged.perform(this,_lastMeasX,_lastMeasY);
+				if(_measurements){
+					_lastMeasX = _measurements.x;
+					_lastMeasY = _measurements.y;
+				}else{
+					_lastMeasX = NaN;
+					_lastMeasY = NaN;
+				}
+			}
 		}
 		protected function validateMeas(force:Boolean): void{
 			_measureFlag.validate(force);
@@ -206,19 +224,6 @@ package org.tbyrne.display.core
 		}
 		protected function commitPosition():void{
 			asset.setPosition(_position.x,_position.y);
-		}
-		protected function invalidateMeasurements():void{
-			_measureFlag.invalidate();
-			if(!_measuring){
-				if(_measurementsChanged)_measurementsChanged.perform(this,_lastMeasX,_lastMeasY);
-				if(_measurements){
-					_lastMeasX = _measurements.x;
-					_lastMeasY = _measurements.y;
-				}else{
-					_lastMeasX = NaN;
-					_lastMeasY = NaN;
-				}
-			}
 		}
 	}
 }
