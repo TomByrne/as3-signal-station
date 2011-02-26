@@ -6,13 +6,28 @@ package org.tbyrne.display.scrolling
 	import org.tbyrne.acting.acts.Act;
 	import org.tbyrne.core.EnterFrameHook;
 	import org.tbyrne.display.actInfo.IMouseActInfo;
+	import org.tbyrne.display.assets.nativeTypes.IDisplayObjectContainer;
 	import org.tbyrne.display.assets.nativeTypes.IInteractiveObject;
 	import org.tbyrne.display.assets.nativeTypes.IStage;
+	import org.tbyrne.display.assets.utils.isDescendant;
 
 	public class MouseDragScroller
 	{
 		private static const VELOCITY_THESHOLD:Number = 0.1;
 		
+		protected static var instances:Vector.<MouseDragScroller> = new Vector.<MouseDragScroller>();
+		
+		protected static function shouldCapture(from:MouseDragScroller):Boolean{
+			var cast:IDisplayObjectContainer = (from.interactiveObject as IDisplayObjectContainer);
+			if(cast){
+				for each(var instance:MouseDragScroller in instances){
+					if(instance!=from && isDescendant(cast,instance.interactiveObject)){
+						return false;
+					}
+				}
+			}
+			return true;
+		}
 		
 		/**
 		 * handler(from:MouseDragScroller)
@@ -45,10 +60,20 @@ package org.tbyrne.display.scrolling
 			if(_interactiveObject!=value){
 				if(_interactiveObject){
 					_interactiveObject.mousePressed.removeHandler(onMousePressed);
+					_interactiveObject.addedToStage.removeHandler(onAddedToStage);
+					_interactiveObject.removedFromStage.removeHandler(onRemovedFromStage);
+					if(_added){
+						onRemovedFromStage();
+					}
 				}
 				_interactiveObject = value;
 				if(_interactiveObject){
 					_interactiveObject.mousePressed.addHandler(onMousePressed);
+					_interactiveObject.addedToStage.addHandler(onAddedToStage);
+					_interactiveObject.removedFromStage.addHandler(onRemovedFromStage);
+					if(_interactiveObject.stage){
+						onAddedToStage();
+					}
 				}
 			}
 		}
@@ -73,6 +98,7 @@ package org.tbyrne.display.scrolling
 		private var _snapVelocity:Number;
 		private var _ignoreChanges:Boolean;
 		private var _lastTime:int;
+		private var _added:Boolean;
 		
 		private var _velocityRecordings:Vector.<Number>;
 		private var _velocityRecordingFrames:int;
@@ -83,7 +109,7 @@ package org.tbyrne.display.scrolling
 		
 		protected function onMousePressed(from:IInteractiveObject, mouseActInfo:IMouseActInfo):void{
 			cancelDrag();
-			if(_scrollMetrics){
+			if(_scrollMetrics && shouldCapture(this)){
 				_pressedStage = _interactiveObject.stage;
 				_pressedStage.mouseReleased.addHandler(onMouseReleased);
 				EnterFrameHook.getAct().addHandler(doDrag);
@@ -214,6 +240,14 @@ package org.tbyrne.display.scrolling
 			if(!_ignoreChanges){
 				cancelDrag();
 			}
+		}
+		
+		private function onAddedToStage(from:IInteractiveObject=null):void{
+			instances.push(this);
+		}
+		private function onRemovedFromStage(from:IInteractiveObject=null):void{
+			var index:int = instances.indexOf(this);
+			instances.splice(index,1);
 		}
 	}
 }

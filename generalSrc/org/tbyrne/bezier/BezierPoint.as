@@ -338,7 +338,7 @@ package org.tbyrne.bezier
 		
 		public function BezierPoint(x:Number=0, y:Number=0, angle:Number=NaN, distance:Number=NaN){
 			/*CONFIG::debug{
-				if(!gettingNew && this["constructor"]==BezierPoint)trace("WARNING: BezierPoint should be created via BezierPoint.getNew()");
+				if(!gettingNew && this["constructor"]==BezierPoint)Log.error("BezierPoint should be created via BezierPoint.getNew()");
 			}*/
 			this.x = x;
 			this.y = y;
@@ -348,14 +348,14 @@ package org.tbyrne.bezier
 		public function validateNumbers():void{
 			var thisPoint:Point = new Point(x,y);
 			if(_backwardVector){
-				_backwardAngle = Trigonometry.getAngleTo(thisPoint,_backwardVector);
-				_backwardDistance = Trigonometry.getDirection(thisPoint,_backwardVector);
+				_backwardAngle = Trigonometry.getAngleTo(thisPoint.x,thisPoint.y,_backwardVector.x,_backwardVector.y);
+				_backwardDistance = Trigonometry.getDirection(thisPoint.x,thisPoint.y,_backwardVector.x,_backwardVector.y);
 			}else{
 				_backwardAngle = _backwardDistance = NaN;
 			}
 			if(_forwardVector){
-				_forwardAngle = Trigonometry.getAngleTo(thisPoint,_forwardVector);
-				_forwardDistance = Trigonometry.getDirection(thisPoint,_forwardVector);
+				_forwardAngle = Trigonometry.getAngleTo(thisPoint.x,thisPoint.y,_forwardVector.x,_forwardVector.y);
+				_forwardDistance = Trigonometry.getDirection(thisPoint.x,thisPoint.y,_forwardVector.x,_forwardVector.y);
 			}else{
 				_forwardAngle = _forwardDistance = NaN;
 			}

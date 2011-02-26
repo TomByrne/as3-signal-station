@@ -12,10 +12,10 @@ package org.tbyrne.display.layout
 		override protected function onSubjectMeasChanged(from:ILayoutSubject, oldWidth:Number, oldHeight:Number): void{
 			invalidateMeasurements();
 		}
-		override protected function validatePosition():void{
+		override protected function commitPos():void{
 			invalidateSize();
 		}
-		override protected function validateSize():void{
+		override protected function commitSize():void{
 			var doMeas:Boolean = (drawToMeasure() && _measurementsChanged);
 			if(doMeas){
 				var oldMeasWidth:Number = _measurements.x;

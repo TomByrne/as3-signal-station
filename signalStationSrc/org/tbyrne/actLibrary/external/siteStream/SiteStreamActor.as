@@ -4,18 +4,12 @@ package org.tbyrne.actLibrary.external.siteStream
 	import flash.utils.Dictionary;
 	
 	import org.tbyrne.actLibrary.core.UniversalActorHelper;
-	import org.tbyrne.actLibrary.errors.ErrorDetails;
-	import org.tbyrne.actLibrary.errors.actTypes.IDetailedErrorAct;
-	import org.tbyrne.actLibrary.errors.acts.DetailedErrorAct;
-	import org.tbyrne.actLibrary.errors.acts.ErrorAct;
 	import org.tbyrne.actLibrary.external.siteStream.actTypes.*;
-	import org.tbyrne.actLibrary.external.siteStream.errors.SiteStreamErrors;
 	import org.tbyrne.acting.ActingNamspace;
 	import org.tbyrne.acting.universal.UniversalActExecution;
 	import org.tbyrne.acting.universal.phases.LogicPhases;
 	import org.tbyrne.acting.universal.phases.ObjectPhases;
 	import org.tbyrne.siteStream.SiteStream;
-	import org.tbyrne.siteStream.events.SiteStreamErrorEvent;
 	
 	use namespace ActingNamspace;
 
@@ -61,11 +55,6 @@ package org.tbyrne.actLibrary.external.siteStream
 			return _siteStream;
 		}
 		
-		protected function get errorAct():IDetailedErrorAct{
-			return _errorAct;
-		}
-		private var _errorAct:DetailedErrorAct;
-		
 		protected var _baseUrl:String = "";
 		protected var _siteStream:SiteStream;
 		protected var loadRequests: Dictionary;
@@ -73,25 +62,8 @@ package org.tbyrne.actLibrary.external.siteStream
 		public function SiteStreamActor(){
 			metadataTarget = this;
 			
-			_errorAct = new DetailedErrorAct();
-			addChild(_errorAct);
-			
 			this.loadRequests = new Dictionary();
 			_siteStream = this.createSiteStream();
-			_siteStream.addEventListener(SiteStreamErrorEvent.CLASS_FAILURE, onClassFailure);
-			_siteStream.addEventListener(SiteStreamErrorEvent.DATA_FAILURE, onDataFailure);
-		}
-		protected function onClassFailure(e:SiteStreamErrorEvent):void{
-			_errorAct.errorTarget = this;
-			_errorAct.errorType = SiteStreamErrors.CLASS_ERROR;
-			_errorAct.errorDetails = new ErrorDetails(e.text);
-			_errorAct.perform();
-		}
-		protected function onDataFailure(e:SiteStreamErrorEvent):void{
-			_errorAct.errorTarget = this;
-			_errorAct.errorType = SiteStreamErrors.DATA_ERROR;
-			_errorAct.errorDetails = new ErrorDetails(e.text);
-			_errorAct.perform();
 		}
 		protected function createSiteStream():SiteStream{
 			var ret:SiteStream = new SiteStream();

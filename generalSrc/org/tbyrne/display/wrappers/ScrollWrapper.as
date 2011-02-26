@@ -1,4 +1,4 @@
-package org.tbyrne.display.containers
+package org.tbyrne.display.wrappers
 {
 	
 	import flash.geom.Point;
@@ -89,11 +89,12 @@ package org.tbyrne.display.containers
 				return _hScrollMetrics;
 			}
 		}
-		override protected function validatePosition():void{
+		override protected function commitPos():void{
 			var asset:IDisplayObject = (_targetAsset || _assumedTargetAsset);
 			asset.setPosition(_position.x,_position.y);
+			validateSize(true);
 		}
-		override protected function validateSize():void{
+		override protected function commitSize():void{
 			_ignoreMetricsChanges = true;
 			if(_hScrollMetrics.pageSize!=_size.x){
 				_hScrollMetrics.pageSize = _size.x;
@@ -124,11 +125,16 @@ package org.tbyrne.display.containers
 					if(_hScrollMetrics.maximum != targetWidth){
 						_hScrollMetrics.maximum = targetWidth;
 					}
-					
+					var minValue:Number;
+					var maxValue:Number;
 					if(_allowHorizontalScroll){
 						targetWidth = targetWidth;
-						if(_hScrollMetrics.scrollValue>_hScrollMetrics.maximum-_hScrollMetrics.pageSize){
-							_hScrollMetrics.scrollValue = _hScrollMetrics.maximum-_hScrollMetrics.pageSize;
+						minValue = _hScrollMetrics.minimum;
+						maxValue = Math.max(minValue,_hScrollMetrics.maximum-_hScrollMetrics.pageSize);
+						if(_hScrollMetrics.scrollValue<minValue){
+							_hScrollMetrics.scrollValue = minValue;
+						}else if(_hScrollMetrics.scrollValue>maxValue){
+							_hScrollMetrics.scrollValue = maxValue;
 						}
 						if(_scrollRect.x != _hScrollMetrics.scrollValue){
 							_scrollRect.x = _hScrollMetrics.scrollValue;
@@ -141,8 +147,12 @@ package org.tbyrne.display.containers
 					
 					if(_allowVerticalScroll){
 						targetHeight = targetHeight;
-						if(_vScrollMetrics.scrollValue>_vScrollMetrics.maximum-_vScrollMetrics.pageSize){
-							_vScrollMetrics.scrollValue = _vScrollMetrics.maximum-_vScrollMetrics.pageSize;
+						minValue = _vScrollMetrics.minimum;
+						maxValue = Math.max(minValue,_vScrollMetrics.maximum-_vScrollMetrics.pageSize);
+						if(_vScrollMetrics.scrollValue<minValue){
+							_vScrollMetrics.scrollValue = minValue;
+						}else if(_vScrollMetrics.scrollValue>maxValue){
+							_vScrollMetrics.scrollValue = maxValue;
 						}
 						if(_scrollRect.y != _vScrollMetrics.scrollValue){
 							_scrollRect.y = _vScrollMetrics.scrollValue;

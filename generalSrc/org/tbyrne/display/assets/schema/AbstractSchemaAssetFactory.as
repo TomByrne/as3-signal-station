@@ -43,12 +43,12 @@ package org.tbyrne.display.assets.schema
 			return createAssetFromSchema(_hitAreaProto) as ISprite;
 		}
 		public function destroyAsset(asset:IAsset):void{
-			throw new Error();
+			Log.log(Log.SUSPICIOUS_IMPLEMENTATION, "AbstractSchemaAssetFactory.destroyAsset: Should be overriden");
 		}
 		
 		
 		public function createAssetFromSchema(schema:IAssetSchema):IAsset{
-			throw new Error();
+			Log.log(Log.SUSPICIOUS_IMPLEMENTATION, "AbstractSchemaAssetFactory.createAssetFromSchema: Should be overriden");
 		}
 		protected function attemptToCreateChildren(schema:IAssetSchema):Array{
 			var contSchema:IContainerAssetSchema = (schema as IContainerAssetSchema);

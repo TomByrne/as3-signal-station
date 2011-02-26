@@ -38,9 +38,9 @@ package org.tbyrne.display.validation
 			this.parameters = parameters;
 		}
 		public function invalidate():void{
-			if(_valid && !_executing){
+			if(_valid){
 				_valid = false;
-				if(_invalidateAct)_invalidateAct.perform(this);
+				if(!_executing && _invalidateAct)_invalidateAct.perform(this);
 			}
 		}
 		public function validate(force:Boolean=false):void{

@@ -17,8 +17,8 @@
 		 * throw new Error(MetadataConfirmer.createWarning("MySystem",["MyMetadata"]))<br>
 		 * }</code>
 		 */
-		public static function confirm(requiredMetadata: Array, klass:Class):Boolean{
-			var type: XML = ReflectionUtils.describeType(klass);
+		public static function confirm(requiredMetadata: Array, instance:*):Boolean{
+			var type: XML = ReflectionUtils.describeType(instance);
 			for each(var metaName:String in requiredMetadata){
 				if(!type..metadata.(@name==metaName).length()){
 					return false;

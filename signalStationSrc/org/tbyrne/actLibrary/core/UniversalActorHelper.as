@@ -59,7 +59,7 @@ package org.tbyrne.actLibrary.core
 				_children.push(view);
 				view.scope = _asset;
 			}else{
-				throw new Error("act already added");
+				Log.error( "UniversalActorHelper.addChild: act already added");
 			}
 		}
 		public function removeChild(view:IScopedObject):void{
@@ -68,7 +68,7 @@ package org.tbyrne.actLibrary.core
 				view.scope = null;
 				_children.splice(index,1);
 			}else{
-				throw new Error("act hasn't been added");
+				Log.error( "UniversalActorHelper.removeChild: act hasn't been added");
 			}
 		}
 		public function assessMetadata(asset:IDisplayObject=null):void{

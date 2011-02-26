@@ -29,7 +29,7 @@ package org.tbyrne.siteStream
 			for each(var prop:String in propPath){
 				value = value[prop];
 				if(value==null){
-					throw new Error("Referenced value couldn't be found");
+					Log.error("ReferenceNodeResolver.dispatchResolved: Referenced value couldn't be found");
 				}
 			}
 			propertySetter.value = value;

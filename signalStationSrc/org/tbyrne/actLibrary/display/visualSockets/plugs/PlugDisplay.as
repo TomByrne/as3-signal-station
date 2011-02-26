@@ -75,7 +75,7 @@ package org.tbyrne.actLibrary.display.visualSockets.plugs
 			if(displaySocket){
 				super.checkIsBound();
 			}else{
-				trace("WARNING: "+this+" must have displaySocket to be bound");
+				Log.error("PlugDisplay.checkIsBound: "+this+" must have displaySocket to be bound");
 			}
 		}
 	}

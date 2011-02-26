@@ -76,7 +76,7 @@ package org.tbyrne.siteStream
 		
 		public function PropertySetter(siteStreamItem:ISiteStreamParser=null, propertyInfo:IPropertyInfo=null){
 			/*CONFIG::debug{
-				if(!gettingNew && this["constructor"]==PropertySetter)throw new Error("WARNING: BezierPoint should be created via BezierPoint.getNew()");
+				if(!gettingNew && this["constructor"]==PropertySetter)Log.error( "BezierPoint should be created via BezierPoint.getNew");
 			}*/
 			this._siteStreamItem = siteStreamItem;
 			this.propertyInfo = propertyInfo;

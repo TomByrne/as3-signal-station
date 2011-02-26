@@ -158,7 +158,7 @@ package org.tbyrne.sound
 			
 			if(_allSounds[sound] && !pendingStop && !inQueue) {
 				// allow queue items through as they won't be played on top of one another
-				throw new Error("This ISoundControl object has already been added to the SoundManager");
+				Log.error( "SoundManager._playSound: This ISoundControl object has already been added to the SoundManager");
 			}else{
 				sound.added = true;
 				if(inQueue){
@@ -181,7 +181,7 @@ package org.tbyrne.sound
 						}
 						ret = true;
 					}else if(queue && queue.playingSound && queue.playingSound.infinite){
-						trace("WARNING: failed to add sound to queue with infinitely playing sound.");
+						Log.error("SoundManager._playSound: failed to add sound to queue with infinitely playing sound.");
 					}
 				}else{
 					_allSounds[sound] = true;

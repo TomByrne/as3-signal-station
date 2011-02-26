@@ -102,7 +102,7 @@ package org.tbyrne.behaviour
 			}
 			else
 			{
-				throw new Error("Cannot remove goal, not present");
+				Log.error( "BehaviourExecution.removeGoal: Cannot remove goal, not present");
 			}
 		}
 		

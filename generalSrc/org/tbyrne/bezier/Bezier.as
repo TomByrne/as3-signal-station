@@ -135,7 +135,7 @@ package org.tbyrne.bezier
 					ret.setPosition(start.x+((end.x-start.x)*fract),
 									start.y+((end.y-start.y)*fract));
 					if(includeVector){
-						ret.angle = Trigonometry.getAngleTo(start.toPoint(),end.toPoint());
+						ret.angle = Trigonometry.getAngleTo(start.x,start.y,end.x,end.y);
 						ret.distance = 1;
 					}
 				}
@@ -302,14 +302,14 @@ package org.tbyrne.bezier
 			if(start && end){
 				var start:Point = start.toPoint();
 				var end:Point = end.toPoint();
-				var startDist:Number = Trigonometry.getDistance(start,point);
+				var startDist:Number = Trigonometry.getDistance(start.x,start.y,point.x,point.y);
 				var endDist:Number = Trigonometry.getDistance(end,point);
 				while(endFract-startFract>tolerance){
 					var midFract:Number = startFract+((endFract-startFract)/2);
 					var bezMid:BezierPoint = getPointAt(midFract);
 					var mid:Point = bezMid.toPoint();
 					bezMid.release();
-					var midDist:Number = Trigonometry.getDistance(mid,point);
+					var midDist:Number = Trigonometry.getDistance(mid.x,mid.y,point.x,point.y);
 					
 					if(isNaN(nearest.distance) || nearest.distance>midDist){
 						nearest.distance = midDist;
@@ -318,8 +318,8 @@ package org.tbyrne.bezier
 					var _startDist:Number = startDist;
 					var _endDist:Number = endDist;
 					if(startDist==endDist){
-						_startDist = Trigonometry.getDistance(mid,start);
-						_endDist = Trigonometry.getDistance(mid,end);
+						_startDist = Trigonometry.getDistance(mid.x,mid.y,start.x,start.y);
+						_endDist = Trigonometry.getDistance(mid.x,mid.y,end.x,end.y);
 					}
 					if(_startDist<_endDist){
 						endFract = midFract;

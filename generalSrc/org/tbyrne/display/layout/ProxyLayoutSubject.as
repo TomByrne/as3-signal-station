@@ -28,7 +28,14 @@ package org.tbyrne.display.layout
 		public function set measurements(value:Point):void{
 			if((!_forceMeasurements && value) || 
 				(!_forceMeasurements.equals(value))){
-				_forceMeasurements = value;
+				if(value){
+					// create different instance so that external code can reuse it's instance
+					if(!_forceMeasurements)_forceMeasurements = new Point();
+					_forceMeasurements.x = value.x;
+					_forceMeasurements.y = value.y;
+				}else{
+					_forceMeasurements = null;
+				}
 				invalidateMeasurements();
 			}
 		}
@@ -81,10 +88,10 @@ package org.tbyrne.display.layout
 				}
 			}
 		}
-		override protected function validatePosition():void{
+		override protected function commitPos():void{
 			_target.setPosition(_position.x,_position.y);
 		}
-		override protected function validateSize():void{
+		override protected function commitSize():void{
 			_target.setSize(_size.x,_size.y);
 		}
 		protected function onMeasurementsChanged(from:ILayoutSubject, oldWidth:Number, oldHeight:Number):void{

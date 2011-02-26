@@ -60,7 +60,7 @@ package org.tbyrne.external
 		 */
 		private function handleAsyncErrorEvent(event: AsyncErrorEvent): void
 		{
-			trace("WARNING: Remoting ASyncError - " + event.error);
+			Log.log(Log.DEV_INFO, "Remoting ASyncError - " + event.error);
 			this.dispatchEvent(event);
 		}
 		

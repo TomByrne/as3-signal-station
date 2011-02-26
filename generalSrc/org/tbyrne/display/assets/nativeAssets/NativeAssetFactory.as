@@ -64,7 +64,7 @@ package org.tbyrne.display.assets.nativeAssets
 		CONFIG::debug{
 			protected function checkFactoryType(type:Class):void{
 				if(type==MovieClip || type==Shape || type==Sprite || type==SimpleButton){
-					throw new Error("Flash assets must be 'Exported for Actionscript' to be clonable");
+					Log.error( "NativeAssetFactory.checkFactoryType: Flash assets must be 'Exported for Actionscript' to be clonable");
 				}
 			}
 		}
@@ -184,7 +184,7 @@ package org.tbyrne.display.assets.nativeAssets
 		private function returnTo(pool:Array, asset:NativeAsset):void{
 			var cached:IAsset = cache[asset.display];
 			if(cached!=asset){
-				throw new Error("displayObject property has been set outside of NativeAssetFactory");
+				Log.error( "NativeAssetFactory.returnTo: displayObject property has been set outside of NativeAssetFactory");
 			}
 			delete cache[asset.display];
 			asset.display = null;

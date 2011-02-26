@@ -42,10 +42,10 @@ package org.tbyrne.actLibrary.external.remoteMethod
 			var connection:IConnection;
 			if(!id){
 				connection = _defaultConnection;
-				if(!connection)throw new Error("RemoteMethodAdvisor.onSetCredentials: Default connection has not been set");
+				if(!connection)Log.error( "RemoteMethodAdvisor.onSetCredentials: Default connection has not been set");
 			}else{
 				connection = _connections[id];
-				if(!connection)throw new Error("RemoteMethodAdvisor.onSetCredentials: Connection with id "+id+" does not exist");
+				if(!connection)Log.error( "RemoteMethodAdvisor.onSetCredentials: Connection with id "+id+" does not exist");
 			}
 			return connection;
 		}

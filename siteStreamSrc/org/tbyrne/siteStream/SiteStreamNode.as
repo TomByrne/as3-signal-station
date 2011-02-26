@@ -38,7 +38,7 @@ package org.tbyrne.siteStream
 		public function set id(value:String):void{
 			if(_id!=value){
 				if(_id && _id.length){
-					throw new Error("SiteStreamNode id property being changed. This may be the result of non-matching XML id attribute.");
+					Log.error("SiteStreamNode.id: SiteStreamNode id property being changed. This may be the result of non-matching XML id attribute");
 				}
 				_id = value;
 			}
@@ -83,7 +83,7 @@ package org.tbyrne.siteStream
 		public function SiteStreamNode(siteStreamItem:ISiteStreamParser=null, propertyInfo:IPropertyInfo=null){
 			super(siteStreamItem, propertyInfo);
 			/*CONFIG::debug{
-				if(!gettingNew)throw new Error("WARNING: SiteStreamNode should be created via SiteStreamNode.getNew()");
+				if(!gettingNew)Log.error("SiteStreamNode should be created via SiteStreamNode.getNew");
 			}*/
 			this.addEventListener(SiteStreamEvent.PARSED,checkResolved,false,0,true);
 		}

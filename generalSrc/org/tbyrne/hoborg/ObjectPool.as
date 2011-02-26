@@ -43,11 +43,11 @@
 				object.reset();
 				pool[object] = true;
 				_size++;
-			}/*else{
+			}else{
 				CONFIG::debug{
-					throw new Error("Object has already been released");
+					Log.error( "ObjectPool.releaseObject: Object has already been released");
 				}
-			}*/
+			}
 		}
 		protected function validateSize():void{
 			var poolLength:Number = DictionaryUtils.getLength(pool);

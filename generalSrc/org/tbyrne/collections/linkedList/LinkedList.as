@@ -294,7 +294,7 @@ package org.tbyrne.collections.linkedList
 			return ret;
 		}
 		private function throwIndexError(index:uint):void{
-			throw new Error("LinkedList: index "+index+" is out of bounds");
+			Log.error( "LinkedList: index "+index+" is out of bounds");
 		}
 		public function release():void{
 			pool.releaseObject(this)

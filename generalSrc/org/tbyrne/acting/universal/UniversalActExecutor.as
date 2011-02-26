@@ -148,7 +148,7 @@ package org.tbyrne.acting.universal
 			++_executionCount;
 			CONFIG::debug{
 				if(execution.reactionCount==0 && String(execution.act).indexOf("Method")==-1){
-					trace("WARNING: UniversalAct without reactions that doesn't appear to call a method: "+execution.act);
+					Log.log(Log.SUSPICIOUS_IMPLEMENTATION,"UniversalAct without reactions that doesn't appear to call a method: "+execution.act);
 				}
 			}
 			if(parentExecution){

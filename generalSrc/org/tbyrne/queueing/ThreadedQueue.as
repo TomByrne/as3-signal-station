@@ -134,7 +134,7 @@ package org.tbyrne.queueing
 			_currentItem = null;
 		}
 		protected function onFrame(e:Event):void{
-			//trace("\nonFrame");
+			//Log.trace("\nonFrame");
 			FRAME_DISPATCHER.removeEventListener(Event.ENTER_FRAME,onFrame);
 			_frameStartTime = getTimer();
 			_executedThisFrame = 0;

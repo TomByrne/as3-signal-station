@@ -104,7 +104,7 @@ package org.tbyrne.actLibrary.display.visualSockets.mappers
 					}
 				}
 			}else{
-				trace("WARNING: SiteStreamPlugMapper.onSiteStreamComplete - data was not found for path "+cause.resolvePaths[0]);
+				Log.error("SiteStreamPlugMapper.onSiteStreamComplete: data was not found for path "+cause.resolvePaths[0]);
 			}
 			result.data = resolved;
 			result.complete = true;

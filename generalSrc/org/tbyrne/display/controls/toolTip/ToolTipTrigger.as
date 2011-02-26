@@ -138,7 +138,7 @@ package org.tbyrne.display.controls.toolTip
 		}
 		protected function checkValue():void{
 			if(_data){
-				if(!_activeProperty)throw new Error("activeProperty must be set if deactivateActName and activateActName are the same");
+				if(!_activeProperty)Log.error( "ToolTipTrigger.checkValue: activeProperty must be set if deactivateActName and activateActName are the same");
 				var value:Boolean = _actTarget[_activeProperty];
 				setActive(value);
 			}else{

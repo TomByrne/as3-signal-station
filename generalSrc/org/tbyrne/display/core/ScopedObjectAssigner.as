@@ -32,7 +32,7 @@ package org.tbyrne.display.core
 		public function addManager(manager:IScopedObjectRoot):void{
 			CONFIG::debug{
 				if(managers[manager]){
-					throw new Error("Manager already added");
+					Log.error( "ScopedObjectAssigner.addManager: Manager already added");
 				}
 			}
 			
@@ -45,7 +45,7 @@ package org.tbyrne.display.core
 		public function removeManager(manager:IScopedObjectRoot):void{
 			CONFIG::debug{
 				if(!managers[manager]){
-					throw new Error("Manager hasn't been added");
+					Log.error( "ScopedObjectAssigner.removeManager: Manager hasn't been added");
 				}
 			}
 			
@@ -58,7 +58,7 @@ package org.tbyrne.display.core
 		public function addScopedObject(scopedObject:IScopedObject):void{
 			CONFIG::debug{
 				if(scopedObjectMap[scopedObject]){
-					throw new Error("scopedObject already added");
+					Log.error( "ScopedObjectAssigner.addScopedObject: scopedObject already added");
 				}
 			}
 			
@@ -72,7 +72,7 @@ package org.tbyrne.display.core
 			var bundle:ScopedObjectBundle = scopedObjects[scopedObject];
 			CONFIG::debug{
 				if(!bundle){
-					throw new Error("scopedObject has not been added");
+					Log.error( "ScopedObjectAssigner.removeScopedObject: scopedObject has not been added");
 				}
 			}
 			if(scopedObject.scope){

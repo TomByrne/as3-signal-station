@@ -23,7 +23,7 @@ package org.tbyrne.acting.universal
 						++index;
 						if(index==reactors.length){
 							if(!taken){
-								throw new Error("This list of IActReactions can not be ordered");
+								Log.error( "UniversalReactionSorter.sortReactors: This list of IActReactions can not be ordered");
 							}
 							index = 0;
 							taken = false;
@@ -45,7 +45,7 @@ package org.tbyrne.acting.universal
 							if(maxIndex==-1 || maxIndex==i){
 								minIndex = i+1;
 							}else{
-								throw new Error("IActReaction has a conflicting position in list.");
+								Log.error( "UniversalReactionSorter.sortReactors: IActReaction has a conflicting position in list");
 							}
 						}
 					}

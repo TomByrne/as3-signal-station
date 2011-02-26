@@ -30,12 +30,12 @@ package org.tbyrne.media.image
 			this.smoothing = smoothing;
 		}
 		protected function onLoaderComplete(e:Event):void{
-			//trace("onLoaderComplete: "+_asset.width,_asset.scaleX);
+			//Log.trace("onLoaderComplete: "+_asset.width,_asset.scaleX);
 			invalidateSize();
 			applySmoothing();
 		}
 		override protected function commitSize():void{
-			//trace("commitSize: "+_asset.width,_asset.scaleX,_size);
+			//Log.trace("commitSize: "+_asset.width,_asset.scaleX,_size);
 			super.commitSize();
 		}
 		protected function applySmoothing():void{

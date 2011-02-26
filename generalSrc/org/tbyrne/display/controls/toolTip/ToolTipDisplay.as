@@ -1,12 +1,9 @@
 package org.tbyrne.display.controls.toolTip
 {
-	import flash.display.Sprite;
 	import flash.geom.Point;
-	import flash.geom.Rectangle;
 	
 	import org.tbyrne.display.DisplayNamespace;
 	import org.tbyrne.display.assets.nativeTypes.IDisplayObject;
-	import org.tbyrne.display.assets.nativeTypes.ISprite;
 	import org.tbyrne.display.assets.states.StateDef;
 	import org.tbyrne.display.constants.Anchor;
 	import org.tbyrne.display.controls.TextLabel;
@@ -147,9 +144,9 @@ package org.tbyrne.display.controls.toolTip
 				}
 				
 				if(!anchorSide){
-					var angle:Number = Trigonometry.getAngleTo(anchorPos,center);
+					var angle:Number = Trigonometry.getAngleTo(anchorPos.x,anchorPos.y,center.x,center.y);
 					// ancCornerAngle is the angle from the centre of the anchorView to it's top-right corner, used to work out the side which the connector hits
-					var ancCornerAngle:Number = Trigonometry.getAngleTo(ORIGIN,new Point(anchorSize.x/2,-anchorSize.y/2));
+					var ancCornerAngle:Number = Trigonometry.getAngleTo(0,0,anchorSize.x/2,-anchorSize.y/2);
 					if(angle<ancCornerAngle || angle>360-ancCornerAngle){
 						anchorSide = Anchor.TOP;
 					}else if(angle<180-ancCornerAngle){

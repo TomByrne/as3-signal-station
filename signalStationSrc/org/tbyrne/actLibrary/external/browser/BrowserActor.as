@@ -87,7 +87,7 @@ package org.tbyrne.actLibrary.external.browser
 			if(ExternalInterface.available){
 				cause.currentURL = ExternalInterface.call("function(){return document.location.href}");
 			}else{
-				throw new Error("BrowserAdvisor.onGetCurrentURL: IGetCurrentURLAdvice cannot be executed without ExternalInterface being available.");
+				Log.error( "BrowserAdvisor.onGetCurrentURL: IGetCurrentURLAdvice cannot be executed without ExternalInterface being available");
 			}
 		}
 	}

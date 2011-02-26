@@ -14,7 +14,7 @@ package org.tbyrne.gateways
 		{
 		}
 		public function shouldExecuteCall(methodCall:MethodCall):Boolean{
-			throw new Error("Override me");
+			Log.log(Log.SUSPICIOUS_IMPLEMENTATION, "AbstractDataGateway.shouldExecuteCall: Should be overriden");
 			return false;
 		}
 		public function executeCall(methodCall:MethodCall):void{

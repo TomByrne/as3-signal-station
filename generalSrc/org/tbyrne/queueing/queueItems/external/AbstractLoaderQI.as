@@ -26,7 +26,7 @@ package org.tbyrne.queueing.queueItems.external
 				loader.contentLoaderInfo.addEventListener(Event.COMPLETE,onComplete);
 				loader.contentLoaderInfo.addEventListener(IOErrorEvent.IO_ERROR, onFail);
 			}else{
-				throw new Error("LoaderQI needs a Loader");
+				Log.error( "AbstractLoaderQI.step: LoaderQI needs a Loader");
 			}
 		}
 		protected function executeLoad():void{

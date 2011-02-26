@@ -83,7 +83,8 @@ package org.tbyrne.display.assets.nativeAssets
 				var cast:DisplayObjectAsset = (asset as DisplayObjectAsset);
 				return _displayObjectContainer.getChildIndex(cast.displayObject);
 			}else{
-				throw new Error("This method cannot be called before a displayObject is set");
+				Log.error( "DisplayObjectContainerAsset.getAssetIndex: This method cannot be called before a displayObject is set");
+				return -1;
 			}
 		}
 		public function containsAssetByName(name:String):Boolean{
@@ -91,7 +92,8 @@ package org.tbyrne.display.assets.nativeAssets
 				var displayObject:DisplayObject = _displayObjectContainer.getChildByName(name);
 				return (displayObject!=null);
 			}else{
-				throw new Error("This method cannot be called before a displayObject is set");
+				Log.error( "DisplayObjectContainerAsset.containsAssetByName: This method cannot be called before a displayObject is set");
+				return false;
 			}
 		}
 		public function contains(child:IDisplayObject):Boolean{
@@ -107,7 +109,8 @@ package org.tbyrne.display.assets.nativeAssets
 				}
 				return isDescendant(this,child);
 			}else{
-				throw new Error("This method cannot be called before a displayObject is set");
+				Log.error( "DisplayObjectContainerAsset.contains: This method cannot be called before a displayObject is set");
+				return false;
 			}
 		}
 		
@@ -123,10 +126,10 @@ package org.tbyrne.display.assets.nativeAssets
 					}
 					return ret;
 				}else if(!optional){
-					throw new Error("Child DisplayObject with name "+name+" was not found");
+					Log.error( "DisplayObjectContainerAsset.takeAssetByName: Child DisplayObject with name "+name+" was not found");
 				}
 			}else{
-				throw new Error("This method cannot be called before a displayObject is set");
+				Log.error( "DisplayObjectContainerAsset.takeAssetByName: This method cannot be called before a displayObject is set");
 			}
 		}
 		public function returnAsset(asset:IDisplayObject):void{
@@ -134,8 +137,8 @@ package org.tbyrne.display.assets.nativeAssets
 		}
 		public function addAsset(asset:IDisplayObject):void{
 			var nativeAsset:INativeAsset = (asset as INativeAsset);
-			storeChildAsset(asset,nativeAsset.displayObject);
 			_displayObjectContainer.addChild(nativeAsset.displayObject);
+			storeChildAsset(asset,nativeAsset.displayObject);
 		}
 		public function removeAsset(asset:IDisplayObject):void{
 			var nativeAsset:INativeAsset = (asset as INativeAsset);
@@ -158,7 +161,8 @@ package org.tbyrne.display.assets.nativeAssets
 				}
 				return ret;
 			}else{
-				throw new Error("This method cannot be called before a displayObject is set");
+				Log.error( "DisplayObjectContainerAsset.getAssetAt: This method cannot be called before a displayObject is set");
+				return null;
 			}
 		}
 		public function setAssetIndex(asset:IDisplayObject, index:int):void{

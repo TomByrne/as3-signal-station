@@ -6,7 +6,6 @@ package org.tbyrne.input.items
 	import org.tbyrne.data.core.StringData;
 	import org.tbyrne.data.dataTypes.IDataProvider;
 	import org.tbyrne.data.dataTypes.IStringProvider;
-	import org.tbyrne.debug.logging.Log;
 	import org.tbyrne.input.menu.IMenuInputItem;
 
 	public class InputGroup extends StringData implements IDataProvider, IMenuInputItem

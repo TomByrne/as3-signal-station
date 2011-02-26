@@ -73,7 +73,7 @@ package org.tbyrne.actLibrary.display.visualSockets
 				socketContainer.assetChanged.addHandler(onSocketContDisplayChanged);
 				socketContainers[socketContainer] = manager;
 			}else{
-				throw new Error("socketContainer already added");
+				Log.error( "SocketManager.addSocketContainer: socketContainer already added");
 			}
 		}
 		public static function removeSocketContainer(socketContainer:ISocketContainer):void{
@@ -198,7 +198,7 @@ package org.tbyrne.actLibrary.display.visualSockets
 				container.childSocketsChanged.addHandler(onChildSocketsChanged);
 				for each(var socket:IDisplaySocket in container.childSockets){
 					if(_childSockets[socket.socketId]){
-						throw new Error("WebAppAdvisor: socket with id "+socket.socketId+" has already been added to container "+path);
+						Log.error( "WebAppAdvisor.addChildContainer: socket with id "+socket.socketId+" has already been added to container "+path);
 					}else{
 						_childSockets[socket.socketId] = new SocketManager(this, container,socket);
 					}
@@ -211,7 +211,7 @@ package org.tbyrne.actLibrary.display.visualSockets
 				container.childSocketsChanged.removeHandler(onChildSocketsChanged);
 				for each(var socket:IDisplaySocket in container.childSockets){
 					if(!_childSockets[socket.socketId]){
-						throw new Error("WebAppAdvisor: no socket with id "+socket.socketId+" found in container "+path);
+						Log.error( "WebAppAdvisor.removeChildContainer: no socket with id "+socket.socketId+" found in container "+path);
 					}else{
 						var childBundle:SocketManager = _childSockets[socket.socketId];
 						childBundle.dispose();
@@ -350,7 +350,7 @@ package org.tbyrne.actLibrary.display.visualSockets
 				if(!socketBundle){
 					_childSockets[socket.socketId] = new SocketManager(this, container,socket);
 				}else if(socketBundle.parentContainer!=container){
-					throw new Error("WebAppAdvisor: socket with id "+socket.socketId+" has already been added to container "+path);
+					Log.error( "WebAppAdvisor.onChildSocketsChanged: socket with id "+socket.socketId+" has already been added to container "+path);
 				}
 			}
 			//e.stopImmediatePropagation();

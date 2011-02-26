@@ -73,7 +73,7 @@ package org.tbyrne.memory
 		
 		public function LooseReference(object:Object=null){
 			/*CONFIG::debug{
-				if(!gettingNew)throw new Error("WARNING: LooseReference should be created via LooseReference.getNew()");
+				if(!gettingNew)Log.error( "LooseReference: LooseReference should be created via LooseReference.getNew()");
 			}*/
 			this.lockedReference = null;
 			this._locked = false;

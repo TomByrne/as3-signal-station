@@ -21,7 +21,6 @@ package org.tbyrne.display.assets.schema
 	import org.tbyrne.acting.actTypes.IAct;
 	import org.tbyrne.acting.acts.Act;
 	import org.tbyrne.acting.acts.NativeAct;
-	import org.tbyrne.debug.logging.Log;
 	import org.tbyrne.display.actInfo.IMouseActInfo;
 	import org.tbyrne.display.assets.IAssetFactory;
 	import org.tbyrne.display.assets.nativeAssets.INativeAsset;
@@ -222,8 +221,6 @@ package org.tbyrne.display.assets.schema
 					_displayObject.removeEventListener(bundle.eventName, bundle.handler);
 				}
 			}
-			
-			throw new Error();
 		}
 		protected function redrawSize():void{
 			if(_textField){
@@ -688,7 +685,7 @@ package org.tbyrne.display.assets.schema
 				}
 			}
 			if(!ret && !optional){
-				throw new Error("Child with name "+name+" not found");
+				Log.error( "AbstractDynamicAsset.takeAssetByName: Child with name "+name+" not found");
 			}else{
 				return ret;
 			}
@@ -700,9 +697,9 @@ package org.tbyrne.display.assets.schema
 		public function addAsset(asset:IDisplayObject):void{
 			var nativeAsset:INativeAsset = (asset as INativeAsset);
 			CONFIG::debug{
-				if(!asset)Log.log(Log.ERROR,"no asset provided");
-				if(!nativeAsset)Log.log(Log.ERROR,"cannot add non-native asset");
-				if(_children[nativeAsset.displayObject])Log.log(Log.ERROR,"asset already added (AbstractDynamicAsset.addAsset).");
+				if(!asset)Log.error("no asset provided");
+				if(!nativeAsset)Log.error("cannot add non-native asset");
+				if(_children[nativeAsset.displayObject])Log.error("asset already added (AbstractDynamicAsset.addAsset).");
 			}
 			asset.parent = this;
 			_sprite.addChild(nativeAsset.displayObject);

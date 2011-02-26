@@ -44,7 +44,7 @@ package org.tbyrne.actLibrary.application.states.acts
 				if(!_lookupParams)_lookupParams = new Dictionary();
 				_lookupParams[parameter] = data;
 			}else{
-				throw new Error("LookupSetAppStateAct.addLookupParameter: lookup parameter "+parameter+" has already been added.");
+				Log.error( "LookupSetAppStateAct.addLookupParameter: lookup parameter "+parameter+" has already been added");
 			}
 		}
 		public function removeLookupParameter(parameter:String = "*"):void{

@@ -76,7 +76,7 @@ package org.tbyrne.display.tabFocus
 							if(interactiveObject){
 								addInteractiveObject(interactiveObject,i);
 							}else{
-								throw new Error("Can't add item of type "+item.constructor+" to TabFocusGroup");
+								Log.error( "TabFocusGroup.items: Can't add item of type "+item.constructor+" to TabFocusGroup");
 							}
 						}
 					}else{
@@ -116,7 +116,7 @@ package org.tbyrne.display.tabFocus
 				_rawElements.splice(index,0,interactiveObject);
 				_addTabFocusable(new InteractiveObjectFocusWrapper(interactiveObject),index);
 			}else{
-				throw new Error("This InteractiveObject has already been added to this TabFocusGroup");
+				Log.error( "TabFocusGroup.addInteractiveObject: This InteractiveObject has already been added to this TabFocusGroup");
 			}
 		}
 		public function addTabFocusable(tabFocusable:ITabFocusable, index:uint=uint.MAX_VALUE):void{
@@ -125,7 +125,7 @@ package org.tbyrne.display.tabFocus
 				_rawElements.splice(index,0,tabFocusable);
 				_addTabFocusable(tabFocusable,index);
 			}else{
-				throw new Error("This ITabFocusable has already been added to this TabFocusGroup");
+				Log.error( "TabFocusGroup.addTabFocusable: This ITabFocusable has already been added to this TabFocusGroup");
 			}
 		}
 		public function removeItem(item:*):void{
@@ -133,14 +133,14 @@ package org.tbyrne.display.tabFocus
 			if(currentIndex!=-1){
 				_removeItem(currentIndex);
 			}else{
-				throw new Error("This item has not been added to this TabFocusGroup");
+				Log.error( "TabFocusGroup.removeItem: This item has not been added to this TabFocusGroup");
 			}
 		}
 		public function removeItemAt(index:uint):void{
 			if(index<=_rawElements.length){
 				_removeItem(index);
 			}else{
-				throw new RangeError("This index is out of range");
+				Log.error( "TabFocusGroup.removeItemAt: This index is out of range");
 			}
 		}
 		public function containsItem(item:*):Boolean{
@@ -155,7 +155,7 @@ package org.tbyrne.display.tabFocus
 				var tabFocusable:ITabFocusable = _tabFocusableElements.splice(currentIndex,1)[0];
 				_tabFocusableElements.splice(index,0,tabFocusable);
 			}else{
-				throw new Error("This has not been added to this TabFocusGroup");
+				Log.error( "TabFocusGroup.setItemIndex: This has not been added to this TabFocusGroup");
 			}
 		}
 		

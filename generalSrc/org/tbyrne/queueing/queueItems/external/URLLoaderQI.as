@@ -29,7 +29,7 @@ package org.tbyrne.queueing.queueItems.external
 				urlLoader.addEventListener(SecurityErrorEvent.SECURITY_ERROR, onFail);
 				urlLoader.load(urlRequest);
 			}else{
-				throw new Error("URLLoaderQI needs both a URLLoader and a URLRequest");
+				Log.error( "URLLoaderQI.step: URLLoaderQI needs both a URLLoader and a URLRequest");
 			}
 		}
 		protected function onComplete(e:Event):void{
@@ -40,7 +40,7 @@ package org.tbyrne.queueing.queueItems.external
 		}
 		protected function onFail(e:Event):void{
 			var urlLoader:URLLoader = (e.target as URLLoader);
-			trace("WARNING: URLLoaderQI.onFail - failed to load "+urlRequest.url);
+			Log.log(Log.DEV_INFO, "URLLoaderQI.onFail - failed to load "+urlRequest.url);
 			_result = urlLoader.data;
 			removeListeners(urlLoader);
 			dispatchFail();

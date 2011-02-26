@@ -52,9 +52,7 @@ package org.tbyrne.actLibrary.display.visualSockets.socketContainers
 		override public function get display():IDisplayObject{
 			var ret:IDisplayObject = super.display;
 			if(!ret){
-				// TODO: fix this
-				//ret = asset = new Sprite();
-				throw new Error();
+				Log.error( "SocketContainer.display: Cannot retrieve display yet");
 			}
 			return ret;
 		}

@@ -58,10 +58,10 @@ package org.tbyrne.display.layout
 			}
 			return false;
 		}
-		override protected function validatePosition():void{
+		override protected function commitPos():void{
 			invalidateSize();
 		}
-		override protected function validateSize():void{
+		override protected function commitSize():void{
 			for each(var valFlag:FrameValidationFlag in _subjectFlags){
 				valFlag.validate(true);
 			}

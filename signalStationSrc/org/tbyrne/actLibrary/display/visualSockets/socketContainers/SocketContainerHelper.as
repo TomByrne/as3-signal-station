@@ -232,7 +232,7 @@ package org.tbyrne.actLibrary.display.visualSockets.socketContainers
 		}
 		public function _addSocket(socket:IDisplaySocket, dataProperty:String=null, dispatchEvent:Boolean=true): void{
 			if(getSocketIndex(socket.socketId, _childSockets)!=-1){
-				throw new Error("This socket already exists in this socket container.");
+				Log.error( "SocketContainerHelper._addSocket: This socket already exists in this socket container");
 			}else{
 				_childSockets.push(socket);
 				if(dataProperty)bindSocketToDataProperty(socket.socketId, dataProperty);
@@ -254,7 +254,7 @@ package org.tbyrne.actLibrary.display.visualSockets.socketContainers
 		protected function _removeSocket(socketId:String, unbindSocket:Boolean=true, dispatchEvent:Boolean=true): void{
 			var index:int = getSocketIndex(socketId, _childSockets);
 			if(index==-1){
-				throw new Error("This socket doesn't exist in this socket container.");
+				Log.error( "SocketContainerHelper._removeSocket: This socket doesn't exist in this socket container");
 			}else{
 				if(unbindSocket)this.unbindSocket(socketId);
 				var socket:IDisplaySocket = _childSockets.splice(index,1)[0];

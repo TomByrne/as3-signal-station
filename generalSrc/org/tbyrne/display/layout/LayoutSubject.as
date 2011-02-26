@@ -86,8 +86,8 @@ package org.tbyrne.display.layout
 			_measureFlag = new ValidationFlag(measure, false);
 			_measurements = new Point();
 			
-			addDrawFlag(_posDrawFlag = new FrameValidationFlag(null,validatePosition,true));
-			addDrawFlag(_sizeDrawFlag = new FrameValidationFlag(null,validateSize,true));
+			addDrawFlag(_posDrawFlag = new FrameValidationFlag(null,commitPos,true));
+			addDrawFlag(_sizeDrawFlag = new FrameValidationFlag(null,commitSize,true));
 		}
 		protected function addDrawFlag(frameValidationFlag:FrameValidationFlag):void{
 			if(!_childDrawFlags)_childDrawFlags = new Vector.<FrameValidationFlag>();
@@ -168,14 +168,19 @@ package org.tbyrne.display.layout
 			}
 		}
 		
-		protected function validateSize():void{
-			// override me
-		}
-		protected function validatePosition():void{
-			// override me
-		}
-		
 		protected function measure() : void{
+			// override me
+		}
+		protected function validatePos(force:Boolean=false):void{
+			_posDrawFlag.validate(force);
+		}
+		protected function commitPos():void{
+			// override me
+		}
+		protected function validateSize(force:Boolean=false):void{
+			_sizeDrawFlag.validate(force);
+		}
+		protected function commitSize():void{
 			// override me
 		}
 	}

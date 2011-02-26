@@ -1,5 +1,6 @@
 package flash.system
 {
+
 	public class PlayerVersion
 	{
 		private static const VERSION_PARSER:RegExp = /(?P<opSys>\w+) (?P<majVer>\d+),(?P<majRev>\d+),(?P<minVer>\d+),(?P<minRev>\d+)/;
@@ -46,7 +47,7 @@ package flash.system
 				_minorVersion = parseInt(results.minVer);
 				_minorRevision = parseInt(results.minRev);
 			}else{
-				throw new Error("PlayerVersion couldn't parse version string: "+version);
+				Log.error( "PlayerVersion couldn't parse version string: "+version);
 			}
 		}
 	}

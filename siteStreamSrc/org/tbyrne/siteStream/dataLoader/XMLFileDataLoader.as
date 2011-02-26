@@ -69,7 +69,8 @@ package org.tbyrne.siteStream.dataLoader
 				pending[ret] = dataInfo;
 				return ret;
 			}
-			throw new Error("Attempting to load load a loaded/unloadable node");
+			Log.error( "XMLFileDataLoader.loadData: Attempting to load load a loaded/unloadable node");
+			return null;
 		}
 		public function releaseData(dataInfo:IDataInfo):void{
 			dataInfo.loadedData = null;
@@ -107,7 +108,9 @@ package org.tbyrne.siteStream.dataLoader
 		protected function getRootURL():String{
 			var url:String = _rootUrl;
 			if(url && url.length)return(_baseUrl?_baseUrl:"")+url;
-			else throw new Error("No root URL found");
+			
+			Log.error( "XMLFileDataLoader.getRootURL: No root URL found");
+			return null;
 		}
 	}
 }

@@ -3,7 +3,6 @@ package org.tbyrne.acting.acts
 	import flash.utils.Dictionary;
 	
 	import org.tbyrne.acting.actTypes.IAct;
-	import org.tbyrne.debug.logging.Log;
 	import org.tbyrne.hoborg.IPoolable;
 	import org.tbyrne.hoborg.ObjectPool;
 	

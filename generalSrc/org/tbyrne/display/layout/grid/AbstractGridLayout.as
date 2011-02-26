@@ -252,6 +252,16 @@ package org.tbyrne.display.layout.grid
 				invalidateSize();
 			}
 		}
+		protected function get _scrollRectMode():Boolean{
+			return __scrollRectMode;
+		}
+		protected function set _scrollRectMode(value:Boolean):void{
+			if(__scrollRectMode!=value){
+				__scrollRectMode = value;
+				_cellPosFlag.invalidate();
+				invalidateSize();
+			}
+		}
 		
 		/**
 		 * @inheritDoc
@@ -265,6 +275,7 @@ package org.tbyrne.display.layout.grid
 		
 		protected var __pixelFlow:Boolean;
 		protected var __renderersSameSize:Boolean;
+		protected var __scrollRectMode:Boolean;
 		
 		protected var _sameCellMeas:Point; // when renderersSameSize is true the first measurement is stored here
 		protected var _cellMeasCache:Dictionary = new Dictionary(true);
@@ -632,7 +643,7 @@ package org.tbyrne.display.layout.grid
 						_cellPosCache[lengthIndex] = breadthIndices = [];
 					}
 					if(breadthIndices[breadthIndex]){
-						throw new Error("Two ILayoutSubjects have the same grid coords.");
+						Log.error( "AbstractGridLayout.validateCellMapping: Two ILayoutSubjects have the same grid coords");
 					}else{
 						breadthIndices[breadthIndex] = key;
 					}
@@ -760,8 +771,8 @@ package org.tbyrne.display.layout.grid
 			var lengthStack:Number = _lengthAxis.foreMargin;
 			var lengthCount:int=  _cellPosCache.length;
 			
-			var lengthScroll:Number = _lengthAxis.pixScrollMetrics.scrollValue;
-			var breadthScroll:Number = _breadthAxis.pixScrollMetrics.scrollValue;
+			var lengthScroll:Number = __scrollRectMode?0:_lengthAxis.pixScrollMetrics.scrollValue;
+			var breadthScroll:Number = __scrollRectMode?0:_breadthAxis.pixScrollMetrics.scrollValue;
 			
 			var breadthCount:int = _breadthAxis.maxCellSizes.length;
 			

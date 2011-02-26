@@ -28,7 +28,7 @@ package org.tbyrne.acting.universal
 		
 		public static function addManager(scopeDisplay:IDisplayObject=null):void{
 			if(managers[scopeDisplay]){
-				throw new Error("Manager already added");
+				Log.error( "UniversalActManager.addManager: Manager already added");
 			}else{
 				var parent:UniversalActManager = findManagerFor(scopeDisplay,false);
 				var manager:UniversalActManager = new UniversalActManager();
@@ -79,7 +79,7 @@ package org.tbyrne.acting.universal
 					subject = subject.parent;
 				}
 			}
-			throw new Error("Can't remove base UniversalActManager");
+			Log.error( "UniversalActManager.removeManager: Can't remove base UniversalActManager");
 		}
 		public static function addAct(act:IUniversalAct):void{
 			if(!actMap[act]){
@@ -97,7 +97,7 @@ package org.tbyrne.acting.universal
 				act.scopeChanged.addHandler(onActScopeDisplayChange);
 				actMap[act] = manager;
 			}else{
-				throw new Error("act already added");
+				Log.error( "UniversalActManager.addAct: act already added");
 			}
 		}
 		public static function removeAct(act:IUniversalAct):void{
@@ -119,7 +119,7 @@ package org.tbyrne.acting.universal
 					delete executors[act];
 				}
 			}else{
-				throw new Error("act has not been added");
+				Log.error( "UniversalActManager.removeAct: act has not been added");
 			}
 		}
 		protected static function onExecutionsComplete(executor:UniversalActExecutor):void{
@@ -134,7 +134,7 @@ package org.tbyrne.acting.universal
 				reaction.assetChanged.addHandler(onReactionScopeDisplayChange);
 				reactionMap[reaction] = manager;
 			}else{
-				throw new Error("reaction already added");
+				Log.error( "UniversalActManager.addReaction: reaction already added");
 			}
 		}
 		public static function removeReaction(reaction:IActReaction):void{
@@ -144,7 +144,7 @@ package org.tbyrne.acting.universal
 				reaction.assetChanged.removeHandler(onReactionScopeDisplayChange);
 				delete reactionMap[reaction];
 			}else{
-				throw new Error("reaction has not been added");
+				Log.error( "UniversalActManager.removeReaction: reaction has not been added");
 			}
 		}
 		private static function findManagerFor(scopeDisplay:IDisplayObject, createRoot:Boolean):UniversalActManager{
@@ -198,7 +198,7 @@ package org.tbyrne.acting.universal
 		public function addAct(act:IUniversalAct):void{
 			CONFIG::debug{
 				if(acts[act]){
-					throw new Error("This Act has already been added to this UniversalActManager");
+					Log.error( "UniversalActManager.addAct: This Act has already been added to this UniversalActManager");
 				}
 			}
 			var executor:UniversalActExecutor = executors[act];
@@ -215,7 +215,7 @@ package org.tbyrne.acting.universal
 		public function removeAct(act:IUniversalAct):void{
 			CONFIG::debug{
 				if(!acts[act]){
-					throw new Error("This act doesn't exist within this UniversalActManager");
+					Log.error( "UniversalActManager.removeAct: This act doesn't exist within this UniversalActManager");
 				}
 			}
 			var executor:UniversalActExecutor = executors[act];
@@ -240,7 +240,7 @@ package org.tbyrne.acting.universal
 				reaction.universalRuleAddedAct.addHandler(onRuleAdded);
 				reaction.universalRuleRemovedAct.addHandler(onRuleRemoved);
 			}else{
-				throw new Error("This IActReaction has already been added to this UniversalActManager");
+				Log.error( "UniversalActManager.addReaction: This IActReaction has already been added to this UniversalActManager");
 			}
 		}
 		public function removeReaction(reaction:IActReaction):void{
@@ -253,7 +253,7 @@ package org.tbyrne.acting.universal
 				reaction.universalRuleAddedAct.removeHandler(onRuleAdded);
 				reaction.universalRuleRemovedAct.removeHandler(onRuleRemoved);
 			}else{
-				throw new Error("This IActReaction has not been added to this UniversalActManager");
+				Log.error( "UniversalActManager.removeReaction: This IActReaction has not been added to this UniversalActManager");
 			}
 		}
 		protected function onRuleAdded(reaction:IActReaction, rule:IUniversalRule):void{

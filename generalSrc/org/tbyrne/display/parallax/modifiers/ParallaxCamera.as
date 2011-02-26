@@ -137,11 +137,11 @@ package org.tbyrne.display.parallax.modifiers
 			}
 		}
 		public function modifyContainer(container:DisplayObjectContainer):void{
-			//trace("modifyContainer()");
+			//Log.trace("modifyContainer()");
 			/*if (this._fieldOfView == 0)
 			{
-				trace("modifyContainer() -- [" + this.x + "x" + this.y + "] :: " + this._screenRect);
-				trace(" container: " + container.localToGlobal(new Point()) + " [" + container.x + "x" + container.y + "] :: [" + container.parent.x + "x" + container.parent.y + "]");
+				Log.trace("modifyContainer() -- [" + this.x + "x" + this.y + "] :: " + this._screenRect);
+				Log.trace(" container: " + container.localToGlobal(new Point()) + " [" + container.x + "x" + container.y + "] :: [" + container.parent.x + "x" + container.parent.y + "]");
 				if (this._screenRect)
 				{
 					container.scrollRect = new Rectangle(this.x, this.y, this._screenRect.width, 

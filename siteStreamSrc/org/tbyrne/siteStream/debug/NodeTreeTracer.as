@@ -11,7 +11,7 @@ package org.tbyrne.siteStream.debug
 		private static function _traceTree(node:SiteStreamNode, traceFunction:Function, tabs:String):void{
 			var nodeTrace:String = traceFunction(node);
 			if(nodeTrace){
-				trace(tabs+nodeTrace);
+				Log.trace(tabs+nodeTrace);
 				var iterator:IIterator = node.getChildIterator();
 				var child:SiteStreamNode;
 				var childTabs:String = tabs+"\t";

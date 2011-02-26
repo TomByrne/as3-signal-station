@@ -1,10 +1,10 @@
 package org.tbyrne.display.parallax
 {
-	import org.tbyrne.display.parallax.depthSorting.IDepthSorter;
-	import org.tbyrne.display.parallax.modifiers.IParallaxModifier;
-	
 	import flash.display.DisplayObjectContainer;
 	import flash.utils.Dictionary;
+	
+	import org.tbyrne.display.parallax.depthSorting.IDepthSorter;
+	import org.tbyrne.display.parallax.modifiers.IParallaxModifier;
 	
 	public class AbstractParallax
 	{
@@ -18,7 +18,7 @@ package org.tbyrne.display.parallax
 			this._modifiers = new Array();
 		}
 		protected function _addChild(parallaxDisplay:IParallaxDisplay):void{
-			if(childrenDict[parallaxDisplay])throw new Error("Item " + parallaxDisplay + " has already been added to the Parallax");
+			if(childrenDict[parallaxDisplay])Log.error( "AbstractParallax._addChild: Item " + parallaxDisplay + " has already been added to the Parallax");
 			directChildren.push(parallaxDisplay);
 			childrenDict[parallaxDisplay] = true;
 		}

@@ -9,7 +9,6 @@ package org.tbyrne.media.image
 	import flash.net.URLLoaderDataFormat;
 	import flash.net.URLRequest;
 	
-	import org.tbyrne.debug.logging.Log;
 	import org.tbyrne.display.assets.nativeAssets.NativeAssetFactory;
 	import org.tbyrne.display.assets.nativeTypes.ILoader;
 	import org.tbyrne.display.core.ILayoutView;
@@ -90,7 +89,7 @@ package org.tbyrne.media.image
 			setMemoryLoadProps(_urlLoader.bytesLoaded, _urlLoader.bytesTotal);
 		}
 		protected function onError(e:Event):void{
-			Log.log(Log.ERROR,e);
+			Log.error(e);
 		}
 		override public function takeMediaDisplay():ILayoutView{
 			_displaysTaken++;

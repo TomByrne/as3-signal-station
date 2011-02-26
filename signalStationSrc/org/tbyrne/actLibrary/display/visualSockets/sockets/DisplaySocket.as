@@ -207,10 +207,10 @@ package org.tbyrne.actLibrary.display.visualSockets.sockets
 				_measurements.y = NaN;
 			}
 		}
-		override protected function validatePosition():void{
+		override protected function commitPos():void{
 			if(_plugDisplay)_plugDisplay.setPosition(_position.x,_position.y);
 		}
-		override protected function validateSize():void{
+		override protected function commitSize():void{
 			if(_plugDisplay)_plugDisplay.setSize(_size.x,_size.y);
 		}
 		protected function onPlugMeasChanged(from:ILayoutSubject, oldWidth:Number, oldHeight:Number):void{

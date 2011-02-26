@@ -76,11 +76,11 @@ package org.tbyrne.actLibrary.sound
 			var control:ISoundControl = cause.soundControl;
 			if (control == null){
 				execution.continueExecution();	
-				throw new Error("Cannot play null soundControl");
+				Log.error( "SoundActor.onAddSound: Cannot play null soundControl");
 			}else{
 				if(cause.continueAfterCompletion && cause.soundControl.infinite)
 				{
-					throw new Error("Can't add infinite sound with continueAfterCompletion set to true");
+					Log.error( "SoundActor.onAddSound: Can't add infinite sound with continueAfterCompletion set to true");
 				}
 				
 				// May throw SoundError here if not added. Should convert to SoundErrorAdvice

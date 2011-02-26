@@ -23,7 +23,7 @@ package org.tbyrne.display.core
 		public function addScopedObject(scopedObject:IScopedObject):void{
 			CONFIG::debug{
 				if(_scopedObjects[scopedObject]){
-					throw new Error("Trying to add IScopedObject twice");
+					Log.error( "ScopedObjectTree.addScopedObject: Trying to add IScopedObject twice");
 				}
 			}
 			_scopedObjects[scopedObject] = true;
@@ -36,7 +36,7 @@ package org.tbyrne.display.core
 		public function removeScopedObject(scopedObject:IScopedObject):void{
 			CONFIG::debug{
 				if(!_scopedObjects[scopedObject]){
-					throw new Error("Trying to remove a non-added IScopedObject");
+					Log.error( "ScopedObjectTree.removeScopedObject: Trying to remove a non-added IScopedObject");
 				}
 			}
 			var index:int = _pendingScopedObjects.indexOf(scopedObject);
@@ -214,6 +214,7 @@ import flash.utils.Dictionary;
 
 import org.tbyrne.acting.actTypes.IAct;
 import org.tbyrne.acting.acts.Act;
+import Log;
 import org.tbyrne.display.assets.nativeTypes.IDisplayObject;
 import org.tbyrne.display.core.IScopedObject;
 import org.tbyrne.hoborg.IPoolable;
@@ -282,7 +283,7 @@ class AssetBundle implements IPoolable{
 	public function addChild(bundle:AssetBundle):void{
 		CONFIG::debug{
 			if(children.indexOf(bundle)!=-1){
-				throw new Error("child already added");
+				Log.error( "AssetBundle.addChild: child already added");
 			}
 		}
 		bundle.parent = this;
@@ -292,7 +293,7 @@ class AssetBundle implements IPoolable{
 		var index:int = children.indexOf(bundle);
 		CONFIG::debug{
 			if(index==-1){
-				throw new Error("child not added");
+				Log.error( "AssetBundle.removeChild: child not added");
 			}
 		}
 		bundle.parent = null;
@@ -302,7 +303,7 @@ class AssetBundle implements IPoolable{
 	public function addScopedObject(scopedObject:IScopedObject):void{
 		CONFIG::debug{
 			if(scopedObjects.indexOf(scopedObject)!=-1){
-				throw new Error("IScopedObject already added");
+				Log.error( "AssetBundle.addScopedObject: IScopedObject already added");
 			}
 		}
 		scopedObjects.push(scopedObject);
@@ -311,7 +312,7 @@ class AssetBundle implements IPoolable{
 		var index:int = scopedObjects.indexOf(scopedObject);
 		CONFIG::debug{
 			if(index==-1){
-				throw new Error("IScopedObject not added");
+				Log.error( "AssetBundle.removeScopedObject: IScopedObject not added");
 			}
 		}
 		scopedObjects.splice(index,1);

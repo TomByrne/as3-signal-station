@@ -59,7 +59,7 @@ package org.tbyrne.core
 				}
 				_looseReference.object = value;
 			}else{
-				throw new Error("DelayedCall.callFunction must be non-null");
+				Log.error( "DelayedCall.callFunction: DelayedCall.callFunction must be non-null");
 			}
 		}
 		public function get seconds():Boolean{
@@ -152,10 +152,10 @@ package org.tbyrne.core
 		}
 		public function begin():void{
 			if(!this._looseReference.referenceExists) {
-				throw new Error("DelayedCall.begin: function reference has been lost.");
+				Log.error( "DelayedCall.begin: function reference has been lost");
 			}
 			if(_startDelay==0 && this.executions==0){
-				throw new Error("DelayedCall.begin: cannot have 0 delay and infinite repeat.");
+				Log.error( "DelayedCall.begin: cannot have 0 delay and infinite repeat");
 			}
 			this.setRunning(true);
 			_executed = 0;

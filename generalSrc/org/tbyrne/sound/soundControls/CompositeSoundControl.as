@@ -75,7 +75,7 @@ package org.tbyrne.sound.soundControls
 			if (!this.playing){
 				this._pending = true;
 				if (this.controls.length == 0){
-					throw new Error("No sound object to play");
+					Log.error( "CompositeSoundControl.play: No sound object to play");
 				}else{
 					this.currentSoundIndex = 0;
 					this.currentLoop = 0;

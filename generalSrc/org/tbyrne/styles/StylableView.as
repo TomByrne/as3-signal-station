@@ -49,7 +49,7 @@ package org.tbyrne.styles
 		public function applyStyle(property:String, value:*):void{
 			CONFIG::debug{
 				var styleStr:String = (_styleNames?" with style names "+_styleNames.join(", "):"");
-				trace("WARNING: Style "+property+" couldn't be applied to object "+this+styleStr);
+				Log.trace("WARNING: Style "+property+" couldn't be applied to object "+this+styleStr);
 			}
 			// override me
 		}

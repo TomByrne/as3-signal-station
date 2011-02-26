@@ -1,6 +1,6 @@
 package org.tbyrne.display.progress
 {
-	import org.tbyrne.display.assets.nativeTypes.ISprite;
+	
 
 	public class SimpleSWFPreloaderFrame extends SWFPreloaderFrame
 	{

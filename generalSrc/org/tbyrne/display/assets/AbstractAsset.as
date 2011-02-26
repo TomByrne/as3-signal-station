@@ -66,7 +66,7 @@ package org.tbyrne.display.assets
 		protected function _addStateList(stateList:Array):void{
 			CONFIG::debug{
 				if(_stateLists.indexOf(stateList)!=-1){
-					throw new Error("This state list has already been added");
+					Log.error( "AbstractAsset._addStateList: This state list has already been added");
 				}
 			}
 			_stateLists.push(stateList);

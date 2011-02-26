@@ -21,12 +21,19 @@ package org.tbyrne.acting.metadata
 		private static const DEFAULT_RULE_PACKAGE: String = "org.tbyrne.acting.universal.rules.";
 		private static const PROPERTY_MATCHER:RegExp = /<([\w\.]+)>/;
 		
+		private static var metadataTested:Boolean;
+		
 		private static var actMap:Dictionary = new Dictionary();
 		
+		
 		public static function addActor(actor:Object, scopeDisplay:IDisplayObject):void{
+			if(!metadataTested){
+				validateProjectSettings();
+				metadataTested = true;
+			}
 			CONFIG::debug{
 				if(actMap[actor]){
-					throw new Error("Actor already registered");
+					Log.error( "MetadataActorRegistry.addActor: Actor already registered");
 				}
 			}
 			var classDesc: XML = ReflectionUtils.describeType(actor);
@@ -77,7 +84,7 @@ package org.tbyrne.acting.metadata
 			var acts:Array = actMap[actor];
 			CONFIG::debug{
 				if(!acts){
-					throw new Error("Actor not registered");
+					Log.error( "MetadataActorRegistry.changeActorDisplay: Actor not registered");
 				}
 			}
 			var tot:int = acts.length;
@@ -90,7 +97,7 @@ package org.tbyrne.acting.metadata
 			var acts:Array = actMap[actor];
 			CONFIG::debug{
 				if(!acts){
-					throw new Error("Actor not registered");
+					Log.error( "MetadataActorRegistry.removeActor: Actor not registered");
 				}
 			}
 			var tot:int = acts.length;
@@ -107,7 +114,7 @@ package org.tbyrne.acting.metadata
 			var methodName:String = memberNode.@name;
 			var method:Function = actor[methodName];
 			if(method==null){
-				throw new Error("Method "+methodName+" could not be found/accessed");
+				Log.error( "MetadataActorRegistry.createImplicitReaction: Method "+methodName+" could not be found/accessed");
 			}
 			var reaction:MethodReaction = new MethodReaction(method);
 			var async:Boolean = (memberNode.parameter.length() && ReflectionUtils.getClassByName(memberNode.parameter.(@index=="1").@type)==UniversalActExecution);
@@ -171,19 +178,20 @@ package org.tbyrne.acting.metadata
 				fillObject(rule, actor, props);
 				return rule;
 			}else{
-				throw new Error(REQUIRED_META_TAGS[0]+" tag requires a rule class reference");
+				Log.error( "MetadataActorRegistry.createRule: "+REQUIRED_META_TAGS[0]+" tag requires a rule class reference");
 			}
 			return null;
 		}
 		protected static function validateProjectSettings(): void
 		{
-			if (!MetadataConfirmer.confirm(REQUIRED_META_TAGS,MetadataTest))
+			Log.trace("validateProjectSettings: "+(!MetadataConfirmer.confirm(REQUIRED_META_TAGS,new MetadataTest())));
+			if (!MetadataConfirmer.confirm(REQUIRED_META_TAGS,new MetadataTest()))
 			{
 				var msg: String = "Your project settings aren't compatible with the UniversalMetadataUtil. ";
 				msg += "Please ensure you have '-keep-as3-metadata+=";
 				msg += REQUIRED_META_TAGS.join(",");
 				msg += "' in your \"Additional Compiler Arguments\"";
-				throw new Error(msg);
+				Log.error( "MetadataActorRegistry.validateProjectSettings: "+msg);
 			}
 		}
 	}

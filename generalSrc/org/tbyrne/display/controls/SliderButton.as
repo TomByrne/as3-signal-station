@@ -5,6 +5,7 @@ package org.tbyrne.display.controls
 	import flash.geom.Point;
 	import flash.geom.Rectangle;
 	
+	import org.goasap.events.GoEvent;
 	import org.tbyrne.acting.actTypes.IAct;
 	import org.tbyrne.acting.acts.Act;
 	import org.tbyrne.display.actInfo.IMouseActInfo;
@@ -13,7 +14,6 @@ package org.tbyrne.display.controls
 	import org.tbyrne.display.constants.Anchor;
 	import org.tbyrne.display.constants.Direction;
 	import org.tbyrne.tweening.LooseTween;
-	import org.goasap.events.GoEvent;
 	
 	/**
 	 * This class is generally aimed at mute/unmute buttons, which have a volume Slider
@@ -54,7 +54,7 @@ package org.tbyrne.display.controls
 				}else if(newAnch==Anchor.LEFT || newAnch==Anchor.RIGHT){
 					_slider.direction = Direction.HORIZONTAL;
 				}else{
-					throw new Error("Invalid anchor, must be top, bottom, left or right");
+					Log.error( "SliderButton.sliderAnchor: Invalid anchor, must be top, bottom, left or right");
 				}
 				invalidateSize();
 			}

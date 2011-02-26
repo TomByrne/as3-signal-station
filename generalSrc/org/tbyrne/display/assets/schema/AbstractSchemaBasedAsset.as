@@ -46,10 +46,10 @@ package org.tbyrne.display.assets.schema
 		
 		
 		protected function addSchema():void{
-			throw new Error("override me");
+			Log.log(Log.SUSPICIOUS_IMPLEMENTATION, "AbstractSchemaBasedAsset.addSchema: Should be overriden");
 		}
 		protected function removeSchema():void{
-			throw new Error("override me");
+			Log.log(Log.SUSPICIOUS_IMPLEMENTATION, "AbstractSchemaBasedAsset.removeSchema: Should be overriden");
 		}
 	}
 }

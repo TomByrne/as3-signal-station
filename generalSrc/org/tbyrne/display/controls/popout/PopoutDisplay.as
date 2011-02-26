@@ -52,7 +52,7 @@ package org.tbyrne.display.controls.popout
 					}
 					_relativeLayout.addSubject(_popoutLayoutProxy);
 					if(!_relativeLayout.stage){
-						throw new Error("No reference to the stage found");
+						Log.error( "PopoutDisplay.popoutShown: No reference to the stage found");
 					}
 					_popoutLayoutProxy.target = _popout;
 					if(wasRemoving){

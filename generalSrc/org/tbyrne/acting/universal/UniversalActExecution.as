@@ -117,7 +117,7 @@ package org.tbyrne.acting.universal
 				_waiting = false;
 				executeNext();
 			}else{
-				throw new Error("This execution is not waiting for continue() to be called");
+				Log.error( "UniversalActExecution.continueExecution: This execution is not waiting for continue() to be called");
 			}
 		}
 		protected function executeNext():void{

@@ -80,7 +80,7 @@ package org.tbyrne.siteStream
 					var id:String = _pathParts.shift();
 					var child:SiteStreamNode = _node.getChildNode(id);
 					if(!child){
-						throw new Error("Couldn't find item: "+ id+" within node "+_node.id+" (resolving "+this.path+")");
+						Log.error( "NodeResolver.checkPath: Couldn't find item: "+ id+" within node "+_node.id+" (resolving "+this.path+")");
 					}
 					_node = child;
 					checkPath(doResolve);

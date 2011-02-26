@@ -6,7 +6,6 @@ package org.tbyrne.display.containers
 	
 	import org.tbyrne.acting.actTypes.IAct;
 	import org.tbyrne.acting.acts.Act;
-	import org.tbyrne.debug.logging.Log;
 	import org.tbyrne.display.DisplayNamespace;
 	import org.tbyrne.display.assets.nativeTypes.IDisplayObject;
 	import org.tbyrne.display.constants.Direction;
@@ -57,7 +56,7 @@ package org.tbyrne.display.containers
 		public function set selectedIndices(value: Array):void{
 			if(_selectedIndices!=value){
 				if(!_protoRenderer){
-					Log.log(Log.ERROR, "selectedIndices cannot be set without a renderer that implements ISelectableRenderer");
+					Log.error( "selectedIndices cannot be set without a renderer that implements ISelectableRenderer");
 				}
 				
 				var valueCount:int;

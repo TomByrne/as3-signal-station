@@ -199,7 +199,7 @@
 				}
 				catch (error: ReferenceError)
 				{
-					throw new Error("Couldn't find definition for " + classType);
+					Log.error( "ReflectionUtils.classTypeLineageContains: Couldn't find definition for " + classType);
 				}
 			}
 			
@@ -222,7 +222,7 @@
 				try{
 					object = new klass();
 				}catch(e:Error){
-					//trace("WARNING: ReflectionUtils.describeType couldn't describe object "+cacheKey);
+					//Log.trace("WARNING: ReflectionUtils.describeType couldn't describe object "+cacheKey);
 					return null;
 				}
 			}

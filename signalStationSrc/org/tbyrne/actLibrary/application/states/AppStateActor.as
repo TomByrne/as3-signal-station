@@ -88,7 +88,7 @@ package org.tbyrne.actLibrary.application.states
 		[ActReaction(phases="<setAppStatePhases>")]
 		public function setAppState(execution:UniversalActExecution, cause:ISetAppStateAct): void{
 			if(!cause.appStateMatch){
-				throw new Error("WebAppAdvisor.afterSetState: no appStateMatch in act: "+cause);
+				Log.error( "WebAppAdvisor.afterSetState: no appStateMatch in act: "+cause);
 			}
 			var newState:IAppState = cause.state?cause.state:findState(cause.stateId);
 			if(newState){
@@ -115,7 +115,7 @@ package org.tbyrne.actLibrary.application.states
 					_setSerialisedStateAct.perform(execution);
 				}
 			}else{
-				throw new Error("WebAppAdvisor.afterSetState: no appState found with id: "+cause.stateId);
+				Log.error( "WebAppAdvisor.afterSetState: no appState found with id: "+cause.stateId);
 			}
 			execution.continueExecution();
 		}

@@ -1,7 +1,6 @@
 package org.tbyrne.actLibrary.application
 {
 	import org.tbyrne.actLibrary.core.UniversalActorHelper;
-	import org.tbyrne.actLibrary.errors.ErrorActor;
 	import org.tbyrne.actLibrary.external.config.ConfigActor;
 	import org.tbyrne.actLibrary.external.config.acts.SetPropertyConfigParamAct;
 	import org.tbyrne.actLibrary.external.siteStream.SiteStreamActor;
@@ -79,9 +78,6 @@ package org.tbyrne.actLibrary.application
 			setDefaultConfig("baseDataURL","");
 			setDefaultConfig("baseClassURL","");
 			addActor(_configActor);
-			
-			var errorActor:ErrorActor = new ErrorActor();
-			addActor(errorActor);
 		}
 		protected function onAdded(from:UniversalActorHelper) : void{
 			// we delay for a frame to make sure all Universal stuff is ready 
@@ -97,10 +93,11 @@ package org.tbyrne.actLibrary.application
 			addActor(_swfAddressActor);
 			super.init();
 			
+			
+			if(!_scopeDisplay || !_universalActorHelper.added){
+				Log.error( "ConfiguredApplication.init: Cannot init before the container has been set");
+			}
 			CONFIG::debug{
-				if(!_scopeDisplay || !_universalActorHelper.added){
-					throw new Error("Cannot init before the container has been set");
-				}
 				DebugManager.addDebugNode(new DebugDataNode(_scopedObject,new DebugData(_swfAddressActor.currentPath)));
 			}
 			
@@ -122,7 +119,7 @@ package org.tbyrne.actLibrary.application
 				if(!_lastStage.loaderInfo.parameters[name])
 					_lastStage.loaderInfo.parameters[name] = value;
 			}else{
-				throw new Error("Can't set default config values yet");
+				Log.error( "ConfiguredApplication.setDefaultConfig: Can't set default config values yet");
 			}
 		}
 		protected function addActor(actor:IScopedObject) : void{
@@ -175,7 +172,8 @@ package org.tbyrne.actLibrary.application
 			if(!isNaN(_appConfig.applicationScale))applicationScale = _appConfig.applicationScale;
 		}
 		protected function getCoreSkinName():String{
-			throw new Error("getCoreSkinName should be overriden");
+			Log.log(Log.SUSPICIOUS_IMPLEMENTATION, "ConfiguredApplication.getCoreSkinName: Should be overriden");
+			return null;
 		}
 		protected function temporaryPerformAct(act:IUniversalAct, execution:UniversalActExecution=null):void{
 			act.scope = _asset;

@@ -446,7 +446,7 @@ package org.tbyrne.siteStream.parsers
 							{
 								var msg: String = "Couldn't map element \"" + propInfo.propertyName + "\"";
 								msg += " to object: "+ memberXML.parent().name();
-								throw new Error(msg);
+								Log.error( "DefaultParser._getChildProperties: "+msg);
 							}
 						}
 					}

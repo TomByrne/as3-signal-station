@@ -75,7 +75,7 @@ package org.tbyrne.actLibrary.display.popup
 					_pendingPopUps[popupInfo] = true;
 				}
 			}else{
-				throw new Error("Cannot add null popup");
+				Log.error( "PopupActor.addPopup: Cannot add null popup");
 			}
 		}
 		

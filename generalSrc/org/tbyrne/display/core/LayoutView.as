@@ -118,6 +118,10 @@ package org.tbyrne.display.core
 					var child:LayoutView = (i as LayoutView);
 					var asset:IDisplayObject = child.asset;
 					child.asset = null;
+					if(asset.parent!=_containerAsset){
+						if(asset.parent)asset.parent.removeAsset(asset);
+						_containerAsset.addAsset(asset);
+					}
 					_containerAsset.returnAsset(asset);
 				}
 				_boundChildren = null;
@@ -165,14 +169,14 @@ package org.tbyrne.display.core
 		protected function invalidatePos(): void{
 			_posDrawFlag.invalidate();
 		}
-		protected function validatePos(force:Boolean): void{
+		protected function validatePos(force:Boolean=false): void{
 			_posDrawFlag.validate(force);
 		}
 		
 		protected function invalidateSize(): void{
 			_sizeDrawFlag.invalidate();
 		}
-		protected function validateSize(force:Boolean): void{
+		protected function validateSize(force:Boolean=false): void{
 			_sizeDrawFlag.validate(force);
 		}
 		

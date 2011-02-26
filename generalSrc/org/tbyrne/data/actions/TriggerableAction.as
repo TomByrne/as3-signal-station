@@ -4,7 +4,6 @@ package org.tbyrne.data.actions
 	
 	import org.tbyrne.acting.actTypes.IAct;
 	import org.tbyrne.data.dataTypes.ITriggerableAction;
-	import org.tbyrne.debug.logging.Log;
 	import org.tbyrne.display.assets.nativeTypes.IDisplayObject;
 	
 	public class TriggerableAction implements ITriggerableAction

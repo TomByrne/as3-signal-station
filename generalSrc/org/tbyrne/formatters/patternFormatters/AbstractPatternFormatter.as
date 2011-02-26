@@ -70,7 +70,7 @@ package org.tbyrne.formatters.patternFormatters
 		}
 		protected function _addToken(token:String, stringProvider:IStringProvider):void{
 			CONFIG::debug{
-				if(!stringProvider)throw new Error("No IStringProvider provided");
+				if(!stringProvider)Log.error( "AbstractPatternFormatter._addToken: No IStringProvider provided");
 			}
 			if(_tokens[token]){
 				_removeToken(token);
@@ -81,7 +81,7 @@ package org.tbyrne.formatters.patternFormatters
 		}
 		protected function _removeToken(token:String):void{
 			CONFIG::debug{
-				if(!_tokens[token])throw new Error("This token hasn't been added");
+				if(!_tokens[token])Log.error( "AbstractPatternFormatter._removeToken: This token hasn't been added");
 			}
 			var stringProvider:IStringProvider = _tokens[token];
 			stringProvider.stringValueChanged.removeHandler(onTokenChanged);

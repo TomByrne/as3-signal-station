@@ -98,7 +98,7 @@ package org.tbyrne.media.video
 					break;
 				case NetConnectionCodes.CONNECT_REJECTED:
 					_connectionStarted = false;
-					throw new Error("StreamingVideoSource: connect rejected by server; "+e.info.description);
+					Log.error( "StreamingVideoSource.onConnectionStatus: connect rejected by server; "+e.info.description);
 					break;
 			}
 		}

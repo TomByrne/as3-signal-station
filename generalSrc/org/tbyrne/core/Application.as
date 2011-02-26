@@ -150,7 +150,7 @@ package org.tbyrne.core
 		protected function addMainAsset():void{
 			if(!_mainAssetAdded && _container && _asset){
 				_mainAssetAdded = true;
-				_container.addAsset(_asset);
+				_container.addAssetAt(_asset,0);
 				if(_size)setMainViewSize();
 			}
 		}

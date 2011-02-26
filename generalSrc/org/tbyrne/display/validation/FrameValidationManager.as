@@ -45,7 +45,7 @@ package org.tbyrne.display.validation
 		public function addFrameValFlag(flag:IFrameValidationFlag):void{
 			CONFIG::debug{
 				if(flags[flag]){
-					throw new Error("Trying to add flag twice");
+					Log.error( "FrameValidationManager.addFrameValFlag: Trying to add flag twice");
 				}
 			}
 			flags[flag] = true;
@@ -58,7 +58,7 @@ package org.tbyrne.display.validation
 		public function removeFrameValFlag(flag:IFrameValidationFlag):void{
 			CONFIG::debug{
 				if(!flags[flag]){
-					throw new Error("Trying to remove a non-added flag");
+					Log.error( "FrameValidationManager.removeFrameValFlag: Trying to remove a non-added flag");
 				}
 			}
 			var index:int = pendingFlags.indexOf(flag);
@@ -289,6 +289,7 @@ import flash.utils.Dictionary;
 
 import org.tbyrne.acting.actTypes.IAct;
 import org.tbyrne.acting.acts.Act;
+import Log;
 import org.tbyrne.display.assets.nativeTypes.IDisplayObject;
 import org.tbyrne.display.validation.IFrameValidationFlag;
 import org.tbyrne.hoborg.IPoolable;
@@ -357,7 +358,7 @@ class AssetBundle implements IPoolable{
 	public function addChild(bundle:AssetBundle):void{
 		CONFIG::debug{
 			if(children.indexOf(bundle)!=-1){
-				throw new Error("child already added");
+				Log.error( "AssetBundle.addChild: child already added");
 			}
 		}
 		bundle.parent = this;
@@ -367,7 +368,7 @@ class AssetBundle implements IPoolable{
 		var index:int = children.indexOf(bundle);
 		CONFIG::debug{
 			if(index==-1){
-				throw new Error("child not added");
+				Log.error( "AssetBundle.removeChild: child not added");
 			}
 		}
 		bundle.parent = null;
@@ -377,7 +378,7 @@ class AssetBundle implements IPoolable{
 	public function addValidationFlag(validationFlag:IFrameValidationFlag):void{
 		CONFIG::debug{
 			if(validationFlags.indexOf(validationFlag)!=-1){
-				throw new Error("flag already added");
+				Log.error( "AssetBundle.addValidationFlag: flag already added");
 			}
 		}
 		validationFlags.push(validationFlag);
@@ -386,7 +387,7 @@ class AssetBundle implements IPoolable{
 		var index:int = validationFlags.indexOf(validationFlag);
 		CONFIG::debug{
 			if(index==-1){
-				throw new Error("flag not added");
+				Log.error( "AssetBundle.removeValidationFlag: flag not added");
 			}
 		}
 		validationFlags.splice(index,1);
@@ -425,7 +426,7 @@ class DrawRun implements IPoolable{
 	public function addPending(flag:IFrameValidationFlag):void{
 		CONFIG::debug{
 			if(pendingDraws.indexOf(flag)!=-1){
-				throw new Error("Trying to add already added flag");
+				Log.error( "DrawRun.addPending: Trying to add already added flag");
 			}
 		}
 		pendingDraws.push(flag);

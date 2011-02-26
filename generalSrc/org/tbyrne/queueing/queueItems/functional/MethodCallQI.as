@@ -38,7 +38,7 @@ package org.tbyrne.queueing.queueItems.functional
 		
 		public function MethodCallQI(func:Function=null, parameters:Array=null){
 			/*CONFIG::debug{
-				if(!gettingNew)throw new Error("WARNING: MethodCallQI should be created via MethodCallQI.getNew()");
+				if(!gettingNew)Log.error( "MethodCallQI: MethodCallQI should be created via MethodCallQI.getNew()");
 			}*/
 			this.func = func;
 			this.parameters = parameters;

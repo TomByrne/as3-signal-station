@@ -81,7 +81,7 @@ package org.tbyrne.actLibrary.display.visualSockets
 				
 			}else if(cause.displayPath == null){
 				// TODO: dispatch error act
-				throw new Error("VisualSocketActor.onContentRequest: displayPath must be set.");
+				Log.error( "VisualSocketActor.onContentRequest: displayPath must be set");
 				execution.continueExecution();
 			}else{
 				var displayPath: Array = cause.displayPath.split(this.pathSeparator);
@@ -125,7 +125,7 @@ package org.tbyrne.actLibrary.display.visualSockets
 				if(!data || (displayResult && displayResult.complete)){
 					completeDisplayRequest(socketBundle, displayResult, execution);
 				}else if(!displayResult){
-					throw new Error("Cannot map data "+data+" to a display mapper at displayPath "+socketBundle.path);
+					Log.error( "VisualSocketActor.populateNode: Cannot map data "+data+" to a display mapper at displayPath "+socketBundle.path);
 				}else{
 					displayResult.addEventListener(Event.COMPLETE, createCompleteHander(socketBundle,execution));
 				}
@@ -134,7 +134,7 @@ package org.tbyrne.actLibrary.display.visualSockets
 				var pathComp: String = displayPath[currentIndex];
 				var targetSocket: SocketManager = socketBundle.getChildSocket(pathComp);
 				if (targetSocket == null){
-					throw new Error("Cannot find displayPath: "+displayPath);
+					Log.error( "VisualSocketActor.populateNode: Cannot find displayPath: "+displayPath);
 				}else{
 					currentIndex++;
 					populateNode(targetSocket, displayPath, currentIndex, data, execution);

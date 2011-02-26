@@ -9,7 +9,6 @@ package org.tbyrne.display.assets.nativeAssets
 	
 	import org.tbyrne.acting.actTypes.IAct;
 	import org.tbyrne.acting.acts.NativeAct;
-	import org.tbyrne.debug.logging.Log;
 	import org.tbyrne.display.assets.nativeTypes.IDisplayObject;
 	import org.tbyrne.display.assets.nativeTypes.ITextField;
 	import org.tbyrne.display.assets.states.IStateDef;

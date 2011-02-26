@@ -161,7 +161,7 @@ package org.tbyrne.bezier
 			}
 		}
 		public function getBezierAt(fract:Number, getVectors:Boolean):BezierPoint{
-			if(fract<0 || fract>1)throw new Error("Path.getBezierAt: fract must be between 0 and 1");
+			if(fract<0 || fract>1)Log.error( "Path.getBezierAt: Path.getBezierAt: fract must be between 0 and 1");
 			validateShape();
 			var totalLength:Number = length;
 			var bezier:Bezier;
@@ -300,17 +300,19 @@ package org.tbyrne.bezier
 						var dist2:Number;
 						var angle1:Number;
 						var angle2:Number;
+						var staPoint:Point;
+						var endPoint:Point;
 						if(do1){
-							var staPoint:Point = prevBezier.start.toPoint();
-							var endPoint:Point = prevBezier.end.toPoint();
-							dist1 = Trigonometry.getDistance(endPoint,staPoint);
-							angle1 = Trigonometry.getAngleTo(endPoint,staPoint);
+							staPoint = prevBezier.start.toPoint();
+							endPoint = prevBezier.end.toPoint();
+							dist1 = Trigonometry.getDistance(endPoint.x,endPoint.y,staPoint.x,staPoint.y);
+							angle1 = Trigonometry.getAngleTo(endPoint.x,endPoint.y,staPoint.x,staPoint.y);
 						}
 						if(do2){
 							staPoint = nextBezier.start.toPoint();
 							endPoint = nextBezier.end.toPoint();
-							dist2 = Trigonometry.getDistance(staPoint,endPoint);
-							angle2 = Trigonometry.getAngleTo(staPoint,endPoint);
+							dist2 = Trigonometry.getDistance(staPoint.x,staPoint.y,endPoint.x,endPoint.y);
+							angle2 = Trigonometry.getAngleTo(staPoint.x,staPoint.y,endPoint.x,endPoint.y);
 							if(do1){
 								var ratio:Number = 0.5;
 								var angle:Number = (angle1*(1-ratio))+(angle2*ratio);

@@ -11,7 +11,6 @@ package org.tbyrne.display.layout.grid
 	import org.tbyrne.collections.IIterator;
 	import org.tbyrne.collections.IIterator2D;
 	import org.tbyrne.collections.linkedList.LinkedListConverter;
-	import org.tbyrne.debug.logging.Log;
 	import org.tbyrne.display.DisplayNamespace;
 	import org.tbyrne.display.core.IView;
 	import org.tbyrne.display.layout.ILayoutSubject;
@@ -168,6 +167,12 @@ package org.tbyrne.display.layout.grid
 		public function get fitRenderers():int{
 			validate();
 			return _fitRenderers;
+		}
+		public function get scrollRectMode():Boolean{
+			return _scrollRectMode;
+		}
+		public function set scrollRectMode(value:Boolean):void{
+			_scrollRectMode = value;
 		}
 		
 		/**
@@ -373,7 +378,7 @@ package org.tbyrne.display.layout.grid
 				_cellMeasFlag.invalidate();
 				invalidateSize();
 			}else{
-				Log.log(Log.ERROR,"RendererGridLayout.onRendMeasChanged() data couldn't be found");
+				Log.error("RendererGridLayout.onRendMeasChanged() data couldn't be found");
 			}
 		}
 		override protected function remeasureChild(key:*) : Boolean{

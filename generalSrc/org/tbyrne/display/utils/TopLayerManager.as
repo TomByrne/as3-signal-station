@@ -19,7 +19,7 @@ package org.tbyrne.display.utils
 				}
 				bundle.addDisplay(display);
 			}else{
-				throw new Error("TopLayerManager needs a reference to the container");
+				Log.error( "TopLayerManager.add: TopLayerManager needs a reference to the container");
 			}
 		}
 		public static function remove(display:IDisplayObject):void{

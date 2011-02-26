@@ -17,8 +17,8 @@ package org.tbyrne.hoborg
 		
 		private static function validate():void{
 			if(!validated){
-				if (!MetadataConfirmer.confirm(METADATA,PropertyMetadataTest)){
-					trace(MetadataConfirmer.createWarning('ObjectDescriber',METADATA));
+				if (!MetadataConfirmer.confirm(METADATA,new PropertyMetadataTest())){
+					Log.error("ObjectDescriber.validate: "+MetadataConfirmer.createWarning('ObjectDescriber',METADATA));
 				}
 				validated = true;
 				// add native items

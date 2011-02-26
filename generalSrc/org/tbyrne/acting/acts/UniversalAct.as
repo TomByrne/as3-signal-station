@@ -3,7 +3,6 @@ package org.tbyrne.acting.acts
 	import org.tbyrne.acting.actTypes.IAct;
 	import org.tbyrne.acting.actTypes.IUniversalAct;
 	import org.tbyrne.acting.universal.UniversalActManager;
-	import org.tbyrne.debug.logging.Log;
 	import org.tbyrne.display.assets.nativeTypes.IDisplayObject;
 	import org.tbyrne.display.core.ScopedObject;
 	

@@ -40,9 +40,8 @@ package org.tbyrne.binding
 		}
 		
 		protected function addWatchableProps(propName:String):void{
-			CONFIG::debug{
-				if(_watchableProps[propName])throw new Error("This property has already been added");
-			}
+			if(_watchableProps[propName])Log.error( "Watchable.addWatchableProps: This property has already been added");
+			
 			if(!_watchablePropNames)_watchablePropNames = [];
 			_watchablePropNames.push(propName);
 			_watchableProps[propName] = WatchableProperty.getNew();

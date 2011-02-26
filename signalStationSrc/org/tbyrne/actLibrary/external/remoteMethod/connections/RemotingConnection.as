@@ -53,7 +53,7 @@ package org.tbyrne.actLibrary.external.remoteMethod.connections
 					failed = true;
 				}
 				if(failed){
-					throw new Error("NetConnection.connect failed: "+info.code);
+					Log.error( "RemotingConnection.onNetStatus: NetConnection.connect failed: "+info.code);
 				}else{
 					_connectionReadyChanged.perform(this);
 				}

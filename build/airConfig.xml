@@ -2,11 +2,6 @@
 
 <flex-config>
 	 <compiler>
-		<keep-as3-metadata>
-			<name>Advice</name>
-			<name>Trigger</name>
-			<name>Property</name>
-		</keep-as3-metadata>
 		
 		<define>
         	<name>CONFIG::debug</name>

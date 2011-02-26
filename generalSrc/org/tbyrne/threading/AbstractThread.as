@@ -108,7 +108,7 @@ package org.tbyrne.threading
 		}
 		protected function evaluateProccessTime():void{
 			if(isNaN(intendedFPS)){
-				trace("WARNING: AbstractThread.evaluateProccessTime. intendedFPS is not set, thread will not limit processing.");
+				Log.trace("WARNING: AbstractThread.evaluateProccessTime. intendedFPS is not set, thread will not limit processing.");
 			}else{
 				_processTime = (1000/intendedFPS)*_intendedThreadSpeed;
 			}
