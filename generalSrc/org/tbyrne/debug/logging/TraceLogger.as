@@ -10,7 +10,7 @@ package org.tbyrne.debug.logging
 		}
 		public function log(level:int, ... params):void{
 			var levelName:String = getLevelName(level);
-			trace.apply(null,[levelName].concat(params).join(" "));
+			trace.apply(null,[levelName].concat(params));
 		}
 	}
 }

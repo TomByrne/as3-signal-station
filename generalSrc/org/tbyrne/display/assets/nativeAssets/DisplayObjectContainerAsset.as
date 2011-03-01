@@ -137,8 +137,14 @@ package org.tbyrne.display.assets.nativeAssets
 		}
 		public function addAsset(asset:IDisplayObject):void{
 			var nativeAsset:INativeAsset = (asset as INativeAsset);
-			_displayObjectContainer.addChild(nativeAsset.displayObject);
+			
+			/*
+			we must store the asset before adding it to heirarchy so that when it binds (as a result of addedToStage)
+			it has a reference to the parent asset (and therefore the stage).
+			*/
 			storeChildAsset(asset,nativeAsset.displayObject);
+			
+			_displayObjectContainer.addChild(nativeAsset.displayObject);
 		}
 		public function removeAsset(asset:IDisplayObject):void{
 			var nativeAsset:INativeAsset = (asset as INativeAsset);

@@ -2,6 +2,10 @@
 
 <flex-config>
 	 <compiler>
+		<keep-as3-metadata>
+			<name>ActRule</name>
+			<name>ActReaction</name>
+		</keep-as3-metadata>
 		
 		<define>
         	<name>CONFIG::debug</name>

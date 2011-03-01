@@ -40,8 +40,7 @@ package org.tbyrne.display.controls
 		}
 		
 		public function get tabFocusable(): ITabFocusable{
-			checkIsBound();
-			if(!_tabFocusable)_tabFocusable = new InteractiveAssetFocusWrapper(_interactiveObjectAsset);
+			attemptInit();
 			return _tabFocusable;
 		}
 		
@@ -121,17 +120,14 @@ package org.tbyrne.display.controls
 		} 
 		override protected function init() : void{
 			super.init();
+			_tabFocusable = new InteractiveAssetFocusWrapper(_interactiveObjectAsset);
 		}
 		override protected function bindToAsset() : void{
 			super.bindToAsset();
-			if(_tabFocusable){
-				_tabFocusable.interactiveAsset = _interactiveArea;
-			}
+			_tabFocusable.interactiveAsset = _interactiveArea;
 		}
 		override protected function unbindFromAsset() : void{
-			if(_tabFocusable){
-				_tabFocusable.interactiveAsset = null;
-			}
+			_tabFocusable.interactiveAsset = null;
 			super.unbindFromAsset();
 		}
 		private function onProviderChanged(from:IBooleanProvider):void{

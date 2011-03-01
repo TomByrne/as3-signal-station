@@ -178,7 +178,7 @@ package org.tbyrne.display.controls
 			syncDataToField();
 		}
 		override protected function unbindFromAsset() : void{
-			_tabFocusable = null;
+			_tabFocusable.interactiveAsset = null;
 			if(_focused){
 				_focusedState.selection = 0;
 				_focused = false;

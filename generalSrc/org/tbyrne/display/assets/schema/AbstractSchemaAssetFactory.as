@@ -49,6 +49,7 @@ package org.tbyrne.display.assets.schema
 		
 		public function createAssetFromSchema(schema:IAssetSchema):IAsset{
 			Log.log(Log.SUSPICIOUS_IMPLEMENTATION, "AbstractSchemaAssetFactory.createAssetFromSchema: Should be overriden");
+			return null;
 		}
 		protected function attemptToCreateChildren(schema:IAssetSchema):Array{
 			var contSchema:IContainerAssetSchema = (schema as IContainerAssetSchema);

@@ -193,7 +193,7 @@ package org.tbyrne.display.core
 				}
 			}
 		}
-		protected function validateMeas(force:Boolean): void{
+		protected function validateMeas(force:Boolean=false): void{
 			_measureFlag.validate(force);
 		}
 		

@@ -6,6 +6,7 @@ package org.tbyrne.display.scrolling
 	import org.tbyrne.acting.acts.Act;
 	import org.tbyrne.core.EnterFrameHook;
 	import org.tbyrne.display.actInfo.IMouseActInfo;
+	import org.tbyrne.display.assets.nativeTypes.IDisplayObject;
 	import org.tbyrne.display.assets.nativeTypes.IDisplayObjectContainer;
 	import org.tbyrne.display.assets.nativeTypes.IInteractiveObject;
 	import org.tbyrne.display.assets.nativeTypes.IStage;
@@ -17,11 +18,15 @@ package org.tbyrne.display.scrolling
 		
 		protected static var instances:Vector.<MouseDragScroller> = new Vector.<MouseDragScroller>();
 		
-		protected static function shouldCapture(from:MouseDragScroller):Boolean{
+		protected static function shouldCapture(from:MouseDragScroller, mouseTarget:IDisplayObject):Boolean{
+			if(from.interactiveObject==mouseTarget)return true;
+			
 			var cast:IDisplayObjectContainer = (from.interactiveObject as IDisplayObjectContainer);
 			if(cast){
 				for each(var instance:MouseDragScroller in instances){
-					if(instance!=from && isDescendant(cast,instance.interactiveObject)){
+					var otherInt:IInteractiveObject = instance.interactiveObject;
+					var otherCast:IDisplayObjectContainer = (otherInt as IDisplayObjectContainer);
+					if(instance!=from && isDescendant(cast,otherInt) && (otherInt==mouseTarget || (otherCast && isDescendant(otherCast,mouseTarget)))){
 						return false;
 					}
 				}
@@ -109,7 +114,7 @@ package org.tbyrne.display.scrolling
 		
 		protected function onMousePressed(from:IInteractiveObject, mouseActInfo:IMouseActInfo):void{
 			cancelDrag();
-			if(_scrollMetrics && shouldCapture(this)){
+			if(_scrollMetrics && shouldCapture(this,mouseActInfo.mouseTarget)){
 				_pressedStage = _interactiveObject.stage;
 				_pressedStage.mouseReleased.addHandler(onMouseReleased);
 				EnterFrameHook.getAct().addHandler(doDrag);
