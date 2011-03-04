@@ -9,15 +9,100 @@ package org.tbyrne.binding
 		}
 		public function set bindable(value:Object):void{
 			if(_bindable!=value){
-				if(_bindable){
+				if(_bindable && _changeProp){
 					_bindable[_changeProp].removeHandler(onValueChanged);
 				}
 				_bindable = value;
-				if(_bindable){
+				if(_bindable && _dirProperty){
 					_bindable[_changeProp].addHandler(onValueChanged);
-					setValue(_bindable[_property]);
+					onValueChanged();
 				}else{
 					setValue(null);
+				}
+				
+			}
+		}
+		public function get property():String{
+			return _property;
+		}
+		public function set property(value:String):void{
+			if(_property!=value){
+				if(_bindable && _changeProp){
+					_bindable[_changeProp].removeHandler(onValueChanged);
+				}
+				
+				_property = value;
+				
+				
+				var index:int = property?property.indexOf("."):-1;
+				if(index==-1){
+					_useChildBinder = false;
+					_dirProperty = property;
+					
+					if(_childBinder){
+						_childBinder.bindable = null;
+						_childBinder.setHandler = null;
+						_childBinder.updateHandler = null;
+						_childBinder.unsetHandler = null;
+					}
+				}else{
+					_useChildBinder = true;
+					_dirProperty = property.slice(0,index);
+					if(!_childBinder){
+						_childBinder = new PropertyWatcher();
+					}
+					_childBinder.property = property.slice(index+1);
+					_childBinder.setHandler = _setHandler;
+					_childBinder.updateHandler = _updateHandler;
+					_childBinder.unsetHandler = _unsetHandler;
+				}
+				
+				if(_dirProperty){
+					_changeProp = _dirProperty+"Changed";
+					
+					if(_bindable){
+						_bindable[_changeProp].addHandler(onValueChanged);
+						onValueChanged();
+					}
+				}else{
+					setValue(null);
+				}
+			}
+		}
+		
+		
+		public function get setHandler():Function{
+			return _setHandler;
+		}
+		public function set setHandler(value:Function):void{
+			if(_setHandler!=value){
+				_setHandler = value;
+				if(_useChildBinder){
+					_childBinder.setHandler = _setHandler;
+				}
+			}
+		}
+		
+		public function get updateHandler():Function{
+			return _updateHandler;
+		}
+		public function set updateHandler(value:Function):void{
+			if(_updateHandler!=value){
+				_updateHandler = value;
+				if(_useChildBinder){
+					_childBinder.updateHandler = _updateHandler;
+				}
+			}
+		}
+		
+		public function get unsetHandler():Function{
+			return _unsetHandler;
+		}
+		public function set unsetHandler(value:Function):void{
+			if(_unsetHandler!=value){
+				_unsetHandler = value;
+				if(_useChildBinder){
+					_childBinder.unsetHandler = _unsetHandler;
 				}
 			}
 		}
@@ -27,7 +112,9 @@ package org.tbyrne.binding
 		
 		private var _bindable:Object;
 		private var _property:String;
+		private var _dirProperty:String;
 		private var _changeProp:String;
+		private var _useChildBinder:Boolean;
 		private var _childBinder:PropertyWatcher;
 		
 		private var _setHandler:Function;
@@ -53,48 +140,50 @@ package org.tbyrne.binding
 		 * 
 		 * @see org.farmcode.binding.Watchable
 		 */
-		public function PropertyWatcher(property:String, setHandler:Function, updateHandler:Function=null, unsetHandler:Function=null, bindable:Object=null){
-			init(property, setHandler, updateHandler, unsetHandler);
+		public function PropertyWatcher(property:String=null, setHandler:Function=null, updateHandler:Function=null, unsetHandler:Function=null, bindable:Object=null){
+			
+			this.setHandler = setHandler;
+			this.updateHandler = updateHandler;
+			this.unsetHandler = unsetHandler;
+			
+			this.property = property;
 			this.bindable = bindable;
 		}
-		protected function init(property:String, setHandler:Function, updateHandler:Function, unsetHandler:Function):void{
-			var index:int = property.indexOf(".");
-			if(index==-1){
-				_property = property;
-				_setHandler = setHandler;
-				_updateHandler = updateHandler;
-				_unsetHandler = unsetHandler;
-			}else{
-				_property = property.slice(0,index);
-				_childBinder = new PropertyWatcher(property.slice(index+1), setHandler, updateHandler, unsetHandler);
-				_setHandler = setChildBindable;
-			}
-			_changeProp = _property+"Changed";
-		}
 		protected function onValueChanged(... params):void{
-			setValue(_bindable[_property]);
+			setValue(_bindable[_dirProperty]);
 		}
 		protected function setValue(value:*):void{
 			var newValueSet:Boolean = (value!=null);
 			var oldValue:* = _value;
 			_value = value;
 			
+			var setHandler:Function;
+			var updateHandler:Function;
+			var unsetHandler:Function;
+			if(_useChildBinder){
+				setHandler = setChildBindable;
+			}else{
+				setHandler = _setHandler;
+				updateHandler = _updateHandler;
+				unsetHandler = _unsetHandler;
+			}
+			
 			if(newValueSet){
 				if(_valueSet){
-					if(_updateHandler!=null)_updateHandler(oldValue,value);
+					if(updateHandler!=null)updateHandler(oldValue,value);
 					else{
-						if(_unsetHandler!=null)_unsetHandler(oldValue);
-						_setHandler(value);
+						if(unsetHandler!=null)unsetHandler(oldValue);
+						setHandler(value);
 					}
 				}else{
-					if(_setHandler!=null)_setHandler(value);
-					else _updateHandler(null,value);
+					if(setHandler!=null)setHandler(value);
+					else updateHandler(null,value);
 				}
 			}else if(_valueSet){
-				if(_unsetHandler!=null)_unsetHandler(oldValue);
+				if(unsetHandler!=null)unsetHandler(oldValue);
 				else{
-					if(_setHandler!=null)_setHandler(value);
-					else _updateHandler(null,value);
+					if(setHandler!=null)setHandler(value);
+					else updateHandler(null,value);
 				}
 			}
 			_valueSet = newValueSet;

@@ -1,8 +1,7 @@
 package org.tbyrne.display.tabFocus
 {
-	import flash.events.Event;
-	
 	import org.tbyrne.display.assets.nativeTypes.IInteractiveObject;
+	import org.tbyrne.display.assets.nativeTypes.IStage;
 
 	public class InteractiveAssetFocusWrapper extends AbstractTabFocusable implements ITabFocusable
 	{
@@ -40,7 +39,7 @@ package org.tbyrne.display.tabFocus
 					_interactiveAsset.focusOut.removeHandler(onFocusOut);
 					_interactiveAsset.addedToStage.removeHandler(onAddedToStage);
 					_interactiveAsset.removedFromStage.removeHandler(onRemovedFromStage);
-					if(_focused && _interactiveAsset.stage.focus == _interactiveAsset)_interactiveAsset.stage.focus = null;
+					if(_lastStage)onRemovedFromStage()
 				}
 				_interactiveAsset = value;
 				if(_interactiveAsset){
@@ -50,13 +49,14 @@ package org.tbyrne.display.tabFocus
 					_interactiveAsset.focusOut.addHandler(onFocusOut);
 					_interactiveAsset.addedToStage.addHandler(onAddedToStage);
 					_interactiveAsset.removedFromStage.addHandler(onRemovedFromStage);
-					if(_focused && _interactiveAsset.stage)_interactiveAsset.stage.focus = _interactiveAsset;
+					if(_interactiveAsset.stage)onAddedToStage();
 				}
 			}
 		}
 		
 		private var _interactiveAsset:IInteractiveObject;
 		private var _focused:Boolean;
+		private var _lastStage:IStage;
 
 		private var _tabIndex:int;
 		private var _tabEnabled:Boolean = true;
@@ -72,11 +72,13 @@ package org.tbyrne.display.tabFocus
 			_focused = false;
 			if(_focusOut)_focusOut.perform(this);
 		}
-		public function onAddedToStage(from:IInteractiveObject):void{
-			if(_focused)_interactiveAsset.stage.focus = _interactiveAsset;
+		public function onAddedToStage(from:IInteractiveObject=null):void{
+			_lastStage = _interactiveAsset.stage;
+			if(_focused)_lastStage.focus = _interactiveAsset;
 		}
-		public function onRemovedFromStage(from:IInteractiveObject):void{
-			if(_interactiveAsset.stage.focus == _interactiveAsset)_interactiveAsset.stage.focus = null;
+		public function onRemovedFromStage(from:IInteractiveObject=null):void{
+			if(_lastStage.focus == _interactiveAsset)_lastStage.focus = null;
+			_lastStage = null;
 		}
 	}
 }

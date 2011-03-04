@@ -306,6 +306,19 @@ package org.tbyrne.display.layout.grid
 			}
 			return fillPoint;
 		}
+		public function getIndexAtGridCoords(x:int, y:int):int{
+			validate();
+			if(_cellPosCache){
+				x += _horizontalRendAxis.dimIndex;
+				y += _verticalRendAxis.dimIndex;
+				if(_isVertical){
+					if(x<_cellPosCache.length)return _cellPosCache[x][y];
+				}else{
+					if(y<_cellPosCache.length)return _cellPosCache[y][x];
+				}
+			}
+			return -1;
+		}
 		override protected function doLayout(): void{
 			if(_rendererFactory){
 				super.doLayout();
@@ -333,16 +346,17 @@ package org.tbyrne.display.layout.grid
 						_dataLayouts[i] = new GridLayoutInfo(iterator2D.x,iterator2D.y);
 						++i;
 					}
-				}else{
+					iterator.release();
+				}else if(iterator){
 					_anyGridInfos = false;
-					while(data = iterator.next()){
+					while((data = iterator.next())!=null){
 						_dataIndices[data] = i;
 						_dataMap[i] = data;
 						_dataLayouts[i] = new ListLayoutInfo(i);
 						++i;
 					}
+					iterator.release();
 				}
-				iterator.release();
 				_dataCount = i;
 			}
 			var keyCount:int = (_fitRenderers>_dataCount?_fitRenderers:_dataCount);
@@ -388,8 +402,15 @@ package org.tbyrne.display.layout.grid
 			if(key>=_dataCount && !_renderersSameSize){
 				return null;
 			}
+			var ret:Point = _cellMeasCache[key];
+			if(!ret){
+				ret = new Point();
+				_cellMeasCache[key] = ret;
+			}
+			
 			var data:* = _dataMap[key];
 			var renderer:ILayoutSubject = _dataToRenderers[data];
+			var meas:Point;
 			if(!renderer){
 				if(!_protoRenderer){
 					_protoRenderer = _rendererFactory.createInstance();
@@ -398,15 +419,17 @@ package org.tbyrne.display.layout.grid
 				if(_setRendererDataAct)_setRendererDataAct.perform(this,_protoRenderer,data,_dataField);
 				renderer = _protoRenderer;
 				
-				var ret:Point = renderer.measurements.clone();
+				meas = renderer.measurements;
 				
 				_protoRenderer[_dataField] = null;
 				if(_setRendererDataAct)_setRendererDataAct.perform(this,_protoRenderer,null,_dataField);
-				
-				return ret;
 			}else{
-				return renderer.measurements;
+				meas = renderer.measurements;
 			}
+			
+			ret.x = meas.x;
+			ret.y = meas.y;
+			return ret;
 		}
 		override protected function getChildLayoutInfo(key:*) : ILayoutInfo{
 			return _dataLayouts[key] || _cellLayouts[key];
@@ -543,7 +566,7 @@ package org.tbyrne.display.layout.grid
 								}
 								
 								if(shiftBreadth){
-									newBreadth = (length+shiftBreadth);
+									newBreadth = (breadth+shiftBreadth);
 									while(newBreadth>=breadthRange){
 										dataChanged = true;
 										newBreadth -= breadthRange;

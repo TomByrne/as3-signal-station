@@ -32,6 +32,9 @@ package org.tbyrne.display.layout.grid
 		public function GridAxis(coordRef:String=null, indexRef:String=null){
 			this.coordRef = coordRef;
 			this.indexRef = indexRef;
+			
+			scrollMetrics.scrollValue = 0;
+			pixScrollMetrics.scrollValue = 0;
 		}
 	}
 }

@@ -284,6 +284,7 @@ package org.tbyrne.display.layout.grid
 		protected var __flowDirection:String = Direction.VERTICAL;
 		protected var _isVertical:Boolean = true;
 		protected var _ignoreScrollChanges:Boolean;
+		protected var _noKeys:Boolean;
 		
 		protected var _propsFlag:ValidationFlag = new ValidationFlag(validateProps,false);
 		protected var _cellMeasFlag:ValidationFlag = new ValidationFlag(validateCellMeas,false);
@@ -421,16 +422,19 @@ package org.tbyrne.display.layout.grid
 		}
 		protected function validateCellMeas():void{
 			_sameCellMeas = null;
+			_noKeys = true;
 			var keys:Dictionary = getChildKeys();
 			for(var key:* in keys){
-				var childMeas:Point = getChildMeasurement(key);
-				if(_renderersSameSize){
-					_sameCellMeas = childMeas;
-					break;
-				}else{
-					if(remeasureChild(key)){
-						_cellMeasCache[key] = childMeas;
+				_noKeys = false;
+				if(remeasureChild(key)){
+					if(_renderersSameSize){
+						_sameCellMeas = getChildMeasurement(key);
+						break;
+					}else{
+						_cellMeasCache[key] = getChildMeasurement(key);
 					}
+				}else if(_renderersSameSize){
+					break;
 				}
 			}
 			_subjMeasChanged = new Dictionary();
@@ -448,9 +452,12 @@ package org.tbyrne.display.layout.grid
 		protected function validateCellMapping():void{
 			var i:int;
 			
+			
 			_cellPosCache = [];
 			_breadthAxis.maxCellSizes = [];
 			_lengthAxis.maxCellSizes = [];
+			
+			if(_noKeys)return;
 			
 			// this can save a lot of time for big data sets
 			if(!_size.x && !_size.y)return;
@@ -539,113 +546,116 @@ package org.tbyrne.display.layout.grid
 				}
 				
 				// if either of these succeeded and the cell has measurements we attmpet to position it in the visible grid
-				if(subMeas && posFound){
+				if(subMeas){
 					var subLengthDim:Number = subMeas[_lengthAxis.coordRef];
 					var subBreadthDim:Number = subMeas[_breadthAxis.coordRef];
-					var breadthIndices:Array;
-					var doFlow:Boolean;
 					
-					// if there's a maximum amount of columns/rows, we loop it here
-					if(hasMaxBreadthCount && breadthIndex>=maxBreadthCount){
-						doFlow = true;
-						lengthIndex += Math.floor(breadthIndex/maxBreadthCount);
-						breadthIndex = breadthIndex%maxBreadthCount;
-					}
-					
-					/*
-					Looping behaviour starts here:
-					If there's still no breathIndex (it had an unknown/unfilled ILayoutInfo) we use pixelFlowing
-					behaviour (this is uncommon).
-					If the maximimum rows/cols were reached and therefore this cell was was wrapped then we also run
-					through this logic.
-					
-					It continually wraps until it finds a row/col where it'll fit (some cells can already be filled
-					by previous IGridLayoutInfo cells)
-					*/
-					if(breadthIndex==-1 || doFlow || pixelFlow){
-						var satisfied:Boolean = false;
+					if(posFound){
+						var breadthIndices:Array;
+						var doFlow:Boolean;
 						
-						if(breadthIndex==-1){
-							breadthIndex = 0;
+						// if there's a maximum amount of columns/rows, we loop it here
+						if(hasMaxBreadthCount && breadthIndex>=maxBreadthCount){
+							doFlow = true;
+							lengthIndex += Math.floor(breadthIndex/maxBreadthCount);
+							breadthIndex = breadthIndex%maxBreadthCount;
 						}
 						
-						while(!satisfied){
-							breadthIndices = _cellPosCache[lengthIndex];
-							var breadthTotal:int;
-							if(!breadthIndices){
-								// if this row/col hasn't been encountered yet we create a position cache for it
-								if(hasMaxBreadthCount){
-									_cellPosCache[lengthIndex] = breadthIndices = [];
-									breadthTotal = maxBreadthCount;
-								}
-								satisfied = true;
-								break;
-							}else{
-								if(hasMaxBreadthCount && maxBreadthCount>breadthIndices.length){
-									breadthTotal = maxBreadthCount;
-								}else{
-									// plus an extra one to give it room to wrap into
-									breadthTotal = breadthIndices.length+2;
-								}
+						/*
+						Looping behaviour starts here:
+						If there's still no breathIndex (it had an unknown/unfilled ILayoutInfo) we use pixelFlowing
+						behaviour (this is uncommon).
+						If the maximimum rows/cols were reached and therefore this cell was was wrapped then we also run
+						through this logic.
+						
+						It continually wraps until it finds a row/col where it'll fit (some cells can already be filled
+						by previous IGridLayoutInfo cells)
+						*/
+						if(breadthIndex==-1 || doFlow || pixelFlow){
+							var satisfied:Boolean = false;
+							
+							if(breadthIndex==-1){
+								breadthIndex = 0;
 							}
-							if(!satisfied){
-								var breadthStack:Number = 0;
-								
-								// loop through cells already added to this row to get total size up to intended index
-								for(i=0; i<breadthTotal; i++){
-									var otherKey:* = breadthIndices[i];
-									var doWrap:Boolean = false;
-									
-									if(pixelFlow){
-										// add to the stack and work out whether it needs to wrap (by pixel)
-										var cellBreadth:Number = NaN;
-										if(hasBreadthCellSizes){
-											cellBreadth = _breadthAxis.cellSizes[i%_breadthAxis.cellSizesCount];
-										}else if(otherKey!=null){
-											cellBreadth = _cellMeasCache[otherKey][_breadthAxis.coordRef];
-										}else{
-											/*
-											@TODO: this is an assumption. If a later cell fills this slot with
-											different measurements to the current cell, it will fail.
-											*/
-											cellBreadth = subMeas[_breadthAxis.coordRef];
-										}
-										breadthStack += cellBreadth+_breadthAxis.gap;
-										if(breadthStack>breadthStackMax){
-											doWrap = true;
-										}
+							
+							while(!satisfied){
+								breadthIndices = _cellPosCache[lengthIndex];
+								var breadthTotal:int;
+								if(!breadthIndices){
+									// if this row/col hasn't been encountered yet we create a position cache for it
+									if(hasMaxBreadthCount){
+										_cellPosCache[lengthIndex] = breadthIndices = [];
+										breadthTotal = maxBreadthCount;
 									}
+									satisfied = true;
+									break;
+								}else{
+									if(hasMaxBreadthCount && maxBreadthCount>breadthIndices.length){
+										breadthTotal = maxBreadthCount;
+									}else{
+										// plus an extra one to give it room to wrap into
+										breadthTotal = breadthIndices.length+2;
+									}
+								}
+								if(!satisfied){
+									var breadthStack:Number = 0;
 									
-									// i>=breadthIndex tests whether we've yet passed the intended cell location
-									if(!doWrap && i>=breadthIndex){
-										if(_breadthAxis.hasMaxCount && i>=maxBreadthCount){
-											// if we have exceeded the max cols/rows we wrap
-											doWrap = true;
-										}else if(otherKey==null){
-											// else if slot is unoccupied we take it
-											breadthIndex = i;
-											satisfied = true;
+									// loop through cells already added to this row to get total size up to intended index
+									for(i=0; i<breadthTotal; i++){
+										var otherKey:* = breadthIndices[i];
+										var doWrap:Boolean = false;
+										
+										if(pixelFlow){
+											// add to the stack and work out whether it needs to wrap (by pixel)
+											var cellBreadth:Number = NaN;
+											if(hasBreadthCellSizes){
+												cellBreadth = _breadthAxis.cellSizes[i%_breadthAxis.cellSizesCount];
+											}else if(otherKey!=null){
+												cellBreadth = _cellMeasCache[otherKey][_breadthAxis.coordRef];
+											}else{
+												/*
+												@TODO: this is an assumption. If a later cell fills this slot with
+												different measurements to the current cell, it will fail.
+												*/
+												cellBreadth = subMeas[_breadthAxis.coordRef];
+											}
+											breadthStack += cellBreadth+_breadthAxis.gap;
+											if(breadthStack>breadthStackMax){
+												doWrap = true;
+											}
+										}
+										
+										// i>=breadthIndex tests whether we've yet passed the intended cell location
+										if(!doWrap && i>=breadthIndex){
+											if(_breadthAxis.hasMaxCount && i>=maxBreadthCount){
+												// if we have exceeded the max cols/rows we wrap
+												doWrap = true;
+											}else if(otherKey==null){
+												// else if slot is unoccupied we take it
+												breadthIndex = i;
+												satisfied = true;
+												break;
+											}
+										}
+										if(doWrap){
+											breadthIndex = 0;
+											lengthIndex++;
 											break;
 										}
 									}
-									if(doWrap){
-										breadthIndex = 0;
-										lengthIndex++;
-										break;
-									}
 								}
 							}
 						}
-					}
-					// store grid position
-					breadthIndices = _cellPosCache[lengthIndex];
-					if(!breadthIndices){
-						_cellPosCache[lengthIndex] = breadthIndices = [];
-					}
-					if(breadthIndices[breadthIndex]){
-						Log.error( "AbstractGridLayout.validateCellMapping: Two ILayoutSubjects have the same grid coords");
-					}else{
-						breadthIndices[breadthIndex] = key;
+						// store grid position
+						breadthIndices = _cellPosCache[lengthIndex];
+						if(!breadthIndices){
+							_cellPosCache[lengthIndex] = breadthIndices = [];
+						}
+						if(breadthIndices[breadthIndex]){
+							Log.error( "AbstractGridLayout.validateCellMapping: Two ILayoutSubjects have the same grid coords");
+						}else{
+							breadthIndices[breadthIndex] = key;
+						}
 					}
 					
 					if(!ignoreMaxCalcs){
@@ -689,7 +699,6 @@ package org.tbyrne.display.layout.grid
 					}
 				}
 			}
-			
 			
 			// measurement changes get dispatched in the draw() function that wraps this doLayout function
 			if(_measurements[_lengthAxis.coordRef]!= maxLengthMeas){

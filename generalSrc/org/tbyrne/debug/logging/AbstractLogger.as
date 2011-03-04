@@ -16,7 +16,8 @@ package org.tbyrne.debug.logging
 				LEVEL_NAMES[Log.DEV_INFO] = 					"INFO: ";
 				LEVEL_NAMES[Log.PERFORMANCE] = 					"PERFORMANCE: ";
 				LEVEL_NAMES[Log.SUSPICIOUS_IMPLEMENTATION] = 	"SUSPICIOUS: ";
-				LEVEL_NAMES[Log.ERROR] = 						"ERROR: ";
+				LEVEL_NAMES[Log.EXT_ERROR] = 					"EXTERNAL ERROR: ";
+				LEVEL_NAMES[Log.DEV_ERROR] = 					"ERROR: ";
 			}
 			return LEVEL_NAMES[level];
 		}
@@ -29,7 +30,8 @@ package org.tbyrne.debug.logging
 				LEVEL_COLOURS[Log.DEV_INFO] = 					0x000000;
 				LEVEL_COLOURS[Log.PERFORMANCE] = 				0x000000;
 				LEVEL_COLOURS[Log.SUSPICIOUS_IMPLEMENTATION] = 	0x0000ff;
-				LEVEL_COLOURS[Log.ERROR] = 						0xff0000;
+				LEVEL_COLOURS[Log.EXT_ERROR] = 					0xff0000;
+				LEVEL_COLOURS[Log.DEV_ERROR] = 					0xff0000;
 			}
 			return LEVEL_COLOURS[level];
 		}

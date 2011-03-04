@@ -168,7 +168,6 @@ package org.tbyrne.display.scrolling
 					_dragVelocity /= total;
 					_snapVelocity = 0;
 					
-					
 					_lastTime = getTimer();
 					EnterFrameHook.getAct().addHandler(doVelocity);
 				}
@@ -187,7 +186,8 @@ package org.tbyrne.display.scrolling
 			var velocity:Number;
 			var newScrollValue:Number = _scrollMetrics.scrollValue + _dragVelocity;
 			
-			if(!isNaN(snappingInterval) && _dragVelocity<snappingVelThreshold){
+			var absVel:Number = (_dragVelocity>0?_dragVelocity:-_dragVelocity);
+			if(!isNaN(snappingInterval) && absVel<snappingVelThreshold){
 				if(newScrollValue<_scrollMetrics.minimum){
 					newScrollValue = _scrollMetrics.minimum;
 				}else if(newScrollValue>_scrollMetrics.maximum-_scrollMetrics.pageSize){
@@ -253,6 +253,7 @@ package org.tbyrne.display.scrolling
 		private function onRemovedFromStage(from:IInteractiveObject=null):void{
 			var index:int = instances.indexOf(this);
 			instances.splice(index,1);
+			cancelDrag();
 		}
 	}
 }

@@ -26,6 +26,21 @@ package org.tbyrne.media.video
 			if(_hostUrl!=value){
 				closeConnection();
 				_hostUrl = value;
+				
+				if(_hostUrl){
+					var protocol:int = _hostUrl.indexOf("://");
+					if(protocol){
+						_safeHostUrl = _hostUrl.slice(protocol+3);
+					}
+				}else{
+					_safeHostUrl = null;
+				}
+				var lastSlash:int = _safeHostUrl.lastIndexOf("/");
+				var lastDot:int = _safeHostUrl.lastIndexOf(".");
+				if(lastDot!=-1 && lastSlash!=-1 && lastSlash<lastDot){
+					_assumedVideoId = _safeHostUrl.slice(lastSlash+1);
+					_safeHostUrl = _safeHostUrl.substr(0,lastSlash);
+				}
 				assessConnection();
 			}
 		}
@@ -36,56 +51,52 @@ package org.tbyrne.media.video
 		}
 		public function set videoId(value:String):void{
 			if(_videoId!=value){
-				closeStream();
+				stopNetStream();
 				_videoId = value;
-				assessStream();
+				assessConnection();
 			}
 		}
 		
 		
 		
 		private var _hostUrl:String;
+		private var _safeHostUrl:String;
+		private var _assumedVideoId:String;
 		private var _videoId:String;
 		private var _connectionStarted:Boolean;
-		private var _connected:Boolean;
 		
 		protected var _netConnection:OvpConnection;
 		
 		public function StreamingVideoSource(hostUrl:String=null, videoId:String=null){
 			super();
-			createNetConnection();
 			this.hostUrl = hostUrl;
 			this.videoId = videoId;
 		}
-		protected function createNetConnection():void{
-			if(!_netConnection){
-				_netConnection = new OvpConnection();
-				_netConnection.addEventListener(OvpEvent.ERROR, onLoadError);
-				_netConnection.addEventListener(NetStatusEvent.NET_STATUS, onConnectionStatus);
-			}
-		}
 		protected function closeConnection():void{
-			closeStream();
+			stopNetStream();
 			if(_connectionStarted){
 				_connectionStarted = false;
 				_netConnection.close();
 				_connected = false;
 			}
 		}
-		protected function assessConnection():void{
-			if(!_connectionStarted && _hostUrl){
-				_connectionStarted = true;
-				_netConnection.connect(_hostUrl);
+		override protected function connect():Boolean{
+			if(!_netConnection){
+				_netConnection = new OvpConnection();
+				_netConnection.addEventListener(OvpEvent.ERROR, onLoadError);
+				_netConnection.addEventListener(NetStatusEvent.NET_STATUS, onConnectionStatus);
 			}
+			if(!_connectionStarted && _safeHostUrl){
+				_connectionStarted = true;
+				_netConnection.connect(_safeHostUrl);
+			}
+			return false;
 		}
-		override protected function assessStream():void{
-			createNetConnection();
-			super.assessStream();
-		}
-		override protected function createNetStream():NetStream{
-			if(_connected && _videoId){
+		override protected function startStream():NetStream{
+			var vidId:String = _videoId || _assumedVideoId;
+			if(_connected && vidId){
 				var stream:OvpNetStream = new OvpNetStream(_netConnection);
-				stream.play(_videoId);
+				stream.play(vidId);
 				return stream;
 			}
 			return null;
@@ -94,11 +105,11 @@ package org.tbyrne.media.video
 			switch(e.info.code){
 				case NetConnectionCodes.CONNECT_SUCCESS:
 					_connected = true;
-					assessStream();
+					assessNetStream();
 					break;
 				case NetConnectionCodes.CONNECT_REJECTED:
 					_connectionStarted = false;
-					Log.error( "StreamingVideoSource.onConnectionStatus: connect rejected by server; "+e.info.description);
+					Log.log(Log.EXT_ERROR, "StreamingVideoSource.onConnectionStatus: connect rejected by server; "+e.info.description);
 					break;
 			}
 		}

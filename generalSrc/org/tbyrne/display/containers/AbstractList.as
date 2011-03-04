@@ -6,8 +6,8 @@ package org.tbyrne.display.containers
 	
 	import org.tbyrne.display.DisplayNamespace;
 	import org.tbyrne.display.assets.AssetNames;
-	import org.tbyrne.display.assets.nativeTypes.IDisplayObjectContainer;
 	import org.tbyrne.display.assets.nativeTypes.IDisplayObject;
+	import org.tbyrne.display.assets.nativeTypes.IDisplayObjectContainer;
 	import org.tbyrne.display.constants.Direction;
 	import org.tbyrne.display.controls.ListRenderer;
 	import org.tbyrne.display.controls.ScrollBar;
@@ -17,8 +17,9 @@ package org.tbyrne.display.containers
 	import org.tbyrne.display.layout.grid.RendererGridLayout;
 	import org.tbyrne.display.scrolling.IScrollMetrics;
 	import org.tbyrne.display.scrolling.IScrollable;
-	import org.tbyrne.display.scrolling.ScrollMultiplier;
+	import org.tbyrne.display.scrolling.MouseDragScroller;
 	import org.tbyrne.display.scrolling.MouseWheelScroller;
+	import org.tbyrne.display.scrolling.ScrollMultiplier;
 	import org.tbyrne.instanceFactory.IInstanceFactory;
 	import org.tbyrne.instanceFactory.MultiInstanceFactory;
 	import org.tbyrne.instanceFactory.SimpleInstanceFactory;
@@ -62,11 +63,26 @@ package org.tbyrne.display.containers
 			}
 		}
 		
+		
+		public function get alwaysUseScrollRect():Boolean{
+			return _alwaysUseScrollRect;
+		}
+		public function set alwaysUseScrollRect(value:Boolean):void{
+			if(_alwaysUseScrollRect!=value){
+				_alwaysUseScrollRect = value;
+				commitScrollRect();
+			}
+		}
+		
+		private var _alwaysUseScrollRect:Boolean = false;
+		
 		protected var _hideScrollBarWhenUnusable:Boolean = true;
 		protected var _dataField:String;
 		protected var _rendererFactory:IInstanceFactory;
 		protected var _scrollBar:ScrollBar;
 		protected var _layout:RendererGridLayout;
+		protected var _vScrollMetrics:IScrollMetrics;
+		protected var _hScrollMetrics:IScrollMetrics;
 		protected var _container:IDisplayObjectContainer;
 		protected var _scrollBarShown:Boolean;
 		
@@ -76,12 +92,10 @@ package org.tbyrne.display.containers
 		protected var _scrollRect:Rectangle = new Rectangle();
 		protected var _scrollMetrics:IScrollMetrics;
 		protected var _mouseWheelScroller:MouseWheelScroller;
+		protected var _mouseDragScroller:MouseDragScroller;
 		
 		protected var _factoryAssumedAssetSet:Boolean;
 		protected var _factoryAssumedAssetProps:Dictionary;
-		
-		private var _horScrollMetrics:IScrollMetrics;
-		private var _verScrollMetrics:IScrollMetrics;
 		
 		protected var _renderers:Array = [];
 		
@@ -91,11 +105,17 @@ package org.tbyrne.display.containers
 		override protected function init() : void{
 			super.init();
 			createLayout();
+			_layout.scrollRectMode = true;
+			_vScrollMetrics = _layout.getScrollMetrics(Direction.VERTICAL);
+			_vScrollMetrics.scrollMetricsChanged.addHandler(onScrollChange);
+			_hScrollMetrics = _layout.getScrollMetrics(Direction.HORIZONTAL);
+			_hScrollMetrics.scrollMetricsChanged.addHandler(onScrollChange);
 			_layout.measurementsChanged.addHandler(onLayoutMeasChange);
 			_layout.addRendererAct.addHandler(onAddRenderer);
 			_layout.removeRendererAct.addHandler(onRemoveRenderer);
 			
 			_mouseWheelScroller = new MouseWheelScroller();
+			_mouseDragScroller = new MouseDragScroller();
 		}
 		protected function createLayout() : void{
 			_layout = new RendererGridLayout(this);
@@ -128,8 +148,10 @@ package org.tbyrne.display.containers
 			}else{
 				wheelDirection = _layout.flowDirection;
 			}
-			_mouseWheelScroller.scrollMetrics = getScrollMetrics(wheelDirection);
+			_mouseWheelScroller.scrollMetrics = new ScrollMultiplier(30,getScrollMetrics(wheelDirection));
 			_mouseWheelScroller.interactiveObject = _interactiveObjectAsset;
+			_mouseDragScroller.scrollMetrics = getScrollMetrics(wheelDirection);
+			_mouseDragScroller.interactiveObject = _interactiveObjectAsset;
 		}
 		protected function setScrollBarMetrics(scrollMetrics:IScrollMetrics):void{
 			if(_scrollMetrics!=scrollMetrics){
@@ -176,6 +198,7 @@ package org.tbyrne.display.containers
 			_container = null;
 			
 			_mouseWheelScroller.interactiveObject = null;
+			_mouseDragScroller.interactiveObject = null;
 		}
 		protected function onLayoutMeasChange(from:ILayoutSubject, oldWidth:Number, oldHeight:Number) : void{
 			invalidateMeasurements();
@@ -221,6 +244,7 @@ package org.tbyrne.display.containers
 			super.commitSize();
 			drawListAndScrollbar(size.x,size.y);
 		}
+		
 		protected function drawListAndScrollbar(width:Number, height:Number) : void{
 			var layoutWidth:Number = width;
 			var layoutHeight:Number = height;
@@ -243,12 +267,7 @@ package org.tbyrne.display.containers
 				}
 			}
 			setLayoutDimensions(layoutWidth,layoutHeight);
-			_scrollRect.x = _layout.marginLeft;
-			_scrollRect.y = _layout.marginTop;
-			_scrollRect.width = layoutWidth-_layout.marginLeft-_layout.marginRight;
-			_scrollRect.height = height-_layout.marginTop-_layout.marginBottom;
-			_container.scrollRect = _scrollRect;
-			_container.setPosition(_layout.marginLeft,_layout.marginTop);
+			commitScrollRect();
 		}
 		protected function setLayoutDimensions(width:Number, height:Number):void{
 			_layout.setSize(width,height);
@@ -260,6 +279,29 @@ package org.tbyrne.display.containers
 				_layout.rowHeights = [height-_layout.marginTop-_layout.marginBottom];
 			}
 		}
+		protected function onScrollChange(from:IScrollMetrics):void{
+			commitScrollRect();
+		}
+		
+		protected function commitScrollRect():void{
+			if(_alwaysUseScrollRect ||
+				_hScrollMetrics.pageSize<_hScrollMetrics.maximum-_hScrollMetrics.minimum ||
+				_vScrollMetrics.pageSize<_vScrollMetrics.maximum-_vScrollMetrics.minimum){
+			
+				_scrollRect.x = _layout.marginLeft+_hScrollMetrics.scrollValue;
+				_scrollRect.y = _layout.marginTop+_vScrollMetrics.scrollValue;
+				_scrollRect.width = _layout.size.x-_layout.marginLeft-_layout.marginRight;
+				_scrollRect.height = _layout.size.y-_layout.marginTop-_layout.marginBottom;
+				
+				_container.setPosition(_layout.marginLeft,_layout.marginTop);
+				_container.scrollRect = _scrollRect;
+			}else{
+				
+				_container.setPosition(0,0);
+				_container.scrollRect = null;
+			}
+		}
+		
 		protected function assessFactory():void{
 			attemptInit();
 			
@@ -322,11 +364,9 @@ package org.tbyrne.display.containers
 		public function getScrollMetrics(direction:String):IScrollMetrics{
 			attemptInit();
 			if(direction==Direction.HORIZONTAL){
-				if(!_horScrollMetrics)_horScrollMetrics = new ScrollMultiplier(scrollSpeed(direction),_layout.getScrollMetrics(direction));
-				return _horScrollMetrics;
+				return _hScrollMetrics;
 			}else{
-				if(!_verScrollMetrics)_verScrollMetrics = new ScrollMultiplier(scrollSpeed(direction),_layout.getScrollMetrics(direction));
-				return _verScrollMetrics;
+				return _vScrollMetrics;
 			}
 		}
 		protected function scrollSpeed(direction:String):Number{

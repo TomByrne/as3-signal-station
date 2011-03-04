@@ -21,26 +21,33 @@
 		private var pool:Dictionary = new Dictionary();
 		private var _constructor:*;
 		private var _isClass:Boolean;
+		private var _isPoolable:Boolean;
+		private var _testedPoolable:Boolean;
 		
 		public function ObjectPool(constructor:*){
 			_constructor = constructor;
 			_isClass = (_constructor is Class);
 		}
 		public function takeObject():*{
+			var ret:*;
 			if(_size>0){
 				_size--;
-				for(var ret:* in pool){
+				for(ret in pool){
 					delete pool[ret];
 					return ret;
 				}
 			}else{
-				var ret2:* = createNew();
-				return ret2;
+				ret = createNew();
+				if(!_testedPoolable){
+					_testedPoolable = true;
+					_isPoolable = (ret is IPoolable);
+				}
+				return ret;
 			}
 		}
-		public function releaseObject(object:IPoolable):void{
+		public function releaseObject(object:*):void{
 			if(!pool[object]){
-				object.reset();
+				if(_isPoolable)object.reset();
 				pool[object] = true;
 				_size++;
 			}else{

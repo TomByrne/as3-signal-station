@@ -8,26 +8,29 @@ package
 	public class Log
 	{
 		// The lower the level the more important (i.e. 0 is most important)
-		public static const USER_INFO:int 					= 5;
-		public static const USER_ERROR:int 					= 4;
-		public static const DEV_INFO:int 					= 3;
-		public static const PERFORMANCE:int					= 2;
-		public static const SUSPICIOUS_IMPLEMENTATION:int	= 1;
-		public static const ERROR:int						= 0;
+		public static const USER_INFO:int 					= 6;
+		public static const USER_ERROR:int 					= 5;
+		public static const DEV_INFO:int 					= 4;
+		public static const PERFORMANCE:int					= 3;
+		public static const SUSPICIOUS_IMPLEMENTATION:int	= 2;
+		public static const EXT_ERROR:int					= 1;
+		public static const DEV_ERROR:int					= 0;
 		
 		public static var ALL_LEVELS:Array;
 		
 		private static var _loggers:Dictionary = new Dictionary();
 		{
-			ALL_LEVELS = [ERROR,
+			ALL_LEVELS = [DEV_ERROR,
+				EXT_ERROR,
 				SUSPICIOUS_IMPLEMENTATION,
 				PERFORMANCE,
 				DEV_INFO,
-				USER_ERROR,USER_INFO];
+				USER_ERROR,
+				USER_INFO];
 			
 			CONFIG::debug{
 				setLogger(new TraceLogger(),USER_INFO,USER_ERROR,DEV_INFO,PERFORMANCE,SUSPICIOUS_IMPLEMENTATION);
-				setLogger(new ErrorLogger(),ERROR);
+				setLogger(new ErrorLogger(),DEV_ERROR,EXT_ERROR);
 			}
 		}
 		
@@ -58,7 +61,7 @@ package
 			log.apply(null,[DEV_INFO].concat(params));
 		}
 		public static function error(... params):void{
-			log.apply(null,[ERROR].concat(params));
+			log.apply(null,[DEV_ERROR].concat(params));
 		}
 	}
 }

@@ -66,7 +66,7 @@ package org.tbyrne.media.video
 				if(_playingChanged)_playingChanged.perform(this);
 				if(_streamPlaying!=value){
 					if(value){
-						assessStream();
+						assessConnection();
 						if(_buffered){
 							_streamPlaying = true;
 							_netStream.resume();
@@ -123,6 +123,7 @@ package org.tbyrne.media.video
 			}
 		}
 		
+		protected var _connected:Boolean;
 		protected var _streamStarted:Boolean;
 		protected var _volume:Number = 1;
 		protected var _buffered:Boolean;
@@ -203,7 +204,7 @@ package org.tbyrne.media.video
 			_currentTime.numericalValue = value;
 			_ignoreCurrTimeChange = false;
 		}
-		protected function closeStream():void{
+		protected function stopNetStream():void{
 			if(_streamStarted){
 				_streamStarted = false;
 				_netStream.close();
@@ -219,39 +220,51 @@ package org.tbyrne.media.video
 				}
 			}
 		}
-		protected function assessStream():void{
+		protected function assessConnection():void{
 			if(_streamStarted){
 				if(!_displaysTaken){
-					closeStream();
+					stopNetStream();
 					_videoPoller.clear();
 				}
 			}else if(_displaysTaken && _playing){
-				_netStream = createNetStream();
-				if(_netStream){
-					_streamStarted = true;
-					_streamPlaying = true;
-					_pendingSeek = false;
-					
-					_videoStreamProxy = new VideoStreamProxy();
-					_videoStreamProxy.metadataChanged.addHandler(onMetadata);
-					_netStream.client = _videoStreamProxy;
-					_netStream.addEventListener(NetStatusEvent.NET_STATUS,onStreamStatus);
-					_netStream.addEventListener(IOErrorEvent.IO_ERROR, onLoadError);
-					
-					_videoPoller.begin();
-					assessVolume();
-					assessBufferSize();
-					for(var i:* in _allMediaDisplays){
-						var mediaView:MediaView = (i as MediaView);
-						(mediaView.asset as IVideo).attachNetStream(_netStream);
-					}
+				if(!_connected)_connected = connect();
+				if(_connected){
+					assessNetStream();
 				}
 			}
 		}
-		protected function createNetStream():NetStream{
+		protected function connect():Boolean{
+			// override me
+			return false;
+		}
+		
+		protected function assessNetStream():void{
+			_netStream = startStream();
+			if(_netStream){
+				_streamStarted = true;
+				_streamPlaying = true;
+				_pendingSeek = false;
+				
+				_videoStreamProxy = new VideoStreamProxy();
+				_videoStreamProxy.metadataChanged.addHandler(onMetadata);
+				_netStream.client = _videoStreamProxy;
+				_netStream.addEventListener(NetStatusEvent.NET_STATUS,onStreamStatus);
+				_netStream.addEventListener(IOErrorEvent.IO_ERROR, onLoadError);
+				
+				_videoPoller.begin();
+				assessVolume();
+				assessBufferSize();
+				for(var i:* in _allMediaDisplays){
+					var mediaView:MediaView = (i as MediaView);
+					(mediaView.asset as IVideo).attachNetStream(_netStream);
+				}
+			}
+		}
+		protected function startStream():NetStream{
 			// override me
 			return null;
 		}
+		
 		protected function onStreamStatus(e:NetStatusEvent):void{
 			switch(e.info.code){
 				case NetStreamCodes.PLAY_START:
@@ -327,12 +340,12 @@ package org.tbyrne.media.video
 		}
 		override public function takeMediaDisplay():ILayoutView{
 			_displaysTaken++;
-			assessStream();
+			assessConnection();
 			return super.takeMediaDisplay();
 		}
 		override public function returnMediaDisplay(value:ILayoutView):void{
 			_displaysTaken--;
-			assessStream();
+			assessConnection();
 			super.returnMediaDisplay(value);
 		}
 		override protected function createMediaDisplay():ILayoutView{

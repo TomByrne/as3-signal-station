@@ -146,7 +146,7 @@ package org.tbyrne.styles
 			}else{
 				classMatch = true;
 			}
-			var styleMatch:Boolean = (!styleName || (stylable.styleNames.indexOf(styleName)!=-1));
+			var styleMatch:Boolean = (!styleName || (stylable.styleNames && stylable.styleNames.indexOf(styleName)!=-1));
 			return (classMatch && styleMatch);
 		}
 		

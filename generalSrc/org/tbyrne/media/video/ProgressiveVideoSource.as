@@ -20,9 +20,9 @@ package org.tbyrne.media.video
 		}
 		public function set videoUrl(value:String):void{
 			if(_videoUrl!=value){
-				closeStream();
+				stopNetStream();
 				_videoUrl = value;
-				assessStream();
+				assessConnection();
 			}
 		}
 		
@@ -31,16 +31,16 @@ package org.tbyrne.media.video
 		
 		public function ProgressiveVideoSource(videoUrl:String=null){
 			super();
-			createConnection();
 			this.videoUrl = videoUrl;
 		}
-		protected function createConnection():void{
+		override protected function connect():Boolean{
 			if(!_netConnection){
 				_netConnection = new NetConnection();
 				_netConnection.connect(null);
 			}
+			return true;
 		}
-		override protected function createNetStream():NetStream{
+		override protected function startStream():NetStream{
 			if(_videoUrl){
 				var stream:NetStream = new NetStream(_netConnection);
 				stream.play(_videoUrl);

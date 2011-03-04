@@ -17,6 +17,19 @@ package org.tbyrne.display.utils
 		protected var _childAsset:IDisplayObject;
 		protected var _childView:ILayoutView;
 		
+		public function get paddingPixelTop():Number{
+			return _paddingPixelTop;
+		}
+		public function get paddingPixelBottom():Number{
+			return _paddingPixelBottom;
+		}
+		public function get paddingPixelLeft():Number{
+			return _paddingPixelLeft;
+		}
+		public function get paddingPixelRight():Number{
+			return _paddingPixelRight;
+		}
+		
 		protected var _paddingPixelTop:Number;
 		protected var _paddingPixelBottom:Number;
 		protected var _paddingPixelLeft:Number;

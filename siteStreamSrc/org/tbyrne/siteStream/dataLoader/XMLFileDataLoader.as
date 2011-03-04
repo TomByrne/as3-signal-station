@@ -69,7 +69,7 @@ package org.tbyrne.siteStream.dataLoader
 				pending[ret] = dataInfo;
 				return ret;
 			}
-			Log.error( "XMLFileDataLoader.loadData: Attempting to load load a loaded/unloadable node");
+			Log.log(Log.EXT_ERROR, "XMLFileDataLoader.loadData: Attempting to load load a loaded/unloadable node");
 			return null;
 		}
 		public function releaseData(dataInfo:IDataInfo):void{

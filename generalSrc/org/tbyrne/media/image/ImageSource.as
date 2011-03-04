@@ -89,7 +89,7 @@ package org.tbyrne.media.image
 			setMemoryLoadProps(_urlLoader.bytesLoaded, _urlLoader.bytesTotal);
 		}
 		protected function onError(e:Event):void{
-			Log.error(e);
+			Log.log(Log.EXT_ERROR,e);
 		}
 		override public function takeMediaDisplay():ILayoutView{
 			_displaysTaken++;
