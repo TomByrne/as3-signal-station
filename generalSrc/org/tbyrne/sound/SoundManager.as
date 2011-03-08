@@ -159,6 +159,7 @@ package org.tbyrne.sound
 			if(_allSounds[sound] && !pendingStop && !inQueue) {
 				// allow queue items through as they won't be played on top of one another
 				Log.error( "SoundManager._playSound: This ISoundControl object has already been added to the SoundManager");
+				return false;
 			}else{
 				sound.added = true;
 				if(inQueue){

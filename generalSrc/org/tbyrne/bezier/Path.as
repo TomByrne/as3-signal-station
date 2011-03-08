@@ -391,7 +391,7 @@ package org.tbyrne.bezier
 				invalidShape = false;
 			}
 		}
-		public function getFractClosestTo(point:Point, tolerance:Number = 0.05):Distance{
+		public function getFractClosestTo(x:Number, y:Number, tolerance:Number = 0.05):Distance{
 			var totalLength:Number = length;
 			var length:Number = 0;
 			var nearest:Distance;
@@ -405,7 +405,7 @@ package org.tbyrne.bezier
 			iterator.release();
 			iterator = _bezierList.getIterator();
 			while(bezier = iterator.next()){
-				var _nearest:Distance = bezier.getFractClosestTo(point, tolerance * (aveLength / bezier.length));
+				var _nearest:Distance = bezier.getFractClosestTo(x,y, tolerance * (aveLength / bezier.length));
 				if(_nearest && (!nearest || nearest.distance>_nearest.distance)){
 					nearest = _nearest;
 					nearest.fract = (length/totalLength)+(nearest.fract*(bezier.length/totalLength))

@@ -1,18 +1,12 @@
 package org.tbyrne.display.assets.nativeAssets
 {
-	import flash.display.DisplayObject;
-	import flash.display.InteractiveObject;
-	import flash.display.LoaderInfo;
-	import flash.display.Stage;
+	import flash.display.*;
 	import flash.events.Event;
 	import flash.events.FullScreenEvent;
-	import flash.events.MouseEvent;
 	
 	import org.tbyrne.acting.actTypes.IAct;
 	import org.tbyrne.acting.acts.NativeAct;
-	import org.tbyrne.display.assets.assetTypes.IAsset;
 	import org.tbyrne.display.assets.nativeTypes.IInteractiveObject;
-	import org.tbyrne.display.assets.nativeTypes.INativeWindow;
 	import org.tbyrne.display.assets.nativeTypes.IStage;
 
 	public class StageAsset extends DisplayObjectContainerAsset implements IStage
@@ -81,16 +75,12 @@ package org.tbyrne.display.assets.nativeAssets
 		
 		PLATFORM::air{
 			
-		public function get nativeWindow():INativeWindow {
-			if(!_nativeWindow){
-				_nativeWindow = _nativeFactory.getNew(_stage.nativeWindow);
-			}
-			return _nativeWindow;
+		public function get nativeWindow():NativeWindow {
+			return _stage.nativeWindow;
 		}
 		
 		}
 		
-		protected var _nativeWindow:INativeWindow
 		
 		private var _stage:Stage;
 		private var _focus:InteractiveObjectAsset;

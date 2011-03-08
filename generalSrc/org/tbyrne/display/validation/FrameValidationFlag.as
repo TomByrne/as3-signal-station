@@ -1,5 +1,7 @@
 package org.tbyrne.display.validation
 {
+	import flash.events.ErrorEvent;
+	
 	import org.tbyrne.acting.actTypes.IAct;
 	import org.tbyrne.acting.acts.Act;
 	import org.tbyrne.display.assets.assetTypes.IAsset;
@@ -121,8 +123,14 @@ package org.tbyrne.display.validation
 		public function execute():void{
 			_valid = true;
 			_executing = true;
-			if(parameters)_validator.apply(null,parameters);
-			else _validator();
+			try{
+				if(parameters)_validator.apply(null,parameters);
+				else _validator();
+			}catch(e:Error){
+				CONFIG::debug{
+					throw e;
+				}
+			}
 			_executing = false;
 		}
 		override public function release():void{

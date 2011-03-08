@@ -7,17 +7,17 @@
 			<name>ActReaction</name>
 		</keep-as3-metadata>
 		
-		<define>
+		<define append="true">
         	<name>CONFIG::debug</name>
         	<value>false</value>
     	</define>
 		
-		<define>
+		<define append="true">
         	<name>PLATFORM::web</name>
         	<value>false</value>
     	</define>
 		
-		<define>
+		<define append="true">
         	<name>PLATFORM::air</name>
         	<value>true</value>
     	</define>

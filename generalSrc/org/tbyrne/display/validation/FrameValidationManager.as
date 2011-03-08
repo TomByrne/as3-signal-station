@@ -222,7 +222,7 @@ package org.tbyrne.display.validation
 				for each(var bundle:AssetBundle in rootBundles){
 					childRuns = [];
 					for each(drawRun in currentRuns){
-						if(isDescendant(bundle.asset,drawRun.root.asset)){
+						if(!drawRun.root.asset || isDescendant(bundle.asset,drawRun.root.asset)){
 							childRuns.push(drawRun);
 						}
 					}

@@ -80,10 +80,6 @@ package org.tbyrne.display.assets.nativeAssets
 						new TypeBundle(InteractiveObjectAsset, [IInteractiveObject], SimpleButton),
 						new TypeBundle(VideoAsset, [IVideo], Video),
 						new TypeBundle(DisplayObjectAsset, [IDisplayObject], Shape)];
-			
-			PLATFORM::air{
-				bundles.push(new TypeBundle(NativeWindowAsset, [INativeWindow], NativeWindow));
-			}
 		}
 		
 		public function getNew(displayObject:*):*{

@@ -283,33 +283,33 @@ package org.tbyrne.bezier
 			}
 			return true;
 		}
-		public function getFractClosestTo(point:Point, tolerance:Number = 0.05):Distance{
+		public function getFractClosestTo(x:Number, y:Number, tolerance:Number = 0.05):Distance{
 			validateShape();
 			if(_straight){
-				return getFractClosestToStraight(point);
+				return getFractClosestToStraight(x,y);
 			}else{
-				return getFractClosestToCurved(point,tolerance);
+				return getFractClosestToCurved(x,y,tolerance);
 			}
 		}
 		/*
 		This may not be the cleanest way to do this, but it may be the fastest, will look into it.
 		*/
-		protected function getFractClosestToCurved(point:Point, tolerance:Number):Distance {
+		protected function getFractClosestToCurved(x:Number, y:Number, tolerance:Number):Distance {
 			var nearest:Distance = new Distance();
 			var startFract:Number = 0;
 			var endFract:Number = 1;
 			
 			if(start && end){
-				var start:Point = start.toPoint();
-				var end:Point = end.toPoint();
-				var startDist:Number = Trigonometry.getDistance(start.x,start.y,point.x,point.y);
-				var endDist:Number = Trigonometry.getDistance(end,point);
+				var startX:Number = start.x;
+				var startY:Number = start.y;
+				var endX:Number = end.x;
+				var endY:Number = end.y;
+				var startDist:Number = Trigonometry.getDistance(startX,startY,x,y);
+				var endDist:Number = Trigonometry.getDistance(endX,endY,x,y);
 				while(endFract-startFract>tolerance){
 					var midFract:Number = startFract+((endFract-startFract)/2);
 					var bezMid:BezierPoint = getPointAt(midFract);
-					var mid:Point = bezMid.toPoint();
-					bezMid.release();
-					var midDist:Number = Trigonometry.getDistance(mid.x,mid.y,point.x,point.y);
+					var midDist:Number = Trigonometry.getDistance(bezMid.x,bezMid.y,x,y);
 					
 					if(isNaN(nearest.distance) || nearest.distance>midDist){
 						nearest.distance = midDist;
@@ -318,33 +318,36 @@ package org.tbyrne.bezier
 					var _startDist:Number = startDist;
 					var _endDist:Number = endDist;
 					if(startDist==endDist){
-						_startDist = Trigonometry.getDistance(mid.x,mid.y,start.x,start.y);
-						_endDist = Trigonometry.getDistance(mid.x,mid.y,end.x,end.y);
+						_startDist = Trigonometry.getDistance(bezMid.x,bezMid.y,startX,startY);
+						_endDist = Trigonometry.getDistance(bezMid.x,bezMid.y,endX,endY);
 					}
 					if(_startDist<_endDist){
 						endFract = midFract;
-						end = mid;
+						endX = bezMid.x;
+						endY = bezMid.y;
 						endDist = midDist
 					}else{
 						startFract = midFract;
-						start = mid;
+						startX = bezMid.x;
+						startY = bezMid.y;
 						startDist = midDist
 					}
+					bezMid.release();
 				}
 				return nearest;
 			}else{
 				return null;
 			}
 		}
-		protected function getFractClosestToStraight(point:Point):Distance {
+		protected function getFractClosestToStraight(x:Number, y:Number):Distance {
 			var ret:Distance = new Distance();
 			
 			var d1:int = end.x - start.x; // run
 			var d2:int = end.y - start.y; // rise
 			
 			// (v1, v2) is the vector from end point 1 of segment to point
-			var v1:int = point.x - start.x;
-			var v2:int = point.y - start.y;
+			var v1:int = x - start.x;
+			var v2:int = y - start.y;
 		 
 			// the dot product between (d1,d2) and (v1, v2)
 			var t:int = dotProduct(d1, d2, v1, v2);
@@ -355,8 +358,8 @@ package org.tbyrne.bezier
 				ret.distance = Math.sqrt(dotProduct(v1, v2, v1, v2));
 			} else if(t >= dLengthSquared) {
 				ret.fract = 1;
-				var u1:int = point.x - end.x;
-				var u2:int = point.y - end.y;
+				var u1:int = x - end.x;
+				var u2:int = y - end.y;
 				ret.distance = Math.sqrt(dotProduct(u1, u2, u1, u2));
 			} else {
 				ret.fract = t/dLengthSquared;

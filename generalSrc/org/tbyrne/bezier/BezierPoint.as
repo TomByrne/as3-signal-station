@@ -362,9 +362,9 @@ package org.tbyrne.bezier
 			_numbersInvalid = false;
 		}
 		public function validatePoints():void{
-			if(!isNaN(_forwardDistance) && !isNaN(_forwardAngle))_forwardVector = Trigonometry.projectPoint(_forwardDistance,_forwardAngle,new Point(0,0));
+			if(!isNaN(_forwardDistance) && !isNaN(_forwardAngle))_forwardVector = Trigonometry.projectPoint(_forwardDistance,_forwardAngle,0,0);
 			else _forwardVector = null;
-			if(!isNaN(_backwardDistance) && !isNaN(_backwardAngle))_backwardVector = Trigonometry.projectPoint(_backwardDistance,_backwardAngle,new Point(0,0));
+			if(!isNaN(_backwardDistance) && !isNaN(_backwardAngle))_backwardVector = Trigonometry.projectPoint(_backwardDistance,_backwardAngle,0,0);
 			else _backwardVector = null;
 			_pointsInvalid = false;
 		}
