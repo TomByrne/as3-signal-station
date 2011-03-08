@@ -123,14 +123,8 @@ package org.tbyrne.display.validation
 		public function execute():void{
 			_valid = true;
 			_executing = true;
-			try{
-				if(parameters)_validator.apply(null,parameters);
-				else _validator();
-			}catch(e:Error){
-				CONFIG::debug{
-					throw e;
-				}
-			}
+			if(parameters)_validator.apply(null,parameters);
+			else _validator();
 			_executing = false;
 		}
 		override public function release():void{
