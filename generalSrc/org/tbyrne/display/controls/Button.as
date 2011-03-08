@@ -291,7 +291,7 @@ package org.tbyrne.display.controls
 			}
 		}
 		
-		protected function onClick(from:IInteractiveObject, info:IMouseActInfo):void{
+		protected final function onClick(from:IInteractiveObject, info:IMouseActInfo):void{
 			if(_active && _acceptClick){
 				var assetMatch:Boolean = (info.mouseTarget==_interactiveArea);
 				/*if(!assetMatch){
@@ -301,12 +301,17 @@ package org.tbyrne.display.controls
 					}
 				}*/
 				if(assetMatch){
-					if(_clicked)_clicked.perform(this);
-					if(_triggerableData)_triggerableData.triggerAction(asset);
+					acceptClick();
 				}
 			}
 			_acceptClick = false;
 		}
+		
+		protected function acceptClick():void{
+			if(_clicked)_clicked.perform(this);
+			if(_triggerableData)_triggerableData.triggerAction(asset);
+		}
+		
 		
 		override protected function fillStateList(fill:Array):Array{
 			fill = super.fillStateList(fill);
