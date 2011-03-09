@@ -13,6 +13,11 @@
     	</define>
 		
 		<define>
+        	<name>CONFIG::release</name>
+        	<value>true</value>
+    	</define>
+		
+		<define>
         	<name>PLATFORM::web</name>
         	<value>false</value>
     	</define>

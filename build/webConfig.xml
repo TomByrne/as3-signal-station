@@ -3,14 +3,18 @@
 <flex-config>
 	 <compiler>
 		<keep-as3-metadata>
-			<name>Advice</name>
-			<name>Trigger</name>
-			<name>Property</name>
+			<name>ActRule</name>
+			<name>ActReaction</name>
 		</keep-as3-metadata>
 		
 		<define>
         	<name>CONFIG::debug</name>
         	<value>false</value>
+    	</define>
+		
+		<define>
+        	<name>CONFIG::release</name>
+        	<value>true</value>
     	</define>
 		
 		<define>

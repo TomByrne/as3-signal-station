@@ -9,7 +9,6 @@ package org.tbyrne.logging
 	public class LogProxy extends Proxy implements ILogger, ILogProxy
 	{
 		
-		private var _visibility:int = -1;
 		private var _messages:Vector.<LogInfo>;
 		private var _leveled:Array; // leveled isn't dense and so can't be a Vactor
 		
@@ -30,12 +29,7 @@ package org.tbyrne.logging
 				_leveled[level] = leveled;
 			}
 			leveled.push(body);
-			if(_visibility==-1 || level<_visibility){
-				sendNotification(LogNotifications.LOG, body);
-			}
-		}
-		public function setVisibility(level:int):void{
-			_visibility = level;
+			sendNotification(LogNotifications.LOG, body);
 		}
 		public function getMessagesForLevel(level:int):Vector.<LogInfo>{
 			return _leveled[level];
