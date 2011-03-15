@@ -11,7 +11,7 @@ package org.tbyrne.debug.logging
 		
 		public function log(level:int, ...params):void{
 			var levelName:String = getLevelName(level);
-			ASDebugger.apply(null,[levelName].concat(params).join(" ");
+			ASDebugger.trace.apply(null,levelName+" "+params.join(" "));
 		}
 	}
 }

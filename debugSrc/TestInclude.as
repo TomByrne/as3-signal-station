@@ -1,12 +1,11 @@
 package
 {
+	import flash.display.Sprite;
+	
 	import org.tbyrne.actLibrary.application.ConfiguredApplication;
 	import org.tbyrne.actLibrary.application.VisualSocketApplication;
 	import org.tbyrne.actLibrary.data.actions.ExternalLink;
 	import org.tbyrne.actLibrary.data.actions.InternalLink;
-	import org.tbyrne.actLibrary.display.errorPopup.ErrorPopupActor;
-	import org.tbyrne.actLibrary.display.popup.PopupActor;
-	import org.tbyrne.actLibrary.display.progress.ProgressIndicatorActor;
 	import org.tbyrne.actLibrary.display.transition.TransitionActor;
 	import org.tbyrne.actLibrary.display.visualSockets.plugs.PlugDisplay;
 	import org.tbyrne.actLibrary.display.visualSockets.plugs.controls.TextLabelButtonPlug;
@@ -16,17 +15,21 @@ package
 	import org.tbyrne.actLibrary.display.visualSockets.socketContainers.SocketContainer;
 	import org.tbyrne.actLibrary.sound.SoundActor;
 	import org.tbyrne.actLibrary.sound.acts.AddSoundAct;
+	import org.tbyrne.bezier.Bezier;
+	import org.tbyrne.bezier.BezierPoint;
+	import org.tbyrne.bezier.Path;
 	import org.tbyrne.collections.utils.arraysEqual;
 	import org.tbyrne.collections.utils.randomSort;
 	import org.tbyrne.data.actions.Link;
 	import org.tbyrne.data.operators.NumberRange;
 	import org.tbyrne.debug.DebugManager;
 	import org.tbyrne.debug.display.DebugItemRenderer;
+	import org.tbyrne.debug.logging.ASDebuggerLogger;
+	import org.tbyrne.debug.logging.XMLFileLogger;
 	import org.tbyrne.display.assets.nativeAssets.NativeAssetFactory;
 	import org.tbyrne.display.containers.AbstractList;
 	import org.tbyrne.display.containers.ContainerView;
 	import org.tbyrne.display.containers.MediaContainer;
-	import org.tbyrne.display.containers.ScrollWrapper;
 	import org.tbyrne.display.containers.TabPanel;
 	import org.tbyrne.display.containers.VideoContainer;
 	import org.tbyrne.display.containers.accordion.AbstractAccordionView;
@@ -57,10 +60,11 @@ package
 	import org.tbyrne.display.layout.relative.RelativeLayout;
 	import org.tbyrne.display.layout.stage.StageFillLayout;
 	import org.tbyrne.display.parallax.modifiers.ParallaxCamera;
-	import org.tbyrne.display.popup.PopupInfo;
 	import org.tbyrne.display.progress.AbstractProgressDisplay;
 	import org.tbyrne.display.progress.SWFPreloaderFrame;
 	import org.tbyrne.display.progress.SimpleProgressDisplay;
+	import org.tbyrne.display.scrolling.MouseDragScroller;
+	import org.tbyrne.display.scrolling.MouseWheelScroller;
 	import org.tbyrne.display.transition.BlurTransition;
 	import org.tbyrne.display.transition.CrossFadeTransition;
 	import org.tbyrne.display.transition.ExposureTransition;
@@ -68,6 +72,7 @@ package
 	import org.tbyrne.display.transition.ShutterTransition;
 	import org.tbyrne.display.transition.Transition;
 	import org.tbyrne.display.transition.WipeTransition;
+	import org.tbyrne.display.utils.FullscreenUtil;
 	import org.tbyrne.display.utils.TopLayerManager;
 	import org.tbyrne.gateway.ServerProxy;
 	import org.tbyrne.gateway.commands.CallMethodCommand;
@@ -89,7 +94,7 @@ package
 	import org.tbyrne.sound.soundControls.SoundTransformControl;
 	import org.tbyrne.utils.DateFormat;
 
-	public class TestInclude
+	public class TestInclude extends Sprite
 	{
 		public function TestInclude()
 		{
@@ -107,13 +112,9 @@ package
 			TextLabelButton;
 			TextLabelButtonPlug;
 			SocketCollectionContainerHelper
-			PopupInfo;
-			ErrorPopupActor;
 			SocketCollectionContainer;
-			PopupActor;
 			TextLabelPlug;
 			TransitionActor;
-			ProgressIndicatorActor;
 			Transition;
 			AbstractLayout;
 			CrossFadeTransition;
@@ -141,7 +142,8 @@ package
 			TextInput;
 			ContainerView;
 			ProxyLayoutSubject;
-			ScrollWrapper;
+			MouseDragScroller;
+			MouseWheelScroller;
 			ScrollButtons;
 			ImageSource;
 			PopoutDisplay;
@@ -181,6 +183,15 @@ package
 			SetPropertyCall;
 			GetPropertyCall;
 			FlashVarsGateway;
+			ASDebuggerLogger;
+			FullscreenUtil;
+			Path;
+			Bezier;
+			BezierPoint;
+			
+			PLATFORM::air{
+			XMLFileLogger;
+			}
 		}
 	}
 }

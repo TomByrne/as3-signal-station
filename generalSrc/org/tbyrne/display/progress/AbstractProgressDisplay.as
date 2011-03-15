@@ -3,10 +3,11 @@ package org.tbyrne.display.progress
 	import flash.display.DisplayObject;
 	
 	import org.tbyrne.display.assets.assetTypes.IAsset;
-	import org.tbyrne.display.assets.nativeTypes.IDisplayObject;
 	import org.tbyrne.display.assets.nativeAssets.DisplayObjectAsset;
+	import org.tbyrne.display.assets.nativeTypes.IDisplayObject;
 	import org.tbyrne.display.core.ILayoutView;
 	import org.tbyrne.display.core.LayoutView;
+	import org.tbyrne.display.validation.FrameValidationFlag;
 	
 	public class AbstractProgressDisplay extends LayoutView implements IProgressDisplay
 	{
@@ -67,15 +68,29 @@ package org.tbyrne.display.progress
 			return this;
 		}
 		
-		private var _units:String;
-		private var _total:Number;
-		private var _progress:Number;
-		private var _message:String;
-		private var _measurable:Boolean;
+		protected var _units:String;
+		protected var _total:Number;
+		protected var _progress:Number;
+		protected var _message:String;
+		protected var _measurable:Boolean;
 		
-		public function AbstractProgressDisplay(asset:IDisplayObject=null)
-		{
+		private var _progressFlag:FrameValidationFlag;
+		
+		public function AbstractProgressDisplay(asset:IDisplayObject=null){
 			super(asset);
+			
+			_progressFlag = new FrameValidationFlag(this,commitProgress,false);
+			
+		}
+		
+		protected function invalidateProgress():void{
+			_progressFlag.invalidate();
+		}
+		protected function validateProgress(force:Boolean=false):void{
+			_progressFlag.validate(force);
+		}
+		protected function commitProgress():void{
+			// override me
 		}
 	}
 }

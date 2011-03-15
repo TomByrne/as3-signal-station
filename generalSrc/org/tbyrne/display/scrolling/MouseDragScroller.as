@@ -24,10 +24,15 @@ package org.tbyrne.display.scrolling
 			var cast:IDisplayObjectContainer = (from.interactiveObject as IDisplayObjectContainer);
 			if(cast){
 				for each(var instance:MouseDragScroller in instances){
-					var otherInt:IInteractiveObject = instance.interactiveObject;
-					var otherCast:IDisplayObjectContainer = (otherInt as IDisplayObjectContainer);
-					if(instance!=from && isDescendant(cast,otherInt) && (otherInt==mouseTarget || (otherCast && isDescendant(otherCast,mouseTarget)))){
-						return false;
+					if(instance!=from){
+						var scrollMetrics:IScrollMetrics = instance.scrollMetrics;
+						if(scrollMetrics.pageSize<scrollMetrics.maximum-scrollMetrics.minimum){
+							var otherInt:IInteractiveObject = instance.interactiveObject;
+							var otherCast:IDisplayObjectContainer = (otherInt as IDisplayObjectContainer);
+							if(isDescendant(cast,otherInt) && (otherInt==mouseTarget || (otherCast && isDescendant(otherCast,mouseTarget)))){
+								return false;
+							}
+						}
 					}
 				}
 			}

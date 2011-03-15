@@ -15,7 +15,7 @@ package org.tbyrne.display.utils
 	import org.tbyrne.display.core.IOutroView;
 	import org.tbyrne.display.core.IView;
 
-	public class FullScreenUtil
+	public class FullscreenUtil
 	{
 		private static var ORIGIN:Point = new Point();
 		
@@ -164,7 +164,7 @@ package org.tbyrne.display.utils
 		
 		//private var _pendingAdd:DelayedCall;
 
-		public function FullScreenUtil(view:ILayoutView=null){
+		public function FullscreenUtil(view:ILayoutView=null){
 			this.view = view;
 		}
 		protected function onBooleanValueChanged(from:IBooleanProvider):void{

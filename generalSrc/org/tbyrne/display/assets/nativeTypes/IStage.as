@@ -1,6 +1,6 @@
 package org.tbyrne.display.assets.nativeTypes
 {
-	import flash.display.LoaderInfo;
+	import flash.display.*;
 	
 	import org.tbyrne.acting.actTypes.IAct;
 
@@ -31,7 +31,7 @@ package org.tbyrne.display.assets.nativeTypes
 		
 		PLATFORM::air{
 		
-		function get nativeWindow():INativeWindow;
+		function get nativeWindow():NativeWindow;
 		
 		}
 	}

@@ -5,10 +5,9 @@ package org.tbyrne.actLibrary.application.states.acts
 	import org.tbyrne.actLibrary.application.states.AppStateMatch;
 	import org.tbyrne.actLibrary.application.states.actTypes.ISetAppStateAct;
 	import org.tbyrne.actLibrary.application.states.states.IAppState;
-	import org.tbyrne.actLibrary.display.progress.actTypes.IExecutionProgressAct;
 	import org.tbyrne.acting.acts.UniversalAct;
 	
-	public class SetAppStateAct extends UniversalAct implements ISetAppStateAct, IExecutionProgressAct
+	public class SetAppStateAct extends UniversalAct implements ISetAppStateAct//, IExecutionProgressAct
 	{
 		
 		public function get state():IAppState{
@@ -47,9 +46,9 @@ package org.tbyrne.actLibrary.application.states.acts
 			if(!_appStateMatch)_appStateMatch = new AppStateMatch();
 			return _appStateMatch;
 		}
-		public function get message():String{
+		/*public function get message():String{
 			return "Loading";
-		}
+		}*/
 		
 		private var _state:IAppState;
 		private var _stateId:String;

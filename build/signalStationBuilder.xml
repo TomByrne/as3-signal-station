@@ -21,25 +21,29 @@
     <property name="FRAMEWORKS" value="${FLEX_HOME}\frameworks\libs"/>
 
     <target name="SWC Packager" description="Package up code used.">
-    	<swcPackager projectPath="${basedir}" includeMainSource="false" sourceExceptions=""
-    		swcOutput="${basedir}/bin/all.swc" compiler="${FLEX_HOME}\bin\compc.exe"
-    		frameworkDirectory="${FRAMEWORKS}" additionalArgs="-define=CONFIG::debug,false" verbose="false"/>
+    	<swcPackager projectPath="${basedir}" includeMainSource="false" sourceExceptions="debugSrc"
+    		swcOutput="${basedir}/bin/all-air.swc" compiler="${FLEX_HOME}\bin\compc.exe"
+    		frameworkDirectory="${FRAMEWORKS}\air" additionalArgs="-load-config+=../build/airConfig.xml" verbose="true"/>
 
-    	<swcPackager projectPath="${basedir}" includeMainSource="false" sourceExceptions="signalStationSrc,siteStreamSrc,pureMvcSrc"
+    	<swcPackager projectPath="${basedir}" includeMainSource="false" sourceExceptions="/debugSrc"
+    		swcOutput="${basedir}/bin/all-player.swc" compiler="${FLEX_HOME}\bin\compc.exe"
+    		frameworkDirectory="${FRAMEWORKS}\player" additionalArgs="-load-config+=../build/webConfig.xml" verbose="true"/>
+
+    	<!--<swcPackager projectPath="${basedir}" includeMainSource="false" sourceExceptions="debugSrc,signalStationSrc,siteStreamSrc,pureMvcSrc"
     		swcOutput="${basedir}/bin/general.swc" compiler="${FLEX_HOME}\bin\compc.exe"
-    		frameworkDirectory="${FRAMEWORKS}" additionalArgs="-define=CONFIG::debug,false" verbose="false"/>
+    		frameworkDirectory="${FRAMEWORKS}" additionalArgs="-load-config+=../build/webConfig.xml" verbose="false"/>
 
-	<swcPackager projectPath="${basedir}" includeMainSource="false" sourceExceptions="generalSrc,siteStreamSrc,pureMvcSrc"
-		swcOutput="${basedir}/bin/signalStation.swc" compiler="${FLEX_HOME}\bin\compc.exe"
-		frameworkDirectory="${FRAMEWORKS}" additionalArgs="-define=CONFIG::debug,false" verbose="false"/>
+		<swcPackager projectPath="${basedir}" includeMainSource="false" sourceExceptions="debugSrc,generalSrc,siteStreamSrc,pureMvcSrc"
+			swcOutput="${basedir}/bin/signalStation.swc" compiler="${FLEX_HOME}\bin\compc.exe"
+			frameworkDirectory="${FRAMEWORKS}" additionalArgs="-load-config+=../build/webConfig.xml" verbose="false"/>
 
-    	<swcPackager projectPath="${basedir}" includeMainSource="false" sourceExceptions="signalStationSrc,generalSrc,pureMvcSrc"
+    	<swcPackager projectPath="${basedir}" includeMainSource="false" sourceExceptions="debugSrc,signalStationSrc,generalSrc,pureMvcSrc"
     		swcOutput="${basedir}/bin/siteStream.swc" compiler="${FLEX_HOME}\bin\compc.exe"
-    		frameworkDirectory="${FRAMEWORKS}" additionalArgs="-define=CONFIG::debug,false" verbose="false"/>
+    		frameworkDirectory="${FRAMEWORKS}" additionalArgs="-load-config+=../build/webConfig.xml" verbose="false"/>
 
-    	<swcPackager projectPath="${basedir}" includeMainSource="false" sourceExceptions="signalStationSrc,generalSrc,siteStreamSrc"
+    	<swcPackager projectPath="${basedir}" includeMainSource="false" sourceExceptions="debugSrc,signalStationSrc,generalSrc,siteStreamSrc"
     		swcOutput="${basedir}/bin/pureMvc.swc" compiler="${FLEX_HOME}\bin\compc.exe"
-    		frameworkDirectory="${FRAMEWORKS}" additionalArgs="-define=CONFIG::debug,false" verbose="false"/>
+    		frameworkDirectory="${FRAMEWORKS}" additionalArgs="-load-config+=../build/webConfig.xml" verbose="false"/>-->
     </target>
 
 
