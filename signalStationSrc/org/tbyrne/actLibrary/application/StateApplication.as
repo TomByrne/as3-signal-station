@@ -9,7 +9,7 @@ package org.tbyrne.actLibrary.application
 	import org.tbyrne.actLibrary.application.states.actTypes.ISetSerialisedStateAct;
 	import org.tbyrne.actLibrary.application.states.acts.SetAppStatesAct;
 	import org.tbyrne.actLibrary.application.states.acts.SetSerialisedStateAct;
-	import org.tbyrne.actLibrary.core.acts.SingleMethodReaction;
+	import org.tbyrne.actLibrary.core.SingleMethodReaction;
 	import org.tbyrne.actLibrary.external.config.ConfigPhases;
 	import org.tbyrne.actLibrary.external.config.acts.GetConfigParamAct;
 	import org.tbyrne.actLibrary.external.swfAddress.SWFAddressPhases;

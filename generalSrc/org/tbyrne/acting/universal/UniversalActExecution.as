@@ -165,7 +165,7 @@ package org.tbyrne.acting.universal
 				_compiledReactors.push(reactor);
 				_compiledRules[reactor] = _extraRules[reactor];
 			}
-			_compiledReactors = sortReactors(act, _compiledReactors,_compiledRules);
+			_compiledReactors = sortReactions(act, _compiledReactors,_compiledRules);
 			
 			if(_index){
 				_index = 0;

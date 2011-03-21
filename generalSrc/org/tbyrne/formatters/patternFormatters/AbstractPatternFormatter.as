@@ -69,8 +69,9 @@ package org.tbyrne.formatters.patternFormatters
 			_tokens = new Dictionary();
 		}
 		protected function _addToken(token:String, stringProvider:IStringProvider):void{
-			CONFIG::debug{
-				if(!stringProvider)Log.error( "AbstractPatternFormatter._addToken: No IStringProvider provided");
+			if(!stringProvider){
+				_removeToken(token);
+				return
 			}
 			if(_tokens[token]){
 				_removeToken(token);

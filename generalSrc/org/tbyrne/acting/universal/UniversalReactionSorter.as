@@ -5,12 +5,14 @@ package org.tbyrne.acting.universal
 	import org.tbyrne.acting.actTypes.IUniversalAct;
 	import org.tbyrne.acting.universal.reactions.IActReaction;
 	import org.tbyrne.acting.universal.ruleTypes.IUniversalRule;
+	import org.tbyrne.utils.methodClosure;
 
 	public class UniversalReactionSorter
 	{
-		protected function sortReactors(act:IUniversalAct, reactors:Array, rules:Dictionary):Array{
+		protected function sortReactions(act:IUniversalAct, reactors:Array, rules:Dictionary):Array{
 			if(reactors.length){
-				var newList:Array = [reactors[0]];
+				return reactors.sort(methodClosure(doSortReactions,act,rules));
+				/*var newList:Array = [reactors[0]];
 				var newListCount:int = 1;
 				var takenList:Array = [0];
 				var index:int = 0;
@@ -57,19 +59,37 @@ package org.tbyrne.acting.universal
 						++newListCount;
 					}
 				}
-				return newList;
+				return newList;*/
 			}
 			return reactors;
 		}
-		private function shouldReactBefore(act:IUniversalAct, reaction1:IActReaction, reaction2:IActReaction, rule1:IUniversalRule, rule2:IUniversalRule):Boolean{
-			if(rule1.shouldReactBefore(act,reaction2)){
-				return true;
+		private function doSortReactions(reaction1:IActReaction, reaction2:IActReaction, act:IUniversalAct, rules:Dictionary):int{
+			var rule1:IUniversalRule = rules[reaction1];
+			var rule2:IUniversalRule = rules[reaction2];
+			
+			var sort1:int = rule1.sortAgainst(act,reaction2);
+			var sort2:int = rule2.sortAgainst(act,reaction1);
+			
+			if(sort1==0){
+				if(sort2==-1){
+					sort1 = 1;
+				}else if(sort2==1){
+					sort1 = -1;
+				}
 			}
-			if(rule2.shouldReactAfter(act,reaction1)){
-				return true;
-			}
-			return false;
+			return sort1;
 		}
+		/*private function shouldReactBefore(act:IUniversalAct, reaction1:IActReaction, reaction2:IActReaction, rule1:IUniversalRule, rule2:IUniversalRule):Boolean{
+			var sort1:int = rule1.sortAgainst(act,reaction2);
+			var sort2:int = rule2.sortAgainst(act,reaction1);
+			
+			if(sort1!=0){
+				if(sort1==sort2)Log.error( "UniversalReactionSorter.shouldReactBefore: IActReactions with conflicting sorting");
+			}else if(sort2==0){
+				Log.error( "UniversalReactionSorter.shouldReactBefore: IActReactions don't specify sprting");
+			}
+			return (sort1==-1 || sort2==1);
+		}*/
 		protected function copyDictionary(dictionary:Dictionary):Dictionary{
 			var ret:Dictionary = new Dictionary();
 			for(var i:* in dictionary){
