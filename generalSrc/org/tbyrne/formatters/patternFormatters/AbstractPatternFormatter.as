@@ -69,23 +69,17 @@ package org.tbyrne.formatters.patternFormatters
 			_tokens = new Dictionary();
 		}
 		protected function _addToken(token:String, stringProvider:IStringProvider):void{
-			if(!stringProvider){
-				_removeToken(token);
-				return
-			}
 			if(_tokens[token]){
 				_removeToken(token);
 			}
 			_tokens[token] = stringProvider;
-			stringProvider.stringValueChanged.addHandler(onTokenChanged);
+			if(stringProvider)stringProvider.stringValueChanged.addHandler(onTokenChanged);
 			doStringChanged();
 		}
 		protected function _removeToken(token:String):void{
-			CONFIG::debug{
-				if(!_tokens[token])Log.error( "AbstractPatternFormatter._removeToken: This token hasn't been added");
-			}
+			if(!_tokens[token])return;
 			var stringProvider:IStringProvider = _tokens[token];
-			stringProvider.stringValueChanged.removeHandler(onTokenChanged);
+			if(stringProvider)stringProvider.stringValueChanged.removeHandler(onTokenChanged);
 			delete _tokens[token];
 			doStringChanged();
 		}
@@ -117,6 +111,10 @@ package org.tbyrne.formatters.patternFormatters
 				if(_stringValue){
 					for(var token:String in _tokens){
 						var provider:IStringProvider = _tokens[token];
+						if(!provider){
+							_stringValue = null;
+							return;
+						}
 						var val:String = provider.stringValue;
 						if(!val)val = "";
 						_stringValue = _stringValue.replace(token,val);

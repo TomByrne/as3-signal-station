@@ -348,12 +348,16 @@ class AssetBundle implements IPoolable{
 	
 	
 	protected function onAdded(from:IDisplayObject):void{
-		_addedToStage = true;
-		_assetPosChanged.perform(this);
+		if(!_addedToStage){
+			_addedToStage = true;
+			_assetPosChanged.perform(this);
+		}
 	}
 	protected function onRemoved(from:IDisplayObject):void{
-		_addedToStage = false;
-		_assetPosChanged.perform(this);
+		if(_addedToStage){
+			_addedToStage = false;
+			_assetPosChanged.perform(this);
+		}
 	}
 	public function addChild(bundle:AssetBundle):void{
 		CONFIG::debug{

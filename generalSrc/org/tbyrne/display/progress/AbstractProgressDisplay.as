@@ -109,12 +109,6 @@ package org.tbyrne.display.progress
 				}
 			}
 		}
-		/*public function get display():IDisplayObject{
-			return asset;
-		}
-		public function get layoutView():ILayoutView{
-			return this;
-		}*/
 		
 		protected var _units:IStringProvider;
 		protected var _total:INumberProvider;

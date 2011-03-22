@@ -12,8 +12,5 @@ package org.tbyrne.display.progress
 		function set units(value:IStringProvider):void;
 		function set progress(value:INumberProvider):void;
 		function set total(value:INumberProvider):void;
-		
-		//function get display():IDisplayObject;
-		//function get layoutView():ILayoutView;
 	}
 }

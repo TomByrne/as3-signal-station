@@ -4,6 +4,7 @@ package org.tbyrne.display.utils
 	
 	import org.tbyrne.display.assets.nativeTypes.IDisplayObject;
 	import org.tbyrne.display.core.ILayoutView;
+	import org.tbyrne.display.layout.ILayoutSubject;
 
 	public class ChildViewEdgeBinder
 	{
@@ -15,7 +16,7 @@ package org.tbyrne.display.utils
 		public var obeyMinHeight:Boolean = false;
 		
 		protected var _childAsset:IDisplayObject;
-		protected var _childView:ILayoutView;
+		protected var _childLayout:ILayoutSubject;
 		
 		public function get paddingPixelTop():Number{
 			return _paddingPixelTop;
@@ -90,12 +91,12 @@ package org.tbyrne.display.utils
 				childW = _childAsset.width;
 				childH = _childAsset.height;
 			}else{
-				_childView = (child as ILayoutView);
-				if(_childView){
-					childX = _childView.position.x;
-					childY = _childView.position.y;
-					childW = _childView.size.x;
-					childH = _childView.size.y;
+				_childLayout = (child as ILayoutSubject);
+				if(_childLayout){
+					childX = _childLayout.position.x;
+					childY = _childLayout.position.y;
+					childW = _childLayout.size.x;
+					childH = _childLayout.size.y;
 				}else{
 					throw new ArgumentError("Unrecognised child");
 				}
@@ -167,7 +168,7 @@ package org.tbyrne.display.utils
 				minW = _childAsset.naturalWidth;
 				minH = _childAsset.naturalHeight;
 			}else{
-				var meas:Point = _childView.measurements;
+				var meas:Point = _childLayout.measurements;
 				minW = meas.x;
 				minH = meas.y;
 			}
@@ -239,14 +240,14 @@ package org.tbyrne.display.utils
 			if(_childAsset){
 				_childAsset.setSizeAndPos(destX,destY,destW,destH);
 			}else{
-				_childView.setPosition(destX,destY);
-				_childView.setSize(destW,destH);
+				_childLayout.setPosition(destX,destY);
+				_childLayout.setSize(destW,destH);
 			}
 		}
 		
 		public function release():void{
 			_childAsset = null;
-			_childView = null;
+			_childLayout = null;
 		}
 	}
 }
