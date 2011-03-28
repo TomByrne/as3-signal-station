@@ -5,11 +5,13 @@ package org.tbyrne.display.controls
 	import flash.events.Event;
 	import flash.geom.Point;
 	import flash.geom.Rectangle;
+	import flash.ui.Keyboard;
 	
 	import org.tbyrne.acting.actTypes.IAct;
 	import org.tbyrne.acting.acts.Act;
 	import org.tbyrne.data.dataTypes.ITriggerableAction;
 	import org.tbyrne.display.DisplayNamespace;
+	import org.tbyrne.display.actInfo.IKeyActInfo;
 	import org.tbyrne.display.actInfo.IMouseActInfo;
 	import org.tbyrne.display.assets.nativeTypes.IDisplayObject;
 	import org.tbyrne.display.assets.nativeTypes.IInteractiveObject;
@@ -182,6 +184,7 @@ package org.tbyrne.display.controls
 			_interactiveArea.focusIn.addHandler(onFocusIn);
 			_interactiveArea.focusOut.addHandler(onFocusOut);
 			_interactiveArea.clicked.addHandler(onClick);
+			_interactiveArea.keyUp.addHandler(onKeyUp);
 			_interactiveArea.focusRect = false;
 			
 			//_containerAsset.mouseChildren = false;
@@ -201,6 +204,7 @@ package org.tbyrne.display.controls
 			_interactiveArea.focusIn.removeHandler(onFocusIn);
 			_interactiveArea.focusOut.removeHandler(onFocusOut);
 			_interactiveArea.clicked.removeHandler(onClick);
+			_interactiveArea.keyUp.removeHandler(onKeyUp);
 			_interactiveArea.focusRect = null;
 			
 			_asset.factory.destroyAsset(_interactiveArea);
@@ -291,22 +295,25 @@ package org.tbyrne.display.controls
 			}
 		}
 		
-		protected function onClick(from:IInteractiveObject, info:IMouseActInfo):void{
-			if(_active && _acceptClick){
-				var assetMatch:Boolean = (info.mouseTarget==_interactiveArea);
-				/*if(!assetMatch){
-					var cast:ISprite = (info.mouseTarget as ISprite);
-					if(!cast || !cast.buttonMode){
-						assetMatch = true;
-					}
-				}*/
-				if(assetMatch){
-					if(_clicked)_clicked.perform(this);
-					if(_triggerableData)_triggerableData.triggerAction(asset);
-				}
+		protected final function onClick(from:IInteractiveObject, info:IMouseActInfo):void{
+			if(_active && _acceptClick && info.mouseTarget==_interactiveArea){
+				acceptClick();
 			}
 			_acceptClick = false;
 		}
+		
+		protected final function onKeyUp(from:IInteractiveObject, info:IKeyActInfo):void{
+			if(_active && info.keyCode==Keyboard.ENTER){
+				acceptClick();
+			}
+		}
+		
+		
+		protected function acceptClick():void{
+			if(_clicked)_clicked.perform(this);
+			if(_triggerableData)_triggerableData.triggerAction(asset);
+		}
+		
 		
 		override protected function fillStateList(fill:Array):Array{
 			fill = super.fillStateList(fill);

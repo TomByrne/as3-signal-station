@@ -5,9 +5,9 @@ package org.tbyrne.display.progress
 	import flash.text.*;
 	import flash.utils.getTimer;
 	
-	import org.tbyrne.display.assets.nativeTypes.IDisplayObject;
 	import org.tbyrne.display.assets.nativeAssets.NativeAssetFactory;
 	import org.tbyrne.display.assets.nativeAssets.SpriteAsset;
+	import org.tbyrne.display.assets.nativeTypes.IDisplayObject;
 
 	/**
 	 * TODO: add preloader props (e.g. progress,total,units, etc.) into their own 
@@ -109,7 +109,7 @@ package org.tbyrne.display.progress
 			_textFormat.align = TextFormatAlign.CENTER;
 			
 			_container = new Sprite();
-			_container.alpha = (!isNaN(progress) && !isNaN(total) && progress<total)?1:0;
+			_container.alpha = (_active.booleanValue?1:0);
 			_container.blendMode = _doInvertBlend?BlendMode.INVERT:BlendMode.NORMAL;
 			
 			_background = new Shape();
@@ -227,9 +227,14 @@ package org.tbyrne.display.progress
 			// ignore
 		}
 		protected function get shouldShow() : Boolean{
-			return (!measurable || (!isNaN(progress) && !isNaN(total) && progress<total));
+			return (_active.booleanValue);
+		}
+		override protected function commitProgress():void{
+			validateSize(true);
 		}
 		override protected function commitSize():void{
+			var isMeas:Boolean = (_measurable.booleanValue && !isNaN(_progress.numericalValue) && !isNaN(_total.numericalValue));
+			
 			
 			_background.width = position.x;
 			_background.height = position.y;
@@ -245,17 +250,17 @@ package org.tbyrne.display.progress
 				startTransOut();
 			}
 			
-			if(_showMessage && message){
+			if(_showMessage && _message.stringValue){
 				_messageField.width = width;
-				_messageField.text = message;
+				_messageField.text = _message.stringValue;
 				_messageField.height = _messageField.textHeight+4;
 				_messageField.y = -_messageField.height-BAR_HEIGHT/2
 			}else{
 				_messageField.text = "";
 			}
-			if(_detailsFormat && measurable){
+			if(_detailsFormat && isMeas){
 				_detailsField.width = width;
-				_detailsField.text = ProgressLabelFormatter.format(_detailsFormat,message,progress,total,units);
+				_detailsField.text = ProgressLabelFormatter.format(_detailsFormat,_message.stringValue,_progress.numericalValue,_total.numericalValue,_units.stringValue);
 				_detailsField.height = _detailsField.textHeight+4;
 				_detailsField.y = BAR_HEIGHT/2
 			}else{
@@ -266,11 +271,12 @@ package org.tbyrne.display.progress
 			_border.width = width;
 			_bar.y = -BAR_HEIGHT/2;
 			_border.y = -BAR_HEIGHT/2;
-			if(!measurable){
+			
+			if(!isMeas){
 				_bar.width = width*NON_MEAS_WIDTH;
 				_bar.x = (_border.width-_bar.width)*(getTimer()%(NON_MEAS_CYCLE*1000))/(NON_MEAS_CYCLE*1000);
 			}else{
-				_bar.width = shouldShow?(width*(progress/total)):width;
+				_bar.width = shouldShow?(width*(progress.numericalValue/total.numericalValue)):width;
 				_bar.x = 0;
 			}
 			

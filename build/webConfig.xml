@@ -2,10 +2,11 @@
 
 <flex-config>
 	 <compiler>
+		<optimize>true</optimize>
+		
 		<keep-as3-metadata>
-			<name>Advice</name>
-			<name>Trigger</name>
-			<name>Property</name>
+			<name>ActRule</name>
+			<name>ActReaction</name>
 		</keep-as3-metadata>
 		
 		<define append="true">
@@ -14,6 +15,11 @@
     	</define>
 		
 		<define append="true">
+        	<name>CONFIG::release</name>
+        	<value>true</value>
+    	</define>
+		
+		<define>
         	<name>PLATFORM::web</name>
         	<value>true</value>
     	</define>

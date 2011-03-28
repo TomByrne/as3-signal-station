@@ -26,11 +26,8 @@ package org.tbyrne.acting.universal.rules
 		public function shouldReact(act:IUniversalAct):Boolean{
 			return (act==_act);
 		}
-		public function shouldReactBefore(act:IUniversalAct, reaction:IActReaction):Boolean{
-			return true;
-		}
-		public function shouldReactAfter(act:IUniversalAct, reaction:IActReaction):Boolean{
-			return false;
+		public function sortAgainst(act:IUniversalAct, reaction:IActReaction):int{
+			return -1;
 		}
 	}
 }

@@ -159,7 +159,7 @@ package org.tbyrne.acting.universal
 			}
 		}
 		private function validateReactors():void{
-			_reactors = sortReactors(act,_reactors,_rules);
+			_reactors = sortReactions(act,_reactors,_rules);
 			if(!_executionsFrozen)_execReators = _reactors;
 		}
 		ActingNamspace function release():void{

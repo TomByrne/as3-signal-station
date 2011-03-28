@@ -155,6 +155,13 @@
 				return className;
 			}
 		}
+		public static function getClassPath(obj:*): String{
+			var klass:Class;
+			if(obj is Class)klass = (obj as Class);
+			else klass = ReflectionUtils.getClass(obj);
+			var className:String = getQualifiedClassName(klass);
+			return className.replace("::",".");
+		}
 		
 		// TODO: Functions should use class/interface references. Possibly with other wrapper functions
 		// to use with just names

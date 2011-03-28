@@ -1,4 +1,4 @@
-package org.tbyrne.actLibrary.core.acts
+package org.tbyrne.actLibrary.core
 {
 	import org.tbyrne.acting.universal.UniversalActExecution;
 	import org.tbyrne.acting.universal.reactions.MethodReaction;

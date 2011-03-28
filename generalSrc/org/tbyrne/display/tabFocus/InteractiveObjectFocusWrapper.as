@@ -3,6 +3,9 @@ package org.tbyrne.display.tabFocus
 	import flash.display.InteractiveObject;
 	import flash.events.Event;
 	import flash.events.FocusEvent;
+	import flash.events.KeyboardEvent;
+	import flash.text.TextField;
+	import flash.ui.Keyboard;
 	
 	import org.tbyrne.acting.actTypes.IAct;
 	import org.tbyrne.acting.acts.Act;
@@ -33,6 +36,7 @@ package org.tbyrne.display.tabFocus
 		
 		
 		private var _interactiveObject:InteractiveObject;
+		private var _textField:TextField;
 		private var _focused:Boolean;
 		
 		public function InteractiveObjectFocusWrapper(interactiveObject:InteractiveObject){
@@ -41,6 +45,9 @@ package org.tbyrne.display.tabFocus
 			_interactiveObject.addEventListener(FocusEvent.FOCUS_OUT, onFocusOut);
 			_interactiveObject.addEventListener(Event.ADDED_TO_STAGE, onAddedToStage);
 			_interactiveObject.addEventListener(Event.REMOVED_FROM_STAGE, onRemovedFromStage);
+			
+			_textField = _interactiveObject as TextField;
+			if(_textField)_textField.addEventListener(KeyboardEvent.KEY_DOWN, onKeyDown);
 		}
 		public function onFocusIn(e:FocusEvent):void{
 			_focused = true;
@@ -49,6 +56,11 @@ package org.tbyrne.display.tabFocus
 		public function onFocusOut(e:FocusEvent):void{
 			_focused = false;
 			if(_focusOut)_focusOut.perform(this);
+		}
+		public function onKeyDown(e:KeyboardEvent):void{
+			if(e.keyCode==Keyboard.ENTER && !_textField.multiline){
+				if(_focusNext)_focusNext.perform(this);
+			}
 		}
 		public function onAddedToStage(e:Event):void{
 			if(_focused)_interactiveObject.stage.focus = _interactiveObject;

@@ -17,27 +17,30 @@ package org.tbyrne.acting.universal.rules
 		public function shouldReact(act:IUniversalAct):Boolean{
 			return false;
 		}
-		public function shouldReactBefore(act:IUniversalAct, reaction:IActReaction):Boolean{
-			if(beforePhases && reaction.phases){
+		public function sortAgainst(act:IUniversalAct, reaction:IActReaction):int{
+			var ret:int = 0;
+			if(reaction.phases){
 				var reactionPhases:Array = reaction.phases;
-				for each(var phase:String in beforePhases){
-					if(reactionPhases.indexOf(phase)!=-1){
-						return true;
+				var phase:String;
+				if(beforePhases){
+					for each(phase in beforePhases){
+						if(reactionPhases.indexOf(phase)!=-1){
+							ret = -1;
+						}
+					}
+				}
+				if(afterPhases){
+					for each(phase in afterPhases){
+						if(reactionPhases.indexOf(phase)!=-1){
+							if(ret!=0){
+								Log.error("There is a conflict in before and after phases: "+beforePhases+" "+afterPhases);
+							}
+							ret = 1;
+						}
 					}
 				}
 			}
-			return false;
-		}
-		public function shouldReactAfter(act:IUniversalAct, reaction:IActReaction):Boolean{
-			if(afterPhases && reaction.phases){
-				var reactionPhases:Array = reaction.phases;
-				for each(var phase:String in afterPhases){
-					if(reactionPhases.indexOf(phase)!=-1){
-						return true;
-					}
-				}
-			}
-			return false;
+			return ret;
 		}
 	}
 }

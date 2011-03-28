@@ -141,15 +141,12 @@ package org.tbyrne.display.controls
 				_selectedState.selection = _booleanProvider.booleanValue?1:2;
 			}
 		}
-		override protected function onClick(from:IInteractiveObject, info:IMouseActInfo):void{
-			if(_active){
-				selected = !selected;
-				
-				if(!useDataForSelected && _booleanConsumer){
-					_booleanConsumer.booleanValue = !_booleanProvider.booleanValue;
-				}
+		override protected function acceptClick():void{
+			selected = !selected;
+			if(!useDataForSelected && _booleanConsumer){
+				_booleanConsumer.booleanValue = !_booleanProvider.booleanValue;
 			}
-			super.onClick(from, info);
+			super.acceptClick();
 		}
 		
 		
