@@ -5,14 +5,14 @@ package org.tbyrne.debug.logging
 	import flash.events.Event;
 	import flash.events.IOErrorEvent;
 	
-	//import flash.filesystem.*;
+	import flash.filesystem.*;
 
 	public class XMLFileLogger extends AbstractLogger implements ILogger
 	{
 		PLATFORM::air{
 		
-		private var _file:flash.filesystem.File;
-		private var _fileStream:flash.filesystem.FileStream;
+		private var _file:File;
+		private var _fileStream:FileStream;
 		
 		private var _log:XML;
 		private var _pendingNodes:Vector.<XML>;
@@ -24,13 +24,13 @@ package org.tbyrne.debug.logging
 		{
 			var now:Date = new Date();
 			var timestamp:String = (now.fullYear)+"-"+(now.month+1)+"-"+now.date;
-			var path:String = flash.filesystem.File.applicationStorageDirectory.nativePath+"\\"+logName+"_"+timestamp+".xml";
+			var path:String = File.applicationStorageDirectory.nativePath+"\\"+logName+"_"+timestamp+".xml";
 			_file = new File(path);
 			
 			
 			if(_file.exists){
 				_loading = true;
-				_fileStream = new flash.filesystem.FileStream();
+				_fileStream = new FileStream();
 				_fileStream.openAsync(_file, flash.filesystem.FileMode.READ);
 				_fileStream.addEventListener(Event.COMPLETE, fileReadHandler);
 				_fileStream.addEventListener(IOErrorEvent.IO_ERROR, readIOErrorHandler);
@@ -93,9 +93,9 @@ package org.tbyrne.debug.logging
 		}
 		
 		private function writeFile():void{
-			_fileStream = new flash.filesystem.FileStream();
+			_fileStream = new FileStream();
 			_fileStream.addEventListener(IOErrorEvent.IO_ERROR, writeIOErrorHandler);
-			_fileStream.openAsync(_file, flash.filesystem.FileMode.WRITE);
+			_fileStream.openAsync(_file, FileMode.WRITE);
 			_fileStream.writeUTFBytes(_log.toXMLString());
 			_fileStream.close();
 			_fileStream.removeEventListener(IOErrorEvent.IO_ERROR, writeIOErrorHandler);

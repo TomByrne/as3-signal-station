@@ -139,7 +139,7 @@ package org.tbyrne.display.controls
 			_labelField.focusOut.addHandler(onFocusOut);
 			_labelField.keyUp.addHandler(onKeyUp);
 			
-			_labelField.type = TextFieldType.INPUT;
+			//_labelField.type = TextFieldType.INPUT;
 			_tabFocusable.interactiveAsset = _labelField;
 			
 			
