@@ -163,6 +163,7 @@ package org.tbyrne.display.tabFocus
 		public function _addTabFocusable(tabFocusable:ITabFocusable, index:uint):void{
 			tabFocusable.focusIn.addHandler(onFocusIn);
 			tabFocusable.focusOut.addHandler(onFocusOut);
+			tabFocusable.focusNext.addHandler(onFocusNext);
 			_tabFocusableElements.splice(index,0,tabFocusable);
 			_tabIndicesFlag.invalidate();
 			_tabCountFlag.invalidate();
@@ -180,6 +181,7 @@ package org.tbyrne.display.tabFocus
 			var tabFocusable:ITabFocusable = _tabFocusableElements.splice(index,1)[0];
 			tabFocusable.focusIn.removeHandler(onFocusIn);
 			tabFocusable.focusOut.removeHandler(onFocusOut);
+			tabFocusable.focusNext.removeHandler(onFocusNext);
 			clearTabFocusable(tabFocusable);
 			_tabIndicesFlag.invalidate();
 			_tabCountFlag.invalidate();
@@ -202,6 +204,23 @@ package org.tbyrne.display.tabFocus
 			if(focused){
 				_doFocusOutCall = new DelayedCall(commitFocusOut,1,false);
 				_doFocusOutCall.begin();
+			}
+		}
+		protected function onFocusNext(from:ITabFocusable):void{
+			if(focused && _focusedItem==from){
+				for(var i:int=0; i<_tabFocusableElements.length; ++i){
+					if(_tabFocusableElements[i]==from){
+						var nextItem:ITabFocusable;
+						if(i<_tabFocusableElements.length-1){
+							nextItem = _tabFocusableElements[i+1];
+						}else{
+							nextItem = _tabFocusableElements[0];
+						}
+						from.focused = false;
+						nextItem.focused = true;
+						break;
+					}
+				}
 			}
 		}
 		protected function commitFocusOut():void{

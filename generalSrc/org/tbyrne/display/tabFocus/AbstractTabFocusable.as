@@ -22,6 +22,15 @@ package org.tbyrne.display.tabFocus
 			return _focusOut;
 		}
 		
+		/**
+		 * @inheritDoc
+		 */
+		public function get focusNext():IAct{
+			if(!_focusNext)_focusNext = new Act();
+			return _focusNext;
+		}
+		
+		protected var _focusNext:Act;
 		protected var _focusOut:Act;
 		protected var _focusIn:Act;
 		

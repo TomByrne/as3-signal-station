@@ -20,5 +20,9 @@ package org.tbyrne.display.tabFocus
 		 * handler(from:ITabFocusable)
 		 */
 		function get focusOut():IAct;
+		/**
+		 * handler(from:ITabFocusable)
+		 */
+		function get focusNext():IAct;
 	}
 }

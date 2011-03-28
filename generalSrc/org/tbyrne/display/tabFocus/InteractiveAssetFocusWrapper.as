@@ -1,7 +1,11 @@
 package org.tbyrne.display.tabFocus
 {
+	import flash.ui.Keyboard;
+	
+	import org.tbyrne.display.actInfo.IKeyActInfo;
 	import org.tbyrne.display.assets.nativeTypes.IInteractiveObject;
 	import org.tbyrne.display.assets.nativeTypes.IStage;
+	import org.tbyrne.display.assets.nativeTypes.ITextField;
 
 	public class InteractiveAssetFocusWrapper extends AbstractTabFocusable implements ITabFocusable
 	{
@@ -39,7 +43,11 @@ package org.tbyrne.display.tabFocus
 					_interactiveAsset.focusOut.removeHandler(onFocusOut);
 					_interactiveAsset.addedToStage.removeHandler(onAddedToStage);
 					_interactiveAsset.removedFromStage.removeHandler(onRemovedFromStage);
-					if(_lastStage)onRemovedFromStage()
+					if(_lastStage)onRemovedFromStage();
+						
+					if(_textField){
+						_textField.keyDown.removeHandler(onKeyDown);
+					}
 				}
 				_interactiveAsset = value;
 				if(_interactiveAsset){
@@ -50,11 +58,19 @@ package org.tbyrne.display.tabFocus
 					_interactiveAsset.addedToStage.addHandler(onAddedToStage);
 					_interactiveAsset.removedFromStage.addHandler(onRemovedFromStage);
 					if(_interactiveAsset.stage)onAddedToStage();
+					
+					_textField = (value as ITextField);	
+					if(_textField){
+						_textField.keyDown.addHandler(onKeyDown);
+					}
+				}else{
+					_textField = null;
 				}
 			}
 		}
 		
 		private var _interactiveAsset:IInteractiveObject;
+		private var _textField:ITextField;
 		private var _focused:Boolean;
 		private var _lastStage:IStage;
 
@@ -71,6 +87,11 @@ package org.tbyrne.display.tabFocus
 		public function onFocusOut(from:IInteractiveObject):void{
 			_focused = false;
 			if(_focusOut)_focusOut.perform(this);
+		}
+		public function onKeyDown(from:ITextField, keyActInfo:IKeyActInfo):void{
+			if(keyActInfo.keyCode==Keyboard.ENTER && !from.multiline){
+				if(_focusNext)_focusNext.perform(this);
+			}
 		}
 		public function onAddedToStage(from:IInteractiveObject=null):void{
 			_lastStage = _interactiveAsset.stage;
