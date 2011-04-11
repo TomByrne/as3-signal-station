@@ -34,10 +34,10 @@ package org.tbyrne.binding
 				_property = value;
 				
 				
-				var index:int = property?property.indexOf("."):-1;
+				var index:int = _property?_property.indexOf("."):-1;
 				if(index==-1){
 					_useChildBinder = false;
-					_dirProperty = property;
+					_dirProperty = _property;
 					
 					if(_childBinder){
 						_childBinder.bindable = null;

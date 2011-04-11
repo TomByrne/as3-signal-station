@@ -882,6 +882,12 @@ package org.tbyrne.display.assets.schema
 		public function getCharIndexAtPoint(x:Number, y:Number):int{
 			return _textField.getCharIndexAtPoint(x, y);
 		}
+		public function getCharBoundaries(charIndex:int):Rectangle{
+			return _textField.getCharBoundaries(charIndex);
+		}
+		public function getLineMetrics(lineIndex:int):TextLineMetrics{
+			return _textField.getLineMetrics(lineIndex);
+		}
 		
 		
 		

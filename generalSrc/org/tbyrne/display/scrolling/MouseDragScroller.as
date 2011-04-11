@@ -218,7 +218,26 @@ package org.tbyrne.display.scrolling
 				var ratio:Number = _dragVelocity/snappingVelThreshold;
 				if(ratio<0)ratio = -ratio;
 				
-				velocity = (_snapVelocity*(1-ratio)*timeStep)+_dragVelocity*ratio;
+				var snapV:Number = (_snapVelocity*(1-ratio)*timeStep);
+				var dragV:Number = _dragVelocity*ratio;
+				
+				/*newScrollValue = _scrollMetrics.scrollValue+dragV;
+				
+				trace("drag: "+_dragVelocity);
+				if(_dragVelocity<0){
+					if(newScrollValue+snapV<nearest){
+						trace("\tup: "+snapV,nearest-newScrollValue);
+						snapV = nearest-newScrollValue;
+					}
+				}else if(newScrollValue+snapV>nearest && newScrollValue<nearest){
+					trace("\tdown: "+snapV,newScrollValue-nearest);
+					snapV = newScrollValue-nearest;
+				}
+				
+				velocity = snapV+dragV;
+				newScrollValue += snapV;*/
+				
+				velocity = snapV+dragV;
 				newScrollValue = _scrollMetrics.scrollValue+velocity;
 			}else{
 				velocity = _dragVelocity;

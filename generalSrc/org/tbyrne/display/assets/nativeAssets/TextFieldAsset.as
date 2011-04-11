@@ -4,8 +4,10 @@ package org.tbyrne.display.assets.nativeAssets
 	import flash.display.MovieClip;
 	import flash.display.TextFieldGutter;
 	import flash.events.Event;
+	import flash.geom.Rectangle;
 	import flash.text.TextField;
 	import flash.text.TextFormat;
+	import flash.text.TextLineMetrics;
 	
 	import org.tbyrne.acting.actTypes.IAct;
 	import org.tbyrne.acting.acts.NativeAct;
@@ -207,6 +209,12 @@ package org.tbyrne.display.assets.nativeAssets
 		}
 		public function getCharIndexAtPoint(x:Number, y:Number):int{
 			return _textField.getCharIndexAtPoint(x,y);
+		}
+		public function getCharBoundaries(charIndex:int):Rectangle{
+			return _textField.getCharBoundaries(charIndex);
+		}
+		public function getLineMetrics(lineIndex:int):TextLineMetrics{
+			return _textField.getLineMetrics(lineIndex);
 		}
 		override protected function isStateNameAvailable(stateName:String):Boolean {
 			// (_textField.parent is MovieClip) is the cheapest way to check if the parent is dynamic (there could be a better way long term).

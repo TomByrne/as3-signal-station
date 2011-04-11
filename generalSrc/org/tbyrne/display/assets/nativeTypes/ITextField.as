@@ -1,6 +1,8 @@
 package org.tbyrne.display.assets.nativeTypes
 {
+	import flash.geom.Rectangle;
 	import flash.text.TextFormat;
+	import flash.text.TextLineMetrics;
 	
 	import org.tbyrne.acting.actTypes.IAct;
 
@@ -65,5 +67,7 @@ package org.tbyrne.display.assets.nativeTypes
 		function setSelection(beginIndex:int, endIndex:int):void;
 		function appendText(text:String):void;
 		function getCharIndexAtPoint(x:Number, y:Number):int;
+		function getCharBoundaries(charIndex:int):Rectangle;
+		function getLineMetrics(lineIndex:int):TextLineMetrics;
 	}
 }
