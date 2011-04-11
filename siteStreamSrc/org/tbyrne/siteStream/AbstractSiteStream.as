@@ -133,7 +133,7 @@ package org.tbyrne.siteStream
 			}
 		}
 		
-		public function onNodeResolved(e:SiteStreamEvent):void{
+		protected function onNodeResolved(e:SiteStreamEvent):void{
 			var nodeResolver:NodeResolver = (e.target as NodeResolver);
 			nodeResolver.removeEventListener(SiteStreamEvent.RESOLVED, onNodeResolved);
 			if(dispatchResolvingEvents){

@@ -28,6 +28,16 @@
 			}
 			return type;
 		}
+		public static function doesClassExist(name: String): Boolean
+		{
+			try{
+				getDefinitionByName(name);
+			}catch (e: ReferenceError){
+				return false;
+			}
+			return true;
+		}
+		
 		
 		public static function getFunctionByName(name: String): Function
 		{
