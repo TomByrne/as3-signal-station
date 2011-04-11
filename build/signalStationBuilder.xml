@@ -10,7 +10,7 @@
 	-->
 
 	<!--<property name="FLEX_HOME" value="${application.home}" />-->
-	<property name="FLEX_HOME" value="C:\FlexSDKs\4.1.0" />
+	<property name="FLEX_HOME" value="C:\FlexSDKs\4.5.0" />
 
     <taskdef name="swcPackager" classpath="${basedir}\build\SWCPackager.jar" classname="org.farmcode.antTasks.SWCPackager"/>
 	

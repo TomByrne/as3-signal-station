@@ -29,7 +29,6 @@
         	<value>true</value>
     	</define>
 		
-		<optimize>true</optimize>
 		<warn-assignment-within-conditional>false</warn-assignment-within-conditional>
 		<warn-no-constructor>false</warn-no-constructor>
 	 </compiler>

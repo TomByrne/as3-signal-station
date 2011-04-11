@@ -189,9 +189,9 @@ package
 			Bezier;
 			BezierPoint;
 			
-			PLATFORM::air{
+			//PLATFORM::air{
 			XMLFileLogger;
-			}
+			//}
 		}
 	}
 }
