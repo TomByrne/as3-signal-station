@@ -16,6 +16,7 @@ package org.tbyrne.display.assets.schema
 	import flash.geom.Transform;
 	import flash.text.TextField;
 	import flash.text.TextFormat;
+	import flash.text.TextLineMetrics;
 	import flash.utils.Dictionary;
 	
 	import org.tbyrne.acting.actTypes.IAct;
