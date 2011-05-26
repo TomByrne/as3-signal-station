@@ -213,7 +213,7 @@ package org.tbyrne.display.controls
 				}else{
 					var width:Number = (_size.x>0?_size.x:_asset.naturalWidth);
 					_measurements.x = _size.x;
-					_labelField.width = _size.x-_labelFieldSizer.paddingLeft-_labelFieldSizer.paddingRight;
+					_labelField.width = _size.x-_labelFieldSizer.paddingLeft-_labelFieldSizer.paddingRight+TextFieldGutter.TEXT_FIELD_GUTTER*2;
 					_labelField.height = _labelField.textHeight+TextFieldGutter.TEXT_FIELD_GUTTER*2; // if height is less than one line then wrapping doesn't occur
 				}
 				_measurements.y = _labelField.textHeight+_labelFieldSizer.paddingTop+_labelFieldSizer.paddingBottom;
@@ -284,6 +284,11 @@ package org.tbyrne.display.controls
 			if(_labelField!=asset){
 				_labelField.setPosition(-TextFieldGutter.TEXT_FIELD_GUTTER+_labelFieldSizer.paddingLeft,-TextFieldGutter.TEXT_FIELD_GUTTER+_labelFieldSizer.paddingTop);
 			}
+		}
+		// compares 2 numbers taking floating point errors into account
+		private function fleCompare(number1:Number, number2:Number):Boolean{
+			var dif:Number = number1-number2;
+			return dif<1?(dif>-0.01):(dif<0.01);
 		}
 		override protected function commitPosition():void{
 			if(_labelField==asset){

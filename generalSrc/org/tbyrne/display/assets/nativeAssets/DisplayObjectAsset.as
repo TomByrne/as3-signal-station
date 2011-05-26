@@ -5,10 +5,12 @@ package org.tbyrne.display.assets.nativeAssets {
 	import flash.geom.Point;
 	import flash.geom.Rectangle;
 	import flash.geom.Transform;
+	import flash.utils.Dictionary;
 	
 	import org.tbyrne.acting.actTypes.IAct;
 	import org.tbyrne.acting.acts.Act;
 	import org.tbyrne.acting.acts.NativeAct;
+	import org.tbyrne.display.assets.assetTypes.IAsset;
 	import org.tbyrne.display.assets.nativeTypes.IDisplayObject;
 	import org.tbyrne.display.assets.nativeTypes.IDisplayObjectContainer;
 	import org.tbyrne.display.assets.nativeTypes.IStage;
@@ -85,6 +87,9 @@ package org.tbyrne.display.assets.nativeAssets {
 					_displayObject.scaleY = _origScaleY;
 					_displayObject.removeEventListener(Event.ADDED_TO_STAGE,handleAddedToStage);
 					_displayObject.removeEventListener(Event.REMOVED_FROM_STAGE,handleRemovedToStage);
+					if(_noFilters){
+						returnFilters();
+					}
 				}
 				_displayObject = value;
 				super.display = value;
@@ -99,6 +104,10 @@ package org.tbyrne.display.assets.nativeAssets {
 					_enterFrame.eventDispatcher = value;
 				
 				if(_displayObject){
+					_filters = _displayObject.filters;
+					if(_noFilters){
+						removeFilters();
+					}
 					_displayObject.addEventListener(Event.ADDED_TO_STAGE,handleAddedToStage);
 					_displayObject.addEventListener(Event.REMOVED_FROM_STAGE,handleRemovedToStage);
 					if(_displayObject.stage){
@@ -107,6 +116,17 @@ package org.tbyrne.display.assets.nativeAssets {
 				}
 			}
 		}
+		override public function set noFilters(value:Boolean):void{
+			super.noFilters = value;
+			if(_displayObject){
+				if(_noFilters){
+					removeFilters();
+				}else{
+					returnFilters();
+				}
+			}
+		}
+		
 		
 		private var _stageChanged:Act;
 		private var _addedToStage:Act;
@@ -124,6 +144,8 @@ package org.tbyrne.display.assets.nativeAssets {
 		
 		protected var _parent:IDisplayObjectContainer;
 		protected var _mask:IDisplayObject;
+		
+		private var _filters:Array;
 		
 		
 		public function DisplayObjectAsset(factory:NativeAssetFactory=null){
@@ -200,8 +222,8 @@ package org.tbyrne.display.assets.nativeAssets {
 			if(pixelSnapping && value){
 				value.x = int(value.x+0.5);
 				value.y = int(value.y+0.5);
-				value.width = int(value.width+0.5);
-				value.height = int(value.height+0.5);
+				value.width = int(value.x+value.width+0.5)-value.x;
+				value.height = int(value.y+value.height+0.5)-value.y;
 			}
 			_displayObject.scrollRect = value;
 		}
@@ -210,8 +232,12 @@ package org.tbyrne.display.assets.nativeAssets {
 		}
 		public function set scaleX(value:Number):void {
 			_displayObject.scaleX = value;
-			if(pixelSnapping && _displayObject.width%1){
-				_displayObject.width = int(_displayObject.width+0.5);
+			if(pixelSnapping){
+				var setWas:Boolean = _widthSet;
+				_widthSet = true;
+				_width = _displayObject.width;
+				setPixelWidth();
+				_widthSet = setWas;
 			}
 		}
 		public function get scaleX():Number {
@@ -219,8 +245,12 @@ package org.tbyrne.display.assets.nativeAssets {
 		}
 		public function set scaleY(value:Number):void {
 			_displayObject.scaleY = value;
-			if(pixelSnapping && _displayObject.height%1){
-				_displayObject.height = int(_displayObject.height+0.5);
+			if(pixelSnapping){
+				var setWas:Boolean = _heightSet;
+				_heightSet = true;
+				_height = _displayObject.height;
+				setPixelHeight();
+				_heightSet = setWas;
 			}
 		}
 		public function get scaleY():Number {
@@ -239,12 +269,17 @@ package org.tbyrne.display.assets.nativeAssets {
 			return _displayObject;
 		}
 		
-		public function set filters(value:Array):void {
-			_displayObject.filters = value;
+		
+		public function get filters():Array{
+			return _filters;
 		}
-		public function get filters():Array {
-			return _displayObject.filters;
+		public function set filters(value:Array):void{
+			_filters = value;
+			if(!_noFilters){
+				_displayObject.filters = value;
+			}
 		}
+		
 		
 		override public function set height(value:Number):void {
 			if(checkInnerBounds()) {
@@ -348,6 +383,20 @@ package org.tbyrne.display.assets.nativeAssets {
 				if(parentStage)return parentStage;
 			}
 			return super.findStageRef();
+		}
+		
+		
+		protected function removeFilters():void{
+			if(_displayObject.filters && _displayObject.filters.length){
+				_displayObject.filters = null;
+			}
+		}
+		
+		
+		protected function returnFilters():void{
+			if(_filters && _filters.length){
+				_displayObject.filters = _filters;
+			}
 		}
 	}
 }

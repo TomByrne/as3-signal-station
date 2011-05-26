@@ -13,6 +13,16 @@ package org.tbyrne.display.assets.nativeAssets
 		internal function set display(value:*):void{
 			if(_display!=value){
 				_display = value;
+				if(_display){
+					_x = _display.x;
+					_y = _display.y;
+					_width = _display.width;
+					_height = _display.height;
+					_xSet = false;
+					_ySet = false;
+					_widthSet = false;
+					_heightSet = false;
+				}
 			}
 		}
 		
@@ -24,49 +34,83 @@ package org.tbyrne.display.assets.nativeAssets
 		}
 		
 		
+		public function get noFilters():Boolean{
+			return _noFilters;
+		}
+		public function set noFilters(value:Boolean):void{
+			if(_noFilters!=value){
+				_noFilters = value;
+			}
+		}
+		
 		public function get pixelSnapping():Boolean{
 			return _pixelSnapping;
 		}
 		public function set pixelSnapping(value:Boolean):void{
 			if(_pixelSnapping!=value){
 				_pixelSnapping = value;
+				setPixelX();
+				setPixelY();
+				setPixelWidth();
+				setPixelHeight();
 			}
 		}
 		public function set x(value:Number):void {
+			_x = value;
+			_xSet = true;
 			if(pixelSnapping){
-				_display.x = int(value+0.5);
+				setPixelX();
+				setPixelWidth();
 			}else{
 				_display.x = value;
 			}
 		}
+		
+		
 		public function get x():Number {
-			return _display.x;
+			return _x;
 		}
 		public function set y(value:Number):void {
+			_y = value;
+			_ySet = true;
 			if(pixelSnapping){
-				_display.y = int(value+0.5);
+				setPixelY();
+				setPixelHeight();
 			}else{
 				_display.y = value;
 			}
 		}
 		public function get y():Number {
-			return _display.y;
+			return _y;
 		}
 		public function set height(value:Number):void {
-			if(pixelSnapping)value = int(value+0.5);
-			_display.height = value;
+			_height = value;
+			_heightSet = true;
+			if(_pixelSnapping){
+				setPixelHeight();
+			}else{
+				_display.height = value;
+			}
 		}
+		
 		
 		
 		public function get height():Number {
-			return _display.height;
+			return _height;
 		}
 		public function set width(value:Number):void {
-			if(pixelSnapping)value = int(value+0.5);
-			_display.width = value;
+			_width = value;
+			_widthSet = true;
+			if(_pixelSnapping){
+				setPixelWidth();
+			}else{
+				_display.width = value;
+			}
 		}
+		
+		
 		public function get width():Number {
-			return _display.width;
+			return _width;
 		}
 		public function get stage():IStage {
 			if(_isAddedToStage && !_stageAsset){
@@ -84,7 +128,18 @@ package org.tbyrne.display.assets.nativeAssets
 		}
 		
 		private var _display:*;
-		private var _pixelSnapping:Boolean;
+		
+		protected var _x:Number;
+		protected var _y:Number;
+		protected var _width:Number;
+		protected var _height:Number;
+		protected var _xSet:Boolean;
+		protected var _ySet:Boolean;
+		protected var _widthSet:Boolean;
+		protected var _heightSet:Boolean;
+		
+		protected var _noFilters:Boolean;
+		protected var _pixelSnapping:Boolean;
 		protected var _stageAsset:IStage;
 		protected var _nativeFactory:NativeAssetFactory;
 		
@@ -99,6 +154,36 @@ package org.tbyrne.display.assets.nativeAssets
 				return thisStage;
 			}else{
 				return _nativeFactory.getNew(_display.stage);
+			}
+		}
+		private function setPixelX():void{
+			if(_xSet){
+				_display.x = int(_x+0.5);
+			}
+		}
+		private function setPixelY():void{
+			if(_ySet){
+				_display.y = int(_y+0.5);
+			}
+		}
+		protected function setPixelWidth():void{
+			if(_widthSet){
+				if(_width%1){
+					var right:Number = int(_x+_width+0.5);
+					_display.width = right-_display.x;
+				}else{
+					_display.width = _width;
+				}
+			}
+		}
+		protected function setPixelHeight():void{
+			if(_heightSet){
+				if(_height%1){
+					var bottom:Number = int(_y+_height+0.5);
+					_display.height = bottom-_display.y;
+				}else{
+					_display.height = _height;
+				}
 			}
 		}
 	}

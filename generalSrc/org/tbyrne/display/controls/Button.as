@@ -13,6 +13,7 @@ package org.tbyrne.display.controls
 	import org.tbyrne.display.DisplayNamespace;
 	import org.tbyrne.display.actInfo.IKeyActInfo;
 	import org.tbyrne.display.actInfo.IMouseActInfo;
+	import org.tbyrne.display.assets.assetTypes.IAsset;
 	import org.tbyrne.display.assets.nativeTypes.IDisplayObject;
 	import org.tbyrne.display.assets.nativeTypes.IInteractiveObject;
 	import org.tbyrne.display.assets.nativeTypes.ISprite;
@@ -193,8 +194,6 @@ package org.tbyrne.display.controls
 			_interactiveArea.useHandCursor = (_active && _useHandCursor);
 		}
 		override protected function unbindFromAsset() : void{
-			if(down)killMouseDown();
-			if(_over)onRollOut(_interactiveArea);
 			_asset.added.removeHandler(onChildAdded);
 			_containerAsset.removeAsset(_interactiveArea);
 			
@@ -212,6 +211,11 @@ package org.tbyrne.display.controls
 			
 			//_containerAsset.mouseChildren = true;
 			super.unbindFromAsset();
+		}
+		override protected function onRemovedFromStage(from:IAsset=null):void{
+			if(down)killMouseDown();
+			if(_over)onRollOut(_interactiveArea);
+			super.onRemovedFromStage(from);
 		}
 		protected function onChildAdded(e:Event, from:IDisplayObject) : void{
 			//TODO: when events are replaced with Info objects, do a check here to see if it's a descendant or not

@@ -21,18 +21,9 @@ package org.tbyrne.display.assets.nativeAssets
 	
 	public class DisplayObjectContainerAsset extends InteractiveObjectAsset implements IDisplayObjectContainer
 	{
-		private static var assignments:Dictionary = new Dictionary(true);
-		
 		override public function set displayObject(value:DisplayObject):void{
 			if(super.displayObject!=value){
-				var assArray:Array;
 				if(_displayObjectContainer){
-					assArray = assignments[_displayObjectContainer];
-					var index:int = assArray.indexOf(this);
-					assArray.splice(index,1);
-					if(!assArray.length){
-						delete assignments[_displayObjectContainer];
-					}
 					for each(var child:IDisplayObject in _children){
 						for each(var stateList:Array in _stateLists){
 							child.removeStateList(stateList);
@@ -42,18 +33,12 @@ package org.tbyrne.display.assets.nativeAssets
 					}
 					_children = new Dictionary();
 				}
-				super.displayObject = value;
 				if(value){
 					_displayObjectContainer = value as DisplayObjectContainer;
-					assArray = assignments[value];
-					if(!assArray){
-						assArray = [];
-						assignments[value] = assArray;
-					}
-					assArray.push(this);
 				}else{
 					_displayObjectContainer = null;
 				}
+				super.displayObject = value;
 			}
 		}
 		
@@ -69,6 +54,7 @@ package org.tbyrne.display.assets.nativeAssets
 		
 		private var _mouseChildren:Boolean;
 		private var _displayObjectContainer:DisplayObjectContainer;
+		private var _childFilters:Dictionary = new Dictionary();
 		/*
 		mapped DisplayObject -> IDisplayObject
 		*/
@@ -76,7 +62,65 @@ package org.tbyrne.display.assets.nativeAssets
 		
 		public function DisplayObjectContainerAsset(factory:NativeAssetFactory=null){
 			super(factory);
+			added.addHandler(onAdded);
+			removed.addHandler(onRemoved);
 		}
+		protected function onAdded(e:Event, from:IAsset):void{
+			var target:DisplayObject = (e.target as DisplayObject);
+			if(_noFilters && target && target!=_displayObjectContainer){
+				removeChildFilters(target);
+			}
+		}
+		override protected function removeFilters():void{
+			super.removeFilters();
+			for(var i:int=0; i<_displayObjectContainer.numChildren; ++i){
+				removeChildFilters(_displayObjectContainer.getChildAt(i));
+			}
+		}
+		protected function removeChildFilters(child:DisplayObject):void{
+				if(child.filters.length){
+					_childFilters[child] = child.filters;
+					child.filters = null;
+				}
+				var container:DisplayObjectContainer = (child as DisplayObjectContainer);
+				if(container){
+					for(var i:int=0; i<container.numChildren; ++i){
+						removeChildFilters(container.getChildAt(i));
+					}
+				}
+		}
+		
+		
+		protected function onRemoved(e:Event, from:IAsset):void{
+			var target:DisplayObject = (e.target as DisplayObject);
+			if(target && target!=_displayObjectContainer){
+				var filters:Array = _childFilters[target];
+				if(filters){
+					returnChildFilters(target,filters);
+					delete _childFilters[target];
+				}
+			}
+		}
+		override protected function returnFilters():void{
+			super.returnFilters();
+			
+			var found:Boolean;
+			for(var i:* in _childFilters){
+				if(returnChildFilters(i as DisplayObject, _childFilters[i])){
+					found = true;
+				}
+			}
+			if(found)_childFilters = new Dictionary();
+		}
+		protected function returnChildFilters(child:DisplayObject, filters:Array):Boolean{
+			if(!child.filters.length){
+				child.filters = filters;
+				return true;
+			}else{
+				return false;
+			}
+		}
+		
 		
 		public function getAssetIndex(asset:IDisplayObject):int{
 			if(_displayObjectContainer){
@@ -227,5 +271,7 @@ package org.tbyrne.display.assets.nativeAssets
 			}
 			return null;
 		}
+		
+		
 	}
 }

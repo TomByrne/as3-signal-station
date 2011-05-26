@@ -25,6 +25,8 @@ package org.tbyrne.display.validation
 		private var rootBundles:Array = [];
 		// mapped asset > AssetBundle
 		protected var bundleMap:Dictionary = new Dictionary();
+		// mapped validationFlag > AssetBundle
+		protected var flagToBundle:Dictionary = new Dictionary();
 		// mapped AssetBundle > DrawRun
 		protected var currentRuns:Dictionary = new Dictionary();
 		protected var currentRunCount:int = 0;
@@ -63,7 +65,7 @@ package org.tbyrne.display.validation
 			}
 			var index:int = pendingFlags.indexOf(flag);
 			if(index==-1){
-				var bundle:AssetBundle = bundleMap[flag.asset];
+				var bundle:AssetBundle = flagToBundle[flag];;
 				removeFromBundle(flag, bundle);
 				removeFromRuns(flag);
 				flag.assetChanged.removeHandler(onFlagAssetChanged);
@@ -88,7 +90,7 @@ package org.tbyrne.display.validation
 			addToRuns(flag);
 		}
 		protected function onFlagAssetChanged(from:IFrameValidationFlag, oldAsset:IDisplayObject):void{
-			var oldBundle:AssetBundle = bundleMap[oldAsset];
+			var oldBundle:AssetBundle = flagToBundle[from];
 			var oldRun:DrawRun;
 			
 			oldRun = findRunForBundle(oldBundle);
@@ -105,6 +107,7 @@ package org.tbyrne.display.validation
 				bundle.assetPosChanged.addHandler(onAssetPosChanged);
 				if(bundle.readyForExecution)addToHeirarchy(bundle);
 			}
+			flagToBundle[flag] = bundle;
 			bundle.addValidationFlag(flag);
 			return bundle;
 		}
@@ -116,6 +119,7 @@ package org.tbyrne.display.validation
 				bundle.assetPosChanged.removeHandler(onAssetPosChanged);
 				bundle.release();
 			}
+			delete flagToBundle[flag];
 		}
 		protected function onAssetPosChanged(bundle:AssetBundle):void{
 			var oldRun:DrawRun = findRunForBundle(bundle);
@@ -216,7 +220,7 @@ package org.tbyrne.display.validation
 				if(existingRun){
 					existingRun.forceExecute(flag);
 				}else{
-					createNewRun(bundleMap[flag.asset], childRuns);
+					createNewRun(flagToBundle[flag], childRuns);
 				}
 			}else{
 				for each(var bundle:AssetBundle in rootBundles){

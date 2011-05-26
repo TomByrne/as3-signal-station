@@ -27,6 +27,7 @@ package org.tbyrne.display.assets.nativeAssets
 		private var bundles:Array;
 		
 		public var pixelSnapping:Boolean;
+		public var noFilters:Boolean;
 		
 		public function NativeAssetFactory(skinContainer:DisplayObjectContainer=null){
 			this.skinContainer = skinContainer;
@@ -48,6 +49,7 @@ package org.tbyrne.display.assets.nativeAssets
 		public function createHitArea():ISprite{
 			var ret:SpriteAsset = getNewByType(ISprite);
 			ret.pixelSnapping = pixelSnapping;
+			ret.noFilters = noFilters;
 			var sprite:Sprite = ret.displayObject as Sprite;
 			sprite.graphics.beginFill(0,0);
 			sprite.graphics.drawRect(0,0,10,10);
@@ -98,6 +100,7 @@ package org.tbyrne.display.assets.nativeAssets
 					}
 				}
 				ret.pixelSnapping = pixelSnapping;
+				ret.noFilters = noFilters;
 				return ret;
 			}else{
 				return null;
@@ -119,6 +122,7 @@ package org.tbyrne.display.assets.nativeAssets
 			var display:* = new bundle.displayClass();
 			ret.display = display;
 			ret.pixelSnapping = pixelSnapping;
+			ret.noFilters = noFilters;
 			cache[display] = ret;
 			return ret;
 		}
@@ -137,6 +141,7 @@ package org.tbyrne.display.assets.nativeAssets
 			var lateProps:Dictionary = new Dictionary();
 			lateProps["displayObject"] = new MultiInstanceFactory(displayClass);
 			lateProps["pixelSnapping"] = pixelSnapping;
+			lateProps["noFilters"] = noFilters;
 			ret.addProperties(lateProps);
 			
 			ret.useChildFactories = true;

@@ -36,8 +36,6 @@ package org.tbyrne.display.assets.nativeAssets {
 		
 		public function MovieClipAsset(factory:NativeAssetFactory=null){
 			super(factory);
-			added.addHandler(onAdded);
-			removed.addHandler(onRemoved);
 		}
 		override protected function _addStateList(stateList:Array):void{
 			super._addStateList(stateList);
@@ -100,6 +98,7 @@ package org.tbyrne.display.assets.nativeAssets {
 					thisRet = (thisRet/stage.frameRate);
 					if(thisRet>ret)ret = thisRet;
 				}
+				if(_noFilters)removeFilters();
 			}
 			return ret;
 		}
@@ -107,13 +106,15 @@ package org.tbyrne.display.assets.nativeAssets {
 			super.onAddedToStage();
 			applyAvailableStates();
 		}
-		protected function onAdded(e:Event, from:IAsset):void{
+		override protected function onAdded(e:Event, from:IAsset):void{
+			super.onAdded(e, from);
 			var target:MovieClip = (e.target as MovieClip);
 			if(target && target!=_movieClip){
 				addChild(target);
 			}
 		}
-		protected function onRemoved(e:Event, from:IAsset):void{
+		override protected function onRemoved(e:Event, from:IAsset):void{
+			super.onRemoved(e, from);
 			var target:MovieClip = (e.target as MovieClip);
 			if(target && target!=_movieClip){
 				removeChild(target);
@@ -142,6 +143,7 @@ package org.tbyrne.display.assets.nativeAssets {
 				_childClips[target] = frameAnalysis;
 				addChildren(target);
 				if(stage)setAllStateListsIn(frameAnalysis,false);
+				
 			}
 		}
 		protected function addChildren(parent:MovieClip):void{
@@ -153,12 +155,13 @@ package org.tbyrne.display.assets.nativeAssets {
 			}
 		}
 		protected function setAllStateListsIn(frameAnalysis:MovieClipFrameAnalysis, checkIfTaken:Boolean):void{
+			var movieClip:MovieClip = frameAnalysis.movieClip;
 			if(checkIfTaken){
 				// we check the movieclip to see if something has taken it as an asset after we stored it.
-				var asset:IMovieClip = _nativeFactory.getExisting(frameAnalysis.movieClip);
+				var asset:IMovieClip = _nativeFactory.getExisting(movieClip);
 				if(asset){
 					if(!_toRemove)_toRemove = [];
-					_toRemove.push(frameAnalysis.movieClip);
+					_toRemove.push(movieClip);
 					return;
 				}
 			}
@@ -183,13 +186,14 @@ package org.tbyrne.display.assets.nativeAssets {
 				state = newStates[0];
 				stateName = state.options[state.selection];
 				var duration:int = frameAnalysis.playFrameLabel(stateName);
-				var stage:Stage = frameAnalysis.movieClip.stage;
+				var stage:Stage = movieClip.stage;
 				if(stage) {
 					var time:Number = (duration/stage.frameRate);
 					if(state.stateChangeDuration<time){
 						state.stateChangeDuration = time;
 					}
 				}
+				if(_noFilters)removeChildFilters(movieClip);
 				return;
 			}
 		}
