@@ -88,6 +88,7 @@ package
 	import org.tbyrne.media.video.ProgressiveVideoSource;
 	import org.tbyrne.media.video.StreamingVideoSource;
 	import org.tbyrne.media.video.VolumeMemory;
+	import org.tbyrne.reflection.ReflectionUtils;
 	import org.tbyrne.sound.soundControls.CompositeSoundControl;
 	import org.tbyrne.sound.soundControls.IntroOutroSoundControl;
 	import org.tbyrne.sound.soundControls.SoundControl;
@@ -192,6 +193,8 @@ package
 			//PLATFORM::air{
 			XMLFileLogger;
 			//}
+			
+			var type:Class= ReflectionUtils.getClassByName("flash.display.Sprite");
 		}
 	}
 }

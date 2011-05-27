@@ -21,9 +21,9 @@
     <property name="FRAMEWORKS" value="${FLEX_HOME}\frameworks\libs"/>
 
     <target name="SWC Packager" description="Package up code used.">
-    	<swcPackager projectPath="${basedir}" includeMainSource="false" sourceExceptions="debugSrc"
+    	<!--<swcPackager projectPath="${basedir}" includeMainSource="false" sourceExceptions="debugSrc"
     		swcOutput="${basedir}/bin/all-air.swc" compiler="${FLEX_HOME}\bin\compc.exe"
-    		frameworkDirectory="${FRAMEWORKS}\air" additionalArgs="-load-config+=../build/airConfig.xml" verbose="false"/>
+    		frameworkDirectory="${FRAMEWORKS}\air" additionalArgs="-load-config+=../build/airConfig.xml" verbose="false"/>-->
 
     	<swcPackager projectPath="${basedir}" includeMainSource="false" sourceExceptions="/debugSrc"
     		swcOutput="${basedir}/bin/all-player.swc" compiler="${FLEX_HOME}\bin\compc.exe"

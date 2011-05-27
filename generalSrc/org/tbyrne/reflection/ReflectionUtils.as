@@ -24,7 +24,7 @@
 			}
 			catch (e: ReferenceError)
 			{
-				throw new ReferenceError("Class " + name + " is not defined");
+				throw new ReferenceError("Class '" + name + "' is invalid or undefined");
 			}
 			return type;
 		}
