@@ -1,11 +1,6 @@
 package org.tbyrne.display.core
 {
-	import flash.display.DisplayObject;
-	import flash.events.Event;
-	import flash.utils.Dictionary;
-	
 	import org.tbyrne.acting.actTypes.IAct;
-	import org.tbyrne.acting.acts.Act;
 	import org.tbyrne.core.DelayedCall;
 	import org.tbyrne.display.assets.assetTypes.IAsset;
 	import org.tbyrne.display.assets.nativeTypes.IDisplayObject;
@@ -14,6 +9,7 @@ package org.tbyrne.display.core
 	import org.tbyrne.display.assets.nativeTypes.ISprite;
 	import org.tbyrne.display.assets.states.StateDef;
 	import org.tbyrne.display.validation.FrameValidationFlag;
+	import org.tbyrne.display.validation.ValidationFlag;
 	
 	public class DrawableView extends View implements IOutroView, IScopedObject
 	{
@@ -40,6 +36,8 @@ package org.tbyrne.display.core
 					_spriteAsset = null;
 				}
 				super.asset = value;
+				_bindFlag.invalidate();
+				_bindFlag.ready = (value!=null);
 				if(value){
 					value.addedToStage.addHandler(onAddedToStage);
 					value.removedFromStage.addHandler(onRemovedFromStage);
@@ -74,21 +72,22 @@ package org.tbyrne.display.core
 		protected var _spriteAsset:ISprite;
 		
 		protected var _inited:Boolean;
-		protected var _bound:Boolean;
+		//protected var _bound:Boolean;
 		protected var _introShown:Boolean;
 		protected var _outroShown:Boolean;
 		protected var _playAssetLabelDelay:DelayedCall;
 		private var _finaliseOutroDelay:DelayedCall;
 		protected var _stateList:Array;
-		protected var _drawFlag:FrameValidationFlag;
 		protected var _revertParentStateLists:Boolean;
+		
+		protected var _bindFlag:ValidationFlag;
 		
 		protected var _childDrawFlags:Vector.<FrameValidationFlag>;
 		
 		private var _transState:StateDef = new StateDef([INTRO_FRAME_LABEL,OUTRO_FRAME_LABEL]);
 		
 		public function DrawableView(asset:IDisplayObject=null){
-			_drawFlag = new FrameValidationFlag(this,validateAll,false);
+			_bindFlag = new ValidationFlag(commitBound,true);
 			super(asset);
 		}
 		protected function addDrawFlag(frameValidationFlag:FrameValidationFlag):void{
@@ -155,22 +154,21 @@ package org.tbyrne.display.core
 		 * @see validate
 		 */
 		protected function invalidateAll(): void{
-			_drawFlag.invalidate();
+			for each(var frameValidationFlag:FrameValidationFlag in _childDrawFlags){
+				frameValidationFlag.invalidate();
+			}
 		}
 		
 		/**
 		 * @inheritDoc
 		 */
 		public function validate(forceDraw: Boolean = false): void{
-			_drawFlag.validate(forceDraw);
-		}
-		
-		protected function validateAll():void{
-			checkIsBound();
+			_bindFlag.validate();
 			for each(var frameValidationFlag:FrameValidationFlag in _childDrawFlags){
 				frameValidationFlag.validate();
 			}
 		}
+		
 		protected function bindToAsset():void{
 			attemptInit();
 			_revertParentStateLists = _asset.useParentStateLists;
@@ -182,22 +180,34 @@ package org.tbyrne.display.core
 			_asset.useParentStateLists = _revertParentStateLists;
 		}
 		protected function checkIsBound():void{
-			if(!_bound && _asset){
-				attemptInit();
-				_bound = true;
-				bindToAsset();
-			}
+			_bindFlag.validate();
+		}
+		protected function get isBound():Boolean{
+			return (_asset && _bindFlag.valid);
 		}
 		protected function checkIsUnbound():void{
-			if(_bound){
+			if(_asset && _bindFlag.valid){
 				unbindFromAsset();
-				_bound = false;
 			}
 		}
-		protected function onAddedToStage(from:IAsset=null):void{
+		protected function commitBound():void{
+			attemptInit();
+			bindToAsset();
 			validate();
 			if(autoIntro())showIntro();
 		}
+		protected function onAddedToStage(from:IAsset=null):void{
+			if(_bindFlag.valid){
+				validate();
+			}else{
+				_asset.exitFrame.addTempHandler(onFirstFrameExit);
+			}
+		}
+		
+		protected function onFirstFrameExit(from:IAsset):void{
+			validate();
+		}
+		
 		protected function onRemovedFromStage(from:IAsset=null):void{
 			_introShown = false;
 			_outroShown = false;

@@ -5,9 +5,9 @@ package org.tbyrne.debug.logging
 	import flash.events.Event;
 	import flash.events.IOErrorEvent;
 	
-	PLATFORM::air{
+	//PLATFORM::air{
 	import flash.filesystem.*;
-	}
+	//}
 
 	public class XMLFileLogger extends AbstractLogger implements ILogger
 	{

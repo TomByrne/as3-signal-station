@@ -158,18 +158,18 @@ package org.tbyrne.display.assets.nativeAssets
 		}
 		private function setPixelX():void{
 			if(_xSet){
-				_display.x = int(_x+0.5);
+				_display.x = round(_x);
 			}
 		}
 		private function setPixelY():void{
 			if(_ySet){
-				_display.y = int(_y+0.5);
+				_display.y = round(_y);
 			}
 		}
 		protected function setPixelWidth():void{
 			if(_widthSet){
 				if(_width%1){
-					var right:Number = int(_x+_width+0.5);
+					var right:Number = round(_x+_width);
 					_display.width = right-_display.x;
 				}else{
 					_display.width = _width;
@@ -179,12 +179,16 @@ package org.tbyrne.display.assets.nativeAssets
 		protected function setPixelHeight():void{
 			if(_heightSet){
 				if(_height%1){
-					var bottom:Number = int(_y+_height+0.5);
+					var bottom:Number = round(_y+_height);
 					_display.height = bottom-_display.y;
 				}else{
 					_display.height = _height;
 				}
 			}
+		}
+		
+		protected function round(value:Number): int{
+			return value%1 ? (value>0?int(value+0.5) : int(value-0.5)) :value;
 		}
 	}
 }

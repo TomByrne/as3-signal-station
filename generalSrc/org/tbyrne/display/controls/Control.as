@@ -2,6 +2,7 @@ package org.tbyrne.display.controls
 {
 	import flash.display.DisplayObject;
 	
+	import org.tbyrne.display.DisplayNamespace;
 	import org.tbyrne.display.assets.assetTypes.IAsset;
 	import org.tbyrne.display.assets.nativeTypes.IDisplayObject;
 	import org.tbyrne.display.assets.states.StateDef;
@@ -9,12 +10,14 @@ package org.tbyrne.display.controls
 	import org.tbyrne.display.core.LayoutView;
 	import org.tbyrne.validation.validators.IValidator;
 	
+	use namespace DisplayNamespace;
+	
 	public class Control extends ContainerView
 	{
 		private static var VALID_FRAME_LABEL:String = "valid";
 		private static var INVALID_FRAME_LABEL:String = "invalid";
-		internal static var ACTIVE_FRAME_LABEL:String = "active";
-		internal static var INACTIVE_FRAME_LABEL:String = "inactive";
+		DisplayNamespace static var ACTIVE_FRAME_LABEL:String = "active";
+		DisplayNamespace static var INACTIVE_FRAME_LABEL:String = "inactive";
 		
 		
 		public function get active():Boolean{

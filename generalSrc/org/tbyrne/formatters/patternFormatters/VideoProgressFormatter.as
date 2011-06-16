@@ -95,7 +95,10 @@ package org.tbyrne.formatters.patternFormatters
 			return ret;
 		}
 		protected function calcPercent(progress:Number, total:Number):Number{
-			return int(((progress/total)*100)+0.5);
+			return round(((progress/total)*100));
+		}
+		private function round(value:Number): int{
+			return value%1 ? (value>0?int(value+0.5) : int(value-0.5)) :value;
 		}
 	}
 }

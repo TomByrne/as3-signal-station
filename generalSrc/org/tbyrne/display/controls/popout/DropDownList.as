@@ -7,6 +7,7 @@ package org.tbyrne.display.controls.popout {
 	import org.tbyrne.acting.actTypes.IAct;
 	import org.tbyrne.acting.acts.Act;
 	import org.tbyrne.display.DisplayNamespace;
+	import org.tbyrne.display.assets.AssetNames;
 	import org.tbyrne.display.assets.nativeTypes.IDisplayObject;
 	import org.tbyrne.display.containers.ListBox;
 	import org.tbyrne.display.controls.TextLabelButton;
@@ -105,12 +106,11 @@ package org.tbyrne.display.controls.popout {
 		override public function setAssetAndPosition(asset:IDisplayObject):void{
 			this.asset = asset;
 			if(asset){
-				checkIsBound();
-				var boundsAsset:IDisplayObject;
-				if(_backing){
-					// this avoids the list asset affecting the position/size
-					boundsAsset = _backing;
-				}else{
+				//checkIsBound();
+				
+				// this avoids the list item asset affecting the position/size
+				var boundsAsset:IDisplayObject = _containerAsset.takeAssetByName(AssetNames.BACKING,true);
+				if(!boundsAsset){
 					boundsAsset = asset;
 				}
 				setPosition(asset.x,asset.y);

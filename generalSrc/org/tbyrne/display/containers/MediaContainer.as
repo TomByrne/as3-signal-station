@@ -4,9 +4,12 @@ package org.tbyrne.display.containers
 	import flash.display.Sprite;
 	import flash.geom.Rectangle;
 	
+	import org.tbyrne.display.DisplayNamespace;
 	import org.tbyrne.display.assets.nativeTypes.IDisplayObject;
 	import org.tbyrne.display.assets.nativeTypes.IDisplayObjectContainer;
 	import org.tbyrne.display.assets.nativeTypes.ILoader;
+	import org.tbyrne.display.assets.states.StateDef;
+	import org.tbyrne.display.controls.Control;
 	import org.tbyrne.display.core.ILayoutView;
 	import org.tbyrne.display.layout.ILayoutSubject;
 	import org.tbyrne.display.layout.ProxyLayoutSubject;
@@ -15,6 +18,8 @@ package org.tbyrne.display.containers
 	import org.tbyrne.display.layout.frame.FrameLayoutInfo;
 	import org.tbyrne.display.layout.getMarginAffectedArea;
 	import org.tbyrne.media.IMediaSource;
+	
+	use namespace DisplayNamespace;
 	
 	public class MediaContainer extends ContainerView
 	{
@@ -33,12 +38,14 @@ package org.tbyrne.display.containers
 				}
 				_mediaSource = value;
 				if(_mediaSource){
+					_activeState.selection = 0;
 					_mediaSourceDisplay = _mediaSource.takeMediaDisplay();
 					setMediaAsset(_mediaSourceDisplay.asset);
 					_mediaSourceDisplay.assetChanged.addHandler(onMediaAssetChanged);
 					_layoutProxy.target = _mediaSourceDisplay;
 					invalidateSize();
 				}else{
+					_activeState.selection = 1;
 					_layoutProxy.target = null;
 					setMediaAsset(null);
 				}
@@ -68,11 +75,18 @@ package org.tbyrne.display.containers
 		protected var _mediaBounds:IDisplayObject;
 		protected var _assumedLayoutInfo:FrameLayoutInfo;
 		
+		protected var _activeState:StateDef = new StateDef([Control.ACTIVE_FRAME_LABEL, Control.INACTIVE_FRAME_LABEL],1);
+		
 		public function MediaContainer(asset:IDisplayObject=null){
 			super(asset);
 			_layout = new FrameLayout(this)
 			_layout.addSubject(_layoutProxy);
 			_layout.measurementsChanged.addHandler(onLayoutMeasChange);
+		}
+		override protected function fillStateList(fill:Array):Array{
+			fill = super.fillStateList(fill);
+			fill.push(_activeState);
+			return fill;
 		}
 		protected function onLayoutMeasChange(from:ILayoutSubject, oldWidth:Number, oldHeight:Number):void{
 			invalidateMeasurements();
@@ -135,11 +149,11 @@ package org.tbyrne.display.containers
 		
 		protected function setMediaAsset(asset:IDisplayObject):void{
 			if(_mediaSourceDisplayAsset != asset){
-				if(_mediaSourceDisplayAsset && _bound){
+				if(_mediaSourceDisplayAsset && isBound){
 					_mediaContainer.removeAsset(_mediaSourceDisplayAsset);
 				}
 				_mediaSourceDisplayAsset = asset;
-				if(_mediaSourceDisplayAsset && _bound){
+				if(_mediaSourceDisplayAsset && isBound){
 					_mediaContainer.addAsset(_mediaSourceDisplayAsset);
 				}
 			}

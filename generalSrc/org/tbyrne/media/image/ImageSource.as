@@ -70,8 +70,8 @@ package org.tbyrne.media.image
 			_urlLoader.dataFormat = URLLoaderDataFormat.BINARY;
 			_urlLoader.addEventListener(Event.COMPLETE, onLoadComplete);
 			_urlLoader.addEventListener(ProgressEvent.PROGRESS, onLoadProgress);
-			_urlLoader.addEventListener(IOErrorEvent.IO_ERROR, onError);
-			_urlLoader.addEventListener(SecurityErrorEvent.SECURITY_ERROR, onError);
+			_urlLoader.addEventListener(IOErrorEvent.IO_ERROR, onIOError);
+			_urlLoader.addEventListener(SecurityErrorEvent.SECURITY_ERROR, onSecurityError);
 			this.imageUrl = url;
 			_nativeFactory = new NativeAssetFactory();
 			this.smoothing = smoothing;
@@ -88,8 +88,11 @@ package org.tbyrne.media.image
 		protected function onLoadProgress(e:Event):void{
 			setMemoryLoadProps(_urlLoader.bytesLoaded, _urlLoader.bytesTotal);
 		}
-		protected function onError(e:Event):void{
-			Log.log(Log.EXT_ERROR,e);
+		protected function onIOError(e:Event):void{
+			Log.log(Log.EXT_ERROR,"Couldn't load image: "+_imageUrl);
+		}
+		protected function onSecurityError(e:Event):void{
+			Log.log(Log.EXT_ERROR,"There was a security error loading image: "+_imageUrl);
 		}
 		override public function takeMediaDisplay():ILayoutView{
 			_displaysTaken++;

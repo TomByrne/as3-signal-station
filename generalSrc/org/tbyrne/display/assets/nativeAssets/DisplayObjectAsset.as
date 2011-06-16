@@ -58,6 +58,14 @@ package org.tbyrne.display.assets.nativeAssets {
 				_enterFrame = new NativeAct(_displayObject, Event.ENTER_FRAME, [this], false);
 			return _enterFrame;
 		}
+		/**
+		 * @inheritDoc
+		 */
+		public function get exitFrame():IAct {
+			if(!_exitFrame)
+				_exitFrame = new NativeAct(_displayObject, Event.EXIT_FRAME, [this], false);
+			return _exitFrame;
+		}
 		
 		/**
 		 * @inheritDoc
@@ -103,6 +111,9 @@ package org.tbyrne.display.assets.nativeAssets {
 				if(_enterFrame)
 					_enterFrame.eventDispatcher = value;
 				
+				if(_exitFrame)
+					_exitFrame.eventDispatcher = value;
+				
 				if(_displayObject){
 					_filters = _displayObject.filters;
 					if(_noFilters){
@@ -135,6 +146,7 @@ package org.tbyrne.display.assets.nativeAssets {
 		private var _added:NativeAct;
 		private var _removed:NativeAct;
 		private var _enterFrame:NativeAct;
+		private var _exitFrame:NativeAct;
 		
 		private var _displayObject:DisplayObject;
 		
@@ -220,10 +232,10 @@ package org.tbyrne.display.assets.nativeAssets {
 		}
 		public function set scrollRect(value:Rectangle):void {
 			if(pixelSnapping && value){
-				value.x = int(value.x+0.5);
-				value.y = int(value.y+0.5);
-				value.width = int(value.x+value.width+0.5)-value.x;
-				value.height = int(value.y+value.height+0.5)-value.y;
+				value.x = round(value.x);
+				value.y = round(value.y);
+				value.width = round(value.x+value.width)-value.x;
+				value.height = round(value.y+value.height)-value.y;
 			}
 			_displayObject.scrollRect = value;
 		}

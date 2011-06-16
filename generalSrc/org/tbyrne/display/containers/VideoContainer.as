@@ -82,14 +82,14 @@ package org.tbyrne.display.containers
 					_videoSource.muted.booleanValueChanged.addHandler(onMuteChanged);
 					if(_videoProgressProvider)_videoProgressProvider.videoSource = _videoSource;
 					syncToData();
-					if(!_bound){
+					if(!isBound){
 						_openFract = 1;
 					}else if(_hasControlCont){
 						transTo(1);
 					}
 				}else{
 					if(_muteButton)_muteButton.data = null;
-					if(!_bound){
+					if(!isBound){
 						_openFract = 0;
 					}else if(_hasControlCont){
 						transTo(0);
@@ -503,8 +503,10 @@ package org.tbyrne.display.containers
 		protected function assessPlaying():void{
 			var isPlaying:Boolean = (_videoSource && _videoSource.playing);
 			if(_playPauseButton)_playPauseButton.selected = isPlaying;
-				
-			setControlsActive([_playPauseButton,_rewindButton,_muteButton,_stopButton,_fullScreenButton,_volumeSlider,_bufferBar,_progressLabel],_videoSource && (!isPlaying || _mouseActive));
+			
+			var active:Boolean = _videoSource && (!isPlaying || _mouseActive);
+			
+			setControlsActive([_playPauseButton,_rewindButton,_muteButton,_stopButton,_fullScreenButton,_volumeSlider,_bufferBar,_progressLabel],active);
 			
 			if(_centredPauseButton){
 				_centredPauseButton.selected = isPlaying;

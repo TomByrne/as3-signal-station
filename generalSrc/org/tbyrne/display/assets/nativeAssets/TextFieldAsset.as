@@ -257,7 +257,7 @@ package org.tbyrne.display.assets.nativeAssets
 			// this avoids text lines being cut off accidentally when dimensions are rounded down
 			if(_heightSet){
 				if(_height%1){
-					var bottom:Number = int(_y+_height+0.5);
+					var bottom:Number = round(_y+_height);
 					var newHeight:Number = bottom-_textField.y;
 					var meas:Number = _textField.textHeight+(TextFieldGutter.TEXT_FIELD_GUTTER*2);
 					if(_height>=meas && newHeight<meas){

@@ -28,7 +28,7 @@ package org.tbyrne.display.core
 		}
 		
 		public function get measurements():Point{
-			checkIsBound();
+			_bindFlag.validate();
 			_measureFlag.validate();
 			return _measurements;
 		}
@@ -90,8 +90,8 @@ package org.tbyrne.display.core
 			if(!_measurements)_measurements = new Point();
 			super(asset);
 			
-			addDrawFlag(_posDrawFlag = new FrameValidationFlag(this,commitPosition,false));
-			addDrawFlag(_sizeDrawFlag = new FrameValidationFlag(this,commitSize,false));
+			addDrawFlag(_posDrawFlag = new FrameValidationFlag(this,positionNow,false));
+			addDrawFlag(_sizeDrawFlag = new FrameValidationFlag(this,sizeNow,false));
 		}
 		
 		override protected function unbindFromAsset():void{
@@ -223,8 +223,18 @@ package org.tbyrne.display.core
 				_measureFlag.invalidate();
 			}
 		}
+		private function sizeNow():void{
+			_bindFlag.validate();
+			if(_bindFlag.valid)commitSize();
+			else _sizeDrawFlag.invalidate();
+		}
 		protected function commitSize():void{
 			asset.setSize(_size.x,_size.y);
+		}
+		private function positionNow():void{
+			_bindFlag.validate();
+			if(_bindFlag.valid)commitPosition();
+			else _posDrawFlag.invalidate();
 		}
 		protected function commitPosition():void{
 			asset.setPosition(_position.x,_position.y);

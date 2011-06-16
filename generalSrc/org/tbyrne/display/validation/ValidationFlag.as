@@ -23,6 +23,20 @@ package org.tbyrne.display.validation
 			return _valid;
 		}
 		
+		
+		public function get ready():Boolean{
+			return _ready;
+		}
+		public function set ready(value:Boolean):void{
+			if(_ready!=value){
+				_ready = value;
+				if(value && _pending)validate();
+			}
+		}
+		
+		private var _ready:Boolean;
+		private var _pending:Boolean;
+		
 		public var parameters:Array;
 		
 		protected var _validateAct:Act;
@@ -32,10 +46,11 @@ package org.tbyrne.display.validation
 		protected var _valid:Boolean;
 		protected var _executing:Boolean;
 		
-		public function ValidationFlag(validator:Function, valid: Boolean, parameters:Array=null){
+		public function ValidationFlag(validator:Function, valid: Boolean, parameters:Array=null, ready:Boolean=true){
 			_valid = valid;
 			_validator = validator;
 			this.parameters = parameters;
+			this.ready = ready;
 		}
 		public function invalidate():void{
 			if(_valid){
@@ -45,13 +60,19 @@ package org.tbyrne.display.validation
 		}
 		public function validate(force:Boolean=false):void{
 			if(force || !_valid){
-				_valid = true;
-				_executing = true;
-				if(parameters)_validator.apply(null,parameters);
-				else _validator();
-				_executing = false;
-				
-				if(_validateAct)_validateAct.perform(this);
+				if(_ready && !_executing){
+					_pending = false;
+					_executing = true;
+					if(parameters)_validator.apply(null,parameters);
+					else _validator();
+					_valid = true;
+					_executing = false;
+					
+					if(_validateAct)_validateAct.perform(this);
+				}else{
+					if(force)invalidate();
+					_pending = true;
+				}
 			}
 		}
 		public function release():void{

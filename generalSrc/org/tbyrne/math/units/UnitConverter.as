@@ -169,7 +169,7 @@ package org.tbyrne.math.units
 			var bothNaN:Boolean = (isNaN(newValue) && isNaN(_numericalValue));
 			if(!bothNaN){
 				if(_roundResult){
-					newValue = int(newValue+0.5);
+					newValue = round(newValue);
 				}
 				if(newValue!=_numericalValue){
 					_numericalValue = newValue;
@@ -177,6 +177,9 @@ package org.tbyrne.math.units
 					if(_numericalValueChanged)_numericalValueChanged.perform(this);
 				}
 			}
+		}
+		private function round(value:Number): int{
+			return value%1 ? (value>0?int(value+0.5) : int(value-0.5)) :value;
 		}
 		
 	}

@@ -104,11 +104,11 @@ package org.tbyrne.media
 						tot = total;
 					}
 					if(prog>=10 && tot>=10){
-						prog = int(prog+0.5);
-						tot = int(tot+0.5);
+						prog = round(prog);
+						tot = round(tot);
 					}else{
-						prog = (int((prog*100)+0.5))/100;
-						tot = (int((tot*100)+0.5))/100;
+						prog = (round(prog*100))/100;
+						tot = (round(tot*100))/100;
 					}
 					setLoadProps(prog,tot,MEMORY_UNIT_NAMES[i]);
 					break;
@@ -149,6 +149,9 @@ package org.tbyrne.media
 		}
 		protected function destroyMediaDisplay(value:ILayoutView):void{
 			// override me
+		}
+		protected function round(value:Number): int{
+			return value%1 ? (value>0?int(value+0.5) : int(value-0.5)) :value;
 		}
 	}
 }

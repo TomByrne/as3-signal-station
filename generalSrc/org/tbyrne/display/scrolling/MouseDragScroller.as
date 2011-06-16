@@ -134,7 +134,7 @@ package org.tbyrne.display.scrolling
 			if(!_dragging){
 				if((dif<0?-dif:dif)>dragThreshold){
 					_dragging = true;
-					_velocityRecordingFrames = int(velocityAffectDuration*_pressedStage.frameRate+0.5);
+					_velocityRecordingFrames = round(velocityAffectDuration*_pressedStage.frameRate);
 					_velocityRecordings = new Vector.<Number>();
 				}
 			}
@@ -199,7 +199,7 @@ package org.tbyrne.display.scrolling
 					newScrollValue =_scrollMetrics.maximum-_scrollMetrics.pageSize;
 				}
 				
-				var nearest:Number = int(newScrollValue/snappingInterval+0.5)*snappingInterval;
+				var nearest:Number = round(newScrollValue/snappingInterval)*snappingInterval;
 				var dif:Number = nearest-newScrollValue;
 				
 				// check whether the maximum value is a more appropriate place to snap to
@@ -278,6 +278,9 @@ package org.tbyrne.display.scrolling
 			var index:int = instances.indexOf(this);
 			instances.splice(index,1);
 			cancelDrag();
+		}
+		private function round(value:Number): int{
+			return value%1 ? (value>0?int(value+0.5) : int(value-0.5)) :value;
 		}
 	}
 }

@@ -65,11 +65,14 @@ package org.tbyrne.debug.data.core
 			setNumValue(from.numericalValue);
 		}
 		protected function setNumValue(number:Number):void{
-			if(!isNaN(number))number = int(number+0.5);
+			if(!isNaN(number))number = round(number);
 			if(_numericalValue!=number){
 				_numericalValue = number;
 				if(_numericalValueChanged)_numericalValueChanged.perform(this);
 			}
+		}
+		private function round(value:Number): int{
+			return value%1 ? (value>0?int(value+0.5) : int(value-0.5)) :value;
 		}
 	}
 }

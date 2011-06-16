@@ -29,13 +29,15 @@ package org.tbyrne.display.layout.frame
 				getMarginAffectedArea(position.x,position.y,size.x,size.y, subject.layoutInfo, marginAffectedPosition, marginRect);
 				
 				var subMeas:Point = subject.measurements;
-				var framed:Rectangle = DisplayFramer.frame(subMeas.x,subMeas.y,marginAffectedPosition,cast.anchor,cast.scaleXPolicy,cast.scaleYPolicy,cast.fitPolicy);
+				var measW:Number = isNaN(subMeas.x)?0:subMeas.x;
+				var measH:Number = isNaN(subMeas.y)?0:subMeas.y;
+				var framed:Rectangle = DisplayFramer.frame(measW,measH,marginAffectedPosition,cast.anchor,cast.scaleXPolicy,cast.scaleYPolicy,cast.fitPolicy);
 				subject.setPosition(framed.x,framed.y);
 				subject.setSize(framed.width,framed.height);
 				
 				if(subMeas){
-					var measW:Number = subMeas.x+marginRect.x+marginRect.width;
-					var measH:Number = subMeas.y+marginRect.y+marginRect.height;
+					measW = measW+marginRect.x+marginRect.width;
+					measH = measH+marginRect.y+marginRect.height;
 					if(subjMeas.x!=measW || subjMeas.y!=measH){
 						subjMeas.x = measW;
 						subjMeas.y = measH;

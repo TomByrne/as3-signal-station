@@ -307,8 +307,8 @@ package org.tbyrne.media.video
 					// occasionally bufferLength+time is more that duration
 					total = _videoStreamProxy.duration;
 					var progress:Number = _netStream.bufferLength+_netStream.time;
-					progress = (int((progress*100)+0.5))/100;
-					total = (int((total*100)+0.5))/100;
+					progress = (round((progress*100)))/100;
+					total = (round((total*100)))/100;
 					setLoadProps(progress,total,TIME_LOAD_UNITS);
 				}else{
 					setMemoryLoadProps(_netStream.bytesLoaded,_netStream.bytesTotal);
@@ -324,7 +324,7 @@ package org.tbyrne.media.video
 					total = _smallBuffer;
 				}
 				if(_buffered || _netStream.bufferLength>total){
-					total = (int((total*100)+0.5))/100;
+					total = (round((total*100)))/100;
 					setLoadProps(total,	total, TIME_LOAD_UNITS);
 				}else{
 					setMemoryLoadProps(_netStream.bufferLength, total);
@@ -493,6 +493,9 @@ dynamic class VideoStreamProxy{
 		}
 		
 		if(_metadataChanged)_metadataChanged.perform(this);
+	}
+	private function round(value:Number): int{
+		return value%1 ? (value>0?int(value+0.5) : int(value-0.5)) :value;
 	}
 	/*
 	public function onXMPData(info:Object):void{

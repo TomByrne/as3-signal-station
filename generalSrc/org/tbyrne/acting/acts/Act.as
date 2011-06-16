@@ -36,22 +36,24 @@ package org.tbyrne.acting.acts
 			_performing = true;
 			var hasParams:Boolean = (params.length>0);
 			for each(var actHandler:ActHandler in _handlers){
-				if(actHandler.additionalArguments && actHandler.additionalArguments.length){
-					if(hasParams){
-						actHandler.handler.apply(null,params.concat(actHandler.additionalArguments));
+				if(!actHandler.checkExecutions || actHandler.executions){ // if the event gets dispatched again as a result of a handler
+					if(actHandler.additionalArguments && actHandler.additionalArguments.length){
+						if(hasParams){
+							actHandler.handler.apply(null,params.concat(actHandler.additionalArguments));
+						}else{
+							actHandler.handler.apply(null,actHandler.additionalArguments);
+						}
+					}else if(hasParams){
+						actHandler.handler.apply(null,params);
 					}else{
-						actHandler.handler.apply(null,actHandler.additionalArguments);
+						actHandler.handler();
 					}
-				}else if(hasParams){
-					actHandler.handler.apply(null,params);
-				}else{
-					actHandler.handler();
-				}
-				if(actHandler.checkExecutions){
-					--actHandler.executions;
-					if(actHandler.executions==0){
-						_toRemove.push(actHandler.handler);
-						_checkRemove = true;
+					if(actHandler.checkExecutions){
+						--actHandler.executions;
+						if(actHandler.executions==0){
+							_toRemove.push(actHandler.handler);
+							_checkRemove = true;
+						}
 					}
 				}
 			}
