@@ -271,7 +271,6 @@ package org.tbyrne.acting.metadata
 		}
 		protected static function validateProjectSettings(): void
 		{
-			Log.trace("validateProjectSettings: "+(!MetadataConfirmer.confirm(REQUIRED_META_TAGS,new MetadataTest())));
 			if (!MetadataConfirmer.confirm(REQUIRED_META_TAGS,new MetadataTest()))
 			{
 				var msg: String = "Your project settings aren't compatible with the UniversalMetadataUtil. ";
