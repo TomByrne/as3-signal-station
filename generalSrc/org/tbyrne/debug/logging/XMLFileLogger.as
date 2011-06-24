@@ -19,7 +19,7 @@ package org.tbyrne.debug.logging
 		private var _log:XML;
 		private var _pendingNodes:Vector.<XML>;
 		
-		private var _loading:Boolean;
+		private var _busy:Boolean;
 		private var _invalid:Boolean;
 		
 		public function XMLFileLogger(logName:String="log")
@@ -31,7 +31,7 @@ package org.tbyrne.debug.logging
 			
 			
 			if(_file.exists){
-				_loading = true;
+				_busy = true;
 				_fileStream = new FileStream();
 				_fileStream.openAsync(_file, flash.filesystem.FileMode.READ);
 				_fileStream.addEventListener(Event.COMPLETE, fileReadHandler);
@@ -56,7 +56,7 @@ package org.tbyrne.debug.logging
 				_pendingNodes.push(node);
 			}
 			
-			if(_loading){
+			if(_busy){
 				_invalid = true;
 			}else{
 				writeFile();
@@ -81,7 +81,7 @@ package org.tbyrne.debug.logging
 		}
 		
 		private function finishRead():void{
-			_loading = false;
+			_busy = false;
 			_fileStream.removeEventListener(Event.COMPLETE, fileReadHandler);
 			_fileStream.removeEventListener(IOErrorEvent.IO_ERROR, readIOErrorHandler);
 			
@@ -95,6 +95,7 @@ package org.tbyrne.debug.logging
 		}
 		
 		private function writeFile():void{
+			_busy = true;
 			_fileStream = new FileStream();
 			_fileStream.addEventListener(IOErrorEvent.IO_ERROR, writeIOErrorHandler);
 			_fileStream.openAsync(_file, FileMode.WRITE);

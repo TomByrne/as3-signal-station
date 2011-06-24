@@ -32,24 +32,16 @@ package org.tbyrne.display.progress
 		public function set progressDisplay(value:IProgressDisplay):void{
 			if(_progressDisplay!=value){
 				if(_progressDisplay){
-					_progressDisplay.active = null;
-					_progressDisplay.measurable = null;
-					_progressDisplay.total = null;
-					_progressDisplay.progress = null;
-					_progressDisplay.units = null;
-					_progressDisplay.message = null;
+					clearProgressDisplay();
 				}
 				_progressDisplay = value;
 				if(_progressDisplay){
-					_progressDisplay.active = new BooleanData(true);
-					_progressDisplay.measurable = _measurableData;
-					_progressDisplay.total = _totalData;
-					_progressDisplay.progress = _progressData;
-					_progressDisplay.units = _unitsData;
-					_progressDisplay.message = _messageData;
+					commitProgressDisplay();
 				}
 			}
 		}
+		
+		
 		
 		public function get layoutView():ILayoutView{
 			return _layoutView;
@@ -77,7 +69,7 @@ package org.tbyrne.display.progress
 		public var mainClasspath:String;
 		
 		private var _layoutView:ILayoutView;
-		private var _progressDisplay:IProgressDisplay;
+		protected var _progressDisplay:IProgressDisplay;
 		private var _progressDisplayAnim:IOutroView;
 		private var _totalFound:Boolean = false;
 		private var _measureFactor:Number;
@@ -219,6 +211,25 @@ package org.tbyrne.display.progress
 		private function guessClassName():String{
 			var results:Object = CLASS_FILENAME_PATTERN.exec(unescape(stage.loaderInfo.url));
 			return results[1];
+		}
+		
+		
+		protected function clearProgressDisplay():void{
+			_progressDisplay.active = null;
+			_progressDisplay.measurable = null;
+			_progressDisplay.total = null;
+			_progressDisplay.progress = null;
+			_progressDisplay.units = null;
+			_progressDisplay.message = null;
+		}
+		
+		protected function commitProgressDisplay():void{
+			_progressDisplay.active = new BooleanData(true);
+			_progressDisplay.measurable = _measurableData;
+			_progressDisplay.total = _totalData;
+			_progressDisplay.progress = _progressData;
+			_progressDisplay.units = _unitsData;
+			_progressDisplay.message = _messageData;
 		}
 	}
 }

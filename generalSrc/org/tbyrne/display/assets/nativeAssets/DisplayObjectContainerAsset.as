@@ -203,12 +203,17 @@ package org.tbyrne.display.assets.nativeAssets
 		}
 		public function getAssetAt(index:int):IDisplayObject{
 			if(_displayObjectContainer){
+				//Log.trace("getAssetAt 1");
 				var displayObject:DisplayObject = _displayObjectContainer.getChildAt(index);
+				//Log.trace("getAssetAt 2");
 				var ret:DisplayObjectAsset = _children[displayObject];
+				//Log.trace("getAssetAt 3");
 				if(!ret){
 					ret = _nativeFactory.getNew(displayObject);
+					//Log.trace("getAssetAt 4");
 					storeChildAsset(ret,displayObject);
 				}
+				//Log.trace("getAssetAt 5");
 				return ret;
 			}else{
 				Log.error( "DisplayObjectContainerAsset.getAssetAt: This method cannot be called before a displayObject is set");

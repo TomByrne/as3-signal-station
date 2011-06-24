@@ -52,6 +52,7 @@ package org.tbyrne.debug.logging
 			_textField.doubleClickEnabled = true;
 			_textField.addEventListener(MouseEvent.DOUBLE_CLICK, onClick);
 			_textField.alpha = 0.5;
+			_textField.multiline = true;
 			
 			this.parent = parent;
 		}

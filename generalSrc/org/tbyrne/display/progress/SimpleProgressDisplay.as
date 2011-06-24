@@ -5,6 +5,7 @@ package org.tbyrne.display.progress
 	import flash.text.*;
 	import flash.utils.getTimer;
 	
+	import org.tbyrne.core.EnterFrameHook;
 	import org.tbyrne.display.assets.nativeAssets.NativeAssetFactory;
 	import org.tbyrne.display.assets.nativeAssets.SpriteAsset;
 	import org.tbyrne.display.assets.nativeTypes.IDisplayObject;
@@ -19,7 +20,7 @@ package org.tbyrne.display.progress
 		private static const BAR_HEIGHT:Number = 9;
 		private static const DEFAULT_BACKGROUND_ALPHA:Number = 0.15;
 		private static const TRANSITION_TIME:Number = 0.25; // in seconds
-		private static const NON_MEAS_CYCLE:Number = 0.25; // in seconds
+		private static const NON_MEAS_CYCLE:Number = 1; // in seconds
 		private static const NON_MEAS_WIDTH:Number = 0.2; // as fract
 		
 		public function get detailsFormat():String{
@@ -50,21 +51,29 @@ package org.tbyrne.display.progress
 			if(_background)_background.alpha = _backgroundAlpha;
 		}
 		
+		public function get textColour():Number{
+			return _textColour;
+		}
+		public function set textColour(value:Number):void{
+			_textColour = value;
+			if(_inited){
+				_detailsField.textColor = _textColour;
+				_messageField.textColor = _textColour;
+			}
+		}
 		public function get foregroundColour():Number{
 			return _foregroundColour;
 		}
 		public function set foregroundColour(value:Number):void{
-			attemptInit();
 			_foregroundColour = value;
-			drawForeground();
+			if(_inited)drawForeground();
 		}
 		public function get backgroundColour():Number{
 			return _backgroundColour;
 		}
 		public function set backgroundColour(value:Number):void{
-			attemptInit();
 			_backgroundColour = value;
-			drawBackground();
+			if(_inited)drawBackground();
 		}
 		
 		public function get doInvertBlend():Boolean{
@@ -79,6 +88,7 @@ package org.tbyrne.display.progress
 		
 		private var _doInvertBlend:Boolean = true;
 		private var _foregroundColour:Number = 0;
+		private var _textColour:Number = 0;
 		private var _backgroundColour:Number = 0;
 		private var _backgroundAlpha:Number;
 		private var _showMessage:Boolean = false;
@@ -124,12 +134,14 @@ package org.tbyrne.display.progress
 			_detailsField.defaultTextFormat = _textFormat;
 			_detailsField.selectable = false;
 			_detailsField.type = TextFieldType.DYNAMIC;
+			_detailsField.textColor = _textColour;
 			_centerContainer.addChild(_detailsField);
 			
 			_messageField = new TextField();
 			_messageField.defaultTextFormat = _textFormat;
 			_messageField.selectable = false;
 			_messageField.type = TextFieldType.DYNAMIC;
+			_messageField.textColor = _textColour;
 			_centerContainer.addChild(_messageField);
 			
 			_border = new Shape();
@@ -239,7 +251,6 @@ package org.tbyrne.display.progress
 			_background.width = position.x;
 			_background.height = position.y;
 			
-			
 			var width:Number = Math.min(size.x,BAR_WIDTH);
 			var shouldShow:Boolean = this.shouldShow;
 			if(shouldShow){
@@ -272,10 +283,12 @@ package org.tbyrne.display.progress
 			_bar.y = -BAR_HEIGHT/2;
 			_border.y = -BAR_HEIGHT/2;
 			
+			
 			if(!isMeas){
-				_bar.width = width*NON_MEAS_WIDTH;
-				_bar.x = (_border.width-_bar.width)*(getTimer()%(NON_MEAS_CYCLE*1000))/(NON_MEAS_CYCLE*1000);
+				EnterFrameHook.getAct().addHandler(onEnterFrame);
+				commitBarWidth();
 			}else{
+				EnterFrameHook.getAct().removeHandler(onEnterFrame);
 				_bar.width = shouldShow?(width*(progress.numericalValue/total.numericalValue)):width;
 				_bar.x = 0;
 			}
@@ -283,5 +296,20 @@ package org.tbyrne.display.progress
 			_centerContainer.x = (_size.x-width)/2;
 			_centerContainer.y = _size.y/2;
 		}
+		
+		private function onEnterFrame():void{
+			commitBarWidth();
+		}
+		
+		
+		private function commitBarWidth():void{
+			var width:Number = Math.min(size.x,BAR_WIDTH);
+			var fract:Number = (getTimer()%(NON_MEAS_CYCLE*1000))/(NON_MEAS_CYCLE*1000);
+			var barWidth:Number = width*NON_MEAS_WIDTH;
+			var x:Number = fract*(width+barWidth)-barWidth;
+			_bar.x = Math.max(x,0);
+			_bar.width = Math.min(barWidth-(_bar.x-x),width-_bar.x);
+		}
+		
 	}
 }
