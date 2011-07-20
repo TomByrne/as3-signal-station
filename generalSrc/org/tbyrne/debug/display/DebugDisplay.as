@@ -11,8 +11,8 @@ package org.tbyrne.debug.display
 	import org.tbyrne.debug.nodeTypes.IGraphStatisticNode;
 	import org.tbyrne.display.DisplayNamespace;
 	import org.tbyrne.display.assets.AssetNames;
-	import org.tbyrne.display.assets.nativeTypes.IDisplayObjectContainer;
 	import org.tbyrne.display.assets.nativeTypes.IDisplayObject;
+	import org.tbyrne.display.assets.nativeTypes.IDisplayObjectContainer;
 	import org.tbyrne.display.containers.CascadingMenuBar;
 	import org.tbyrne.display.layout.ILayoutSubject;
 	import org.tbyrne.formatters.patternFormatters.PatternFormatter;
@@ -89,7 +89,20 @@ package org.tbyrne.debug.display
 			}
 			var dataNode:IDebugDataNode = (descendant as IDebugDataNode);
 			if(dataNode){
-				_menuItems.push(dataNode.debugData);
+				var parentPath:String = dataNode.parentPath;
+				if(parentPath && parentPath.length){
+					var path:Array = parentPath.split(/\/\\/);
+					//var list:
+					/*for(var i:int=0; i<parts.length; i++){
+					var pathPart:String = path[i];
+					if(pathPart.length){
+					for(var j:int=0; j<list.length; j++){
+					
+					}
+					}
+					}*/
+				}
+				_menuItems.push(dataNode.rendererData);
 			}
 		}
 		public function removeDebugNode(descendant:IDebugNode):void{
@@ -103,7 +116,7 @@ package org.tbyrne.debug.display
 			}
 			var dataNode:IDebugDataNode = (descendant as IDebugDataNode);
 			if(dataNode){
-				_menuItems.removeFirst(dataNode.debugData);
+				_menuItems.removeFirst(dataNode.rendererData);
 			}
 		}
 		protected function assessGraphLabel() : void{

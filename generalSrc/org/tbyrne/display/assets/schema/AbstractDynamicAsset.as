@@ -168,6 +168,9 @@ package org.tbyrne.display.assets.schema
 			if(_enterFrame)
 				_enterFrame.eventDispatcher = _displayObject;
 			
+			if(_exitFrame)
+				_exitFrame.eventDispatcher = _displayObject;
+			
 			// this is disabled because we're assuming that if the schema is being changed
 			// then event handlers shouldn't be renewed, they'll be renewed when the Acts are
 			// accessed.
@@ -206,6 +209,9 @@ package org.tbyrne.display.assets.schema
 			
 			if(_enterFrame)
 				_enterFrame.eventDispatcher = null;
+			
+			if(_exitFrame)
+				_exitFrame.eventDispatcher = null;
 			
 			removeAllChildren();
 			
@@ -320,6 +326,14 @@ package org.tbyrne.display.assets.schema
 		/**
 		 * @inheritDoc
 		 */
+		public function get exitFrame():IAct {
+			if(!_exitFrame)
+				_exitFrame = new NativeAct(_displayObject, Event.EXIT_FRAME, [this], false);
+			return _exitFrame;
+		}
+		/**
+		 * @inheritDoc
+		 */
 		public function get stageChanged():IAct{
 			if(!_stageChanged)_stageChanged = new Act();
 			return _stageChanged;
@@ -338,6 +352,7 @@ package org.tbyrne.display.assets.schema
 		
 		protected var _stageChanged:Act;
 		protected var _enterFrame:NativeAct;
+		protected var _exitFrame:NativeAct;
 		protected var _removed:NativeAct;
 		protected var _added:NativeAct;
 		protected var _removedFromStage:Act;

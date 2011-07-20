@@ -7,20 +7,42 @@ package org.tbyrne.debug.nodes
 	public class DebugDataNode extends ProxyScopedObject implements IDebugDataNode
 	{
 		
-		public function get debugData():*{
-			return _debugData;
+		public function get rendererData():*{
+			return _rendererData;
 		}
-		public function set debugData(value:*):void{
-			if(_debugData!=value){
-				_debugData = value;
-			}
+		public function set rendererData(value:*):void{
+			//if(_rendererData!=value){
+				_rendererData = value;
+			//}
 		}
 		
-		private var _debugData:*;
+		public function get pathId():String{
+			return _pathId;
+		}
+		public function set pathId(value:String):void{
+			//if(_pathId!=value){
+				_pathId = value;
+			//}
+		}
 		
-		public function DebugDataNode(scopedObject:IScopedObject=null, debugData:*=null){
+		public function get parentPath():String{
+			return _parentPath;
+		}
+		public function set parentPath(value:String):void{
+			//if(_parentPath!=value){
+				_parentPath = value;
+			//}
+		}
+		
+		private var _parentPath:String;
+		private var _pathId:String;
+		private var _rendererData:*;
+		
+		public function DebugDataNode(scopedObject:IScopedObject=null, pathId:String=null, debugData:*=null, parentPath:String=null){
 			super(scopedObject);
-			this.debugData = debugData;
+			this.pathId = pathId;
+			this.rendererData = debugData;
+			this.parentPath = parentPath;
 		}
 	}
 }

@@ -16,6 +16,7 @@ package org.tbyrne.actLibrary.application
 	import org.tbyrne.debug.DebugManager;
 	import org.tbyrne.debug.data.core.DebugData;
 	import org.tbyrne.debug.nodes.DebugDataNode;
+	import org.tbyrne.debug.nodes.StandardNodePaths;
 	import org.tbyrne.display.assets.nativeTypes.IDisplayObject;
 	import org.tbyrne.display.assets.nativeTypes.IDisplayObjectContainer;
 	import org.tbyrne.display.core.IScopedObject;
@@ -98,7 +99,7 @@ package org.tbyrne.actLibrary.application
 				Log.error( "ConfiguredApplication.init: Cannot init before the container has been set");
 			}
 			CONFIG::debug{
-				DebugManager.addDebugNode(new DebugDataNode(_scopedObject,new DebugData(_swfAddressActor.currentPath)));
+				DebugManager.addDebugNode(new DebugDataNode(_scopedObject,StandardNodePaths.APP_STATE,_swfAddressActor.currentPath));
 			}
 			
 			var act:SetPropertyConfigParamAct = new SetPropertyConfigParamAct(_siteStreamActor,"baseDataURL","baseDataURL");

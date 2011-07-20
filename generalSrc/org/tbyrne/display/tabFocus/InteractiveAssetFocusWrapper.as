@@ -15,7 +15,7 @@ package org.tbyrne.display.tabFocus
 		override public function set focused(value:Boolean):void{
 			if(_focused!=value){
 				_focused = value;
-				if(_interactiveAsset.stage){
+				if(_interactiveAsset && _interactiveAsset.stage){
 					if(value)_interactiveAsset.stage.focus = _interactiveAsset;
 					else if(_interactiveAsset.stage.focus == _interactiveAsset)_interactiveAsset.stage.focus = null;
 				}

@@ -16,7 +16,7 @@ package org.tbyrne.debug.data.core
 	import org.tbyrne.display.assets.nativeTypes.IDisplayObject;
 	import org.tbyrne.display.core.ILayoutView;
 	
-	public class DebugData extends StringProxy implements IBooleanConsumer, IBooleanProvider, IDataProvider, IBitmapDataProvider, ITriggerableAction, ILayoutViewProvider
+	public class DebugData extends StringProxy implements IBooleanConsumer, IBooleanProvider, IDataProvider, /*IBitmapDataProvider,*/ ITriggerableAction, ILayoutViewProvider
 	{
 		public function get layoutView():ILayoutView{
 			return _layoutView;
@@ -37,10 +37,10 @@ package org.tbyrne.debug.data.core
 			}
 		}
 		
-		public function get bitmapData():BitmapData{
+		/*public function get bitmapData():BitmapData{
 			if(_bitmapProvider)return _bitmapProvider.bitmapData;
 			else return null;
-		}
+		}*/
 		
 		public function get bitmapProvider():IBitmapDataProvider{
 			return _bitmapProvider;

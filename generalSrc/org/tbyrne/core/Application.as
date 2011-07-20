@@ -1,6 +1,7 @@
 package org.tbyrne.core
 {
 	import flash.geom.Point;
+	import flash.geom.Rectangle;
 	
 	import org.tbyrne.binding.PropertyWatcher;
 	import org.tbyrne.data.core.StringData;
@@ -13,13 +14,15 @@ package org.tbyrne.core
 	import org.tbyrne.debug.data.core.DebugData;
 	import org.tbyrne.debug.nodes.DebugDataNode;
 	import org.tbyrne.debug.nodes.GraphStatisticNode;
+	import org.tbyrne.debug.nodes.StandardNodePaths;
 	import org.tbyrne.display.assets.assetTypes.IAsset;
-	import org.tbyrne.display.assets.nativeTypes.IDisplayObjectContainer;
 	import org.tbyrne.display.assets.nativeTypes.IDisplayObject;
+	import org.tbyrne.display.assets.nativeTypes.IDisplayObjectContainer;
 	import org.tbyrne.display.assets.nativeTypes.IStage;
 	import org.tbyrne.display.core.ILayoutView;
 	import org.tbyrne.display.core.LayoutView;
 	import org.tbyrne.display.core.ScopedObject;
+	import org.tbyrne.input.items.MethodCallInputItem;
 	import org.tbyrne.math.units.MemoryUnitConverter;
 	
 	/**
@@ -113,8 +116,36 @@ package org.tbyrne.core
 				var fps:GraphStatisticNode = new GraphStatisticNode(_scopedObject,"FPS",0x990000,new RealFrameRate(),true);
 				fps.maximumProvider = new IntendedFrameRate(_scopedObject);
 				DebugManager.addDebugNode(fps);
-				DebugManager.addDebugNode(new DebugDataNode(_scopedObject,new DebugData(new StringData("Garbage Collect"),new GarbageCollect())));
+				DebugManager.addDebugNode(new DebugDataNode(_scopedObject,StandardNodePaths.GARBAGE_COLLECT,new DebugData(new StringData("Garbage Collect"),new GarbageCollect())));
+				
+				PLATFORM::air{
+					if(_lastStage.nativeWindow.resizable){
+						var resolution:DebugData = new DebugData(new StringData("Resolution"));
+						resolution.addChildData(new DebugData(new StringData("640 x 480"),new MethodCallInputItem(null,setResolution,[640,480])));
+						resolution.addChildData(new DebugData(new StringData("800 x 600"),new MethodCallInputItem(null,setResolution,[800,600])));
+						resolution.addChildData(new DebugData(new StringData("1024 x 768"),new MethodCallInputItem(null,setResolution,[1024,768])));
+						resolution.addChildData(new DebugData(new StringData("1280 x 720"),new MethodCallInputItem(null,setResolution,[1280,720])));
+						resolution.addChildData(new DebugData(new StringData("1600 x 900"),new MethodCallInputItem(null,setResolution,[1600,900])));
+						resolution.addChildData(new DebugData(new StringData("1280 x 1024"),new MethodCallInputItem(null,setResolution,[1280,1024])));
+						DebugManager.addDebugNode(new DebugDataNode(_scopedObject,StandardNodePaths.RESOLUTION,resolution));
+					}
+				}
 			}
+
+		}
+		CONFIG::debug{
+		PLATFORM::air{
+		public function setResolution(x:Number, y:Number):void{
+				var bounds:Rectangle = _lastStage.nativeWindow.bounds;
+				var xDif:Number = bounds.width-_size.x;
+				var yDif:Number = bounds.height-_size.y;
+				
+				bounds.width = x+xDif;
+				bounds.height = y+yDif;
+				
+				_lastStage.nativeWindow.bounds = bounds;
+		}
+		}
 		}
 		public function setPosition(x:Number, y:Number):void{
 			if(!_position)_position = new Point();

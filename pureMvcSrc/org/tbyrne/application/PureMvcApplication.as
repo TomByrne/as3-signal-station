@@ -14,8 +14,9 @@ package org.tbyrne.application
 	import org.tbyrne.debug.data.core.DebugData;
 	import org.tbyrne.debug.nodes.DebugDataNode;
 	import org.tbyrne.debug.nodes.GraphStatisticNode;
-	import org.tbyrne.display.assets.nativeTypes.IDisplayObjectContainer;
+	import org.tbyrne.debug.nodes.StandardNodePaths;
 	import org.tbyrne.display.assets.nativeTypes.IDisplayObject;
+	import org.tbyrne.display.assets.nativeTypes.IDisplayObjectContainer;
 	import org.tbyrne.display.core.ScopedObject;
 	import org.tbyrne.math.units.MemoryUnitConverter;
 	import org.tbyrne.notifications.ApplicationNotifications;
@@ -137,7 +138,8 @@ package org.tbyrne.application
 				var fps:GraphStatisticNode = new GraphStatisticNode(_scopedObject,"FPS",0x990000,new RealFrameRate(),true);
 				fps.maximumProvider = new IntendedFrameRate(_scopedObject);
 				DebugManager.addDebugNode(fps);
-				DebugManager.addDebugNode(new DebugDataNode(_scopedObject,new DebugData(new StringData("Garbage Collect"),new GarbageCollect())));
+				
+				DebugManager.addDebugNode(new DebugDataNode(_scopedObject,StandardNodePaths.GARBAGE_COLLECT,new DebugData(new StringData("Garbage Collect"),new GarbageCollect())));
 			}
 		}
 		private function onRemovedFromStage(from:IDisplayObject=null):void{
