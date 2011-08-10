@@ -80,9 +80,9 @@ package org.tbyrne.display.assets.schema
 			return new CloneAssetFactory(this,from.schema);
 		}
 		
-		protected function getAssetClass(from:AbstractSchemaBasedAsset):Class{
+		/*protected function getAssetClass(from:AbstractSchemaBasedAsset):Class{
 			return from["constructor"]; // override me to optimise
-		}
+		}*/
 	}
 }
 import org.tbyrne.acting.actTypes.IAct;

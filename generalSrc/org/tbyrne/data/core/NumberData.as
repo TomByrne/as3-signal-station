@@ -15,12 +15,12 @@ package org.tbyrne.data.core
 		public function set numericalValue(value:Number):void{
 			if(_numericalValue!=value && !(isNaN(value) && isNaN(_numericalValue))){
 				_numericalValue = value;
-				if(_numericalValueChanged)_numericalValueChanged.perform(this);
 				if(isNaN(value)){
 					super.stringValue = null;
 				}else{
 					super.stringValue = numToString(value);
 				}
+				if(_numericalValueChanged)_numericalValueChanged.perform(this);
 			}
 		}
 		

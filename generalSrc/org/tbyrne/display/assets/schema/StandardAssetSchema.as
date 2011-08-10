@@ -22,6 +22,12 @@ package org.tbyrne.display.assets.schema
 				debugDisplay.childSchemas.push(createDebugList(AssetNames.CHILD_LIST,0,0,100,20,false));
 				_childSchemas.push(debugDisplay);
 			}
+			
+			var children:Array = [];
+			children.push(new RectangleAssetSchema(AssetNames.BACKING,0,0,320,240));
+			children.push(new RectangleAssetSchema(AssetNames.MEDIA_BOUNDS,0,0,320,240));
+			var videoContainer:ContainerAssetSchema = new ContainerAssetSchema(AssetNames.VIDEO_CONTAINER,0,0,children);
+			_childSchemas.push(videoContainer);
 		}
 		
 		CONFIG::debug{

@@ -21,6 +21,7 @@ package org.tbyrne.display.assets
 		
 		// VideoContainer
 		public static const VIDEO_CONTAINER:String = "videoContainer";
+		public static const MEDIA_BOUNDS:String = "mediaBounds";
 		
 		// CascadingMenuBar
 		public static const CHILD_LIST:String = "childList";

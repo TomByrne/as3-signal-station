@@ -15,6 +15,12 @@ package org.tbyrne.display.assets.stylable
 	
 	public class StylableAsset extends AbstractDynamicAsset
 	{
+		override public function set schema(value:IAssetSchema):void{
+			super.schema = value;
+			checkRectStyles();
+			checkTextStyles();
+			findAvailableStates();
+		}
 		
 		override public function set useParentStateLists(value:Boolean):void{
 			if(_useParentStateLists!=value){
@@ -31,48 +37,36 @@ package org.tbyrne.display.assets.stylable
 		}
 		public function set textStyles(value:Array):void{
 			if(_textStyles!=value){
-				var index:int;
-				var textStyle:ITextStyle;
-				var styles:Array;
-				for each(textStyle in _matchingTextStyles){
-					styles = _textStateMap[textStyle.stateName];
-					index = styles.indexOf(textStyle);
+				for each(var textStyle:ITextStyle in _matchingTextStyles){
+					var styles:Array = _textStateMap[textStyle.stateName];
+					var index:int = styles.indexOf(textStyle);
 					styles.splice(index,1);
 				}
 				_textStyles = value;
-				_matchingTextStyles = findMatchingStyles(_textStyles);
-				for each(textStyle in _matchingTextStyles){
-					styles = getStyleArray(_textStateMap,textStyle.stateName);
-					styles.push(textStyle);
-				}
+				checkTextStyles();
 				//_inDefaultMode = false;
 				findAvailableStates();
 			}
 		}
+		
 		
 		public function get rectangleStyles():Array{
 			return _rectangleStyles;
 		}
 		public function set rectangleStyles(value:Array):void{
 			if(_rectangleStyles!=value){
-				var index:int;
-				var rectStyle:IRectangleStyle;
-				var styles:Array;
-				for each(rectStyle in _matchingRectangleStyles){
-					styles = _rectStateMap[rectStyle.stateName];
-					index = styles.indexOf(rectStyle);
+				for each(var rectStyle:IRectangleStyle in _matchingRectangleStyles){
+					var styles:Array = _rectStateMap[rectStyle.stateName];
+					var index:int = styles.indexOf(rectStyle);
 					styles.splice(index,1);
 				}
 				_rectangleStyles = value;
-				_matchingRectangleStyles = findMatchingStyles(_rectangleStyles);
-				for each(rectStyle in _matchingRectangleStyles){
-					styles = getStyleArray(_rectStateMap,rectStyle.stateName);
-					styles.push(rectStyle);
-				}
+				checkRectStyles();
 				//_inDefaultMode = false;
 				findAvailableStates();
 			}
 		}
+		
 		
 		private var _nullStateList:Array;
 		private var _rectangleStyles:Array;
@@ -99,6 +93,29 @@ package org.tbyrne.display.assets.stylable
 			_nullStateList = [new StateDef([null],0)];
 		}
 		
+		
+		private function checkTextStyles():void{
+			if(_textStyles && schema){
+				_matchingTextStyles = findMatchingStyles(_textStyles);
+				for each(var textStyle:ITextStyle in _matchingTextStyles){
+					var styles:Array = getStyleArray(_textStateMap,textStyle.stateName);
+					styles.push(textStyle);
+				}
+			}else{
+				_matchingTextStyles = null;
+			}
+		}
+		private function checkRectStyles():void{
+			if(_rectangleStyles && schema){
+				_matchingRectangleStyles = findMatchingStyles(_rectangleStyles);
+				for each(var rectStyle:IRectangleStyle in _matchingRectangleStyles){
+					var styles:Array = getStyleArray(_rectStateMap,rectStyle.stateName);
+					styles.push(rectStyle);
+				}
+			}else{
+				_matchingRectangleStyles = null;
+			}
+		}
 		
 		
 		protected function findMatchingStyles(within:Array):*{

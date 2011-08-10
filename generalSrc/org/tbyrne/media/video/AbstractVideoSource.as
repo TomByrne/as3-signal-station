@@ -76,7 +76,7 @@ package org.tbyrne.media.video
 						}
 					}else if(_videoStreamProxy.metadataReceived){
 						_streamPlaying = false;
-						_netStream.pause();
+						if(_netStream)_netStream.pause();
 					}
 					assessBufferSize();
 				}

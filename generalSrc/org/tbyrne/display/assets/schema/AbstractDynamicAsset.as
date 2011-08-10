@@ -24,6 +24,7 @@ package org.tbyrne.display.assets.schema
 	import org.tbyrne.acting.acts.NativeAct;
 	import org.tbyrne.display.actInfo.IMouseActInfo;
 	import org.tbyrne.display.assets.IAssetFactory;
+	import org.tbyrne.display.assets.assetTypes.IAsset;
 	import org.tbyrne.display.assets.nativeAssets.INativeAsset;
 	import org.tbyrne.display.assets.nativeAssets.actInfo.MouseActInfo;
 	import org.tbyrne.display.assets.nativeTypes.*;
@@ -63,7 +64,6 @@ package org.tbyrne.display.assets.schema
 			
 			_addedToStage = new NativeAct(_displayObject, Event.ADDED_TO_STAGE, [this],false);
 			_addedToStage.addHandler(onAddedToStage);
-			_displayObject.addEventListener(Event.REMOVED_FROM_STAGE,onRemovedFromStage);
 			
 			setupActBundles();
 		}
@@ -156,8 +156,9 @@ package org.tbyrne.display.assets.schema
 			_displayObject.y = _displaySchema.y;
 			if(_displaySchema.assetName)_displayObject.name = _displaySchema.assetName;
 			
-			if(_addedToStage)
-				_addedToStage.eventDispatcher = _displayObject;
+			_addedToStage.eventDispatcher = _displayObject;
+			
+			_displayObject.addEventListener(Event.REMOVED_FROM_STAGE,onRemovedFromStage);
 			
 			if(_added)
 				_added.eventDispatcher = _displayObject;
@@ -198,8 +199,9 @@ package org.tbyrne.display.assets.schema
 			_width = NaN;
 			_height = NaN;
 			
-			if(_addedToStage)
-				_addedToStage.eventDispatcher = null;
+			_addedToStage.eventDispatcher = null;
+			
+			_displayObject.removeEventListener(Event.REMOVED_FROM_STAGE,onRemovedFromStage);
 			
 			if(_added)
 				_added.eventDispatcher = null;
@@ -779,7 +781,7 @@ package org.tbyrne.display.assets.schema
 		
 		public function get numChildren():int{return _sprite.numChildren}
 		
-		protected function removeAllChildren():void{
+		public function removeAllChildren():void{
 			for each(var child:IDisplayObject in _children){
 				var nativeAsset:INativeAsset = (child as INativeAsset);
 				for each(var stateList:Array in _stateLists){
