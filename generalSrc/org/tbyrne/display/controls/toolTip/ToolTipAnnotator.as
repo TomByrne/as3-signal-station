@@ -4,6 +4,7 @@ package org.tbyrne.display.controls.toolTip
 	
 	import org.tbyrne.display.assets.nativeTypes.ITextField;
 	import org.tbyrne.display.core.DrawableView;
+	import org.tbyrne.display.validation.FrameValidationFlag;
 
 	public class ToolTipAnnotator extends DrawableView implements IToolTipManager
 	{
@@ -20,7 +21,7 @@ package org.tbyrne.display.controls.toolTip
 		public function set annotationType(value:String):void{
 			if(_annotationType!=value){
 				_annotationType = value;
-				invalidateAll();
+				_tipsFlag.invalidate();
 			}
 		}
 		
@@ -30,7 +31,7 @@ package org.tbyrne.display.controls.toolTip
 		public function set annotationPattern(value:String):void{
 			if(_annotationPattern!=value){
 				_annotationPattern = value;
-				invalidateAll();
+				_tipsFlag.invalidate();
 			}
 		}
 		
@@ -39,16 +40,19 @@ package org.tbyrne.display.controls.toolTip
 		private var _tipTriggers:Array = [];
 		private var _textField:ITextField;
 		
+		private var _tipsFlag:FrameValidationFlag;
+		
 		public function ToolTipAnnotator(){
+			_tipsFlag = new FrameValidationFlag(this,commitTips,false);
 		}
 		public function addTipTrigger(trigger:IToolTipTrigger):void{
 			_tipTriggers.push(trigger);
-			invalidateAll();
+			_tipsFlag.invalidate();
 		}
 		public function removeTipTrigger(trigger:IToolTipTrigger):void{
 			var index:int = _tipTriggers.indexOf(trigger);
 			_tipTriggers.splice(index,1);
-			invalidateAll();
+			_tipsFlag.invalidate();
 		}
 		override protected function bindToAsset() : void{
 			super.bindToAsset();
@@ -58,8 +62,7 @@ package org.tbyrne.display.controls.toolTip
 			super.unbindFromAsset();
 			_textField = null;
 		}
-		override protected function validateAll():void{
-			super.validateAll();
+		protected function commitTips():void{
 			_tipTriggers = _tipTriggers.sort(sortTips);
 			var text:String = "";
 			var count:int = 0;

@@ -457,7 +457,7 @@ class DrawRun implements IPoolable{
 			currentIndex = 0;
 			while(currentIndex<pendingDraws.length && currentIndex>=0){
 				var flag:IFrameValidationFlag = pendingDraws[currentIndex];
-				if(flag.readyForExecution && !flag.valid){
+				if(!flag.valid && flag.readyForExecution){
 					executeFlag(flag, currentIndex);
 				}else{
 					currentIndex++;

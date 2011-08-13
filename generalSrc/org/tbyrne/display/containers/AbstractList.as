@@ -70,7 +70,7 @@ package org.tbyrne.display.containers
 		public function set alwaysUseScrollRect(value:Boolean):void{
 			if(_alwaysUseScrollRect!=value){
 				_alwaysUseScrollRect = value;
-				commitScrollRect();
+				if(isBound)commitScrollRect();
 			}
 		}
 		
@@ -280,7 +280,7 @@ package org.tbyrne.display.containers
 			}
 		}
 		protected function onScrollChange(from:IScrollMetrics):void{
-			commitScrollRect();
+			if(isBound)commitScrollRect();
 		}
 		
 		protected function commitScrollRect():void{

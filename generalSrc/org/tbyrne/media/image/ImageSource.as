@@ -54,14 +54,14 @@ package org.tbyrne.media.image
 			}
 		}
 		
-		private var _smoothing:Boolean;
-		private var _imageUrl:String;
-		private var _urlLoader:URLLoader;
-		private var _protoLoader:ILoader;
-		private var _loadStarted:Boolean;
-		private var _loaded:Boolean;
-		private var _displaysTaken:int = 0;
-		private var _nativeFactory:NativeAssetFactory;
+		protected var _smoothing:Boolean;
+		protected var _imageUrl:String;
+		protected var _urlLoader:URLLoader;
+		protected var _protoLoader:ILoader;
+		protected var _loadStarted:Boolean;
+		protected var _loaded:Boolean;
+		protected var _displaysTaken:int = 0;
+		protected var _nativeFactory:NativeAssetFactory;
 		
 		public function ImageSource(url:String=null, smoothing:Boolean=true){
 			super();

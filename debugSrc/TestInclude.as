@@ -84,6 +84,7 @@ package
 	import org.tbyrne.input.items.MethodCallInputItem;
 	import org.tbyrne.input.items.NotificationInputItem;
 	import org.tbyrne.media.MediaProgressDisplayAdaptor;
+	import org.tbyrne.media.image.GifSource;
 	import org.tbyrne.media.image.ImageSource;
 	import org.tbyrne.media.video.ProgressiveVideoSource;
 	import org.tbyrne.media.video.StreamingVideoSource;
@@ -146,7 +147,7 @@ package
 			MouseDragScroller;
 			MouseWheelScroller;
 			ScrollButtons;
-			ImageSource;
+			GifSource;
 			PopoutDisplay;
 			PlugDisplay;
 			AbstractAccordionView;

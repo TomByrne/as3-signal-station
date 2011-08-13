@@ -120,9 +120,10 @@ package org.tbyrne.display.progress
 		private var _progressFlag:FrameValidationFlag;
 		
 		public function AbstractProgressDisplay(asset:IDisplayObject=null){
+			_progressFlag = new FrameValidationFlag(this,commitProgress,false);
+			
 			super(asset);
 			
-			_progressFlag = new FrameValidationFlag(this,commitProgress,false);
 			
 		}
 		

@@ -18,6 +18,9 @@ package org.tbyrne.display.core
 	{
 		override public function set asset(value:IDisplayObject):void{
 			super.asset = value;
+			if(value!=null){
+				attemptInit();
+			}
 			invalidateMeasurements();
 		}
 		public function get layoutInfo():ILayoutInfo{
@@ -86,12 +89,18 @@ package org.tbyrne.display.core
 		private var _boundChildren:Dictionary = new Dictionary();
 		
 		public function LayoutView(asset:IDisplayObject=null){
+			super(asset);
+		}
+		
+		override protected function init():void{
 			_measureFlag = new ValidationFlag(doMeasure, false);
 			if(!_measurements)_measurements = new Point();
-			super(asset);
 			
-			addDrawFlag(_posDrawFlag = new FrameValidationFlag(this,positionNow,false));
-			addDrawFlag(_sizeDrawFlag = new FrameValidationFlag(this,sizeNow,false));
+			addDrawFlag(_posDrawFlag = new FrameValidationFlag(this,commitPosition,false,null,readyForPosition));
+			addDrawFlag(_sizeDrawFlag = new FrameValidationFlag(this,commitSize,false,null,readyForSize));
+			
+			super.init();
+			
 		}
 		
 		override protected function unbindFromAsset():void{
@@ -181,6 +190,7 @@ package org.tbyrne.display.core
 		}
 		
 		protected function invalidateMeasurements():void{
+			attemptInit();
 			_measureFlag.invalidate();
 			if(!_measuring){
 				if(_measurementsChanged)_measurementsChanged.perform(this,_lastMeasX,_lastMeasY);
@@ -223,18 +233,16 @@ package org.tbyrne.display.core
 				_measureFlag.invalidate();
 			}
 		}
-		private function sizeNow():void{
+		protected function readyForSize(from:FrameValidationFlag):Boolean{
 			_bindFlag.validate();
-			if(_bindFlag.valid)commitSize();
-			else _sizeDrawFlag.invalidate();
+			return _bindFlag.valid;
 		}
 		protected function commitSize():void{
 			asset.setSize(_size.x,_size.y);
 		}
-		private function positionNow():void{
+		protected function readyForPosition(from:FrameValidationFlag):Boolean{
 			_bindFlag.validate();
-			if(_bindFlag.valid)commitPosition();
-			else _posDrawFlag.invalidate();
+			return _bindFlag.valid;
 		}
 		protected function commitPosition():void{
 			asset.setPosition(_position.x,_position.y);

@@ -5,6 +5,9 @@ package org.tbyrne.display.validation
 
 	public class ValidationFlag
 	{
+		public static const ALWAYS_READY_CHECKER:Function = function(from:ValidationFlag):Boolean{return this};
+		
+		
 		/**
 		 * handler(validationFlag:ValidationFlag)
 		 */
@@ -23,8 +26,30 @@ package org.tbyrne.display.validation
 			return _valid;
 		}
 		
+		public function get readyForExecution():Boolean{
+			return (readyChecker==null || readyChecker.call(null,this));
+		}
 		
-		public function get ready():Boolean{
+		
+		/**
+		 * A function which returns a boolean, which represents whether this flag is ready to be validated.
+		 * It should take one parameter, being the ValidationFlag itself.
+		 */
+		
+		public function get readyChecker():Function{
+			return _readyChecker;
+		}
+		public function set readyChecker(value:Function):void{
+			if(_readyChecker!=value){
+				_readyChecker = value;
+				if(readyForExecution)validate();
+			}
+		}
+		
+		protected var _readyChecker:Function;
+		
+		
+		/*public function get ready():Boolean{
 			return _ready;
 		}
 		public function set ready(value:Boolean):void{
@@ -34,8 +59,8 @@ package org.tbyrne.display.validation
 			}
 		}
 		
-		private var _ready:Boolean;
-		private var _pending:Boolean;
+		private var _ready:Boolean;*/
+		protected var _pending:Boolean;
 		
 		public var parameters:Array;
 		
@@ -46,11 +71,13 @@ package org.tbyrne.display.validation
 		protected var _valid:Boolean;
 		protected var _executing:Boolean;
 		
-		public function ValidationFlag(validator:Function, valid: Boolean, parameters:Array=null, ready:Boolean=true){
+		public function ValidationFlag(validator:Function, valid: Boolean, parameters:Array=null, readyChecker:Function=null){
 			_valid = valid;
 			_validator = validator;
 			this.parameters = parameters;
-			this.ready = ready;
+			
+			if(readyChecker==null)readyChecker = ALWAYS_READY_CHECKER;
+			_readyChecker = readyChecker;
 		}
 		public function invalidate():void{
 			if(_valid){
@@ -60,7 +87,7 @@ package org.tbyrne.display.validation
 		}
 		public function validate(force:Boolean=false):void{
 			if(force || !_valid){
-				if(_ready && !_executing){
+				if(readyForExecution && !_executing){
 					_pending = false;
 					_executing = true;
 					if(parameters)_validator.apply(null,parameters);

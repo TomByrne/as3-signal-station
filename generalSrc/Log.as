@@ -30,8 +30,8 @@ package
 			
 			CONFIG::debug{
 				setLogger(new TraceLogger(),USER_INFO,USER_ERROR,DEV_INFO,PERFORMANCE,SUSPICIOUS_IMPLEMENTATION);
-				setLogger(new ErrorLogger(),DEV_ERROR,EXT_ERROR);
 			}
+			setLogger(new ErrorLogger(),DEV_ERROR,EXT_ERROR);
 		}
 		
 		public static function setLogger(logger:ILogger, ... levels):void{

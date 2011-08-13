@@ -9,6 +9,7 @@ package org.tbyrne.display.progress
 	import org.tbyrne.display.assets.nativeAssets.NativeAssetFactory;
 	import org.tbyrne.display.assets.nativeAssets.SpriteAsset;
 	import org.tbyrne.display.assets.nativeTypes.IDisplayObject;
+	import org.tbyrne.display.validation.FrameValidationFlag;
 
 	/**
 	 * TODO: add preloader props (e.g. progress,total,units, etc.) into their own 
@@ -119,7 +120,7 @@ package org.tbyrne.display.progress
 			_textFormat.align = TextFormatAlign.CENTER;
 			
 			_container = new Sprite();
-			_container.alpha = (_active.booleanValue?1:0);
+			_container.alpha = (_active && _active.booleanValue?1:0);
 			_container.blendMode = _doInvertBlend?BlendMode.INVERT:BlendMode.NORMAL;
 			
 			_background = new Shape();
@@ -243,6 +244,9 @@ package org.tbyrne.display.progress
 		}
 		override protected function commitProgress():void{
 			validateSize(true);
+		}
+		override protected function readyForSize(from:FrameValidationFlag):Boolean{
+			return (super.readyForSize(from) && _measurable && _active);
 		}
 		override protected function commitSize():void{
 			var isMeas:Boolean = (_measurable.booleanValue && !isNaN(_progress.numericalValue) && !isNaN(_total.numericalValue));

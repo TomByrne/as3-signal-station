@@ -18,6 +18,10 @@ package org.tbyrne.display.validation
 	
 	public class FrameValidationFlag extends ValidationFlag implements IFrameValidationFlag
 	{
+		public static const WITH_ASSET_CHECKER:Function = function(from:FrameValidationFlag):Boolean{return from.asset!=null};
+		
+		
+		
 		/**
 		 * @inheritDoc
 		 */
@@ -47,9 +51,6 @@ package org.tbyrne.display.validation
 				}
 			}
 		}
-		public function get readyForExecution():Boolean{
-			return (_allowAddWithoutAsset || _asset);
-		}
 		
 		
 		private var _view:IView;
@@ -57,16 +58,15 @@ package org.tbyrne.display.validation
 		protected var _assetChanged:Act;
 		protected var _added:Boolean;
 		protected var _manager:FrameValidationManager;
-		protected var _allowAddWithoutAsset:Boolean;
+		//protected var _allowAddWithoutAsset:Boolean;
 		
-		public function FrameValidationFlag(view:IView, validator:Function, valid:Boolean, parameters:Array=null, allowAddWithoutAsset:Boolean=false){
-			super(validator, valid, parameters);
+		public function FrameValidationFlag(view:IView, validator:Function, valid:Boolean, parameters:Array=null, readyChecker:Function=null){
+			if(readyChecker==null)readyChecker = WITH_ASSET_CHECKER;
+			super(validator, valid, parameters, readyChecker);
 			_manager = FrameValidationManager.instance;
-			_allowAddWithoutAsset = allowAddWithoutAsset;
+			//_allowAddWithoutAsset = allowAddWithoutAsset;
 			this.view = view;
-			if(_allowAddWithoutAsset && !view){
-				checkAdded();
-			}
+			checkAdded();
 		}
 		
 		
@@ -76,13 +76,14 @@ package org.tbyrne.display.validation
 		protected function setAsset(asset:IDisplayObject):void{
 			if(_asset!=asset){
 				
-				if(_added && !(_allowAddWithoutAsset || asset)){
+				var oldAsset:IDisplayObject = _asset;
+				_asset = asset;
+				
+				if(_added && !readyForExecution){
 					// remove before changing asset to allow manager to lookup by asset
 					setAdded(false);
 				}
 				
-				var oldAsset:IDisplayObject = _asset;
-				_asset = asset;
 				
 				
 				/*
@@ -98,7 +99,7 @@ package org.tbyrne.display.validation
 			}
 		}
 		private function checkAdded():void{
-			if(readyForExecution){
+			if(_asset || readyForExecution){
 				setAdded(true);
 			}else{
 				setAdded(false);
@@ -117,7 +118,7 @@ package org.tbyrne.display.validation
 		override public function validate(force:Boolean=false):void{
 			if(force || !_valid){
 				if(_valid)invalidate();
-				_manager.validate(this);
+				if(_added)_manager.validate(this);
 			}
 		}
 		public function execute():void{

@@ -35,9 +35,9 @@ package org.tbyrne.display.core
 					_interactiveObjectAsset = null;
 					_spriteAsset = null;
 				}
-				super.asset = value;
 				_bindFlag.invalidate();
-				_bindFlag.ready = (value!=null);
+				super.asset = value;
+				_bindFlag.validate();// don't force validation as setting the asset can sometimes cause binding
 				if(value){
 					value.addedToStage.addHandler(onAddedToStage);
 					value.removedFromStage.addHandler(onRemovedFromStage);
@@ -87,7 +87,8 @@ package org.tbyrne.display.core
 		private var _transState:StateDef = new StateDef([INTRO_FRAME_LABEL,OUTRO_FRAME_LABEL]);
 		
 		public function DrawableView(asset:IDisplayObject=null){
-			_bindFlag = new ValidationFlag(commitBound,true);
+			var _this:DrawableView = this;
+			_bindFlag = new ValidationFlag(commitBound,false,null,function(from:ValidationFlag):Boolean{return _this.asset!=null});
 			super(asset);
 		}
 		protected function addDrawFlag(frameValidationFlag:FrameValidationFlag):void{
