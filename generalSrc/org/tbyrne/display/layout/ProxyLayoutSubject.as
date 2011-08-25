@@ -67,8 +67,8 @@ package org.tbyrne.display.layout
 
 		}
 		
-		private var _target:ILayoutSubject;
-		private var _forceMeasurements:Point;
+		protected var _target:ILayoutSubject;
+		protected var _forceMeasurements:Point;
 		
 		public function ProxyLayoutSubject(target:ILayoutSubject=null){
 			this.target = target;

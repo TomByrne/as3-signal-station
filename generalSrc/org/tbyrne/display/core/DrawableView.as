@@ -8,7 +8,7 @@ package org.tbyrne.display.core
 	import org.tbyrne.display.assets.nativeTypes.IInteractiveObject;
 	import org.tbyrne.display.assets.nativeTypes.ISprite;
 	import org.tbyrne.display.assets.states.StateDef;
-	import org.tbyrne.display.validation.FrameValidationFlag;
+	import org.tbyrne.display.validation.ViewValidationFlag;
 	import org.tbyrne.display.validation.ValidationFlag;
 	
 	public class DrawableView extends View implements IOutroView, IScopedObject
@@ -82,7 +82,7 @@ package org.tbyrne.display.core
 		
 		protected var _bindFlag:ValidationFlag;
 		
-		protected var _childDrawFlags:Vector.<FrameValidationFlag>;
+		protected var _childDrawFlags:Vector.<ViewValidationFlag>;
 		
 		private var _transState:StateDef = new StateDef([INTRO_FRAME_LABEL,OUTRO_FRAME_LABEL]);
 		
@@ -91,8 +91,8 @@ package org.tbyrne.display.core
 			_bindFlag = new ValidationFlag(commitBound,false,null,function(from:ValidationFlag):Boolean{return _this.asset!=null});
 			super(asset);
 		}
-		protected function addDrawFlag(frameValidationFlag:FrameValidationFlag):void{
-			if(!_childDrawFlags)_childDrawFlags = new Vector.<FrameValidationFlag>();
+		protected function addDrawFlag(frameValidationFlag:ViewValidationFlag):void{
+			if(!_childDrawFlags)_childDrawFlags = new Vector.<ViewValidationFlag>();
 			_childDrawFlags.push(frameValidationFlag);
 		}
 		
@@ -155,7 +155,7 @@ package org.tbyrne.display.core
 		 * @see validate
 		 */
 		protected function invalidateAll(): void{
-			for each(var frameValidationFlag:FrameValidationFlag in _childDrawFlags){
+			for each(var frameValidationFlag:ViewValidationFlag in _childDrawFlags){
 				frameValidationFlag.invalidate();
 			}
 		}
@@ -165,7 +165,7 @@ package org.tbyrne.display.core
 		 */
 		public function validate(forceDraw: Boolean = false): void{
 			_bindFlag.validate();
-			for each(var frameValidationFlag:FrameValidationFlag in _childDrawFlags){
+			for each(var frameValidationFlag:ViewValidationFlag in _childDrawFlags){
 				frameValidationFlag.validate();
 			}
 		}

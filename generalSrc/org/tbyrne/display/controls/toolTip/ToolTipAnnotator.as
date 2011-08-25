@@ -4,7 +4,7 @@ package org.tbyrne.display.controls.toolTip
 	
 	import org.tbyrne.display.assets.nativeTypes.ITextField;
 	import org.tbyrne.display.core.DrawableView;
-	import org.tbyrne.display.validation.FrameValidationFlag;
+	import org.tbyrne.display.validation.ViewValidationFlag;
 
 	public class ToolTipAnnotator extends DrawableView implements IToolTipManager
 	{
@@ -40,10 +40,10 @@ package org.tbyrne.display.controls.toolTip
 		private var _tipTriggers:Array = [];
 		private var _textField:ITextField;
 		
-		private var _tipsFlag:FrameValidationFlag;
+		private var _tipsFlag:ViewValidationFlag;
 		
 		public function ToolTipAnnotator(){
-			_tipsFlag = new FrameValidationFlag(this,commitTips,false);
+			_tipsFlag = new ViewValidationFlag(this,commitTips,false);
 		}
 		public function addTipTrigger(trigger:IToolTipTrigger):void{
 			_tipTriggers.push(trigger);

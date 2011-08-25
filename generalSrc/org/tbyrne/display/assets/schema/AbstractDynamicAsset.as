@@ -217,19 +217,19 @@ package org.tbyrne.display.assets.schema
 			
 			removeAllChildren();
 			
-			_textField = null;
-			_displayObject = null;
-			_bitmap = null;
-			_sprite = null;
-			_rect = null;
-			_interactiveObject = null;
-			
 			for each(var bundle:EventBundle in eventBundles){
 				if(bundle.listening){
 					bundle.listening = false;
 					_displayObject.removeEventListener(bundle.eventName, bundle.handler);
 				}
 			}
+			
+			_textField = null;
+			_displayObject = null;
+			_bitmap = null;
+			_sprite = null;
+			_rect = null;
+			_interactiveObject = null;
 		}
 		protected function redrawSize():void{
 			if(_textField){

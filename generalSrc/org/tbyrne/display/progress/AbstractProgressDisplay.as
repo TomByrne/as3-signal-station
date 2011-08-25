@@ -10,7 +10,7 @@ package org.tbyrne.display.progress
 	import org.tbyrne.display.assets.nativeTypes.IDisplayObject;
 	import org.tbyrne.display.core.ILayoutView;
 	import org.tbyrne.display.core.LayoutView;
-	import org.tbyrne.display.validation.FrameValidationFlag;
+	import org.tbyrne.display.validation.ViewValidationFlag;
 	
 	public class AbstractProgressDisplay extends LayoutView implements IProgressDisplay
 	{
@@ -117,10 +117,10 @@ package org.tbyrne.display.progress
 		protected var _measurable:IBooleanProvider;
 		protected var _active:IBooleanProvider;
 		
-		private var _progressFlag:FrameValidationFlag;
+		private var _progressFlag:ViewValidationFlag;
 		
 		public function AbstractProgressDisplay(asset:IDisplayObject=null){
-			_progressFlag = new FrameValidationFlag(this,commitProgress,false);
+			_progressFlag = new ViewValidationFlag(this,commitProgress,false);
 			
 			super(asset);
 			

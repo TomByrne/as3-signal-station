@@ -10,7 +10,7 @@ package org.tbyrne.display.layout
 	import org.tbyrne.binding.Watchable;
 	import org.tbyrne.display.core.IView;
 	import org.tbyrne.display.layout.core.ILayoutInfo;
-	import org.tbyrne.display.validation.FrameValidationFlag;
+	import org.tbyrne.display.validation.ViewValidationFlag;
 	import org.tbyrne.display.validation.ValidationFlag;
 	
 	public class AbstractLayout extends LayoutSubject implements ILayout

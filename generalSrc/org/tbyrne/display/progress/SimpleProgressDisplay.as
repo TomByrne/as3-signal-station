@@ -9,7 +9,7 @@ package org.tbyrne.display.progress
 	import org.tbyrne.display.assets.nativeAssets.NativeAssetFactory;
 	import org.tbyrne.display.assets.nativeAssets.SpriteAsset;
 	import org.tbyrne.display.assets.nativeTypes.IDisplayObject;
-	import org.tbyrne.display.validation.FrameValidationFlag;
+	import org.tbyrne.display.validation.ViewValidationFlag;
 
 	/**
 	 * TODO: add preloader props (e.g. progress,total,units, etc.) into their own 
@@ -245,7 +245,7 @@ package org.tbyrne.display.progress
 		override protected function commitProgress():void{
 			validateSize(true);
 		}
-		override protected function readyForSize(from:FrameValidationFlag):Boolean{
+		override protected function readyForSize(from:ViewValidationFlag):Boolean{
 			return (super.readyForSize(from) && _measurable && _active);
 		}
 		override protected function commitSize():void{

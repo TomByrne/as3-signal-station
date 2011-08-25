@@ -74,6 +74,7 @@ package
 	import org.tbyrne.display.transition.WipeTransition;
 	import org.tbyrne.display.utils.FullscreenUtil;
 	import org.tbyrne.display.utils.TopLayerManager;
+	import org.tbyrne.display.validation.DisplayValidationFlag;
 	import org.tbyrne.gateway.ServerProxy;
 	import org.tbyrne.gateway.commands.CallMethodCommand;
 	import org.tbyrne.gateways.FlashVarsGateway;
@@ -85,7 +86,6 @@ package
 	import org.tbyrne.input.items.NotificationInputItem;
 	import org.tbyrne.media.MediaProgressDisplayAdaptor;
 	import org.tbyrne.media.image.GifSource;
-	import org.tbyrne.media.image.ImageSource;
 	import org.tbyrne.media.video.ProgressiveVideoSource;
 	import org.tbyrne.media.video.StreamingVideoSource;
 	import org.tbyrne.media.video.VolumeMemory;
@@ -190,6 +190,7 @@ package
 			Path;
 			Bezier;
 			BezierPoint;
+			DisplayValidationFlag;
 			
 			//PLATFORM::air{
 			XMLFileLogger;

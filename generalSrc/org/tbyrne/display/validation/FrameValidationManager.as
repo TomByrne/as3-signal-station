@@ -3,8 +3,6 @@ package org.tbyrne.display.validation
 	import flash.display.Shape;
 	import flash.events.Event;
 	import flash.utils.Dictionary;
-	
-	import org.tbyrne.display.assets.nativeTypes.IDisplayObject;
 
 	public class FrameValidationManager
 	{
@@ -20,19 +18,28 @@ package org.tbyrne.display.validation
 		
 		
 		// mapped flag > true
-		private var flags:Dictionary = new Dictionary();
-		private var pendingFlags:Array = [];
-		private var rootBundles:Array = [];
+		private var flags:Dictionary;
+		private var pendingFlags:Vector.<IFrameValidationFlag>;
+		private var rootBundles:Vector.<FlagBundle>;
 		// mapped asset > AssetBundle
-		protected var bundleMap:Dictionary = new Dictionary();
+		protected var bundleMap:Dictionary;
 		// mapped validationFlag > AssetBundle
-		protected var flagToBundle:Dictionary = new Dictionary();
+		protected var flagToBundle:Dictionary;
 		// mapped AssetBundle > DrawRun
-		protected var currentRuns:Dictionary = new Dictionary();
+		protected var currentRuns:Dictionary;
 		protected var currentRunCount:int = 0;
+		protected var _inited:Boolean;
 		
 		public function FrameValidationManager(){
+		}
+		public function init():void{
 			frameDispatcher.addEventListener(Event.ENTER_FRAME, onRender);
+			pendingFlags = new Vector.<IFrameValidationFlag>();
+			rootBundles = new Vector.<FlagBundle>();
+			currentRuns = new Dictionary();
+			flagToBundle = new Dictionary();
+			bundleMap = new Dictionary();
+			flags = new Dictionary();
 		}
 		protected function onRender(e:Event):void{
 			assessAllFlags();
@@ -45,6 +52,10 @@ package org.tbyrne.display.validation
 			}
 		}
 		public function addFrameValFlag(flag:IFrameValidationFlag):void{
+			if(!_inited){
+				_inited = true;
+				init();
+			}
 			CONFIG::debug{
 				if(flags[flag]){
 					Log.error( "FrameValidationManager.addFrameValFlag: Trying to add flag twice");
@@ -65,12 +76,12 @@ package org.tbyrne.display.validation
 			}
 			var index:int = pendingFlags.indexOf(flag);
 			if(index==-1){
-				var bundle:AssetBundle = flagToBundle[flag];;
+				var bundle:FlagBundle = flagToBundle[flag];;
 				removeFromBundle(flag, bundle);
 				removeFromRuns(flag);
-				flag.assetChanged.removeHandler(onFlagAssetChanged);
+				//flag.assetChanged.removeHandler(onFlagAssetChanged);
 			}else{
-				pendingFlags.splice(index);
+				pendingFlags.splice(index,1);
 			}
 			delete flags[flag];
 		}
@@ -79,17 +90,17 @@ package org.tbyrne.display.validation
 			for each(var flag:IFrameValidationFlag in pendingFlags){
 				assessFlag(flag);
 			}
-			pendingFlags = [];
+			pendingFlags = new Vector.<IFrameValidationFlag>();
 		}
 		/**
 		 * Adds this IFrameValidationFlag object into the asset heirarchy.
 		 */
 		protected function assessFlag(flag:IFrameValidationFlag):void{
-			flag.assetChanged.addHandler(onFlagAssetChanged);
+			//flag.assetChanged.addHandler(onFlagAssetChanged);
 			addToBundle(flag);
 			addToRuns(flag);
 		}
-		protected function onFlagAssetChanged(from:IFrameValidationFlag, oldAsset:IDisplayObject):void{
+		/*protected function onFlagAssetChanged(from:IFrameValidationFlag, oldAsset:IDisplayObject):void{
 			var oldBundle:AssetBundle = flagToBundle[from];
 			var oldRun:DrawRun;
 			
@@ -98,36 +109,38 @@ package org.tbyrne.display.validation
 			
 			var newBundle:AssetBundle = addToBundle(from);
 			checkIfRunChange(from, newBundle, oldRun);
-		}
-		protected function addToBundle(flag:IFrameValidationFlag):AssetBundle{
-			var bundle:AssetBundle = bundleMap[flag.asset];
+		}*/
+		protected function addToBundle(flag:IFrameValidationFlag):FlagBundle{
+			var bundle:FlagBundle = bundleMap[flag.hierarchyKey];
 			if(!bundle){
-				bundle = AssetBundle.getNew(flag.asset);
-				bundleMap[flag.asset] = bundle;
-				bundle.assetPosChanged.addHandler(onAssetPosChanged);
-				if(bundle.readyForExecution)addToHeirarchy(bundle);
+				bundle = FlagBundle.getNew(flag.hierarchyKey);
+				bundle.addValidationFlag(flag);
+				bundleMap[flag.hierarchyKey] = bundle;
+				//bundle.assetPosChanged.addHandler(onAssetPosChanged);
+				addToHeirarchy(bundle);
+			}else{
+				bundle.addValidationFlag(flag);
 			}
 			flagToBundle[flag] = bundle;
-			bundle.addValidationFlag(flag);
 			return bundle;
 		}
-		protected function removeFromBundle(flag:IFrameValidationFlag, bundle:AssetBundle):void{
+		protected function removeFromBundle(flag:IFrameValidationFlag, bundle:FlagBundle):void{
 			bundle.removeValidationFlag(flag);
 			if(!bundle.validationFlagCount){
 				removeFromHeirarchy(bundle);
-				delete bundleMap[bundle.asset];
-				bundle.assetPosChanged.removeHandler(onAssetPosChanged);
+				delete bundleMap[bundle.key];
+				//bundle.assetPosChanged.removeHandler(onAssetPosChanged);
 				bundle.release();
 			}
 			delete flagToBundle[flag];
 		}
-		protected function onAssetPosChanged(bundle:AssetBundle):void{
+		/*protected function onAssetPosChanged(bundle:FlagBundle):void{
 			var oldRun:DrawRun = findRunForBundle(bundle);
 			removeFromHeirarchy(bundle);
 			if(bundle.readyForExecution)addToHeirarchy(bundle);
 			checkIfRunChange(null, bundle, oldRun);
-		}
-		protected function checkIfRunChange(flag:IFrameValidationFlag, bundle:AssetBundle, oldRun:DrawRun):void{
+		}*/
+		protected function checkIfRunChange(flag:IFrameValidationFlag, bundle:FlagBundle, oldRun:DrawRun):void{
 			var newRun:DrawRun;
 			if(bundle)newRun = findRunForBundle(bundle);
 			if(newRun!=oldRun){
@@ -142,12 +155,15 @@ package org.tbyrne.display.validation
 				}
 			}
 		}
-		protected function addToHeirarchy(bundle:AssetBundle):void{
-			var subject:IDisplayObject = bundle.asset;
-			var parentBundle:AssetBundle;
+		protected function addToHeirarchy(bundle:FlagBundle):void{
+			/*var subject:IDisplayObject = bundle.asset;
+			var parentBundle:FlagBundle;
 			while(subject && !(parentBundle = bundleMap[subject.parent])){
 				subject = subject.parent;
-			}
+			}*/
+			var flag:IFrameValidationFlag = bundle.validationFlags[0];
+			var parentBundle:FlagBundle = findParentBundle(flag, rootBundles);
+			
 			if(parentBundle){
 				stealChildren(bundle, parentBundle.children);
 				parentBundle.addChild(bundle);
@@ -156,8 +172,22 @@ package org.tbyrne.display.validation
 				rootBundles.push(bundle);
 			}
 		}
-		protected function removeFromHeirarchy(bundle:AssetBundle):void{
-			var child:AssetBundle;
+		protected function findParentBundle(flag:IFrameValidationFlag, inBundles:Vector.<FlagBundle>):FlagBundle{
+			for each(var parentBundle:FlagBundle in inBundles){
+				var parentFlag:IFrameValidationFlag = parentBundle.validationFlags[0];
+				if(parentFlag.isDescendant(flag)){
+					var nextParent:FlagBundle = findParentBundle(flag, parentBundle.children);
+					if(nextParent){
+						return nextParent;
+					}else{
+						return parentBundle;
+					}
+				}
+			}
+			return null;
+		}
+		protected function removeFromHeirarchy(bundle:FlagBundle):void{
+			var child:FlagBundle;
 			if(bundle.parent){
 				while(bundle.children.length){
 					child = bundle.children[0];
@@ -181,39 +211,40 @@ package org.tbyrne.display.validation
 		 * Analyses a list of children and transfers them to the bundle when they fall underneath
 		 * the bundles asset.
 		 */
-		protected function stealChildren(bundle:AssetBundle, children:Array):void{
+		protected function stealChildren(bundle:FlagBundle, children:Vector.<FlagBundle>):void{
+			var bundleFlag:IFrameValidationFlag = bundle.validationFlags[0];
 			for(var i:int=0; i<children.length; i++){
-				var child:AssetBundle = children[i];
-				if(isDescendant(bundle.asset, child.asset)){
+				var child:FlagBundle = children[i];
+				var childFlag:IFrameValidationFlag = child.validationFlags[0];
+				if(bundleFlag.isDescendant(childFlag)){
 					bundle.addChild(child);
 					children.splice(i,1);
 				}
 			}
 		}
-		protected function isDescendant(parent:IDisplayObject, child:IDisplayObject):Boolean{
+		/*protected function isDescendant(parent:IDisplayObject, child:IDisplayObject):Boolean{
 			var subject:IDisplayObject = child.parent;
 			while(subject && subject!=parent){
 				subject = subject.parent;
 			}
 			return (subject!=null);
-		}
+		}*/
 		protected function startDrawRun(flag:IFrameValidationFlag):void{
 			var childRuns:Array;
 			var drawRun:DrawRun;
 			if(flag){
-				var asset:IDisplayObject = flag.asset;
+				var key:* = flag.hierarchyKey;
 				var existingRun:DrawRun;
 				childRuns = [];
 				if(currentRunCount){
 					for each(drawRun in currentRuns){
-						var otherAsset:IDisplayObject = drawRun.root.asset;
-						if(otherAsset){
-							if(otherAsset==asset || isDescendant(otherAsset,asset)){
-								existingRun = drawRun;
-								break;
-							}else if(isDescendant(asset,otherAsset)){
-								childRuns.push(drawRun);
-							}
+						var otherKey:* = drawRun.root.key;
+						var otherFlag:IFrameValidationFlag = drawRun.root.validationFlags[0];
+						if(key==otherKey || otherFlag.isDescendant(flag)){
+							existingRun = drawRun;
+							break;
+						}else if(flag.isDescendant(otherFlag)){
+							childRuns.push(drawRun);
 						}
 					}
 				}
@@ -223,10 +254,12 @@ package org.tbyrne.display.validation
 					createNewRun(flagToBundle[flag], childRuns);
 				}
 			}else{
-				for each(var bundle:AssetBundle in rootBundles){
+				for each(var bundle:FlagBundle in rootBundles){
 					childRuns = [];
+					var bundleFlag:IFrameValidationFlag = bundle.validationFlags[0];
 					for each(drawRun in currentRuns){
-						if(!drawRun.root.asset || isDescendant(bundle.asset,drawRun.root.asset)){
+						var runFlag:IFrameValidationFlag = drawRun.root.validationFlags[0];
+						if(bundleFlag.isDescendant(runFlag)){
 							childRuns.push(drawRun);
 						}
 					}
@@ -234,7 +267,7 @@ package org.tbyrne.display.validation
 				}
 			}
 		}
-		protected function createNewRun(bundle:AssetBundle, childRuns:Array):void{
+		protected function createNewRun(bundle:FlagBundle, childRuns:Array):void{
 			var run:DrawRun = DrawRun.getNew(bundle);
 			currentRuns[bundle] = run;
 			++currentRunCount;
@@ -248,7 +281,7 @@ package org.tbyrne.display.validation
 		 * Adds this flag to the applicable running DrawRun
 		 */
 		protected function addToRuns(flag:IFrameValidationFlag):void{
-			var run:DrawRun = findRunForAsset(flag.asset);
+			var run:DrawRun = findRunForFlag(flag);
 			if(run){
 				run.addPending(flag);
 			}
@@ -257,25 +290,26 @@ package org.tbyrne.display.validation
 		 * Removed this flag from the applicable running DrawRun
 		 */
 		protected function removeFromRuns(flag:IFrameValidationFlag):void{
-			var run:DrawRun = findRunForAsset(flag.asset);
+			var run:DrawRun = findRunForFlag(flag);
 			if(run){
 				run.removePending(flag);
 			}
 		}
-		protected function findRunForAsset(asset:IDisplayObject):DrawRun{
-			if(currentRunCount && asset){
+		protected function findRunForFlag(flag:IFrameValidationFlag):DrawRun{
+			if(currentRunCount){
 				for each(var drawRun:DrawRun in currentRuns){
-					if(isDescendant(drawRun.root.asset,asset)){
+					var runFlag:IFrameValidationFlag = drawRun.root.validationFlags[0];
+					if(runFlag.isDescendant(flag) || runFlag.hierarchyKey==flag.hierarchyKey){
 						return drawRun;
 					}
 				}
 			}
 			return null;
 		}
-		protected function findRunForBundle(bundle:AssetBundle):DrawRun{
+		protected function findRunForBundle(bundle:FlagBundle):DrawRun{
 			if(currentRunCount){
 				for each(var drawRun:DrawRun in currentRuns){
-					var subject:AssetBundle = bundle;
+					var subject:FlagBundle = bundle;
 					while(subject){
 						if(drawRun.root==subject){
 							return drawRun;
@@ -288,22 +322,28 @@ package org.tbyrne.display.validation
 		}
 	}
 }
+
 import flash.events.Event;
 import flash.utils.Dictionary;
 
-import org.tbyrne.acting.actTypes.IAct;
-import org.tbyrne.acting.acts.Act;
-import Log;
-import org.tbyrne.display.assets.nativeTypes.IDisplayObject;
 import org.tbyrne.display.validation.IFrameValidationFlag;
 import org.tbyrne.hoborg.IPoolable;
 import org.tbyrne.hoborg.ObjectPool;
 
-class AssetBundle implements IPoolable{
-	private static const pool:ObjectPool = new ObjectPool(AssetBundle);
-	public static function getNew(asset:IDisplayObject):AssetBundle{
-		var ret:AssetBundle = pool.takeObject();
-		ret.asset = asset;
+/**
+ * A FlagBundle represents a collection of flags which all relate to the same
+ * position in the display heirarchy.
+ * 
+ *  
+ * @author Tom
+ * 
+ */
+class FlagBundle implements IPoolable{
+	private static const pool:ObjectPool = new ObjectPool(FlagBundle);
+	public static function getNew(key:*):FlagBundle{
+		var ret:FlagBundle = pool.takeObject();
+		//ret.asset = asset;
+		ret.key = key;
 		return ret;
 	}
 	
@@ -311,15 +351,15 @@ class AssetBundle implements IPoolable{
 	/**
 	 * handler(from:AssetBundle)
 	 */
-	public function get assetPosChanged():IAct{
+	/*public function get assetPosChanged():IAct{
 		return _assetPosChanged;
-	}
+	}*/
 	
 	public function get validationFlagCount():int{
 		return validationFlags.length;
 	}
 	
-	public function get asset():IDisplayObject{
+	/*public function get asset():IDisplayObject{
 		return _asset;
 	}
 	public function set asset(value:IDisplayObject):void{
@@ -337,21 +377,22 @@ class AssetBundle implements IPoolable{
 				_addedToStage = false;
 			}
 		}
-	}
-	public function get readyForExecution():Boolean{
+	}*/
+	/*public function get readyForExecution():Boolean{
 		return !_asset || _addedToStage;
-	}
+	}*/
 	
-	public var parent:AssetBundle;
-	public var children:Array = [];
-	public var validationFlags:Array = [];
+	public var key:*;
+	public var parent:FlagBundle;
+	public var children:Vector.<FlagBundle> = new Vector.<FlagBundle>();
+	public var validationFlags:Vector.<IFrameValidationFlag> = new Vector.<IFrameValidationFlag>();
 	
 	protected var _addedToStage:Boolean;
-	protected var _asset:IDisplayObject;
-	protected var _assetPosChanged:Act = new Act();
+	/*protected var _asset:IDisplayObject;
+	protected var _assetPosChanged:Act = new Act();*/
 	
 	
-	protected function onAdded(from:IDisplayObject):void{
+	/*protected function onAdded(from:IDisplayObject):void{
 		if(!_addedToStage){
 			_addedToStage = true;
 			_assetPosChanged.perform(this);
@@ -362,8 +403,8 @@ class AssetBundle implements IPoolable{
 			_addedToStage = false;
 			_assetPosChanged.perform(this);
 		}
-	}
-	public function addChild(bundle:AssetBundle):void{
+	}*/
+	public function addChild(bundle:FlagBundle):void{
 		CONFIG::debug{
 			if(children.indexOf(bundle)!=-1){
 				Log.error( "AssetBundle.addChild: child already added");
@@ -372,7 +413,7 @@ class AssetBundle implements IPoolable{
 		bundle.parent = this;
 		children.push(bundle);
 	}
-	public function removeChild(bundle:AssetBundle):void{
+	public function removeChild(bundle:FlagBundle):void{
 		var index:int = children.indexOf(bundle);
 		CONFIG::debug{
 			if(index==-1){
@@ -407,10 +448,10 @@ class AssetBundle implements IPoolable{
 	}
 	
 	public function reset():void{
-		asset = null
-		validationFlags = [];
+		//asset = null
+		validationFlags = new Vector.<IFrameValidationFlag>();
 		parent = null;
-		children = [];
+		children = new Vector.<FlagBundle>();
 	}
 	public function release():void{
 		pool.releaseObject(this);
@@ -418,13 +459,13 @@ class AssetBundle implements IPoolable{
 }
 class DrawRun implements IPoolable{
 	private static const pool:ObjectPool = new ObjectPool(DrawRun);
-	public static function getNew(root:AssetBundle):DrawRun{
+	public static function getNew(root:FlagBundle):DrawRun{
 		var ret:DrawRun = pool.takeObject();
 		ret.root = root;
 		return ret;
 	}
 	
-	public var root:AssetBundle;
+	public var root:FlagBundle;
 	private var pendingDraws:Array = [];
 	public var currentIndex:int = 0;
 	public var hasDrawnThisRun:Boolean;
@@ -469,12 +510,12 @@ class DrawRun implements IPoolable{
 			// should it be resorted here (if flags have ben added/removed)?
 		}
 	}
-	protected function addFlagsExcept(asset:AssetBundle, except:Dictionary):void{
+	protected function addFlagsExcept(asset:FlagBundle, except:Dictionary):void{
 		if(!except[asset]){
 			for each(var flag:IFrameValidationFlag in asset.validationFlags){
 				pendingDraws.push(flag);
 			}
-			for each(var child:AssetBundle in asset.children){
+			for each(var child:FlagBundle in asset.children){
 				addFlagsExcept(child,except);
 			}
 		}

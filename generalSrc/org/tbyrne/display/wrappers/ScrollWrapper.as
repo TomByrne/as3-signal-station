@@ -22,6 +22,7 @@ package org.tbyrne.display.wrappers
 				super.target = value;
 				_targetView = (value as IView);
 				_assetBinding.bindable = _targetView;
+				invalidatePos();
 			}
 		}
 		
@@ -59,7 +60,6 @@ package org.tbyrne.display.wrappers
 		private var _ignoreMetricsChanges:Boolean;
 		private var _allowHorizontalScroll:Boolean = true;
 		private var _allowVerticalScroll:Boolean = true;
-		private var _target:ILayoutSubject;
 		private var _targetView:IView;
 		private var _assumedTargetAsset:IDisplayObject;
 		private var _vScrollMetrics:ScrollMetrics = new ScrollMetrics(0,0,0);
@@ -90,8 +90,8 @@ package org.tbyrne.display.wrappers
 			}
 		}
 		override protected function commitPos():void{
-			var asset:IDisplayObject = (_targetAsset || _assumedTargetAsset);
-			asset.setPosition(_position.x,_position.y);
+			if(_targetAsset)_targetAsset.setPosition(_position.x,_position.y);
+			if(_target)_target.setPosition(_position.x,_position.y);
 			validateSize(true);
 		}
 		override protected function commitSize():void{

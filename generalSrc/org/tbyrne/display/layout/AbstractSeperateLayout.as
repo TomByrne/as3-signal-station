@@ -5,7 +5,7 @@ package org.tbyrne.display.layout
 	import flash.utils.Dictionary;
 	
 	import org.tbyrne.display.core.IView;
-	import org.tbyrne.display.validation.FrameValidationFlag;
+	import org.tbyrne.display.validation.ViewValidationFlag;
 	import org.tbyrne.display.validation.ValidationFlag;
 
 	/**
@@ -38,7 +38,7 @@ package org.tbyrne.display.layout
 			if(super.addSubject(subject)){
 				var subjMeas:Point = new Point();
 				var params:Array =(drawToMeasure()?[subject,subjMeas]:[subject]);
-				_subjectFlags[subject] = new FrameValidationFlag(scopeView, layoutSubject, false, params);
+				_subjectFlags[subject] = new ViewValidationFlag(scopeView, layoutSubject, false, params);
 				_subjectMeas[subject] = subjMeas;
 				_invalidMeas[subject] = true;
 				return true;
@@ -50,7 +50,7 @@ package org.tbyrne.display.layout
 		 */
 		override public function removeSubject(subject:ILayoutSubject):Boolean{
 			if(super.removeSubject(subject)){
-				var valFlag:FrameValidationFlag = _subjectFlags[subject];
+				var valFlag:ViewValidationFlag = _subjectFlags[subject];
 				valFlag.release();
 				delete _subjectFlags[subject];
 				delete _subjectMeas[subject];
@@ -62,7 +62,7 @@ package org.tbyrne.display.layout
 			invalidateSize();
 		}
 		override protected function commitSize():void{
-			for each(var valFlag:FrameValidationFlag in _subjectFlags){
+			for each(var valFlag:ViewValidationFlag in _subjectFlags){
 				valFlag.validate(true);
 			}
 			if(drawToMeasure()){
@@ -86,7 +86,7 @@ package org.tbyrne.display.layout
 				}
 			}else{
 				if(drawToMeasure()){
-					var valFlag:FrameValidationFlag = _subjectFlags[subject];
+					var valFlag:ViewValidationFlag = _subjectFlags[subject];
 					valFlag.invalidate();
 				}
 				_invalidMeas[subject] = true;

@@ -11,7 +11,7 @@ package org.tbyrne.display.core
 	import org.tbyrne.display.assets.assetTypes.IAsset;
 	import org.tbyrne.display.assets.nativeTypes.IDisplayObject;
 	import org.tbyrne.display.layout.core.ILayoutInfo;
-	import org.tbyrne.display.validation.FrameValidationFlag;
+	import org.tbyrne.display.validation.ViewValidationFlag;
 	import org.tbyrne.display.validation.ValidationFlag;
 	
 	public class LayoutView extends DrawableView implements ILayoutView
@@ -70,8 +70,8 @@ package org.tbyrne.display.core
 		protected var _measurementsChanged:Act;
 		
 		private var _measureFlag:ValidationFlag;
-		private var _sizeDrawFlag:FrameValidationFlag;
-		private var _posDrawFlag:FrameValidationFlag;
+		private var _sizeDrawFlag:ViewValidationFlag;
+		private var _posDrawFlag:ViewValidationFlag;
 		
 		private var _lastMeasX:Number;
 		private var _lastMeasY:Number;
@@ -96,8 +96,8 @@ package org.tbyrne.display.core
 			_measureFlag = new ValidationFlag(doMeasure, false);
 			if(!_measurements)_measurements = new Point();
 			
-			addDrawFlag(_posDrawFlag = new FrameValidationFlag(this,commitPosition,false,null,readyForPosition));
-			addDrawFlag(_sizeDrawFlag = new FrameValidationFlag(this,commitSize,false,null,readyForSize));
+			addDrawFlag(_posDrawFlag = new ViewValidationFlag(this,commitPosition,false,null,readyForPosition));
+			addDrawFlag(_sizeDrawFlag = new ViewValidationFlag(this,commitSize,false,null,readyForSize));
 			
 			super.init();
 			
@@ -233,14 +233,14 @@ package org.tbyrne.display.core
 				_measureFlag.invalidate();
 			}
 		}
-		protected function readyForSize(from:FrameValidationFlag):Boolean{
+		protected function readyForSize(from:ViewValidationFlag):Boolean{
 			_bindFlag.validate();
 			return _bindFlag.valid;
 		}
 		protected function commitSize():void{
 			asset.setSize(_size.x,_size.y);
 		}
-		protected function readyForPosition(from:FrameValidationFlag):Boolean{
+		protected function readyForPosition(from:ViewValidationFlag):Boolean{
 			_bindFlag.validate();
 			return _bindFlag.valid;
 		}

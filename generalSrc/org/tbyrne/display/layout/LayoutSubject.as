@@ -7,7 +7,7 @@ package org.tbyrne.display.layout
 	import org.tbyrne.binding.Watchable;
 	import org.tbyrne.display.core.IView;
 	import org.tbyrne.display.layout.core.ILayoutInfo;
-	import org.tbyrne.display.validation.FrameValidationFlag;
+	import org.tbyrne.display.validation.ViewValidationFlag;
 	import org.tbyrne.display.validation.ValidationFlag;
 	
 	public class LayoutSubject extends Watchable implements ILayoutSubject
@@ -63,9 +63,9 @@ package org.tbyrne.display.layout
 		protected var _measurementsChanged:Act;
 		
 		private var _measureFlag:ValidationFlag;
-		private var _sizeDrawFlag:FrameValidationFlag;
-		private var _posDrawFlag:FrameValidationFlag;
-		private var _drawFlag:FrameValidationFlag;
+		private var _sizeDrawFlag:ViewValidationFlag;
+		private var _posDrawFlag:ViewValidationFlag;
+		private var _drawFlag:ViewValidationFlag;
 		
 		protected var _scopeView:IView;
 		
@@ -77,27 +77,27 @@ package org.tbyrne.display.layout
 		private var _lastMeasX:Number;
 		private var _lastMeasY:Number;
 		
-		protected var _childDrawFlags:Vector.<FrameValidationFlag>;
+		protected var _childDrawFlags:Vector.<ViewValidationFlag>;
 		
 		public function LayoutSubject(watchableProperties:Array=null){
 			super(watchableProperties);
-			_drawFlag = new FrameValidationFlag(null,validateAll,false);
+			_drawFlag = new ViewValidationFlag(null,validateAll,false);
 			
 			_measureFlag = new ValidationFlag(measure, false);
 			_measurements = new Point();
 			
-			addDrawFlag(_posDrawFlag = new FrameValidationFlag(null,commitPos,true));
-			addDrawFlag(_sizeDrawFlag = new FrameValidationFlag(null,commitSize,true));
+			addDrawFlag(_posDrawFlag = new ViewValidationFlag(null,commitPos,true));
+			addDrawFlag(_sizeDrawFlag = new ViewValidationFlag(null,commitSize,true));
 		}
-		protected function addDrawFlag(frameValidationFlag:FrameValidationFlag):void{
-			if(!_childDrawFlags)_childDrawFlags = new Vector.<FrameValidationFlag>();
+		protected function addDrawFlag(frameValidationFlag:ViewValidationFlag):void{
+			if(!_childDrawFlags)_childDrawFlags = new Vector.<ViewValidationFlag>();
 			_childDrawFlags.push(frameValidationFlag);
 		}
 		protected function setScopeView(value:IView):void{
 			if(_scopeView!=value){
 				_scopeView = value;
 				_drawFlag.view = _scopeView;
-				for each(var frameValidationFlag:FrameValidationFlag in _childDrawFlags){
+				for each(var frameValidationFlag:ViewValidationFlag in _childDrawFlags){
 					frameValidationFlag.view = value;
 				}
 			}
@@ -123,7 +123,7 @@ package org.tbyrne.display.layout
 			_drawFlag.invalidate();
 		}
 		protected final function validateAll():void{
-			for each(var frameValidationFlag:FrameValidationFlag in _childDrawFlags){
+			for each(var frameValidationFlag:ViewValidationFlag in _childDrawFlags){
 				frameValidationFlag.validate(true);
 			}
 		}
