@@ -77,7 +77,7 @@ package org.tbyrne.display.layout
 		private var _lastMeasX:Number;
 		private var _lastMeasY:Number;
 		
-		protected var _childDrawFlags:Vector.<ViewValidationFlag>;
+		protected var _childDrawFlags:Array;
 		
 		public function LayoutSubject(watchableProperties:Array=null){
 			super(watchableProperties);
@@ -90,7 +90,7 @@ package org.tbyrne.display.layout
 			addDrawFlag(_sizeDrawFlag = new ViewValidationFlag(null,commitSize,true));
 		}
 		protected function addDrawFlag(frameValidationFlag:ViewValidationFlag):void{
-			if(!_childDrawFlags)_childDrawFlags = new Vector.<ViewValidationFlag>();
+			if(!_childDrawFlags)_childDrawFlags = new Array();
 			_childDrawFlags.push(frameValidationFlag);
 		}
 		protected function setScopeView(value:IView):void{

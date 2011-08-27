@@ -19,8 +19,8 @@ package org.tbyrne.display.validation
 		
 		// mapped flag > true
 		private var flags:Dictionary;
-		private var pendingFlags:Vector.<IFrameValidationFlag>;
-		private var rootBundles:Vector.<FlagBundle>;
+		private var pendingFlags:Array;
+		private var rootBundles:Array;
 		// mapped asset > AssetBundle
 		protected var bundleMap:Dictionary;
 		// mapped validationFlag > AssetBundle
@@ -34,8 +34,8 @@ package org.tbyrne.display.validation
 		}
 		public function init():void{
 			frameDispatcher.addEventListener(Event.ENTER_FRAME, onRender);
-			pendingFlags = new Vector.<IFrameValidationFlag>();
-			rootBundles = new Vector.<FlagBundle>();
+			pendingFlags = new Array();
+			rootBundles = new Array();
 			currentRuns = new Dictionary();
 			flagToBundle = new Dictionary();
 			bundleMap = new Dictionary();
@@ -90,7 +90,7 @@ package org.tbyrne.display.validation
 			for each(var flag:IFrameValidationFlag in pendingFlags){
 				assessFlag(flag);
 			}
-			pendingFlags = new Vector.<IFrameValidationFlag>();
+			pendingFlags = new Array();
 		}
 		/**
 		 * Adds this IFrameValidationFlag object into the asset heirarchy.
@@ -172,7 +172,7 @@ package org.tbyrne.display.validation
 				rootBundles.push(bundle);
 			}
 		}
-		protected function findParentBundle(flag:IFrameValidationFlag, inBundles:Vector.<FlagBundle>):FlagBundle{
+		protected function findParentBundle(flag:IFrameValidationFlag, inBundles:Array):FlagBundle{
 			for each(var parentBundle:FlagBundle in inBundles){
 				var parentFlag:IFrameValidationFlag = parentBundle.validationFlags[0];
 				if(parentFlag.isDescendant(flag)){
@@ -211,7 +211,7 @@ package org.tbyrne.display.validation
 		 * Analyses a list of children and transfers them to the bundle when they fall underneath
 		 * the bundles asset.
 		 */
-		protected function stealChildren(bundle:FlagBundle, children:Vector.<FlagBundle>):void{
+		protected function stealChildren(bundle:FlagBundle, children:Array):void{
 			var bundleFlag:IFrameValidationFlag = bundle.validationFlags[0];
 			for(var i:int=0; i<children.length; i++){
 				var child:FlagBundle = children[i];
@@ -384,8 +384,8 @@ class FlagBundle implements IPoolable{
 	
 	public var key:*;
 	public var parent:FlagBundle;
-	public var children:Vector.<FlagBundle> = new Vector.<FlagBundle>();
-	public var validationFlags:Vector.<IFrameValidationFlag> = new Vector.<IFrameValidationFlag>();
+	public var children:Array = new Array();
+	public var validationFlags:Array = new Array();
 	
 	protected var _addedToStage:Boolean;
 	/*protected var _asset:IDisplayObject;
@@ -449,9 +449,9 @@ class FlagBundle implements IPoolable{
 	
 	public function reset():void{
 		//asset = null
-		validationFlags = new Vector.<IFrameValidationFlag>();
+		validationFlags = new Array();
 		parent = null;
-		children = new Vector.<FlagBundle>();
+		children = new Array();
 	}
 	public function release():void{
 		pool.releaseObject(this);

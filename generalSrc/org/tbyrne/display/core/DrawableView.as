@@ -82,7 +82,7 @@ package org.tbyrne.display.core
 		
 		protected var _bindFlag:ValidationFlag;
 		
-		protected var _childDrawFlags:Vector.<ViewValidationFlag>;
+		protected var _childDrawFlags:Array;
 		
 		private var _transState:StateDef = new StateDef([INTRO_FRAME_LABEL,OUTRO_FRAME_LABEL]);
 		
@@ -92,7 +92,7 @@ package org.tbyrne.display.core
 			super(asset);
 		}
 		protected function addDrawFlag(frameValidationFlag:ViewValidationFlag):void{
-			if(!_childDrawFlags)_childDrawFlags = new Vector.<ViewValidationFlag>();
+			if(!_childDrawFlags)_childDrawFlags = new Array();
 			_childDrawFlags.push(frameValidationFlag);
 		}
 		
@@ -201,7 +201,8 @@ package org.tbyrne.display.core
 			if(_bindFlag.valid){
 				validate();
 			}else{
-				_asset.exitFrame.addTempHandler(onFirstFrameExit);
+				//_asset.exitFrame.addTempHandler(onFirstFrameExit);
+				_asset.enterFrame.addTempHandler(onFirstFrameExit);
 			}
 		}
 		

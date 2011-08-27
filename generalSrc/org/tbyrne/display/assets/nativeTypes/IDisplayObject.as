@@ -80,7 +80,7 @@ package org.tbyrne.display.assets.nativeTypes
 		/**
 		 * handler(from:IAsset)
 		 */
-		function get exitFrame():IAct;
+		//function get exitFrame():IAct;
 		
 		function setPosition(x:Number, y:Number):void;
 		function setSize(width:Number, height:Number):void;
