@@ -22,10 +22,12 @@ package org.tbyrne.display.assets.schema
 	import org.tbyrne.acting.actTypes.IAct;
 	import org.tbyrne.acting.acts.Act;
 	import org.tbyrne.acting.acts.NativeAct;
+	import org.tbyrne.display.actInfo.IKeyActInfo;
 	import org.tbyrne.display.actInfo.IMouseActInfo;
 	import org.tbyrne.display.assets.IAssetFactory;
 	import org.tbyrne.display.assets.assetTypes.IAsset;
 	import org.tbyrne.display.assets.nativeAssets.INativeAsset;
+	import org.tbyrne.display.assets.nativeAssets.actInfo.KeyActInfo;
 	import org.tbyrne.display.assets.nativeAssets.actInfo.MouseActInfo;
 	import org.tbyrne.display.assets.nativeTypes.*;
 	import org.tbyrne.display.assets.schemaTypes.*;
@@ -95,6 +97,8 @@ package org.tbyrne.display.assets.schema
 				new EventBundle(MouseEvent.MOUSE_OVER, "_mouseOver", onMouseEvent),
 				new EventBundle(MouseEvent.MOUSE_UP, "_mouseUp", onMouseEvent),
 				new EventBundle(MouseEvent.MOUSE_DOWN, "_mouseDown", onMouseEvent),
+				new EventBundle(KeyboardEvent.KEY_DOWN, "_keyDown", onKeyEvent),
+				new EventBundle(KeyboardEvent.KEY_UP, "_keyUp", onKeyEvent),
 				new EventBundle(Event.CHANGE, "_change", onTextChange)];
 		}
 		protected function onAddedToStage(from:AbstractDynamicAsset):void{
@@ -512,8 +516,6 @@ package org.tbyrne.display.assets.schema
 		
 		protected var _focusIn:NativeAct;
 		protected var _focusOut:NativeAct;
-		protected var _keyDown:NativeAct;
-		protected var _keyUp:NativeAct;
 		
 		protected var _mouseWheel:Act;
 		protected var _click:Act;
@@ -525,6 +527,8 @@ package org.tbyrne.display.assets.schema
 		protected var _mouseOver:Act;
 		protected var _mouseUp:Act;
 		protected var _mouseDown:Act;
+		protected var _keyDown:Act;
+		protected var _keyUp:Act;
 		
 		
 		/**
@@ -628,14 +632,16 @@ package org.tbyrne.display.assets.schema
 		 * @inheritDoc
 		 */
 		public function get keyUp():IAct{
-			if(!_keyUp)_keyUp = new NativeAct(_interactiveObject,KeyboardEvent.KEY_UP,[this]);
+			if(!_keyUp)_keyUp = new Act();
+			confirmListening(KeyboardEvent.KEY_UP);
 			return _keyUp;
 		}
 		/**
 		 * @inheritDoc
 		 */
 		public function get keyDown():IAct{
-			if(!_keyDown)_keyDown = new NativeAct(_interactiveObject,KeyboardEvent.KEY_DOWN,[this]);
+			if(!_keyDown)_keyDown = new Act();
+			confirmListening(KeyboardEvent.KEY_DOWN);
 			return _keyDown;
 		}
 		
@@ -669,6 +675,16 @@ package org.tbyrne.display.assets.schema
 		}
 		
 		
+		private function onKeyEvent(e:KeyboardEvent):void{
+			var act:Act = this["_"+e.type];
+			if(act){
+				act.perform(this,createKeyEvent(e));
+			}
+		}
+		protected function createKeyEvent(e:KeyboardEvent):IKeyActInfo{
+			var target:IDisplayObject = (e.target==_textField?this:DISPLAY_MAP[e.target]);
+			return new KeyActInfo(target, e.altKey, e.ctrlKey, e.shiftKey, e.charCode, e.keyCode, e.keyLocation);
+		}
 		
 		
 		/*
