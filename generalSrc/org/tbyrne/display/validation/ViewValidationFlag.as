@@ -55,7 +55,6 @@ package org.tbyrne.display.validation
 		public function ViewValidationFlag(view:IView, validator:Function, valid:Boolean, parameters:Array=null, readyChecker:Function=null){
 			if(readyChecker==null)readyChecker = WITH_ASSET_CHECKER;
 			super(validator, valid, parameters, readyChecker);
-			_manager = FrameValidationManager.instance;
 			//_allowAddWithoutAsset = allowAddWithoutAsset;
 			this.view = view;
 			checkAdded();
