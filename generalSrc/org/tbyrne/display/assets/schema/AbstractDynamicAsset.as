@@ -87,19 +87,19 @@ package org.tbyrne.display.assets.schema
 		}
 		
 		protected function setupActBundles():void{
-			eventBundles = [new EventBundle(MouseEvent.MOUSE_WHEEL, "_mouseWheel", onMouseWheel),
-				new EventBundle(MouseEvent.CLICK, "_click", onMouseEvent),
-				new EventBundle(MouseEvent.DOUBLE_CLICK, "_doubleClick", onMouseEvent),
-				new EventBundle(MouseEvent.MOUSE_MOVE, "_mouseMove", onMouseEvent),
-				new EventBundle(MouseEvent.ROLL_OUT, "_rollOut", onMouseEvent),
-				new EventBundle(MouseEvent.ROLL_OVER, "_rollOver", onMouseEvent),
-				new EventBundle(MouseEvent.MOUSE_OUT, "_mouseOut", onMouseEvent),
-				new EventBundle(MouseEvent.MOUSE_OVER, "_mouseOver", onMouseEvent),
-				new EventBundle(MouseEvent.MOUSE_UP, "_mouseUp", onMouseEvent),
-				new EventBundle(MouseEvent.MOUSE_DOWN, "_mouseDown", onMouseEvent),
-				new EventBundle(KeyboardEvent.KEY_DOWN, "_keyDown", onKeyEvent),
-				new EventBundle(KeyboardEvent.KEY_UP, "_keyUp", onKeyEvent),
-				new EventBundle(Event.CHANGE, "_change", onTextChange)];
+			eventBundles = [new EventBundle(MouseEvent.MOUSE_WHEEL, onMouseWheel),
+				new EventBundle(MouseEvent.CLICK, onMouseEvent),
+				new EventBundle(MouseEvent.DOUBLE_CLICK, onMouseEvent),
+				new EventBundle(MouseEvent.MOUSE_MOVE, onMouseEvent),
+				new EventBundle(MouseEvent.ROLL_OUT, onMouseEvent),
+				new EventBundle(MouseEvent.ROLL_OVER, onMouseEvent),
+				new EventBundle(MouseEvent.MOUSE_OUT, onMouseEvent),
+				new EventBundle(MouseEvent.MOUSE_OVER, onMouseEvent),
+				new EventBundle(MouseEvent.MOUSE_UP, onMouseEvent),
+				new EventBundle(MouseEvent.MOUSE_DOWN, onMouseEvent),
+				new EventBundle(KeyboardEvent.KEY_DOWN, onKeyEvent),
+				new EventBundle(KeyboardEvent.KEY_UP, onKeyEvent),
+				new EventBundle(Event.CHANGE, onTextChange)];
 		}
 		protected function onAddedToStage(from:AbstractDynamicAsset):void{
 			_isAddedToStage = true;
@@ -842,8 +842,9 @@ package org.tbyrne.display.assets.schema
 		*/
 		
 		protected var _change:Act;
+		protected var _userChange:Act;
 		
-		public function set text(value:String):void{_textField.text = value}
+		public function set text(value:String):void{_textField.text = value;if(_change)_change.perform(this)}
 		public function get text():String{return _textField.text}
 		
 		public function set type(value:String):void{_textField.type = value}
@@ -899,10 +900,21 @@ package org.tbyrne.display.assets.schema
 			confirmListening(Event.CHANGE);
 			return _change;
 		}
+		/**
+		 * @inheritDoc
+		 */
+		public function get userChange():IAct{
+			if(!_change)_userChange = new Act();
+			confirmListening(Event.CHANGE);
+			return _change;
+		}
 		
 		
 		private function onTextChange(e:Event):void{
-			_change.perform(e,this);
+			_change.perform(this);
+		}
+		private function onTextUserChange(e:Event):void{
+			_userChange.perform(this);
 		}
 		public function setTextFormat(format:TextFormat, beginIndex:int  = -1, endIndex:int  = -1):void{
 			_textField.setTextFormat(format,beginIndex,endIndex);
@@ -939,13 +951,11 @@ package org.tbyrne.display.assets.schema
 }
 class EventBundle{
 	public var eventName:String;
-	public var actName:String;
 	public var listening:Boolean;
 	public var handler:Function;
 	
-	public function EventBundle(eventName:String, actName:String, handler:Function){
+	public function EventBundle(eventName:String, handler:Function){
 		this.eventName = eventName;
-		this.actName = actName;
 		this.handler = handler;
 	}
 }

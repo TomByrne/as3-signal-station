@@ -22,9 +22,18 @@ package org.tbyrne.display.assets.nativeAssets
 		 */
 		public function get change():IAct{
 			if(!_change){
-				_change = new NativeAct(_textField,Event.CHANGE,[this]);
+				_change = new NativeAct(_textField,Event.CHANGE,[this],false);
 			}
 			return _change;
+		}
+		/**
+		 * @inheritDoc
+		 */
+		public function get userChange():IAct{
+			if(!_userChange){
+				_userChange = new NativeAct(_textField,Event.CHANGE,[this],false);
+			}
+			return _userChange;
 		}
 		
 		
@@ -52,6 +61,7 @@ package org.tbyrne.display.assets.nativeAssets
 					_textField = null;
 				}
 				if(_change)_change.eventDispatcher = value;
+				if(_userChange)_userChange.eventDispatcher = value;
 				
 			}
 		}
@@ -73,6 +83,7 @@ package org.tbyrne.display.assets.nativeAssets
 		}
 		public function set text(value:String):void{
 			_textField.text = value;
+			if(_change)_change.perform(this);
 			/*if(_lastFormat){
 				_textField.setTextFormat(_lastFormat);
 			}*/
@@ -178,6 +189,7 @@ package org.tbyrne.display.assets.nativeAssets
 		
 		private var _textField:TextField;
 		protected var _change:NativeAct;
+		protected var _userChange:NativeAct;
 		protected var _lastFormat:TextFormat;
 		protected var _lastFormatName:String;
 		protected var _defaultState:TextFormat;

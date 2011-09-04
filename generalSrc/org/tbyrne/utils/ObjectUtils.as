@@ -21,7 +21,7 @@ package org.tbyrne.utils
 			for(var i:int=0; i<parts.length-1; i++){
 				into = into[parts[i]];
 			}
-			into[parts[0]] = value;
+			into[parts[i]] = value;
 		}
 	}
 }

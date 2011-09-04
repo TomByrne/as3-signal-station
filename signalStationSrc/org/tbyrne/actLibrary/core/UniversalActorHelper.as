@@ -83,5 +83,14 @@ package org.tbyrne.actLibrary.core
 				MetadataActorRegistry.addActor(_metadataTarget,asset);
 			}
 		}
+		
+		CONFIG::debug{
+			override protected function onAdded(from:IDisplayObject):void{
+				super.onAdded(from);
+				if(!_metadataTarget){
+					Log.log(Log.SUSPICIOUS_IMPLEMENTATION, "UniversalActorHelper added to stage with no metadataTarget: "+this);
+				}
+			}
+		}
 	}
 }

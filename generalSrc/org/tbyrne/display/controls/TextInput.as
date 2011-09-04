@@ -122,6 +122,8 @@ package org.tbyrne.display.controls
 		
 		protected var _focusedState:StateDef = new StateDef([STATE_UNFOCUSED,STATE_FOCUSED],0);
 
+		private var _ignoreChanges:Boolean;
+
 		
 		public function TextInput(asset:IDisplayObject=null){
 			super(asset);
@@ -133,7 +135,7 @@ package org.tbyrne.display.controls
 		override protected function bindTextField():void{
 			super.bindTextField();
 			_assumedPrompt = _labelField.text;
-			_labelField.text = "";
+			setText("");
 			_labelField.change.addHandler(onTextChange);
 			_labelField.focusIn.addHandler(onFocusIn);
 			_labelField.focusOut.addHandler(onFocusOut);
@@ -151,7 +153,7 @@ package org.tbyrne.display.controls
 				_focusedState.selection = 1;
 				_focused = true;
 				if(_showingPrompt){
-					_labelField.text = "";
+					setText("");
 					_showingPrompt = false;
 					applyPrompt();
 				}
@@ -174,8 +176,8 @@ package org.tbyrne.display.controls
 				_enterKeyPressed.perform(this);
 			}
 		}
-		protected function onTextChange(e:Event, from:ITextField) : void{
-			syncDataToField();
+		protected function onTextChange(from:ITextField) : void{
+			if(!_ignoreChanges)syncDataToField();
 		}
 		override protected function unbindFromAsset() : void{
 			_tabFocusable.interactiveAsset = null;
@@ -186,7 +188,7 @@ package org.tbyrne.display.controls
 			}
 			_showingPrompt = false;
 			
-			_labelField.text = _assumedPrompt;
+			setText(_assumedPrompt);
 			_labelField.change.removeHandler(onTextChange);
 			_labelField.focusIn.removeHandler(onFocusIn);
 			_labelField.focusOut.removeHandler(onFocusOut);
@@ -197,19 +199,24 @@ package org.tbyrne.display.controls
 		}
 		override protected function fillField():void{
 			if(_stringData.length || _focused){
-				_labelField.text = _stringData;
+				setText(_stringData);
 				_showingPrompt = false;
 			}else if(!_showingPrompt && _labelField){
 				_showingPrompt = true;
 				applyPrompt();
 			}
 		}
+		protected function setText(value:String):void{
+			_ignoreChanges = true;
+			_labelField.text = value;
+			_ignoreChanges = false;
+		}
 		protected function applyPrompt() : void{
 			if(_labelField){
 				if(_showingPrompt){
 					_labelField.restrict = null;
 					_labelField.maxChars = 0;
-					_labelField.text = getValueOrAssumed(_prompt,_assumedPrompt,"");
+					setText(getValueOrAssumed(_prompt,_assumedPrompt,""));
 					_labelField.displayAsPassword = false;
 				}else{
 					_labelField.maxChars = _maxChars;

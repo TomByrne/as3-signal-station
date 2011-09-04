@@ -58,9 +58,14 @@ package org.tbyrne.display.assets.nativeTypes
 		
 		
 		/**
-		 * handler(e:Event, from:ITextField)
+		 * handler(from:ITextField)
 		 */
 		function get change():IAct;
+		
+		/**
+		 * handler(from:ITextField)
+		 */
+		function get userChange():IAct;
 		
 		
 		function setTextFormat(format:TextFormat, beginIndex:int  = -1, endIndex:int  = -1):void;

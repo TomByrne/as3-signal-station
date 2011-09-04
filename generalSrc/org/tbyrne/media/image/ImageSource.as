@@ -35,10 +35,7 @@ package org.tbyrne.media.image
 				}
 				_imageUrl = value;
 				_loadStarted = false;
-				if(_imageUrl && _displaysTaken>0){
-					_loadStarted = true;
-					_urlLoader.load(new URLRequest(imageUrl));
-				}
+				attemptStartLoad();
 			}
 		}
 		public function get smoothing():Boolean{
@@ -96,18 +93,28 @@ package org.tbyrne.media.image
 		}
 		override public function takeMediaDisplay():ILayoutView{
 			_displaysTaken++;
-			if(!_loadStarted && _imageUrl){
-				_loadStarted = true;
-				_urlLoader.load(new URLRequest(imageUrl));
-			}
+			attemptStartLoad();
 			return super.takeMediaDisplay();
 		}
+		
+		private function attemptStartLoad():void{
+			if(!_loadStarted && _imageUrl && _displaysTaken>0){
+				_loadStarted = true;
+				try{
+					_urlLoader.load(new URLRequest(imageUrl));
+				}catch(e:SecurityError){
+					Log.log(Log.EXT_ERROR,"There was a security error loading image: "+_imageUrl);
+				}
+			}
+		}
+		
 		override public function returnMediaDisplay(value:ILayoutView):void{
 			_displaysTaken--;
 			super.returnMediaDisplay(value);
 		}
 		override protected function createMediaDisplay():ILayoutView{
 			var loader:Loader = new Loader();
+			loader.cacheAsBitmap = true;
 			if(_loaded){
 				loader.loadBytes(_urlLoader.data);
 			}

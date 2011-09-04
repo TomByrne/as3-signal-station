@@ -9,6 +9,8 @@ package org.tbyrne.actLibrary.logging
 		
 		public function LogProxy(){
 			addChild(_logAct);
+			
+			metadataTarget = this;
 		}
 		
 		public function log(level:int, ...params):void{
