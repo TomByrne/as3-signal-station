@@ -377,7 +377,7 @@ package org.tbyrne.bezier
 				this.dispatchShapeChanged();
 			}
 		}
-		protected function validateShape():void{
+		public function validateShape():void{
 			if(invalidShape){
 				linkBeziers();
 				autoFill();
