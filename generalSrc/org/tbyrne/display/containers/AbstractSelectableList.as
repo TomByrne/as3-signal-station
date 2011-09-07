@@ -109,12 +109,14 @@ package org.tbyrne.display.containers
 				}
 				while(valueCount>0){
 					index = value.shift();
-					_selectedIndices.push(index);
 					data = _layout.getDataAt(index);
-					setDataSelected(index, data, true);
-					_selectedData[index] = data;
-					change = true;
-					++_selectedCount;
+					if(data!=null){
+						_selectedIndices.push(index);
+						setDataSelected(index, data, true);
+						_selectedData[index] = data;
+						++_selectedCount;
+						change = true;
+					}
 					--valueCount;
 				}
 				checkAutoScroll();
