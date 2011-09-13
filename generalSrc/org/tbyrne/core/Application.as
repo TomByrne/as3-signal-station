@@ -105,9 +105,9 @@ package org.tbyrne.core
 			}
 		}
 		protected function init():void{
+			_scopedObject = new ScopedObject(_asset);
 			_assetWatcher = new PropertyWatcher("asset",setAsset);
 			_stageWatcher = new PropertyWatcher("stage",setStage,null,null,_container);
-			_scopedObject = new ScopedObject();
 			
 			CONFIG::debug{
 				var memory:INumberProvider = new MemoryUnitConverter(new MemoryUsage(),MemoryUnitConverter.BYTES,MemoryUnitConverter.MEGABYTES)
@@ -118,18 +118,6 @@ package org.tbyrne.core
 				DebugManager.addDebugNode(fps);
 				DebugManager.addDebugNode(new DebugDataNode(_scopedObject,StandardNodePaths.GARBAGE_COLLECT,new DebugData(new StringData("Garbage Collect"),new GarbageCollect())));
 				
-				PLATFORM::air{
-					if(_lastStage.nativeWindow.resizable){
-						var resolution:DebugData = new DebugData(new StringData("Resolution"));
-						resolution.addChildData(new DebugData(new StringData("640 x 480"),new MethodCallInputItem(null,setResolution,[640,480])));
-						resolution.addChildData(new DebugData(new StringData("800 x 600"),new MethodCallInputItem(null,setResolution,[800,600])));
-						resolution.addChildData(new DebugData(new StringData("1024 x 768"),new MethodCallInputItem(null,setResolution,[1024,768])));
-						resolution.addChildData(new DebugData(new StringData("1280 x 720"),new MethodCallInputItem(null,setResolution,[1280,720])));
-						resolution.addChildData(new DebugData(new StringData("1600 x 900"),new MethodCallInputItem(null,setResolution,[1600,900])));
-						resolution.addChildData(new DebugData(new StringData("1280 x 1024"),new MethodCallInputItem(null,setResolution,[1280,1024])));
-						DebugManager.addDebugNode(new DebugDataNode(_scopedObject,StandardNodePaths.RESOLUTION,resolution));
-					}
-				}
 			}
 
 		}
@@ -192,7 +180,7 @@ package org.tbyrne.core
 				_asset.addedToStage.removeHandler(onAddedToStage);
 			}
 			_asset = value;
-			_scopedObject.asset = value;
+			if(_scopedObject)_scopedObject.asset = value;
 			if(_asset){
 				_asset.addedToStage.addHandler(onAddedToStage);
 				addMainAsset();
@@ -206,6 +194,18 @@ package org.tbyrne.core
 			if(_lastStage!=value){
 				_lastStage = value;
 				commitStage();
+				PLATFORM::air{CONFIG::debug{
+					if(_lastStage.nativeWindow.resizable){
+						var resolution:DebugData = new DebugData(new StringData("Resolution"));
+						resolution.addChildData(new DebugData(new StringData("640 x 480"),new MethodCallInputItem(null,setResolution,[640,480])));
+						resolution.addChildData(new DebugData(new StringData("800 x 600"),new MethodCallInputItem(null,setResolution,[800,600])));
+						resolution.addChildData(new DebugData(new StringData("1024 x 768"),new MethodCallInputItem(null,setResolution,[1024,768])));
+						resolution.addChildData(new DebugData(new StringData("1280 x 720"),new MethodCallInputItem(null,setResolution,[1280,720])));
+						resolution.addChildData(new DebugData(new StringData("1600 x 900"),new MethodCallInputItem(null,setResolution,[1600,900])));
+						resolution.addChildData(new DebugData(new StringData("1280 x 1024"),new MethodCallInputItem(null,setResolution,[1280,1024])));
+						DebugManager.addDebugNode(new DebugDataNode(_scopedObject,StandardNodePaths.RESOLUTION,resolution));
+					}
+				}}
 			}
 		}
 		protected function commitStage() : void{

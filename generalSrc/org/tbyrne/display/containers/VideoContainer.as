@@ -87,6 +87,7 @@ package org.tbyrne.display.containers
 					}else if(_hasControlCont){
 						transTo(1);
 					}
+					_isPlaying.booleanValue = _videoSource.playing;
 				}else{
 					if(_muteButton)_muteButton.data = null;
 					if(!isBound){
@@ -94,6 +95,7 @@ package org.tbyrne.display.containers
 					}else if(_hasControlCont){
 						transTo(0);
 					}
+					_isPlaying.booleanValue = false;
 				}
 			}
 		}
@@ -175,6 +177,8 @@ package org.tbyrne.display.containers
 		private var _mouseOver:Boolean;
 		private var _mouseOverControls:Boolean;
 		
+		private var _isPlaying:BooleanData;
+		
 		private var _progressLabelPattern:String;
 		private var _mainLayout:CanvasLayout;
 		private var _contLayout:CanvasLayout;
@@ -201,6 +205,8 @@ package org.tbyrne.display.containers
 			_mainLayout = new CanvasLayout(this);
 			_contLayout = new CanvasLayout();
 			
+			_isPlaying = new BooleanData();
+			_isPlaying.booleanValueChanged.addHandler(onPlayingDataChanged);
 			
 			_fullScreenSelected = new BooleanData();
 			_fullScreenSelected.booleanValueChanged.addHandler(onFullscreenChange);
@@ -217,7 +223,8 @@ package org.tbyrne.display.containers
 				interCont.mousedOut.addHandler(onMousedOutCont);
 			}
 			
-			_playPauseButton = bindButton(_playPauseButton, ToggleButton, PLAY_PAUSE_BUTTON,onPlayPauseClick);
+			_playPauseButton = bindView(_playPauseButton, ToggleButton, PLAY_PAUSE_BUTTON,false);
+			if(_playPauseButton)_playPauseButton.data = _isPlaying;
 			_stopButton = bindButton(_stopButton, Button, STOP_BUTTON,onStopClick);
 			_rewindButton = bindButton(_rewindButton, Button,REWIND_BUTTON,onRewindClick);
 			
@@ -231,7 +238,8 @@ package org.tbyrne.display.containers
 			if(pauseAsset){
 				if(!_centredPauseButton){
 					_centredPauseButton = new ToggleButton();
-					_centredPauseButton.clicked.addHandler(onPlayPauseClick);
+					//_centredPauseButton.clicked.addHandler(onPlayPauseClick);
+					_centredPauseButton.data = _isPlaying;
 				}
 				_centredPauseButton.setAssetAndPosition(pauseAsset);
 			}
@@ -458,12 +466,12 @@ package org.tbyrne.display.containers
 			}
 		}
 		
-		protected function onPlayPauseClick(from:Button):void{
+		/*protected function onPlayPauseClick(from:Button):void{
 			if(_videoSource){
 				_videoSource.playing = !_videoSource.playing;
 				assessPlaying();
 			}
-		}
+		}*/
 		protected function onStopClick(from:Button):void{
 			if(_videoSource){
 				_videoSource.playing = false;
@@ -495,21 +503,26 @@ package org.tbyrne.display.containers
 			}
 		}
 		protected function onPlayingChanged(from:IVideoSource):void{
+			_isPlaying.booleanValue = _videoSource.playing;
 			assessPlaying();
+		}
+		protected function onPlayingDataChanged(from:IBooleanProvider):void{
+			_videoSource.playing = _isPlaying.booleanValue;
+			//assessPlaying();
 		}
 		protected function onDataChanged(... params):void{
 			syncToData();
 		}
 		protected function assessPlaying():void{
 			var isPlaying:Boolean = (_videoSource && _videoSource.playing);
-			if(_playPauseButton)_playPauseButton.selected = isPlaying;
+			//if(_playPauseButton)_playPauseButton.selected = isPlaying;
 			
 			var active:Boolean = _videoSource && (!isPlaying || _mouseActive);
 			
 			setControlsActive([_playPauseButton,_rewindButton,_muteButton,_stopButton,_fullScreenButton,_volumeSlider,_bufferBar,_progressLabel],active);
 			
 			if(_centredPauseButton){
-				_centredPauseButton.selected = isPlaying;
+				//_centredPauseButton.selected = isPlaying;
 				_centredPauseButton.active = (!isPlaying || (_mouseOver && _mouseActive));
 				
 				if(_mouseOver){

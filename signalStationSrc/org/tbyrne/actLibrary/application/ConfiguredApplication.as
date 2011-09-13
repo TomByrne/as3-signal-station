@@ -59,7 +59,7 @@ package org.tbyrne.actLibrary.application
 		
 		protected var _universalActorHelper:UniversalActorHelper = new UniversalActorHelper();
 		
-		private var _configURL:String;
+		//private var _configURL:String;
 		
 		private var _actors:Array = [];
 		

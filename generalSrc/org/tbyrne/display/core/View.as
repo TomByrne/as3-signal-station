@@ -30,5 +30,7 @@ package org.tbyrne.display.core
 		public function View(asset:IDisplayObject=null){
 			this.asset = asset;
 		}
+		
+		
 	}
 }

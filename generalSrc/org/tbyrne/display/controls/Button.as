@@ -223,6 +223,7 @@ package org.tbyrne.display.controls
 		}
 		override protected function commitSize() : void{
 			if(_scaleAsset){
+				_interactiveArea.setSize(0.01,0.01);
 				asset.setSize(size.x,size.y);
 				_interactiveArea.setSize(size.x/asset.scaleX,size.y/asset.scaleY);
 			}else{

@@ -1,3 +1,4 @@
+
 package org.tbyrne.actLibrary.application
 {
 	import org.tbyrne.display.assets.IAssetFactory;
@@ -14,9 +15,10 @@ package org.tbyrne.actLibrary.application
 		
 		// this is here to allow content to be added in SiteStream XML
 		public function get data():Array{
-			return null;
+			return _data;
 		}
 		public function set data(value:Array):void{
+			_data = value;
 		}
 		
 		public function get assetFactory():IAssetFactory{
@@ -36,5 +38,6 @@ package org.tbyrne.actLibrary.application
 		private var _applicationScale:Number;
 		private var _assetFactory:IAssetFactory;
 		private var _initActs:Array;
+		private var _data:Array;
 	}
 }

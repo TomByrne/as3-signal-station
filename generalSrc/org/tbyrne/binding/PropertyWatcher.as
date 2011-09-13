@@ -191,5 +191,12 @@ package org.tbyrne.binding
 		protected function setChildBindable(value:*):void{
 			_childBinder.bindable = value;
 		}
+		
+		public function clear():void{
+			if(_childBinder)_childBinder.clear();
+			
+			property = null;
+			bindable = null;
+		}
 	}
 }

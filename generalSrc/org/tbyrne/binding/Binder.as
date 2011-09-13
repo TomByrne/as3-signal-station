@@ -60,6 +60,7 @@ package org.tbyrne.binding
 						if(!binder.destinationCount){
 							var srcObjectLookup:Dictionary = _srcPropLookup[binder.srcProp];
 							delete srcObjectLookup[binder.srcBindable];
+							binder.clear();
 						}
 					}
 				}
@@ -144,6 +145,10 @@ package org.tbyrne.binding
 				subject = subject[propPath[i]];
 			}
 			subject[propPath[propCount-1]] = value;
+		}
+		
+		public function clear():void{
+			_propWatcher.clear();
 		}
 	}
 }

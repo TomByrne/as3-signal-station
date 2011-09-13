@@ -2,14 +2,15 @@ package org.tbyrne.display.core
 {
 	import org.tbyrne.acting.actTypes.IAct;
 	import org.tbyrne.core.DelayedCall;
+	import org.tbyrne.core.EnterFrameHook;
 	import org.tbyrne.display.assets.assetTypes.IAsset;
 	import org.tbyrne.display.assets.nativeTypes.IDisplayObject;
 	import org.tbyrne.display.assets.nativeTypes.IDisplayObjectContainer;
 	import org.tbyrne.display.assets.nativeTypes.IInteractiveObject;
 	import org.tbyrne.display.assets.nativeTypes.ISprite;
 	import org.tbyrne.display.assets.states.StateDef;
-	import org.tbyrne.display.validation.ViewValidationFlag;
 	import org.tbyrne.display.validation.ValidationFlag;
+	import org.tbyrne.display.validation.ViewValidationFlag;
 	
 	public class DrawableView extends View implements IOutroView, IScopedObject
 	{
@@ -195,14 +196,15 @@ package org.tbyrne.display.core
 			attemptInit();
 			bindToAsset();
 			validate();
-			if(autoIntro())showIntro();
 		}
 		protected function onAddedToStage(from:IAsset=null):void{
+			EnterFrameHook.getAct().removeHandler(onFrameAfterRemove);
 			if(_bindFlag.valid){
 				validate();
 			}else{
 				_asset.exitFrame.addTempHandler(onFirstFrameExit);
 			}
+			if(autoIntro())showIntro();
 		}
 		
 		protected function onFirstFrameExit(from:IAsset):void{
@@ -210,6 +212,10 @@ package org.tbyrne.display.core
 		}
 		
 		protected function onRemovedFromStage(from:IAsset=null):void{
+			EnterFrameHook.getAct().addTempHandler(onFrameAfterRemove);
+		}
+		
+		private function onFrameAfterRemove():void{
 			_introShown = false;
 			_outroShown = false;
 		}
