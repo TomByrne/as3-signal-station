@@ -140,6 +140,7 @@ package org.tbyrne.display.controls
 			_progressTrack.clicked.addHandler(onTrackClick);
 			
 			_thumb = new Button();
+			_thumb.dragAvoidanceDist = NaN;
 			_thumb.mousePressed.addHandler(onThumbMouseDown);
 			_thumb.mouseReleased.addHandler(onThumbMouseUp);
 		}
@@ -193,6 +194,8 @@ package org.tbyrne.display.controls
 			_asset.scaleY = 1;
 			
 			var fract:Number = (value-_minimum)/(_maximum-_minimum);
+			if(isNaN(fract))fract = 0;
+			
 			
 			var usableW:Number;
 			var usableH:Number;
@@ -251,8 +254,9 @@ package org.tbyrne.display.controls
 				thumbY = _assumedThumbY;
 				thumbX = trackX+(trackWidth-_thumb.asset.width)*fract;
 				
+				
 				pTrackY = trackY;
-				pTrackWidth = thumbX+_thumb.asset.width/2;
+				pTrackWidth = thumbX-trackX+_thumb.asset.width/2;
 				pTrackHeight = trackHeight;
 			}
 			_thumb.setPosition(thumbX,thumbY);
@@ -303,13 +307,15 @@ package org.tbyrne.display.controls
 		protected function setValueToMouse():void{
 			var newVal:Number;
 			if(direction==Direction.VERTICAL){
-				newVal = 1-((asset.mouseY-_dragOffset-_thumb.asset.height/2)/(_track.height-_thumb.asset.height));
+				newVal = 1-((asset.mouseY-_dragOffset-_thumb.asset.height/2-_track.y)/(_track.height-_thumb.asset.height));
 			}else{
-				newVal = (asset.mouseX-_dragOffset-_thumb.asset.width/2)/(_track.width-_thumb.asset.width);
+				newVal = (asset.mouseX-_dragOffset-_thumb.asset.width/2-_track.x)/(_track.width-_thumb.asset.width);
 			}
+			
 			if(newVal<0)newVal = minimum;
 			else if(newVal>1)newVal = maximum;
 			else newVal = (newVal*(maximum-minimum))+minimum;
+			
 			
 			if(_value!=newVal){
 				_value = newVal;

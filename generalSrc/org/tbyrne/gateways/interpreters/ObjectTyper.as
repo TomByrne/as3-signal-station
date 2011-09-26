@@ -26,6 +26,7 @@ package org.tbyrne.gateways.interpreters
 		
 		private var _type:Class;
 		private var _propMapping:Dictionary;
+		private var _propLookup:Dictionary;
 		private var _interpreters:Dictionary;
 		private var _recursive:Boolean;
 		
@@ -110,6 +111,10 @@ package org.tbyrne.gateways.interpreters
 			var parts:Array = propName.split(".");
 			var value:* = data;
 			for each(var prop:String in parts){
+				if(!value.hasOwnProperty(prop)){
+					value = null;
+					return; // don't over-write default values if no data came through (as opposed to a null value coming through)
+				}
 				value = value[prop];
 			}
 			if(interpreters){
@@ -147,8 +152,16 @@ package org.tbyrne.gateways.interpreters
 		 * 
 		 */
 		public function addPropMapping(propName:String, mappedTo:String, interpreters:*=null):void{
-			if(!_propMapping)_propMapping = new Dictionary();
+			
+			if(!_propMapping){
+				_propMapping = new Dictionary();
+				_propLookup = new Dictionary();
+			}else if(_propLookup[propName]){
+				throw new Error("Property "+propName+" already mapped");
+			}
 			_propMapping[mappedTo] = propName;
+			_propLookup[propName] = mappedTo;
+			
 			if(interpreters is IDataInterpreter){
 				interpreters = Vector.<IDataInterpreter>([interpreters]);
 			}else if(interpreters is Array){
@@ -159,6 +172,18 @@ package org.tbyrne.gateways.interpreters
 				if(!_interpreters)_interpreters = new Dictionary();
 				_interpreters[mappedTo] = castInter;
 			}
+		}
+		public function removePropMapping(propName:String):void{
+			if(!_propMapping || !_propLookup[propName]){
+				throw new Error("Property "+propName+" not mapped");
+			}
+			
+			var mappedTo:String = _propLookup[propName];
+			
+			delete _propMapping[mappedTo];
+			delete _interpreters[mappedTo];
+			delete _propLookup[propName];
+			
 		}
 	}
 }

@@ -12,8 +12,8 @@ package org.tbyrne.reflection
 		protected static const NUMBER_16:RegExp = /^((#)|(0x))[0-9A-F]*$/;
 		protected static const ARRAY:RegExp = /^\[((?:.+?,)*(?:.+?)?)\]$/;
 		protected static const ARRAY_INNER:RegExp = /[^,]+/g;
-		protected static const OBJECT:RegExp = /^{((?:\w+:.+,?)*)}$/;
-		protected static const OBJECT_INNER:RegExp = /(\w+?):([^,]+)/g;
+		protected static const OBJECT:RegExp = /^{((?:[\w.]+:.+,)*(?:[\w.]+:.+))}$/;
+		protected static const OBJECT_INNER:RegExp = /([\w.]+?):([^,]+)/g;
 		protected static const EXPRESSION:RegExp = /^{.*}$/;
 		
 		public static function deliterate(string:String, unquote:Boolean=false):*{

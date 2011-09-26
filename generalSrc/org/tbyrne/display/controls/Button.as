@@ -273,13 +273,13 @@ package org.tbyrne.display.controls
 				if(_mousePressed)_mousePressed.perform(this);
 				
 				if(!_pressedPos)_pressedPos = new Point();
-				_pressedPos.x = _asset.stage.mouseX;
-				_pressedPos.y = _asset.stage.mouseY;
+				_pressedPos.x = _asset.mouseX;
+				_pressedPos.y = _asset.mouseY;
 			}
 		}
 		protected function onMouseMove(from:IInteractiveObject, info:IMouseActInfo=null):void{
-			DUMMY_POINT.x = _asset.stage.mouseX;
-			DUMMY_POINT.y = _asset.stage.mouseY;
+			DUMMY_POINT.x = _asset.mouseX;
+			DUMMY_POINT.y = _asset.mouseY;
 			if(Point.distance(_pressedPos,DUMMY_POINT)>dragAvoidanceDist){
 				_acceptClick = false;
 				killMouseDown();

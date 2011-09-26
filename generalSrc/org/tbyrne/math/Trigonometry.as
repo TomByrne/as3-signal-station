@@ -14,8 +14,7 @@ package org.tbyrne.math{
 			return Math.sqrt((difX*difX) + (difY*difY));
 		}
 		public static function getAngleTo(fromX:Number, fromY:Number, toX:Number, toY:Number):Number{
-			var ret:Number = (Math.atan2(fromY - toY, fromX - toX) * (180 / Math.PI))+90;
-			ret -=180;
+			var ret:Number = (Math.atan2(fromY - toY, fromX - toX) * (180 / Math.PI))-90;
 			ret = (ret<0)?ret+360:ret;
 			return ret;
 		}

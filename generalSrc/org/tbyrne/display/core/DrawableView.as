@@ -167,7 +167,7 @@ package org.tbyrne.display.core
 		public function validate(forceDraw: Boolean = false): void{
 			_bindFlag.validate();
 			for each(var frameValidationFlag:ViewValidationFlag in _childDrawFlags){
-				frameValidationFlag.validate();
+				frameValidationFlag.validate(forceDraw);
 			}
 		}
 		

@@ -2,6 +2,7 @@ package org.tbyrne.siteStream.parsers
 {
 	import flash.events.Event;
 	import flash.events.EventDispatcher;
+	import flash.utils.Dictionary;
 	import flash.utils.getQualifiedClassName;
 	import flash.xml.XMLNodeKinds;
 	
@@ -18,6 +19,7 @@ package org.tbyrne.siteStream.parsers
 	import org.tbyrne.siteStream.events.SiteStreamErrorEvent;
 	import org.tbyrne.siteStream.propertyInfo.IPropertyInfo;
 	import org.tbyrne.siteStream.propertyInfo.PropertyInfo;
+	import org.tbyrne.utils.ObjectUtils;
 	
 	/**
 	 * This class gets used to describe the behaviour of any item being parsed which
@@ -25,8 +27,9 @@ package org.tbyrne.siteStream.parsers
 	 */
 	public class DefaultParser extends EventDispatcher implements ISiteStreamParser
 	{
-		private static const NODE_REFERENCE_EXP:RegExp = /^\{(\S*)\}$/;
+		private static const NODE_REFERENCE_EXP:RegExp = /^\{([^\s:]*)\}$/;
 		private static const VECTOR_TEST:RegExp = /\[class Vector\.<.*>\]/;
+		private static const OBJECT_TEST:RegExp = /^\{.*\}$/;
 		
 		public function get idAttribute():String{
 			return _idAttribute;
@@ -218,25 +221,40 @@ package org.tbyrne.siteStream.parsers
 						}
 						break;
 					default:
-						var isArray:Boolean = (castPropInfo.classRef==Array);
 						
-						if(isArray || VECTOR_TEST.test(String(castPropInfo.classRef))){
-							if(castPropInfo.bestData.nodeKind()==XMLNodeKinds.ATTRIBUTE){
-								parsedValue = simpleValue.split(",");
-								if(!isArray){
-									var vec:* = new castPropInfo.classRef();
-									for each(var value:* in parsedValue){
-										vec.push(value);
+						if(castPropInfo.bestData.nodeKind()==XMLNodeKinds.ATTRIBUTE && simpleValue){
+							var isArray:Boolean = (castPropInfo.classRef==Array);
+							if(isArray || VECTOR_TEST.test(String(castPropInfo.classRef))){
+									parsedValue = simpleValue.split(",");
+									if(!isArray){
+										var vec:* = new castPropInfo.classRef();
+										for each(var value:* in parsedValue){
+											vec.push(value);
+										}
+										parsedValue = vec;
 									}
-									parsedValue = vec;
-								}
 							}else{
-								// if it's an element node and of type Array it gets parsed like a normal object below.
-								complexType = true;
+								var isDict:Boolean = (castPropInfo.classRef==Dictionary);
+								var isObject:Boolean = OBJECT_TEST.test(simpleValue) && (castPropInfo.classRef==Object || isDict);
+								if(isObject){
+									var obj:Object = Deliterator.deliterate(simpleValue);
+									if(isDict){
+										parsedValue = new Dictionary();
+										for(var i:String in obj){
+											parsedValue[i] = obj[i];
+										}
+									}else{
+										parsedValue = obj;
+									}
+								}else{
+									complexType = true;
+								}
 							}
 						}else{
+							// if it's an element node it gets parsed like a normal object below.
 							complexType = true;
 						}
+					
 				}
 			}
 			

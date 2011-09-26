@@ -507,7 +507,7 @@ package org.tbyrne.display.containers
 			assessPlaying();
 		}
 		protected function onPlayingDataChanged(from:IBooleanProvider):void{
-			_videoSource.playing = _isPlaying.booleanValue;
+			if(_videoSource)_videoSource.playing = _isPlaying.booleanValue;
 			//assessPlaying();
 		}
 		protected function onDataChanged(... params):void{
