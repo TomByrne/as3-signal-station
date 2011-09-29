@@ -17,6 +17,11 @@ package org.tbyrne.display.validation
 		public function FrameValidationFlag(validator:Function, valid:Boolean, parameters:Array=null, readyChecker:Function=null){
 			super(validator, valid, parameters, readyChecker);
 			_manager = FrameValidationManager.instance;
+			checkAdded();
+		}
+		protected function checkAdded():void{
+			// override me
+			setAdded(true);
 		}
 		protected function setAdded(value:Boolean):void{
 			if(_added!=value){

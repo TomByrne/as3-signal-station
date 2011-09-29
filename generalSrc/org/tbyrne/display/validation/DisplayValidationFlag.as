@@ -34,13 +34,12 @@ package org.tbyrne.display.validation
 		
 		public function DisplayValidationFlag(display:DisplayObject, validator:Function, valid:Boolean, parameters:Array=null, readyChecker:Function=null){
 			if(readyChecker==null)readyChecker = WITH_DISPLAY_CHECKER;
-			super(validator, valid, parameters, readyChecker);
 			this.display = display;
 			_manager = FrameValidationManager.instance;
-			checkAdded();
+			super(validator, valid, parameters, readyChecker);
 		}
 		
-		private function checkAdded():void{
+		override protected function checkAdded():void{
 			if(_display || readyForExecution){
 				setAdded(true);
 			}else{

@@ -54,10 +54,9 @@ package org.tbyrne.display.validation
 		
 		public function ViewValidationFlag(view:IView, validator:Function, valid:Boolean, parameters:Array=null, readyChecker:Function=null){
 			if(readyChecker==null)readyChecker = WITH_ASSET_CHECKER;
-			super(validator, valid, parameters, readyChecker);
 			//_allowAddWithoutAsset = allowAddWithoutAsset;
 			this.view = view;
-			checkAdded();
+			super(validator, valid, parameters, readyChecker);
 		}
 		
 		
@@ -66,11 +65,6 @@ package org.tbyrne.display.validation
 		}
 		protected function setAsset(asset:IDisplayObject):void{
 			if(_asset!=asset){
-				
-				if(_added){
-					// remove before changing asset to allow manager to lookup by asset
-					setAdded(false);
-				}
 				
 				//var oldAsset:IDisplayObject = _asset;
 				_asset = asset;
@@ -83,13 +77,11 @@ package org.tbyrne.display.validation
 				*/
 				//if(_assetChanged)_assetChanged.perform(this,oldAsset);
 				
-				if(_asset){
-					setAdded(true);
-				}
+				checkAdded();
 			}
 		}
-		private function checkAdded():void{
-			if(_asset || readyForExecution){
+		override protected function checkAdded():void{
+			if(_manager && (_asset || readyForExecution)){
 				setAdded(true);
 			}else{
 				setAdded(false);
