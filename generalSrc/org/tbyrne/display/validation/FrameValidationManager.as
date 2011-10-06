@@ -76,9 +76,9 @@ package org.tbyrne.display.validation
 			}
 			var index:int = pendingFlags.indexOf(flag);
 			if(index==-1){
-				var bundle:FlagBundle = flagToBundle[flag];;
+				var bundle:FlagBundle = flagToBundle[flag];
+				removeFromRuns(flag, bundle.key);
 				removeFromBundle(flag, bundle);
-				removeFromRuns(flag);
 				//flag.assetChanged.removeHandler(onFlagAssetChanged);
 			}else{
 				pendingFlags.splice(index,1);
@@ -140,7 +140,7 @@ package org.tbyrne.display.validation
 			if(bundle.readyForExecution)addToHeirarchy(bundle);
 			checkIfRunChange(null, bundle, oldRun);
 		}*/
-		protected function checkIfRunChange(flag:IFrameValidationFlag, bundle:FlagBundle, oldRun:DrawRun):void{
+		/*protected function checkIfRunChange(flag:IFrameValidationFlag, bundle:FlagBundle, oldRun:DrawRun):void{
 			var newRun:DrawRun;
 			if(bundle)newRun = findRunForBundle(bundle);
 			if(newRun!=oldRun){
@@ -154,7 +154,7 @@ package org.tbyrne.display.validation
 					}
 				}
 			}
-		}
+		}*/
 		protected function addToHeirarchy(bundle:FlagBundle):void{
 			/*var subject:IDisplayObject = bundle.asset;
 			var parentBundle:FlagBundle;
@@ -289,11 +289,21 @@ package org.tbyrne.display.validation
 		/**
 		 * Removed this flag from the applicable running DrawRun
 		 */
-		protected function removeFromRuns(flag:IFrameValidationFlag):void{
-			var run:DrawRun = findRunForFlag(flag);
+		protected function removeFromRuns(flag:IFrameValidationFlag, oldHeirarchyKey:*):void{
+			var run:DrawRun = findRunByKey(oldHeirarchyKey);
 			if(run){
 				run.removePending(flag);
 			}
+		}
+		protected function findRunByKey(heirarchyKey:*):DrawRun{
+			if(currentRunCount){
+				for each(var drawRun:DrawRun in currentRuns){
+					if(drawRun.root.key==heirarchyKey){
+						return drawRun;
+					}
+				}
+			}
+			return null;
 		}
 		protected function findRunForFlag(flag:IFrameValidationFlag):DrawRun{
 			if(currentRunCount){

@@ -141,7 +141,7 @@ package org.tbyrne.binding
 			var subject:Object = destObject;
 			var propPath:Array = destProp.split(".");
 			var propCount:int = propPath.length;
-			for(var i:int=0; i<propCount-2; i++){
+			for(var i:int=0; i<propCount-1; i++){
 				subject = subject[propPath[i]];
 			}
 			subject[propPath[propCount-1]] = value;
