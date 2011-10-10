@@ -58,6 +58,12 @@ package org.tbyrne.display.layout.grid
 		public function set equaliseCellWidths(value:Boolean):void{
 			super._equaliseCellWidths = value;
 		}
+		public function get fillFlow():Boolean{
+			return super._fillFlow;
+		}
+		public function set fillFlow(value:Boolean):void{
+			super._fillFlow = value;
+		}
 		public function get horizontalGap():Number{
 			return super._horizontalGap;
 		}
@@ -236,8 +242,8 @@ package org.tbyrne.display.layout.grid
 		protected var _verticalRendAxis:RendererGridAxis;
 		protected var _horizontalRendAxis:RendererGridAxis;
 		
-		protected var _breadthRendAxis:RendererGridAxis;
-		protected var _lengthRendAxis:RendererGridAxis;
+		protected var _flowRendAxis:RendererGridAxis;
+		protected var _acrossRendAxis:RendererGridAxis;
 		
 		public function RendererGridLayout(scopeView:IView=null){
 			super(scopeView);
@@ -249,11 +255,11 @@ package org.tbyrne.display.layout.grid
 		override protected function validateProps():void{
 			super.validateProps();
 			if(_isVertical){
-				_breadthRendAxis = _verticalRendAxis;
-				_lengthRendAxis = _horizontalRendAxis;
+				_flowRendAxis = _verticalRendAxis;
+				_acrossRendAxis = _horizontalRendAxis;
 			}else{
-				_breadthRendAxis = _horizontalRendAxis;
-				_lengthRendAxis = _verticalRendAxis;
+				_flowRendAxis = _horizontalRendAxis;
+				_acrossRendAxis = _verticalRendAxis;
 			}
 		}
 		public function onCollection2DChanged(from:ICollection2D, fromX:Number, toX:Number, fromY:Number, toY:Number):void{
@@ -438,7 +444,7 @@ package org.tbyrne.display.layout.grid
 		DisplayNamespace function getRenderer(dataIndex:int):ILayoutSubject{
 			if(!_getRendererPoint)_getRendererPoint = new Point();
 			getDataCoords(dataIndex,_getRendererPoint);
-			return getChildRenderer(dataIndex,_getRendererPoint[_lengthAxis.coordRef],_getRendererPoint[_breadthAxis.coordRef]);
+			return getChildRenderer(dataIndex,_getRendererPoint[_acrossFlowAxis.coordRef],_getRendererPoint[_flowDirectionAxis.coordRef]);
 		}
 		protected function rendererAdded(renderer:ILayoutSubject):void{
 			renderer.measurementsChanged.addHandler(onRendMeasChanged);
@@ -461,22 +467,22 @@ package org.tbyrne.display.layout.grid
 			to any data any more.
 			*/
 			
-			var minLength:int = _lengthRendAxis.dimIndex;
-			var maxLength:int = _lengthRendAxis.dimIndexMax;
-			var minBreadth:int = _breadthRendAxis.dimIndex;
-			var maxBreadth:int = _breadthRendAxis.dimIndexMax;
-			var breadthRange:int = (maxBreadth-minBreadth);
+			var minAcrossSize:int = _acrossRendAxis.dimIndex;
+			var maxAcrossSize:int = _acrossRendAxis.dimIndexMax;
+			var minFlowSize:int = _flowRendAxis.dimIndex;
+			var maxFlowSize:int = _flowRendAxis.dimIndexMax;
+			var flowRange:int = (maxFlowSize-minFlowSize);
 			
 			var totRend:int = _renderers.length;
 			for(var i:int=0; i<totRend; ++i){
 				var renderer:ILayoutSubject = _renderers[i];
 				if(renderer){
-					var breadth:int = i%breadthRange;
-					var length:int = ((i-breadth)/breadthRange)+minLength;
-					breadth += minBreadth;
-					if(length<minLength || 
-						length>maxLength ||
-						(!_renderEmptyCells && (_cellPosCache[length]==null || _cellPosCache[length][breadth]==null))){
+					var flowIndex:int = i%flowRange;
+					var acrossIndex:int = ((i-flowIndex)/flowRange)+minAcrossSize;
+					flowIndex += minFlowSize;
+					if(acrossIndex<minAcrossSize || 
+						acrossIndex>maxAcrossSize ||
+						(!_renderEmptyCells && (_cellPosCache[acrossIndex]==null || _cellPosCache[acrossIndex][flowIndex]==null))){
 						
 						delete _renderers[i];
 						/* must remove before setting data to null to avoid the layout responding to
@@ -491,34 +497,34 @@ package org.tbyrne.display.layout.grid
 			return indexMax-index;
 		}
 		override protected function validateAllScrolling():void{
-			if(!_breadthScrollFlag.valid || !_lengthScrollFlag.valid){
+			if(!_flowScrollFlag.valid || !_acrossScrollFlag.valid){
 				
-				var oldBreadthIndex:int = _breadthRendAxis.dimIndex;
-				var oldLengthIndex:int = _lengthRendAxis.dimIndex;
+				var oldFlowIndex:int = _flowRendAxis.dimIndex;
+				var oldAcrossIndex:int = _acrossRendAxis.dimIndex;
 				
-				var oldBreadthIndexMax:int = _breadthRendAxis.dimIndexMax;
-				var oldLengthIndexMax:int = _lengthRendAxis.dimIndexMax;
+				var oldFlowIndexMax:int = _flowRendAxis.dimIndexMax;
+				var oldAcrossIndexMax:int = _acrossRendAxis.dimIndexMax;
 				
-				var oldBreadthRange:int = calcRange(oldBreadthIndex,oldBreadthIndexMax);
-				var oldLengthRange:int = calcRange(oldLengthIndex,oldLengthIndexMax);
+				var oldFlowRange:int = calcRange(oldFlowIndex,oldFlowIndexMax);
+				var oldAcrossRange:int = calcRange(oldAcrossIndex,oldAcrossIndexMax);
 				
 				super.validateAllScrolling();
 				
 				
-				var breadthIndex:int = _breadthRendAxis.dimIndex;
-				var lengthIndex:int = _lengthRendAxis.dimIndex;
+				var flowIndex:int = _flowRendAxis.dimIndex;
+				var acrossIndex:int = _acrossRendAxis.dimIndex;
 				
-				var breadthIndexMax:int = _breadthRendAxis.dimIndexMax;
-				var lengthIndexMax:int = _lengthRendAxis.dimIndexMax;
+				var flowIndexMax:int = _flowRendAxis.dimIndexMax;
+				var acrossIndexMax:int = _acrossRendAxis.dimIndexMax;
 				
-				var breadthRange:int = calcRange(breadthIndex,breadthIndexMax);
-				var lengthRange:int = calcRange(lengthIndex,lengthIndexMax);
+				var flowRange:int = calcRange(flowIndex,flowIndexMax);
+				var acrossRange:int = calcRange(acrossIndex,acrossIndexMax);
 				
-				var shiftBreadth:int = oldBreadthIndex-breadthIndex;
-				var shiftLength:int = oldLengthIndex-lengthIndex;
+				var shiftFlow:int = oldFlowIndex-flowIndex;
+				var shiftAcross:int = oldAcrossIndex-acrossIndex;
 				
-				var oldTotal:Number = (oldBreadthRange)*(oldLengthRange);
-				_fitRenderers = (breadthRange)*(lengthRange);
+				var oldTotal:Number = (oldFlowRange)*(oldAcrossRange);
+				_fitRenderers = (flowRange)*(acrossRange);
 				if(oldTotal!=_fitRenderers && _fitRenderersAct){
 					_fitRenderersAct.perform(this,_fitRenderers);
 					_cullRenderersFlag.invalidate();
@@ -529,56 +535,56 @@ package org.tbyrne.display.layout.grid
 					invalidateSize();
 				}
 				
-				if(shiftBreadth || shiftLength || oldBreadthRange!=breadthRange || oldLengthRange!=lengthRange){
+				if(shiftFlow || shiftAcross || oldFlowRange!=flowRange || oldAcrossRange!=acrossRange){
 					var newRenderers:Array = [];
 					var rangeDif:int;
 					if(_pixelFlow){
-						rangeDif = (oldBreadthRange-breadthRange);
+						rangeDif = (oldFlowRange-flowRange);
 					}
-					for(var length:int=0; length<oldLengthRange; length++){
-						for(var breadth:int=0; breadth<oldBreadthRange; breadth++){
-							var oldRenderIndex:int = ((oldBreadthRange)*length)+breadth;
+					for(var across:int=0; across<oldAcrossRange; across++){
+						for(var flow:int=0; flow<oldFlowRange; flow++){
+							var oldRenderIndex:int = ((oldFlowRange)*across)+flow;
 							var renderer:ILayoutSubject = _renderers[oldRenderIndex];
 							if(renderer){
-								var newLength:int = length;
-								var newBreadth:int = breadth;
+								var newAcross:int = across;
+								var newFlow:int = flow;
 								if(_pixelFlow && rangeDif){
-									// adjust indices to reflect changes in breadthRange
-									var renderIndex:int = ((breadthRange)*newLength)+newBreadth;
-									renderIndex += rangeDif*length;
-									newLength = Math.floor(renderIndex/(breadthRange));
-									newBreadth = renderIndex%(breadthRange);
+									// adjust indices to reflect changes in flowRange
+									var renderIndex:int = ((flowRange)*newAcross)+newFlow;
+									renderIndex += rangeDif*across;
+									newAcross = Math.floor(renderIndex/(flowRange));
+									newFlow = renderIndex%(flowRange);
 								}
 								// shift cells if scrolling has occured (so that dataProviders stay the same)
 								
 								var dataChanged:Boolean = false;
 								
-								if(shiftLength){
-									newLength = (length+shiftLength);
-									while(newLength>=lengthRange){
+								if(shiftAcross){
+									newAcross = (across+shiftAcross);
+									while(newAcross>=acrossRange){
 										dataChanged = true;
-										newLength -= lengthRange;
+										newAcross -= acrossRange;
 									}
-									while(newLength<0){
+									while(newAcross<0){
 										dataChanged = true;
-										newLength += lengthRange;
+										newAcross += acrossRange;
 									}
 								}
 								
-								if(shiftBreadth){
-									newBreadth = (breadth+shiftBreadth);
-									while(newBreadth>=breadthRange){
+								if(shiftFlow){
+									newFlow = (flow+shiftFlow);
+									while(newFlow>=flowRange){
 										dataChanged = true;
-										newBreadth -= breadthRange;
+										newFlow -= flowRange;
 									}
-									while(newBreadth<0){
+									while(newFlow<0){
 										dataChanged = true;
-										newBreadth += breadthRange;
+										newFlow += flowRange;
 									}
 								}
 								
 								// test whether the renderer is still needed
-								renderIndex = (breadthRange*newLength)+newBreadth;
+								renderIndex = (flowRange*newAcross)+newFlow;
 								if(renderIndex<_fitRenderers && !newRenderers[renderIndex]){
 									if(dataChanged)delete _dataToRenderers[renderer[_dataField]];
 									newRenderers[renderIndex] = renderer;
@@ -712,26 +718,26 @@ package org.tbyrne.display.layout.grid
 			_cellMeasFlag.invalidate();
 			invalidateSize();
 		}
-		override protected function positionRenderer(key:*, length:int, breadth:int, x:Number, y:Number, width:Number, height:Number):void{
-			super.positionRenderer(key, length, breadth, x, y, width, height);
+		override protected function positionRenderer(key:*, acrossIndex:int, flowIndex:int, x:Number, y:Number, width:Number, height:Number):void{
+			super.positionRenderer(key, acrossIndex, flowIndex, x, y, width, height);
 			var posIndex:int = (key as int)*int(4);
 			_positionCache[posIndex] = x;
 			_positionCache[posIndex+1] = y;
 			_positionCache[posIndex+2] = width;
 			_positionCache[posIndex+3] = height;
 			var coIndex:int = (key as int)*int(2);
-			_coordCache[coIndex] = length;
-			_coordCache[coIndex+1] = breadth;
+			_coordCache[coIndex] = acrossIndex;
+			_coordCache[coIndex+1] = flowIndex;
 		}
 		// TODO: use _dataToRenderers to optimise the lookup in this method
-		override protected function getChildRenderer(key:*,length:int,breadth:int):ILayoutSubject{
-			var minLength:int = _lengthRendAxis.dimIndex;
-			var maxLength:int = _lengthRendAxis.dimIndexMax;
-			var minBreadth:int = _breadthRendAxis.dimIndex;
-			var maxBreadth:int = _breadthRendAxis.dimIndexMax;
-			var renderIndex:int = ((maxBreadth-minBreadth)*(length-minLength))+(breadth-minBreadth);
+		override protected function getChildRenderer(key:*,acrossIndex:int,flowIndex:int):ILayoutSubject{
+			var minAcross:int = _acrossRendAxis.dimIndex;
+			var maxAcross:int = _acrossRendAxis.dimIndexMax;
+			var minFlow:int = _flowRendAxis.dimIndex;
+			var maxFlow:int = _flowRendAxis.dimIndexMax;
+			var renderIndex:int = ((maxFlow-minFlow)*(acrossIndex-minAcross))+(flowIndex-minFlow);
 			var renderer:ILayoutSubject = _renderers[renderIndex];
-			if(length>=minLength && length<maxLength && breadth>=minBreadth && breadth<maxBreadth && (key<_dataCount || _renderEmptyCells)){
+			if(acrossIndex>=minAcross && acrossIndex<maxAcross && flowIndex>=minFlow && flowIndex<maxFlow && (key<_dataCount || _renderEmptyCells)){
 				var data:* = _dataMap[key];
 				var addRenderer:Boolean = (renderer==null);
 				if(addRenderer){

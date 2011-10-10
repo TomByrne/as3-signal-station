@@ -9,8 +9,32 @@ package org.tbyrne.display.containers
 			return _layout.flowDirection;
 		}
 		public function set direction(value:String):void{
-			_layout.flowDirection = value;
-			if(_scrollBar)_scrollBar.direction = value;
+			setDirection(value);
+		}
+		public function get fillSpareSpace():Boolean{
+			return _layout.fillFlow;
+		}
+		public function set fillSpareSpace(value:Boolean):void{
+			_layout.fillFlow = value;
+		}
+		
+		public function get gap():Number{
+			return _layout.gap;
+		}
+		public function set gap(value:Number):void{
+			_layout.gap = value;
+		}
+		public function get horizontalGap():Number{
+			return _layout.horizontalGap;
+		}
+		public function set horizontalGap(value:Number):void{
+			_layout.horizontalGap = value;
+		}
+		public function get verticalGap():Number{
+			return _layout.verticalGap;
+		}
+		public function set verticalGap(value:Number):void{
+			_layout.verticalGap = value;
 		}
 		public function get dataCount():int{
 			return _layout.getDataCount();

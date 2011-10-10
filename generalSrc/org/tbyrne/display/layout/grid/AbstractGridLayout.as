@@ -18,8 +18,8 @@ package org.tbyrne.display.layout.grid
 	import org.tbyrne.display.validation.ValidationFlag;
 	
 	/**
-	 * In the AbstractGridLayout class, length is treated as the direction across the stacking of the list
-	 * (i.e. width for a vertical list, height for a horizontal list) and breadth is treated as
+	 * In the AbstractGridLayout class, 'across' is treated as the direction across the stacking of the list
+	 * (i.e. width for a vertical list, height for a horizontal list) and 'flow' is treated as
 	 * the direction along the stacking of the list (i.e. height for vertical lists, width for
 	 * horizontal lists).
 	 */
@@ -173,9 +173,9 @@ package org.tbyrne.display.layout.grid
 			if(_horizontalAxis.scrollByLine!=value){
 				_horizontalAxis.scrollByLine = value;
 				if(_isVertical){
-					_lengthScrollFlag.invalidate();
+					_acrossScrollFlag.invalidate();
 				}else{
-					_breadthScrollFlag.invalidate();
+					_flowScrollFlag.invalidate();
 				}
 				invalidateSize();
 			}
@@ -196,9 +196,9 @@ package org.tbyrne.display.layout.grid
 			if(_verticalAxis.scrollByLine!=value){
 				_verticalAxis.scrollByLine = value;
 				if(_isVertical){
-					_breadthScrollFlag.invalidate();
+					_flowScrollFlag.invalidate();
 				}else{
-					_lengthScrollFlag.invalidate();
+					_acrossScrollFlag.invalidate();
 				}
 				invalidateSize();
 			}
@@ -228,6 +228,20 @@ package org.tbyrne.display.layout.grid
 		protected function set _equaliseCellWidths(value:Boolean):void{
 			if(_horizontalAxis.equaliseCells!=value){
 				_horizontalAxis.equaliseCells = value;
+				_cellPosFlag.invalidate();
+				invalidateSize();
+			}
+		}
+		/**
+		 * When a row is smaller than the dimension (width or height) this evenly distributes
+		 * remaining space across the cells.
+		 */
+		protected function get _fillFlow():Boolean{
+			return __fillFlow;
+		}
+		protected function set _fillFlow(value:Boolean):void{
+			if(__fillFlow!=value){
+				__fillFlow = value;
 				_cellPosFlag.invalidate();
 				invalidateSize();
 			}
@@ -276,6 +290,7 @@ package org.tbyrne.display.layout.grid
 		protected var __pixelFlow:Boolean;
 		protected var __renderersSameSize:Boolean;
 		protected var __scrollRectMode:Boolean;
+		protected var __fillFlow:Boolean;
 		
 		protected var _sameCellMeas:Point; // when renderersSameSize is true the first measurement is stored here
 		protected var _cellMeasCache:Dictionary = new Dictionary(true);
@@ -289,15 +304,15 @@ package org.tbyrne.display.layout.grid
 		protected var _propsFlag:ValidationFlag = new ValidationFlag(validateProps,false);
 		protected var _cellMeasFlag:ValidationFlag = new ValidationFlag(validateCellMeas,false);
 		protected var _cellMappingFlag:ValidationFlag = new ValidationFlag(validateCellMapping,false);
-		protected var _breadthScrollFlag:ValidationFlag = new ValidationFlag(validateBreadthScroll,false);
-		protected var _lengthScrollFlag:ValidationFlag = new ValidationFlag(validateLengthScroll,false);
+		protected var _flowScrollFlag:ValidationFlag = new ValidationFlag(validateFlowScroll,false);
+		protected var _acrossScrollFlag:ValidationFlag = new ValidationFlag(validateAcrossScroll,false);
 		protected var _cellPosFlag:ValidationFlag = new ValidationFlag(validateCellPos,false);
 		
 		protected var _verticalAxis:GridAxis;
 		protected var _horizontalAxis:GridAxis;
 		
-		protected var _breadthAxis:GridAxis;
-		protected var _lengthAxis:GridAxis;
+		protected var _flowDirectionAxis:GridAxis;
+		protected var _acrossFlowAxis:GridAxis;
 		
 		protected var _subjectCount:int;
 		
@@ -384,7 +399,7 @@ package org.tbyrne.display.layout.grid
 		/**
 		 * The ILayoutSubject of the object associated with this key.
 		 */
-		protected function getChildRenderer(key:*,length:int,breadth:int):ILayoutSubject{
+		protected function getChildRenderer(key:*,across:int,flow:int):ILayoutSubject{
 			return key as ILayoutSubject;
 		}
 		
@@ -397,27 +412,27 @@ package org.tbyrne.display.layout.grid
 		}
 		protected function validateProps():void{
 			if(_isVertical){
-				_breadthAxis = _verticalAxis;
-				_lengthAxis = _horizontalAxis;
+				_flowDirectionAxis = _verticalAxis;
+				_acrossFlowAxis = _horizontalAxis;
 				
-				_lengthAxis.scrollMetrics = _horizontalAxis.scrollMetrics;
-				_breadthAxis.scrollMetrics = _verticalAxis.scrollMetrics;
+				_acrossFlowAxis.scrollMetrics = _horizontalAxis.scrollMetrics;
+				_flowDirectionAxis.scrollMetrics = _verticalAxis.scrollMetrics;
 			}else{
-				_breadthAxis = _horizontalAxis;
-				_lengthAxis = _verticalAxis;
+				_flowDirectionAxis = _horizontalAxis;
+				_acrossFlowAxis = _verticalAxis;
 				
-				_lengthAxis.scrollMetrics = _verticalAxis.scrollMetrics;
-				_breadthAxis.scrollMetrics = _horizontalAxis.scrollMetrics;
+				_acrossFlowAxis.scrollMetrics = _verticalAxis.scrollMetrics;
+				_flowDirectionAxis.scrollMetrics = _horizontalAxis.scrollMetrics;
 			}
 			_cellMappingFlag.invalidate();
-			_breadthScrollFlag.invalidate();
-			_lengthScrollFlag.invalidate();
+			_flowScrollFlag.invalidate();
+			_acrossScrollFlag.invalidate();
 			_cellPosFlag.invalidate();
 		}
 		protected function invalidateGapsAndMargins():void{
 			_cellMappingFlag.invalidate();
-			_breadthScrollFlag.invalidate();
-			_lengthScrollFlag.invalidate();
+			_flowScrollFlag.invalidate();
+			_acrossScrollFlag.invalidate();
 			_cellPosFlag.invalidate();
 		}
 		protected function validateCellMeas():void{
@@ -440,8 +455,8 @@ package org.tbyrne.display.layout.grid
 			_subjMeasChanged = new Dictionary();
 			
 			_cellMappingFlag.invalidate();
-			_breadthScrollFlag.invalidate();
-			_lengthScrollFlag.invalidate();
+			_flowScrollFlag.invalidate();
+			_acrossScrollFlag.invalidate();
 			_cellPosFlag.invalidate();
 		}
 		/**
@@ -454,8 +469,8 @@ package org.tbyrne.display.layout.grid
 			
 			
 			_cellPosCache = [];
-			_breadthAxis.maxCellSizes = [];
-			_lengthAxis.maxCellSizes = [];
+			_flowDirectionAxis.maxCellSizes = [];
+			_acrossFlowAxis.maxCellSizes = [];
 			
 			if(_noKeys)return;
 			
@@ -464,14 +479,14 @@ package org.tbyrne.display.layout.grid
 			
 			var pixelFlow:Boolean = _pixelFlow;
 			
-			var breadthStackMax:Number;
+			var flowStackMax:Number;
 			if(pixelFlow){
-				breadthStackMax = _size[_breadthAxis.coordRef]-_breadthAxis.foreMargin-_breadthAxis.aftMargin+_breadthAxis.gap;
+				flowStackMax = _size[_flowDirectionAxis.coordRef]-_flowDirectionAxis.foreMargin-_flowDirectionAxis.aftMargin+_flowDirectionAxis.gap;
 			}
 			
-			var hasMaxBreadthCount:Boolean = _breadthAxis.hasMaxCount;
-			var maxBreadthCount:int = _breadthAxis.maxCount;
-			var hasBreadthCellSizes:Boolean = _breadthAxis.hasCellSizes;
+			var hasMaxFlowCount:Boolean = _flowDirectionAxis.hasMaxCount;
+			var maxFlowCount:int = _flowDirectionAxis.maxCount;
+			var hasFlowCellSizes:Boolean = _flowDirectionAxis.hasCellSizes;
 			var renderersSameSize:Boolean = _renderersSameSize;
 			var newAnyGridInfos:Boolean;
 			
@@ -479,26 +494,26 @@ package org.tbyrne.display.layout.grid
 			
 			if(renderersSameSize && pixelFlow){
 				// in this case we can treat pixel flowing more like column flowing
-				var sameMeasBreadth:Number = _sameCellMeas[_breadthAxis.coordRef];
-				var sameMeasLength:Number = _sameCellMeas[_lengthAxis.coordRef];
+				var sameMeasFlow:Number = _sameCellMeas[_flowDirectionAxis.coordRef];
+				var sameMeasAcross:Number = _sameCellMeas[_acrossFlowAxis.coordRef];
 				
-				var maxBreadth:int = int(breadthStackMax/(sameMeasBreadth+_breadthAxis.gap));
-				if(!hasMaxBreadthCount || maxBreadthCount>maxBreadth){
-					maxBreadthCount = maxBreadth;
+				var maxFlow:int = int(flowStackMax/(sameMeasFlow+_flowDirectionAxis.gap));
+				if(!hasMaxFlowCount || maxFlowCount>maxFlow){
+					maxFlowCount = maxFlow;
 				}
 				pixelFlow = false;
-				hasMaxBreadthCount = true;
+				hasMaxFlowCount = true;
 				
 				
-				// optimised way of finding max breadth/lengths
-				var maxLength:int = int(getChildKeyCount()/maxBreadth);
-				if(maxLength%1)maxLength += 1; // round up
+				// optimised way of finding max flow/across
+				var maxAcross:int = int(getChildKeyCount()/maxFlow);
+				if(maxAcross%1)maxAcross += 1; // round up
 				
-				for(i=0; i<maxBreadthCount; ++i){
-					_breadthAxis.maxCellSizes[i] = sameMeasBreadth;
+				for(i=0; i<maxFlowCount; ++i){
+					_flowDirectionAxis.maxCellSizes[i] = sameMeasFlow;
 				}
-				for(i=0; i<maxLength; ++i){
-					_lengthAxis.maxCellSizes[i] = sameMeasLength;
+				for(i=0; i<maxAcross; ++i){
+					_acrossFlowAxis.maxCellSizes[i] = sameMeasAcross;
 				}
 				ignoreMaxCalcs = true;
 			}
@@ -513,8 +528,8 @@ package org.tbyrne.display.layout.grid
 				}
 				
 				// if cell has specific grid position, we get it here
-				var breadthIndex:int;
-				var lengthIndex:int;
+				var flowIndex:int;
+				var acrossIndex:int;
 				var posFound:Boolean = false;
 				var layoutInfo:ILayoutInfo = getChildLayoutInfo(key);
 				
@@ -523,13 +538,13 @@ package org.tbyrne.display.layout.grid
 					if(gridLayout){
 						newAnyGridInfos = true;
 						if(_isVertical){
-							breadthIndex = gridLayout.rowIndex;
-							lengthIndex = gridLayout.columnIndex;
+							flowIndex = gridLayout.rowIndex;
+							acrossIndex = gridLayout.columnIndex;
 						}else{
-							breadthIndex = gridLayout.columnIndex;
-							lengthIndex = gridLayout.rowIndex;
+							flowIndex = gridLayout.columnIndex;
+							acrossIndex = gridLayout.rowIndex;
 						}
-						if(lengthIndex!=-1){
+						if(acrossIndex!=-1){
 							posFound = true;
 						}
 					}
@@ -539,31 +554,31 @@ package org.tbyrne.display.layout.grid
 				if(!posFound){
 					var listLayout:IListLayoutInfo = (layoutInfo as IListLayoutInfo);
 					if(listLayout){
-						breadthIndex = listLayout.listIndex;
-						lengthIndex = 0;
+						flowIndex = listLayout.listIndex;
+						acrossIndex = 0;
 						posFound = true;
 					}
 				}
 				
 				// if either of these succeeded and the cell has measurements we attmpet to position it in the visible grid
 				if(subMeas){
-					var subLengthDim:Number = subMeas[_lengthAxis.coordRef];
-					var subBreadthDim:Number = subMeas[_breadthAxis.coordRef];
+					var subAcrossDim:Number = subMeas[_acrossFlowAxis.coordRef];
+					var subFlowDim:Number = subMeas[_flowDirectionAxis.coordRef];
 					
 					if(posFound){
-						var breadthIndices:Array;
+						var flowIndices:Array;
 						var doFlow:Boolean;
 						
 						// if there's a maximum amount of columns/rows, we loop it here
-						if(hasMaxBreadthCount && breadthIndex>=maxBreadthCount){
+						if(hasMaxFlowCount && flowIndex>=maxFlowCount){
 							doFlow = true;
-							lengthIndex += Math.floor(breadthIndex/maxBreadthCount);
-							breadthIndex = breadthIndex%maxBreadthCount;
+							acrossIndex += Math.floor(flowIndex/maxFlowCount);
+							flowIndex = flowIndex%maxFlowCount;
 						}
 						
 						/*
 						Looping behaviour starts here:
-						If there's still no breathIndex (it had an unknown/unfilled ILayoutInfo) we use pixelFlowing
+						If there's still no flowIndex (it had an unknown/unfilled ILayoutInfo) we use pixelFlowing
 						behaviour (this is uncommon).
 						If the maximimum rows/cols were reached and therefore this cell was was wrapped then we also run
 						through this logic.
@@ -571,75 +586,75 @@ package org.tbyrne.display.layout.grid
 						It continually wraps until it finds a row/col where it'll fit (some cells can already be filled
 						by previous IGridLayoutInfo cells)
 						*/
-						if(breadthIndex==-1 || doFlow || pixelFlow){
+						if(flowIndex==-1 || doFlow || pixelFlow){
 							var satisfied:Boolean = false;
 							
-							if(breadthIndex==-1){
-								breadthIndex = 0;
+							if(flowIndex==-1){
+								flowIndex = 0;
 							}
 							
 							while(!satisfied){
-								breadthIndices = _cellPosCache[lengthIndex];
-								var breadthTotal:int;
-								if(!breadthIndices){
+								flowIndices = _cellPosCache[acrossIndex];
+								var flowTotal:int;
+								if(!flowIndices){
 									// if this row/col hasn't been encountered yet we create a position cache for it
-									if(hasMaxBreadthCount){
-										_cellPosCache[lengthIndex] = breadthIndices = [];
-										breadthTotal = maxBreadthCount;
+									if(hasMaxFlowCount){
+										_cellPosCache[acrossIndex] = flowIndices = [];
+										flowTotal = maxFlowCount;
 									}
 									satisfied = true;
 									break;
 								}else{
-									if(hasMaxBreadthCount && maxBreadthCount>breadthIndices.length){
-										breadthTotal = maxBreadthCount;
+									if(hasMaxFlowCount && maxFlowCount>flowIndices.length){
+										flowTotal = maxFlowCount;
 									}else{
 										// plus an extra one to give it room to wrap into
-										breadthTotal = breadthIndices.length+2;
+										flowTotal = flowIndices.length+2;
 									}
 								}
 								if(!satisfied){
-									var breadthStack:Number = 0;
+									var flowStack:Number = 0;
 									
 									// loop through cells already added to this row to get total size up to intended index
-									for(i=0; i<breadthTotal; i++){
-										var otherKey:* = breadthIndices[i];
+									for(i=0; i<flowTotal; i++){
+										var otherKey:* = flowIndices[i];
 										var doWrap:Boolean = false;
 										
 										if(pixelFlow){
 											// add to the stack and work out whether it needs to wrap (by pixel)
-											var cellBreadth:Number = NaN;
-											if(hasBreadthCellSizes){
-												cellBreadth = _breadthAxis.cellSizes[i%_breadthAxis.cellSizesCount];
+											var cellFlowSize:Number = NaN;
+											if(hasFlowCellSizes){
+												cellFlowSize = _flowDirectionAxis.cellSizes[i%_flowDirectionAxis.cellSizesCount];
 											}else if(otherKey!=null){
-												cellBreadth = _cellMeasCache[otherKey][_breadthAxis.coordRef];
+												cellFlowSize = _cellMeasCache[otherKey][_flowDirectionAxis.coordRef];
 											}else{
 												/*
 												@TODO: this is an assumption. If a later cell fills this slot with
 												different measurements to the current cell, it will fail.
 												*/
-												cellBreadth = subMeas[_breadthAxis.coordRef];
+												cellFlowSize = subMeas[_flowDirectionAxis.coordRef];
 											}
-											breadthStack += cellBreadth+_breadthAxis.gap;
-											if(breadthStack>breadthStackMax){
+											flowStack += cellFlowSize+_flowDirectionAxis.gap;
+											if(flowStack>flowStackMax){
 												doWrap = true;
 											}
 										}
 										
-										// i>=breadthIndex tests whether we've yet passed the intended cell location
-										if(!doWrap && i>=breadthIndex){
-											if(_breadthAxis.hasMaxCount && i>=maxBreadthCount){
+										// i>=flowIndex tests whether we've yet passed the intended cell location
+										if(!doWrap && i>=flowIndex){
+											if(_flowDirectionAxis.hasMaxCount && i>=maxFlowCount){
 												// if we have exceeded the max cols/rows we wrap
 												doWrap = true;
 											}else if(otherKey==null){
 												// else if slot is unoccupied we take it
-												breadthIndex = i;
+												flowIndex = i;
 												satisfied = true;
 												break;
 											}
 										}
 										if(doWrap){
-											breadthIndex = 0;
-											lengthIndex++;
+											flowIndex = 0;
+											acrossIndex++;
 											break;
 										}
 									}
@@ -647,26 +662,27 @@ package org.tbyrne.display.layout.grid
 							}
 						}
 						// store grid position
-						breadthIndices = _cellPosCache[lengthIndex];
-						if(!breadthIndices){
-							_cellPosCache[lengthIndex] = breadthIndices = [];
+						flowIndices = _cellPosCache[acrossIndex];
+						if(!flowIndices){
+							_cellPosCache[acrossIndex] = flowIndices = [];
 						}
-						if(breadthIndices[breadthIndex]){
+						
+						if(flowIndices[flowIndex]){
 							Log.error( "AbstractGridLayout.validateCellMapping: Two ILayoutSubjects have the same grid coords");
 						}else{
-							breadthIndices[breadthIndex] = key;
+							flowIndices[flowIndex] = key;
 						}
 					}
 					
 					if(!ignoreMaxCalcs){
 						// store measurements against grid position
-						var currentMaxLength:Number = _lengthAxis.maxCellSizes[lengthIndex];
-						if(isNaN(currentMaxLength) || currentMaxLength<subLengthDim){
-							_lengthAxis.maxCellSizes[lengthIndex] = subLengthDim;
+						var currentMaxAcross:Number = _acrossFlowAxis.maxCellSizes[acrossIndex];
+						if(isNaN(currentMaxAcross) || currentMaxAcross<subAcrossDim){
+							_acrossFlowAxis.maxCellSizes[acrossIndex] = subAcrossDim;
 						}
-						var currentMaxBredth:Number = _breadthAxis.maxCellSizes[breadthIndex];
-						if(isNaN(currentMaxBredth) || currentMaxBredth<subBreadthDim){
-							_breadthAxis.maxCellSizes[breadthIndex] = subBreadthDim;
+						var currentMaxFlow:Number = _flowDirectionAxis.maxCellSizes[flowIndex];
+						if(isNaN(currentMaxFlow) || currentMaxFlow<subFlowDim){
+							_flowDirectionAxis.maxCellSizes[flowIndex] = subFlowDim;
 						}
 					}
 				}
@@ -674,56 +690,56 @@ package org.tbyrne.display.layout.grid
 			_anyGridInfos = newAnyGridInfos;
 			
 			// if specific sizes have been set for rows/cols, we replace the calculated maxs here 
-			var maxLengthMeas:Number = _lengthAxis.foreMargin+_lengthAxis.aftMargin+(_lengthAxis.maxCellSizes.length-1)*_lengthAxis.gap;
-			for(i=0; i<_lengthAxis.maxCellSizes.length; i++){
-				subLengthDim = _lengthAxis.maxCellSizes[i];
-				maxLengthMeas += (isNaN(subLengthDim)?0:subLengthDim);
+			var maxAcrossMeas:Number = _acrossFlowAxis.foreMargin+_acrossFlowAxis.aftMargin+(_acrossFlowAxis.maxCellSizes.length-1)*_acrossFlowAxis.gap;
+			for(i=0; i<_acrossFlowAxis.maxCellSizes.length; i++){
+				subAcrossDim = _acrossFlowAxis.maxCellSizes[i];
+				maxAcrossMeas += (isNaN(subAcrossDim)?0:subAcrossDim);
 				
-				if(_lengthAxis.hasCellSizes){
-					var specLength:Number = _lengthAxis.cellSizes[i%_lengthAxis.cellSizesCount];
-					if(!isNaN(specLength)){
-						_lengthAxis.maxCellSizes[i] = specLength;
+				if(_acrossFlowAxis.hasCellSizes){
+					var specAcross:Number = _acrossFlowAxis.cellSizes[i%_acrossFlowAxis.cellSizesCount];
+					if(!isNaN(specAcross)){
+						_acrossFlowAxis.maxCellSizes[i] = specAcross;
 					}
 				}
 			}
 			
-			var maxBreadthMeas:Number = _breadthAxis.foreMargin+_breadthAxis.aftMargin+(_breadthAxis.maxCellSizes.length-1)*_breadthAxis.gap;
-			for(i=0; i<_breadthAxis.maxCellSizes.length; i++){
-				subBreadthDim = _breadthAxis.maxCellSizes[i];
-				maxBreadthMeas += (isNaN(subBreadthDim)?0:subBreadthDim);
+			var maxFlowMeas:Number = _flowDirectionAxis.foreMargin+_flowDirectionAxis.aftMargin+(_flowDirectionAxis.maxCellSizes.length-1)*_flowDirectionAxis.gap;
+			for(i=0; i<_flowDirectionAxis.maxCellSizes.length; i++){
+				subFlowDim = _flowDirectionAxis.maxCellSizes[i];
+				maxFlowMeas += (isNaN(subFlowDim)?0:subFlowDim);
 				
-				if(hasBreadthCellSizes){
-					var specBreadth:Number = _breadthAxis.cellSizes[i%_breadthAxis.cellSizesCount];
-					if(!isNaN(specBreadth)){
-						_breadthAxis.maxCellSizes[i] = specBreadth;
+				if(hasFlowCellSizes){
+					var specFlowSize:Number = _flowDirectionAxis.cellSizes[i%_flowDirectionAxis.cellSizesCount];
+					if(!isNaN(specFlowSize)){
+						_flowDirectionAxis.maxCellSizes[i] = specFlowSize;
 					}
 				}
 			}
 			
 			// measurement changes get dispatched in the draw() function that wraps this doLayout function
-			if(_measurements[_lengthAxis.coordRef]!= maxLengthMeas){
-				_measurements[_lengthAxis.coordRef]= maxLengthMeas;
+			if(_measurements[_acrossFlowAxis.coordRef]!= maxAcrossMeas){
+				_measurements[_acrossFlowAxis.coordRef]= maxAcrossMeas;
 			}
-			if(_measurements[_breadthAxis.coordRef]!= maxBreadthMeas){
-				_measurements[_breadthAxis.coordRef]= maxBreadthMeas;
+			if(_measurements[_flowDirectionAxis.coordRef]!= maxFlowMeas){
+				_measurements[_flowDirectionAxis.coordRef]= maxFlowMeas;
 			}
 			
-			_breadthScrollFlag.invalidate();
-			_lengthScrollFlag.invalidate();
+			_flowScrollFlag.invalidate();
+			_acrossScrollFlag.invalidate();
 			_cellPosFlag.invalidate();
 		}
 		protected function validateAllScrolling():void{
 			_ignoreScrollChanges = true;
-			_breadthScrollFlag.validate();
-			_lengthScrollFlag.validate();
+			_flowScrollFlag.validate();
+			_acrossScrollFlag.validate();
 			_ignoreScrollChanges = false;
 		}
-		protected function validateBreadthScroll():void{
-			validateScroll(_breadthAxis.scrollMetrics,_breadthAxis);
+		protected function validateFlowScroll():void{
+			validateScroll(_flowDirectionAxis.scrollMetrics,_flowDirectionAxis);
 			_cellPosFlag.invalidate();
 		}
-		protected function validateLengthScroll():void{
-			validateScroll(_lengthAxis.scrollMetrics,_lengthAxis);
+		protected function validateAcrossScroll():void{
+			validateScroll(_acrossFlowAxis.scrollMetrics,_acrossFlowAxis);
 			_cellPosFlag.invalidate();
 		}
 		/**
@@ -775,62 +791,104 @@ package org.tbyrne.display.layout.grid
 			}
 		}
 		protected function validateCellPos():void{
-			var equaliseLengths:Boolean = _lengthAxis.equaliseCells;
-			var equaliseBreadths:Boolean = _breadthAxis.equaliseCells;
-			var lengthStack:Number = _lengthAxis.foreMargin;
-			var lengthCount:int=  _cellPosCache.length;
+			var equaliseAcrossSizes:Boolean = _acrossFlowAxis.equaliseCells;
+			var equaliseFlowSizes:Boolean = _flowDirectionAxis.equaliseCells;
 			
-			var lengthScroll:Number = __scrollRectMode?0:_lengthAxis.pixScrollMetrics.scrollValue;
-			var breadthScroll:Number = __scrollRectMode?0:_breadthAxis.pixScrollMetrics.scrollValue;
+			var acrossStack:Number = _acrossFlowAxis.foreMargin;
+			var acrossCount:int=  _cellPosCache.length;
 			
-			var breadthCount:int = _breadthAxis.maxCellSizes.length;
+			var acrossScroll:Number = __scrollRectMode?0:_acrossFlowAxis.pixScrollMetrics.scrollValue;
+			var flowScroll:Number = __scrollRectMode?0:_flowDirectionAxis.pixScrollMetrics.scrollValue;
 			
-			for(var i:int=0; i<lengthCount; i++){
-				var breadthIndices:Array = _cellPosCache[i];
-				var length:Number = _lengthAxis.maxCellSizes[i];
-				if(breadthIndices){
-					var breadthStack:Number = _breadthAxis.foreMargin;
+			var flowCount:int = _flowDirectionAxis.maxCellSizes.length;
+			
+			var realSize:Number = _size[_flowDirectionAxis.coordRef];
+			
+			//var flowFills:Vector.<Number> = new Vector.<Number>(flowCount, false);
+			
+			for(var i:int=0; i<acrossCount; i++){
+				var flowIndices:Array = _cellPosCache[i];
+				var acrossMax:Number = _acrossFlowAxis.maxCellSizes[i];
+				
+				var j:int;
+				var key:*;
+				var subMeas:Point;
+				
+				if(flowIndices){
+					var flowStack:Number = _flowDirectionAxis.foreMargin;
 					
-					for(var j:int=0; j<breadthCount; j++){
-						var key:* = breadthIndices[j];
-						var subMeas:Point = _cellMeasCache[key];
+					var fillSize:Number;
+					
+					if(__fillFlow){
+						var remainingSize:Number = realSize-_flowDirectionAxis.foreMargin-_flowDirectionAxis.aftMargin-(_flowDirectionAxis.gap*(flowCount-1));
+						fillSize = (remainingSize/flowCount);
 						
-						var subBreadthDim:Number;
-						if(equaliseBreadths || !subMeas){
-							subBreadthDim = _breadthAxis.maxCellSizes[j];
-						}else{
-							subBreadthDim = subMeas[_breadthAxis.coordRef];
-						}
 						
-						var subLengthDim:Number;
-						if(equaliseLengths || !subMeas){
-							subLengthDim = length;
-						}else{
-							subLengthDim = subMeas[_lengthAxis.coordRef];
+						// TODO: move these fill calculations higher up in the validation cycle (probably into the and of the cell mapping/flowing code)
+						if(!equaliseFlowSizes){
+							var searching:Boolean = true;
+							var elligable:Array = flowIndices.concat();
+							while(searching){
+								searching = false;
+								for(j=0; j<elligable.length; j++){
+									key = elligable[j];
+									subMeas = _cellMeasCache[key];
+									var flowMeas:Number = subMeas[_flowDirectionAxis.coordRef];
+									if(subMeas && flowMeas>fillSize){
+										elligable.splice(j,1);
+										remainingSize -= flowMeas;
+										fillSize = (remainingSize/elligable.length);
+										searching = true;
+										break;
+									}
+									
+								}
+							}
 						}
-						
-						if(_isVertical){
-							positionRenderer(key,i,j,
-								_position.x+lengthStack-lengthScroll,_position.y+breadthStack-breadthScroll,
-								subLengthDim,subBreadthDim);
-						}else{
-							positionRenderer(key,i,j,
-								_position.x+breadthStack-breadthScroll,_position.y+lengthStack-lengthScroll,
-								subBreadthDim,subLengthDim);
+					}
+					
+					for(j=0; j<flowCount; j++){
+						key = flowIndices[j];
+						if(key!=null){
+							subMeas = _cellMeasCache[key];
+							
+							var subFlowDim:Number = subMeas[_flowDirectionAxis.coordRef];
+							if(__fillFlow && (equaliseFlowSizes || subFlowDim<fillSize)){
+								subFlowDim = fillSize;
+							}else if(equaliseFlowSizes || !subMeas){
+								subFlowDim = _flowDirectionAxis.maxCellSizes[j];
+							}
+							
+							var subAcrossDim:Number;
+							if(equaliseAcrossSizes || !subMeas){
+								subAcrossDim = acrossMax;
+							}else{
+								subAcrossDim = subMeas[_acrossFlowAxis.coordRef];
+							}
+							
+							if(_isVertical){
+								positionRenderer(key,i,j,
+									_position.x+acrossStack-acrossScroll,_position.y+flowStack-flowScroll,
+									subAcrossDim,subFlowDim);
+							}else{
+								positionRenderer(key,i,j,
+									_position.x+flowStack-flowScroll,_position.y+acrossStack-acrossScroll,
+									subFlowDim,subAcrossDim);
+							}
+							flowStack += subFlowDim+_flowDirectionAxis.gap;
 						}
-						breadthStack += subBreadthDim+_breadthAxis.gap;
 					}
 				}
-				lengthStack += length+_lengthAxis.gap;
+				acrossStack += acrossMax+_acrossFlowAxis.gap;
 			}
 		}
 		// TODO: avoid casting all the time
-		protected function positionRenderer(key:*, length:int, breadth:int, x:Number, y:Number, width:Number, height:Number):void{
-			var renderer:ILayoutSubject = getChildRenderer(key,length,breadth);
+		protected function positionRenderer(key:*, acrossSize:int, flowSize:int, x:Number, y:Number, width:Number, height:Number):void{
+			var renderer:ILayoutSubject = getChildRenderer(key,acrossSize,flowSize);
 			var cast:IGridLayoutSubject = (renderer as IGridLayoutSubject);
 			if(cast){
-				cast[_lengthAxis.indexRef] = length;
-				cast[_breadthAxis.indexRef] = breadth;
+				cast[_acrossFlowAxis.indexRef] = acrossSize;
+				cast[_flowDirectionAxis.indexRef] = flowSize;
 			}
 			if(renderer){
 				renderer.setPosition(x,y);
@@ -850,9 +908,9 @@ package org.tbyrne.display.layout.grid
 			if(!_ignoreScrollChanges){
 				_propsFlag.validate();
 				if(_isVertical){
-					_breadthScrollFlag.invalidate()
+					_flowScrollFlag.invalidate()
 				}else{
-					_lengthScrollFlag.invalidate();
+					_acrossScrollFlag.invalidate();
 				}
 				validate(true);
 			}
@@ -861,9 +919,9 @@ package org.tbyrne.display.layout.grid
 			if(!_ignoreScrollChanges){
 				_propsFlag.validate();
 				if(!_isVertical){
-					_breadthScrollFlag.invalidate()
+					_flowScrollFlag.invalidate()
 				}else{
-					_lengthScrollFlag.invalidate();
+					_acrossScrollFlag.invalidate();
 				}
 				validate(true);
 			}

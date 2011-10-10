@@ -126,7 +126,7 @@ package org.tbyrne.display.containers
 }
 import flash.utils.Dictionary;
 
-import org.tbyrne.data.dataTypes.IDataProvider;
+import org.tbyrne.data.controls.IControlData;
 import org.tbyrne.display.DisplayNamespace;
 import org.tbyrne.display.actInfo.IMouseActInfo;
 import org.tbyrne.display.assets.nativeTypes.IDisplayObject;
@@ -288,10 +288,10 @@ class ListWatcher{
 		}
 	}
 	protected function showChildList() : void{
-		var childData:IDataProvider = _parentList.layout.getDataAt(_childDataIndex) as IDataProvider;
-		if(childData && childData.data){
+		var childData:IControlData = _parentList.layout.getDataAt(_childDataIndex) as IControlData;
+		if(childData && childData.childData){
 			
-			if(!_popoutDisplay.popoutShown || childData.data!=_childListWatcher.parentList.dataProvider){
+			if(!_popoutDisplay.popoutShown || childData.childData!=_childListWatcher.parentList.dataProvider){
 				if(!_childListWatcher){
 					_childListWatcher = new ListWatcher(Anchor.BOTTOM_RIGHT, false, _listFactory);
 					_childListWatcher.rendererFactory = _rendererFactory;
@@ -304,7 +304,7 @@ class ListWatcher{
 				}
 				var renderer:ILayoutSubject = _parentList.layout.getRenderer(_childDataIndex);
 				_popoutDisplay.relativeTo = renderer as ILayoutView;
-				_childListWatcher.parentList.dataProvider = childData.data;
+				_childListWatcher.parentList.dataProvider = childData.childData;
 				_popoutDisplay.popoutShown = true;
 				
 				

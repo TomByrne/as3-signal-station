@@ -6,7 +6,9 @@ package org.tbyrne.display.controls
 	
 	import org.tbyrne.acting.actTypes.IAct;
 	import org.tbyrne.acting.acts.Act;
+	import org.tbyrne.data.controls.IControlData;
 	import org.tbyrne.data.dataTypes.IStringConsumer;
+	import org.tbyrne.data.dataTypes.IStringProvider;
 	import org.tbyrne.data.dataTypes.IValueConsumer;
 	import org.tbyrne.display.DisplayNamespace;
 	import org.tbyrne.display.actInfo.IKeyActInfo;
@@ -25,13 +27,6 @@ package org.tbyrne.display.controls
 		DisplayNamespace static const STATE_UNFOCUSED:String = "unfocused";
 		
 		
-		override public function set data(value:*):void{
-			if(super.data != value){
-				_stringConsumer = (value as IStringConsumer);
-				_valueConsumer = (value as IValueConsumer);
-				super.data = value;
-			}
-		}
 		public function get prompt():String{
 			return _prompt;
 		}
@@ -77,7 +72,7 @@ package org.tbyrne.display.controls
 			return _tabFocusable;
 		}
 		override public function set asset(value:IDisplayObject):void{
-			if(!(_stringProvider || _valueProvider))data = null;
+			if(!_stringProvider)_stringData = null;
 			super.asset = value;
 		}
 		/**
@@ -118,7 +113,6 @@ package org.tbyrne.display.controls
 		protected var _tabFocusable:InteractiveAssetFocusWrapper;
 		
 		protected var _stringConsumer:IStringConsumer;
-		protected var _valueConsumer:IValueConsumer;
 		
 		protected var _focusedState:StateDef = new StateDef([STATE_UNFOCUSED,STATE_FOCUSED],0);
 
@@ -242,10 +236,6 @@ package org.tbyrne.display.controls
 		protected function fillData():void{
 			if(_stringConsumer){
 				_stringConsumer.stringValue = _stringData;
-			}else if(_valueConsumer){
-				_valueConsumer.value = _stringData;
-			}else{
-				_data = _stringData;
 			}
 		}
 		override protected function getMeasurementText():String{
@@ -255,6 +245,23 @@ package org.tbyrne.display.controls
 			fill = super.fillStateList(fill);
 			fill.push(_focusedState);
 			return fill;
+		}
+		
+		override protected function clearData():void{
+			super.clearData();
+			if(_stringConsumer){
+				_stringConsumer = null;
+			}
+		}
+		
+		override protected function assessData():void{
+			super.assessData();
+			if(_stringProvider){
+				_stringConsumer = (_stringProvider as IStringConsumer);
+			}
+		}
+		override protected function getLabelProvider(data:IControlData):IStringProvider{
+			return data.stringValue;
 		}
 	}
 }

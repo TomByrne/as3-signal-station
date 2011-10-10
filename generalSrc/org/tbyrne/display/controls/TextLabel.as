@@ -3,9 +3,8 @@ package org.tbyrne.display.controls
 	import flash.display.TextFieldGutter;
 	import flash.text.TextFormat;
 	
-	import org.tbyrne.data.core.StringData;
+	import org.tbyrne.data.controls.IControlData;
 	import org.tbyrne.data.dataTypes.IStringProvider;
-	import org.tbyrne.data.dataTypes.IValueProvider;
 	import org.tbyrne.display.DisplayNamespace;
 	import org.tbyrne.display.assets.AssetNames;
 	import org.tbyrne.display.assets.nativeTypes.IDisplayObject;
@@ -19,35 +18,6 @@ package org.tbyrne.display.controls
 		public function get stringData():String{
 			checkIsBound();
 			return _stringData;
-		}
-		public function get data():*{
-			checkIsBound();
-			return _data;
-		}
-		public function set data(value:*):void{
-			if(_data!=value){
-				if(_stringProvider){
-					_stringProvider.stringValueChanged.removeHandler(onProviderChanged);
-				}else if(_valueProvider){
-					_valueProvider.valueChanged.removeHandler(onProviderChanged);
-				}
-				if(value is String){
-					value = new StringData(value);
-				}
-				_data = value;
-				_stringProvider = value as IStringProvider;
-				if(_stringProvider){
-					_stringProvider.stringValueChanged.addHandler(onProviderChanged);
-				}else{
-					_valueProvider = value as IValueProvider;
-					if(_valueProvider){
-						_valueProvider.valueChanged.addHandler(onProviderChanged);
-					}
-				}
-				if(_labelField){
-					syncFieldToData();
-				}
-			}
 		}
 		
 		public function get paddingTop():Number{
@@ -113,10 +83,8 @@ package org.tbyrne.display.controls
 		protected var _textFormat:TextFormat;
 		protected var _assumedTextFormat:TextFormat;
 		
-		protected var _data:*;
 		protected var _stringData:String;
 		protected var _stringProvider:IStringProvider;
-		protected var _valueProvider:IValueProvider;
 		protected var _labelField:ITextField;
 		
 		protected var _labelFieldSizer:PaddingSizer;
@@ -140,9 +108,8 @@ package org.tbyrne.display.controls
 			bindTextField();
 			_labelField.multiline = _multiline;
 			_labelField.wordWrap = _multiline;
-			if(!_data && _labelField.text.length){
-				_data = _labelField.htmlText;
-				_stringData = _data;
+			if(!_stringData && _labelField.text.length){
+				_stringData = _labelField.text;
 			}
 			if(_backing){
 				
@@ -250,12 +217,6 @@ package org.tbyrne.display.controls
 			var newText:String;
 			if(_stringProvider){
 				newText = _stringProvider.stringValue?_stringProvider.stringValue:"";
-			}else if(_valueProvider){
-				newText = _valueProvider.value?String(_valueProvider.value):"";
-			}else if(_data is String){
-				newText = _data;
-			}else if(_data is Object && _data["label"]){
-				newText = _data["label"];
 			}
 			if(!newText)newText = "";
 			if(_stringData != newText){
@@ -286,10 +247,10 @@ package org.tbyrne.display.controls
 			}
 		}
 		// compares 2 numbers taking floating point errors into account
-		private function fleCompare(number1:Number, number2:Number):Boolean{
+		/*private function fleCompare(number1:Number, number2:Number):Boolean{
 			var dif:Number = number1-number2;
 			return dif<1?(dif>-0.01):(dif<0.01);
-		}
+		}*/
 		override protected function commitPosition():void{
 			if(_labelField==asset){
 				asset.setPosition(position.x-TextFieldGutter.TEXT_FIELD_GUTTER+_labelFieldSizer.paddingLeft,position.y-TextFieldGutter.TEXT_FIELD_GUTTER+_labelFieldSizer.paddingTop);
@@ -304,6 +265,31 @@ package org.tbyrne.display.controls
 				return assumedValue;
 			}
 			return defaultValue;
+		}
+		
+		override protected function clearData():void{
+			super.clearData();
+			if(_stringProvider){
+				_stringProvider.stringValueChanged.removeHandler(onProviderChanged);
+				_stringProvider = null;
+			}
+		}
+		
+		override protected function assessData():void{
+			super.assessData();
+			var labelProvider:IStringProvider = getLabelProvider(_data);
+			if(labelProvider){
+				_stringProvider = labelProvider;
+				_stringProvider.stringValueChanged.addHandler(onProviderChanged);
+				
+				if(_labelField){
+					syncFieldToData();
+				}
+			}
+		}
+		
+		protected function getLabelProvider(data:IControlData):IStringProvider{
+			return data.label;
 		}
 	}
 }

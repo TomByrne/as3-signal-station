@@ -4,7 +4,6 @@ package org.tbyrne.actLibrary.external.siteStream.acts
 	
 	import org.tbyrne.actLibrary.external.siteStream.actTypes.IResolvePathsAct;
 	import org.tbyrne.acting.acts.UniversalAct;
-	import org.tbyrne.hoborg.Cloner;
 	
 	public class SiteStreamResolveAct extends UniversalAct implements IResolvePathsAct
 	{

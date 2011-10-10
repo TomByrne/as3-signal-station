@@ -2,6 +2,8 @@ package org.tbyrne.display.controls
 {
 	import flash.display.DisplayObject;
 	
+	import org.tbyrne.data.controls.IControlData;
+	import org.tbyrne.data.dataTypes.IBooleanProvider;
 	import org.tbyrne.display.DisplayNamespace;
 	import org.tbyrne.display.assets.assetTypes.IAsset;
 	import org.tbyrne.display.assets.nativeTypes.IDisplayObject;
@@ -20,15 +22,33 @@ package org.tbyrne.display.controls
 		DisplayNamespace static var INACTIVE_FRAME_LABEL:String = "inactive";
 		
 		
+		public function get data():IControlData{
+			return _data;
+		}
+		public function set data(value:IControlData):void{
+			if(_data!=value){
+				if(_data){
+					clearData();
+				}
+				
+				_data = value;
+				
+				if(_data){
+					assessData();
+				}
+			}
+		}		
+		
 		public function get active():Boolean{
 			return _active;
 		}
 		public function set active(value:Boolean):void{
-			if(_active!=value){
-				_active = value;
-				_activeState.selection = (value?0:1);
+			if(_activeProvider){
+				Log.error("active shouldn't be set when an activeProvider has been supplied (Control.active)");
 			}
+			setActive(value);
 		}
+		
 		public function get validator():IValidator{
 			return _validator;
 		}
@@ -49,9 +69,12 @@ package org.tbyrne.display.controls
 			}
 		}
 		
+		protected var _data:IControlData;
+		
 		protected var _validator:IValidator;
 		protected var _validatorValid:Boolean = true;
 		protected var _active:Boolean = true;
+		protected var _activeProvider:IBooleanProvider;
 		
 		protected var _activeState:StateDef = new StateDef([ACTIVE_FRAME_LABEL,INACTIVE_FRAME_LABEL],0);
 		protected var _validState:StateDef = new StateDef([VALID_FRAME_LABEL,INVALID_FRAME_LABEL],0);
@@ -68,6 +91,34 @@ package org.tbyrne.display.controls
 			fill.push(_activeState);
 			fill.push(_validState);
 			return fill;
+		}
+		
+		
+		
+		protected function clearData():void{
+			if(_activeProvider){
+				_activeProvider.booleanValueChanged.removeHandler(onActiveChanged);
+				_activeProvider = null;
+			}
+		}
+		
+		protected function assessData():void{
+			if(_data.active){
+				_activeProvider = _data.active;
+				_activeProvider.booleanValueChanged.addHandler(onActiveChanged);
+				setActive(_activeProvider.booleanValue);
+			}
+		}
+		
+		private function onActiveChanged(from:IBooleanProvider):void{
+			setActive(from.booleanValue);
+		}		
+		
+		protected function setActive(value:Boolean):void{
+			if(_active!=value){
+				_active = value;
+				_activeState.selection = (value?0:1);
+			}
 		}
 	}
 }

@@ -32,20 +32,6 @@ package org.tbyrne.display.controls
 		DisplayNamespace static const STATE_UP:String = "mouseUp";
 		
 		
-		public function get data():*{
-			return _data;
-		}
-		public function set data(value:*):void{
-			if(_data != value){
-				_data = value;
-				if(value){
-					_triggerableData = (value as ITriggerableAction);
-				}else{
-					_triggerableData = null;
-				}
-			}
-		}
-		
 		
 		public function get useHandCursor():Boolean{
 			return _useHandCursor;
@@ -53,8 +39,8 @@ package org.tbyrne.display.controls
 		public function set useHandCursor(value:Boolean):void{
 			if(_useHandCursor!=value){
 				_useHandCursor = value;
-				if(_spriteAsset && _active){
-					_spriteAsset.useHandCursor = _useHandCursor;
+				if(_interactiveArea && _active){
+					_interactiveArea.useHandCursor = _useHandCursor && _active;
 				}
 			}
 		}
@@ -118,22 +104,6 @@ package org.tbyrne.display.controls
 			}
 		}
 		
-		override public function set active(value:Boolean):void{
-			if(super.active!=value){
-				if(!value){
-					_overState.selection = 1;
-					_downState.selection = 1;
-					
-					_over = false;
-					_down = false;
-				}
-				if(_interactiveArea){
-					_interactiveArea.buttonMode = value;
-					_interactiveArea.useHandCursor = (value && _useHandCursor);
-				}
-				super.active = value;
-			}
-		}
 		
 		/**
 		 * This is a number representing the amount of pixels the mouse can move between
@@ -143,9 +113,6 @@ package org.tbyrne.display.controls
 		 * @default 10
 		 */
 		public var dragAvoidanceDist:Number = 10;
-		
-		protected var _data:*;
-		protected var _triggerableData:ITriggerableAction;
 		
 		protected var _useHandCursor:Boolean = true;
 		protected var _scaleAsset:Boolean = false;
@@ -316,7 +283,7 @@ package org.tbyrne.display.controls
 		
 		protected function acceptClick():void{
 			if(_clicked)_clicked.perform(this);
-			if(_triggerableData)_triggerableData.triggerAction(asset);
+			if(_data && _data.selectedAction)_data.selectedAction.triggerAction(asset);
 		}
 		
 		
@@ -325,6 +292,24 @@ package org.tbyrne.display.controls
 			fill.push(_overState);
 			fill.push(_downState);
 			return fill;
+		}
+		
+		
+		override protected function setActive(value:Boolean):void{
+			if(_active!=value){
+				if(!value){
+					_overState.selection = 1;
+					_downState.selection = 1;
+					
+					_over = false;
+					_down = false;
+				}
+				if(_interactiveArea){
+					_interactiveArea.buttonMode = value;
+					_interactiveArea.useHandCursor = (value && _useHandCursor);
+				}
+				super.setActive(value);
+			}
 		}
 	}
 }

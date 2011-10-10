@@ -3,6 +3,7 @@ package org.tbyrne.display.controls
 	
 	import org.tbyrne.acting.actTypes.IAct;
 	import org.tbyrne.acting.acts.Act;
+	import org.tbyrne.data.controls.IControlData;
 	import org.tbyrne.data.dataTypes.IBooleanConsumer;
 	import org.tbyrne.data.dataTypes.IBooleanProvider;
 	import org.tbyrne.display.DisplayNamespace;
@@ -44,25 +45,9 @@ package org.tbyrne.display.controls
 			return _tabFocusable;
 		}
 		
-		override public function set data(value:*):void{
+		override public function set data(value:IControlData):void{
 			if(super.data!=value){
-				if(_booleanProvider){
-					_booleanProvider.booleanValueChanged.removeHandler(onProviderChanged);
-				}
 				super.data = value;
-				_booleanProvider = (value as IBooleanProvider);
-				_booleanConsumer = (value as IBooleanConsumer);
-				if(_booleanProvider){
-					if(useDataForSelected){
-						selected = _booleanProvider.booleanValue;
-					}else{
-						selected = false;
-					}
-					_booleanProvider.booleanValueChanged.addHandler(onProviderChanged);
-				}else{
-					selected = false;
-				}
-				assessSelectedState();
 			}else if(!_booleanProvider && _data){
 				/*
 				If a list's dataProvider array is reset and some items
@@ -98,6 +83,8 @@ package org.tbyrne.display.controls
 				if(value){
 					// this will force the data to conform (if possible)
 					selected = selected;
+				}else if(_booleanProvider){
+					selected = _booleanProvider.booleanValue;
 				}
 			}
 		}
@@ -154,6 +141,30 @@ package org.tbyrne.display.controls
 			fill.push(_selectedState);
 			fill = super.fillStateList(fill);
 			return fill;
+		}
+		override protected function clearData():void{
+			super.clearData();
+			if(_booleanProvider){
+				_booleanProvider.booleanValueChanged.removeHandler(onProviderChanged);
+				_booleanProvider = null;
+				_booleanConsumer = null;
+				if(useDataForSelected){
+					selected = false;
+				}
+			}
+		}
+		
+		override protected function assessData():void{
+			super.assessData();
+			if(_data.selected){
+				_booleanProvider = _data.selected;
+				_booleanConsumer = (_booleanProvider as IBooleanConsumer);
+				if(useDataForSelected){
+					selected = _booleanProvider.booleanValue;
+				}
+				_booleanProvider.booleanValueChanged.addHandler(onProviderChanged);
+				assessSelectedState();
+			}
 		}
 	}
 }

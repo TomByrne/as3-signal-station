@@ -1,8 +1,5 @@
 package org.tbyrne.display.controls
 {
-	import org.tbyrne.data.dataTypes.IBooleanProvider;
-	import org.tbyrne.data.dataTypes.IDataProvider;
-	import org.tbyrne.data.dataTypes.ITriggerableAction;
 	import org.tbyrne.display.assets.nativeTypes.IDisplayObject;
 	import org.tbyrne.display.assets.states.StateDef;
 	import org.tbyrne.display.layout.grid.IGridLayoutSubject;
@@ -31,15 +28,6 @@ package org.tbyrne.display.controls
 			}
 		}
 		
-		override public function set data(value:*):void{
-			if(super.data != value){
-				super.data = value;
-				if(_hasChildrenState){
-					assessDataDrivenStates();
-				}
-			}
-		}
-		
 		private var _rowIndex:int;
 		private var _columnIndex:int;
 		
@@ -59,20 +47,21 @@ package org.tbyrne.display.controls
 			return ret;
 		}
 		protected function assessDataDrivenStates():void{
-			var dataProv:IDataProvider = (data as IDataProvider);
-			if(dataProv){
-				_hasChildrenState.selection = (dataProv.data==null)?0:1;
-				active = true;
+			attemptInit()
+			if(_data){
+				_hasChildrenState.selection = (_data.childData==null)?0:1;
+				if(!_data.active)active = true;
 			}else{
 				_hasChildrenState.selection = 0;
-				var boolProv:IBooleanProvider = (data as IBooleanProvider);
-				if(boolProv){
+				if(!_data.active && (_data.selected!=null || _data.selectedAction!=null)){
 					active = true;
-				}else{
-					var trigData:ITriggerableAction = (data as ITriggerableAction);
-					active = (trigData!=null);
 				}
 			}
+		}
+		
+		override protected function assessData():void{
+			super.assessData();
+			assessDataDrivenStates();
 		}
 	}
 }

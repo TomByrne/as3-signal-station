@@ -269,15 +269,26 @@ package org.tbyrne.display.containers
 			setLayoutDimensions(layoutWidth,layoutHeight);
 			commitScrollRect();
 		}
+		protected function setDirection(value:String):void{
+			_layout.flowDirection = value;
+			if(value==Direction.HORIZONTAL){
+				_layout.equaliseCellHeights = true;
+				_layout.equaliseCellWidths = false;
+			}else{
+				_layout.equaliseCellHeights = false;
+				_layout.equaliseCellWidths = true;
+			}
+			if(_scrollBar)_scrollBar.direction = value;
+		}
 		protected function setLayoutDimensions(width:Number, height:Number):void{
 			_layout.setSize(width,height);
-			if(_layout.flowDirection==Direction.VERTICAL){
+			/*if(_layout.flowDirection==Direction.VERTICAL){
 				_layout.columnWidths = [width-_layout.marginLeft-_layout.marginRight];
 				_layout.rowHeights = null;
 			}else{
 				_layout.columnWidths = null;
 				_layout.rowHeights = [height-_layout.marginTop-_layout.marginBottom];
-			}
+			}*/
 		}
 		protected function onScrollChange(from:IScrollMetrics):void{
 			if(isBound)commitScrollRect();

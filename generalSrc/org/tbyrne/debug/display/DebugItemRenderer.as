@@ -4,6 +4,7 @@ package org.tbyrne.debug.display
 	import flash.geom.Point;
 	
 	import org.tbyrne.data.dataTypes.IBitmapDataProvider;
+	import org.tbyrne.debug.data.coreTypes.IDebugData;
 	import org.tbyrne.debug.data.coreTypes.ILayoutViewProvider;
 	import org.tbyrne.display.assets.AssetNames;
 	import org.tbyrne.display.assets.nativeTypes.IBitmap;
@@ -13,32 +14,6 @@ package org.tbyrne.debug.display
 	
 	public class DebugItemRenderer extends MenuBarRenderer
 	{
-		override public function set data(value:*):void{
-			if(data != value){
-				if(_bitmapDataProvider){
-					_bitmapDataProvider.bitmapDataChanged.removeHandler(onBitmapChanged);
-				}
-				if(_layoutViewProvider){
-					_layoutViewProvider.layoutViewChanged.removeHandler(onViewChanged);
-				}
-				super.data = value;
-				_bitmapDataProvider = (value as IBitmapDataProvider);
-				if(_bitmapDataProvider){
-					_bitmapDataProvider.bitmapDataChanged.addHandler(onBitmapChanged);
-					if(_bitmap)_bitmap.bitmapData = _bitmapDataProvider.bitmapData;
-					invalidateMeasurements();
-				}else if(_bitmap){
-					_bitmap.bitmapData = null;
-				}
-				_layoutViewProvider = (value as ILayoutViewProvider);
-				if(_layoutViewProvider){
-					_layoutViewProvider.layoutViewChanged.addHandler(onViewChanged);
-					setLayoutView(_layoutViewProvider.layoutView);
-				}else{
-					setLayoutView(null);
-				}
-			}
-		}
 		override public function set asset(value:IDisplayObject):void{
 			if(super.asset != value){
 				if(_layoutViewAsset && _containerAsset){
@@ -51,12 +26,13 @@ package org.tbyrne.debug.display
 			}
 		}
 		
+		private var _debugData:IDebugData;
+		
 		private var _bitmap:IBitmap;
 		private var _bitmapDataProvider:IBitmapDataProvider;
 		
 		private var _layoutView:ILayoutView;
 		private var _layoutViewAsset:IDisplayObject;
-		private var _layoutViewProvider:ILayoutViewProvider;
 		
 		private var _bitmapPaddingTop:Number;
 		private var _bitmapPaddingBottom:Number;
@@ -140,9 +116,6 @@ package org.tbyrne.debug.display
 			if(_bitmap)_bitmap.bitmapData = _bitmapDataProvider.bitmapData;
 			invalidateMeasurements();
 		}
-		protected function onViewChanged(from:ILayoutViewProvider) : void{
-			setLayoutView(_layoutViewProvider.layoutView);
-		}
 		protected function setLayoutView(layoutView:ILayoutView) : void{
 			if(_layoutView!=layoutView){
 				if(_layoutView){
@@ -171,6 +144,31 @@ package org.tbyrne.debug.display
 				if(_layoutViewAsset && _containerAsset){
 					_containerAsset.addAsset(_layoutViewAsset);
 				}
+			}
+		}
+		
+		override protected function clearData():void{
+			super.clearData();
+			if(_bitmapDataProvider){
+				_bitmapDataProvider.bitmapDataChanged.removeHandler(onBitmapChanged);
+				_bitmapDataProvider = null;
+			}
+			setLayoutView(null);
+			if(_bitmap)_bitmap.bitmapData = null;
+		}
+		override protected function assessData():void{
+			super.assessData();
+			
+			_debugData = (_data as IDebugData);
+			
+			if(_debugData.bitmapDataValue){
+				_bitmapDataProvider = _debugData.bitmapDataValue;
+				_bitmapDataProvider.bitmapDataChanged.addHandler(onBitmapChanged);
+				if(_bitmap)_bitmap.bitmapData = _bitmapDataProvider.bitmapData;
+				invalidateMeasurements();
+			}
+			if(_debugData.layoutView){
+				setLayoutView(_debugData.layoutView);
 			}
 		}
 	}

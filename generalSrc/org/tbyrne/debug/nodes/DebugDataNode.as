@@ -1,5 +1,6 @@
 package org.tbyrne.debug.nodes
 {
+	import org.tbyrne.debug.data.coreTypes.IDebugData;
 	import org.tbyrne.debug.nodeTypes.IDebugDataNode;
 	import org.tbyrne.display.core.IScopedObject;
 	import org.tbyrne.display.core.ProxyScopedObject;
@@ -7,10 +8,10 @@ package org.tbyrne.debug.nodes
 	public class DebugDataNode extends ProxyScopedObject implements IDebugDataNode
 	{
 		
-		public function get rendererData():*{
+		public function get rendererData():IDebugData{
 			return _rendererData;
 		}
-		public function set rendererData(value:*):void{
+		public function set rendererData(value:IDebugData):void{
 			//if(_rendererData!=value){
 				_rendererData = value;
 			//}
@@ -36,9 +37,9 @@ package org.tbyrne.debug.nodes
 		
 		private var _parentPath:String;
 		private var _pathId:String;
-		private var _rendererData:*;
+		private var _rendererData:IDebugData;
 		
-		public function DebugDataNode(scopedObject:IScopedObject=null, pathId:String=null, debugData:*=null, parentPath:String=null){
+		public function DebugDataNode(scopedObject:IScopedObject=null, pathId:String=null, debugData:IDebugData=null, parentPath:String=null){
 			super(scopedObject);
 			this.pathId = pathId;
 			this.rendererData = debugData;

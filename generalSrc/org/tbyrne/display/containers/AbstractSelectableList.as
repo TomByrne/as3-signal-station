@@ -55,6 +55,7 @@ package org.tbyrne.display.containers
 		
 		public function set selectedIndices(value: Array):void{
 			if(_selectedIndices!=value){
+				assessFactory();
 				if(!_protoRenderer){
 					Log.error( "selectedIndices cannot be set without a renderer that implements ISelectableRenderer");
 				}
@@ -71,7 +72,7 @@ package org.tbyrne.display.containers
 						index = value[i];
 						if(_selectedIndices.indexOf(index)!=-1){
 							safeIndices.push(index);
-							_selectedIndices.splice(i,1);
+							value.splice(i,1);
 						}else{
 							i++;
 						}
@@ -83,7 +84,7 @@ package org.tbyrne.display.containers
 				
 				// deselect old items until _minSelected is satisfied
 				var deselectCount:int = _selectedIndices.length-safeIndices.length;
-				if(_minSelected>valueCount){
+				if(_minSelected>valueCount+_selectedCount){
 					deselectCount -= (_minSelected-valueCount);
 				}
 				i=0;
@@ -141,6 +142,7 @@ package org.tbyrne.display.containers
 		private var _selectedData:Dictionary = new Dictionary();
 		private var _selectedIndices:Array = [];
 		private var _selectedCount:int = 0;
+		private var _ignoreSelectionChanges:Boolean;
 		
 		protected var _scrollByLine:Boolean;
 		protected var _autoScrollToSelection:Boolean;
@@ -254,9 +256,13 @@ package org.tbyrne.display.containers
 		class).
 		*/
 		protected function onRendererSelect(renderer:ISelectableRenderer) : void{
+			if(_ignoreSelectionChanges)return;
+			
 			var data:* = renderer[_layout.dataField];
 			var dataIndex:int = getDataIndex(data);
+			_ignoreSelectionChanges = true;
 			renderer.selected = tryRendererSelect(dataIndex, data, renderer.selected);
+			_ignoreSelectionChanges = false;
 		}
 		override protected function updateFactory(factory:IInstanceFactory, dataField:String):void{
 			super.updateFactory(factory, dataField);

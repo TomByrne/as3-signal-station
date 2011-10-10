@@ -1,17 +1,14 @@
 package org.tbyrne.display.controls
 {
-	import flash.display.DisplayObject;
-	import flash.geom.Rectangle;
-	
-	import org.tbyrne.display.assets.assetTypes.IAsset;
+	import org.tbyrne.data.controls.IControlData;
 	import org.tbyrne.display.assets.nativeTypes.IDisplayObject;
 	import org.tbyrne.display.layout.ILayoutSubject;
 	
 	public class TextLabelButton extends ToggleButton
 	{
-		override public function set data(value:*):void{
-			super.data = value;
+		override public function set data(value:IControlData):void{
 			_textLabel.data = value;
+			super.data = value;
 		}
 		public function get paddingTop():Number{
 			return _textLabel.paddingTop;

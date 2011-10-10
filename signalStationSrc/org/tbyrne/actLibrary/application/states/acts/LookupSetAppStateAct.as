@@ -4,7 +4,6 @@ package org.tbyrne.actLibrary.application.states.acts
 	
 	import org.tbyrne.actLibrary.application.states.AppStateMatch;
 	import org.tbyrne.actLibrary.external.siteStream.actTypes.IResolvePathsAct;
-	import org.tbyrne.hoborg.Cloner;
 
 	public class LookupSetAppStateAct extends SetAppStateAct implements IResolvePathsAct
 	{
