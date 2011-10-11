@@ -31,6 +31,19 @@ package org.tbyrne.display.utils
 			return _paddingPixelRight;
 		}
 		
+		public function get destX():Number{
+			return _destX;
+		}
+		public function get destY():Number{
+			return _destY;
+		}
+		public function get destW():Number{
+			return _destW;
+		}
+		public function get destH():Number{
+			return _destH;
+		}
+		
 		protected var _paddingPixelTop:Number;
 		protected var _paddingPixelBottom:Number;
 		protected var _paddingPixelLeft:Number;
@@ -45,6 +58,11 @@ package org.tbyrne.display.utils
 		protected var _bindBottom:String;
 		protected var _bindLeft:String;
 		protected var _bindRight:String;
+		
+		protected var _destX:Number;
+		protected var _destY:Number;
+		protected var _destW:Number;
+		protected var _destH:Number;
 		
 		public function ChildViewEdgeBinder(){
 		}
@@ -114,10 +132,6 @@ package org.tbyrne.display.utils
 		}
 		
 		public function setSize(x:Number, y:Number, width:Number, height:Number):void{
-			var destX:Number;
-			var destY:Number;
-			var destW:Number;
-			var destH:Number;
 			
 			var padTop:Number;
 			var padBottom:Number;
@@ -178,30 +192,30 @@ package org.tbyrne.display.utils
 				if(doBindBottom){
 					// is bound to both top and bottom
 					if(padTop+padBottom+minH>height){
-						destH = (obeyMinHeight?minH:(height-padTop-padBottom));
-						destY = y+padTop+(height-padTop-padBottom-destH)/2;
+						_destH = (obeyMinHeight?minH:(height-padTop-padBottom));
+						_destY = y+padTop+(height-padTop-padBottom-_destH)/2;
 					}else{
-						destY = y+padTop;
-						destH = height-padTop-padBottom;
+						_destY = y+padTop;
+						_destH = height-padTop-padBottom;
 					}
 				}else{
 					// is bound to top
 					if(padTop+minH>height){
-						destY = y+padTop;
-						destH = height-padTop;
+						_destY = y+padTop;
+						_destH = height-padTop;
 					}else{
-						destY = y+padTop;
-						destH = minH;
+						_destY = y+padTop;
+						_destH = minH;
 					}
 				}
 			}else if(doBindBottom){
 				// is bound to bottom
 				if(padBottom+minH>height){
-					destH = height-padBottom;
-					destY = y+height-padBottom-destH;
+					_destH = height-padBottom;
+					_destY = y+height-padBottom-_destH;
 				}else{
-					destY = y+height-minH-padBottom;
-					destH = minH;
+					_destY = y+height-minH-padBottom;
+					_destH = minH;
 				}
 			}
 			
@@ -210,38 +224,40 @@ package org.tbyrne.display.utils
 				if(doBindRight){
 					// is bound to both left and right
 					if(padLeft+padRight+minW>width){
-						destW = (obeyMinWidth?minW:(width-padLeft-padRight));
-						destX = x+padLeft+(width-padLeft-padRight-destW)/2;
+						_destW = (obeyMinWidth?minW:(width-padLeft-padRight));
+						_destX = x+padLeft+(width-padLeft-padRight-_destW)/2;
 					}else{
-						destX = x+padLeft;
-						destW = width-padLeft-padRight;
+						_destX = x+padLeft;
+						_destW = width-padLeft-padRight;
 					}
 				}else{
 					// is bound to left
 					if(padLeft+minW>width){
-						destX = x+padLeft;
-						destW = width-padLeft;
+						_destX = x+padLeft;
+						_destW = width-padLeft;
 					}else{
-						destX = x+padLeft;
-						destW = minW;
+						_destX = x+padLeft;
+						_destW = minW;
 					}
 				}
 			}else if(doBindRight){
 				// is bound to right
 				if(padRight+minW>width){
-					destW = width-padRight;
-					destX = x+width-padRight-destW;
+					_destW = width-padRight;
+					_destX = x+width-padRight-_destW;
 				}else{
-					destX = x+width-minW-padRight;
-					destW = minW;
+					_destX = x+width-minW-padRight;
+					_destW = minW;
 				}
 			}
-			
+		}
+		public function setSizeAndUpdate(x:Number, y:Number, width:Number, height:Number):void{
+			setSize(x,y,width,height);
 			if(_childAsset){
-				_childAsset.setSizeAndPos(destX,destY,destW,destH);
+				_childAsset.setSizeAndPos(_destX,_destY,_destW,_destH);
 			}else{
-				_childLayout.setPosition(destX,destY);
-				_childLayout.setSize(destW,destH);
+				_childLayout.setPosition(_destX,_destY);
+				_childLayout.setSize(_destW,_destH);
 			}
 		}
 		

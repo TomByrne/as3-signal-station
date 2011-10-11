@@ -77,6 +77,7 @@ package org.tbyrne.tbyrne.composeLibrary.away3d
 		public function Away3dDisplay(layerId:String=null)
 		{
 			_view = new View3D();
+			_view.backgroundAlpha = 0;
 			//_view.clipping = new FrustumClipping({minZ:10});
 			
 			_scene = _view.scene;
@@ -121,7 +122,7 @@ package org.tbyrne.tbyrne.composeLibrary.away3d
 		public function tick(timeStep:Number):void{
 			_focalLengthFlag.validate();
 			_matrixFlag.validate();
-			_renderFlag.validate();
+			_renderFlag.validate(true);
 		}
 		
 		protected function onMatrixChanged(from:IMatrix3dTrait=null):void{
