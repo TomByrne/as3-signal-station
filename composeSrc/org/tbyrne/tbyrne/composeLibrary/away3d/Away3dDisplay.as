@@ -15,12 +15,15 @@ package org.tbyrne.tbyrne.composeLibrary.away3d
 	import flash.display.BitmapData;
 	import flash.geom.Vector3D;
 	
+	import org.tbyrne.data.dataTypes.INumberProvider;
+	import org.tbyrne.display.validation.ValidationFlag;
+	import org.tbyrne.tbyrne.compose.concerns.ITraitConcern;
+	import org.tbyrne.tbyrne.compose.concerns.TraitConcern;
+	import org.tbyrne.tbyrne.compose.traits.ITrait;
 	import org.tbyrne.tbyrne.composeLibrary.display2D.LayeredDisplayTrait;
 	import org.tbyrne.tbyrne.composeLibrary.types.display3D.IMatrix3dTrait;
 	import org.tbyrne.tbyrne.composeLibrary.types.draw.IDrawAwareTrait;
 	import org.tbyrne.tbyrne.composeLibrary.types.draw.IFrameAwareTrait;
-	import org.tbyrne.data.dataTypes.INumberProvider;
-	import org.tbyrne.display.validation.ValidationFlag;
 	
 	public class Away3dDisplay extends LayeredDisplayTrait implements IFrameAwareTrait, IDrawAwareTrait
 	{
@@ -57,6 +60,39 @@ package org.tbyrne.tbyrne.composeLibrary.away3d
 				onFocalLengthChanged();
 			}
 		}
+		public function get backgroundColour():INumberProvider{
+			return _backgroundColour;
+		}
+		public function set backgroundColour(value:INumberProvider):void{
+			if(_backgroundColour!=value){
+				if(_backgroundColour){
+					_backgroundColour.numericalValueChanged.removeHandler(onBackgroundColourChanged);
+				}
+				_backgroundColour = value;
+				if(_backgroundColour){
+					_backgroundColour.numericalValueChanged.addHandler(onBackgroundColourChanged);
+				}
+				onBackgroundColourChanged();
+			}
+		}
+		public function get backgroundAlpha():INumberProvider{
+			return _backgroundAlpha;
+		}
+		public function set backgroundAlpha(value:INumberProvider):void{
+			if(_backgroundAlpha!=value){
+				if(_backgroundAlpha){
+					_backgroundAlpha.numericalValueChanged.removeHandler(onBackgroundAlphaChanged);
+				}
+				_backgroundAlpha = value;
+				if(_backgroundAlpha){
+					_backgroundAlpha.numericalValueChanged.addHandler(onBackgroundAlphaChanged);
+				}
+				onBackgroundAlphaChanged();
+			}
+		}
+		
+		private var _backgroundAlpha:INumberProvider;
+		private var _backgroundColour:INumberProvider;
 		
 		private var _focalLength:INumberProvider;
 		private var _matrix3dTrait:IMatrix3dTrait;
@@ -91,9 +127,10 @@ package org.tbyrne.tbyrne.composeLibrary.away3d
 			
 			super(_view, layerId);
 			
-			var material:MaterialBase = new ColorMaterial(0xff0000);
+			/*var material:MaterialBase = new ColorMaterial(0xff0000);
 			
 			var cube:Cube = new Cube(material,300,300,300);
+			cube.z = 400;
 			var cont:ObjectContainer3D = new ObjectContainer3D();
 			cont.addChild(cube);
 			_scene.addChild(cont);
@@ -104,12 +141,22 @@ package org.tbyrne.tbyrne.composeLibrary.away3d
 			
 			material.lights = [light];
 			
-			_scene.addChild(light);
+			_scene.addChild(light);*/
 			
 			_focalLengthFlag = new ValidationFlag(commitFocalLength,false);
 			_matrixFlag = new ValidationFlag(commitMatrix,false);
 			_renderFlag = new ValidationFlag(_view.render,false);
-		}		
+			
+			addConcern(new TraitConcern(false,true,IAway3dAwareTrait));
+		}
+		override protected function onConcernedTraitAdded(from:ITraitConcern, trait:ITrait):void{
+			var itemTrait:IAway3dAwareTrait = (trait as IAway3dAwareTrait);
+			itemTrait.scene3d = _scene;
+		}
+		override protected function onConcernedTraitRemoved(from:ITraitConcern, trait:ITrait):void{
+			var itemTrait:IAway3dAwareTrait = (trait as IAway3dAwareTrait);
+			itemTrait.scene3d = null;
+		}
 		
 		public function setSize(width:Number, height:Number):void{
 			_height = height;
@@ -131,6 +178,15 @@ package org.tbyrne.tbyrne.composeLibrary.away3d
 		}
 		protected function onFocalLengthChanged(from:INumberProvider=null):void{
 			_focalLengthFlag.invalidate();
+			_renderFlag.invalidate();
+		}
+		
+		protected function onBackgroundColourChanged(from:INumberProvider=null):void{
+			_view.backgroundColor = _backgroundColour?_backgroundColour.numericalValue:0;
+			_renderFlag.invalidate();
+		}
+		protected function onBackgroundAlphaChanged(from:INumberProvider=null):void{
+			_view.backgroundAlpha = _backgroundAlpha?_backgroundAlpha.numericalValue:1;
 			_renderFlag.invalidate();
 		}
 		protected function commitMatrix():void{
