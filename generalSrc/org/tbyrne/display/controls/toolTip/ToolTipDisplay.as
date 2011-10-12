@@ -19,6 +19,17 @@ package org.tbyrne.display.controls.toolTip
 		private static const ORIGIN:Point = new Point();
 		
 		
+		
+		public function get toolTipData():Array{
+			return _toolTipData;
+		}
+		public function set toolTipData(value:Array):void{
+			if(_toolTipData!=value){
+				_toolTipData = value;
+				syncFieldToData();
+			}
+		}
+		
 		public function get anchor():String{
 			return _anchor;
 		}
@@ -57,6 +68,7 @@ package org.tbyrne.display.controls.toolTip
 			}
 		}
 		
+		private var _toolTipData:Array;
 		private var _tipType:String;
 		private var _tipTypeState:StateDef = new StateDef([ToolTipTypes.CONTEXTUAL_TIP,ToolTipTypes.DATA_ENTRY_ERROR,ToolTipTypes.DATA_ENTRY_TIP]);
 		private var _anchorView:ILayoutView;
@@ -231,9 +243,9 @@ package org.tbyrne.display.controls.toolTip
 			return fill;
 		}
 		override protected function syncFieldToData():void{
-			if(data is Array){
+			if(_toolTipData){
 				var errorText:String = "";
-				for(var i:int=0; i<data.length; ++i){
+				for(var i:int=0; i<_toolTipData.length; ++i){
 					var error:IErrorDetails = data[i];
 					if(error){
 						if(errorText.length)errorText += "\n";

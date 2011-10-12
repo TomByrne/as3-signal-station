@@ -19,6 +19,13 @@ package org.tbyrne.display.controls
 			checkIsBound();
 			return _stringData;
 		}
+		public function set stringData(value:String):void{
+			if(isBound){
+				_stringData = value || "";
+				_labelField.htmlText = value;
+				syncFieldToData();
+			}
+		}
 		
 		public function get paddingTop():Number{
 			attemptInit();

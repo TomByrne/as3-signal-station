@@ -11,6 +11,7 @@ package org.tbyrne.display.containers
 	import flash.utils.Timer;
 	
 	import org.goasap.events.GoEvent;
+	import org.tbyrne.data.controls.ControlData;
 	import org.tbyrne.data.core.BooleanData;
 	import org.tbyrne.data.core.StringData;
 	import org.tbyrne.data.dataTypes.IBooleanData;
@@ -76,7 +77,7 @@ package org.tbyrne.display.containers
 				_videoSource = (value as IVideoSource);
 				_volumeMemory.videoSource = _videoSource;
 				if(_videoSource){
-					if(_muteButton)_muteButton.data = _videoSource.muted;
+					if(_muteButton)_muteButton.data = new ControlData(null, _videoSource.muted as IBooleanProvider);
 					_videoSource.playingChanged.addHandler(onPlayingChanged);
 					_videoSource.volumeChanged.addHandler(onDataChanged);
 					_videoSource.muted.booleanValueChanged.addHandler(onMuteChanged);
@@ -224,22 +225,22 @@ package org.tbyrne.display.containers
 			}
 			
 			_playPauseButton = bindView(_playPauseButton, ToggleButton, PLAY_PAUSE_BUTTON,false);
-			if(_playPauseButton)_playPauseButton.data = _isPlaying;
+			if(_playPauseButton)_playPauseButton.data = new ControlData(null,_isPlaying);
 			_stopButton = bindButton(_stopButton, Button, STOP_BUTTON,onStopClick);
 			_rewindButton = bindButton(_rewindButton, Button,REWIND_BUTTON,onRewindClick);
 			
 			_fullScreenButton = bindView(_fullScreenButton, ToggleButton,FULLSCREEN_BUTTON,false);
-			if(_fullScreenButton)_fullScreenButton.data = _fullScreenSelected;
+			if(_fullScreenButton)_fullScreenButton.data = new ControlData(null,_fullScreenSelected);
 			
 			_muteButton = bindView(_muteButton, SliderButton,MUTE_BUTTON, false);
-			if(_muteButton && _videoSource)_muteButton.data = _videoSource.muted;
+			if(_muteButton && _videoSource)_muteButton.data = new ControlData(null,_videoSource.muted as IBooleanProvider);
 			
 			var pauseAsset:IInteractiveObject = _containerAsset.takeAssetByName(CENTERED_PAUSE_BUTTON,true);
 			if(pauseAsset){
 				if(!_centredPauseButton){
 					_centredPauseButton = new ToggleButton();
 					//_centredPauseButton.clicked.addHandler(onPlayPauseClick);
-					_centredPauseButton.data = _isPlaying;
+					_centredPauseButton.data = new ControlData(null,_isPlaying);
 				}
 				_centredPauseButton.setAssetAndPosition(pauseAsset);
 			}
@@ -257,9 +258,9 @@ package org.tbyrne.display.containers
 			
 			_progressLabel = bindView(_progressLabel,TextLabel,PROGRESS_LABEL,false) as TextLabel;
 			if(_progressLabel){
-				_assumedPattern = _progressLabel.data;
+				_assumedPattern = _progressLabel.stringData;
 				if(!_videoProgressProvider)_videoProgressProvider = new VideoProgressFormatter(_videoSource,_videoProgressProviderPattern = new StringData());
-				_progressLabel.data = _videoProgressProvider;
+				_progressLabel.data = new ControlData(_videoProgressProvider);
 				checkProgressPattern();
 			}
 			
@@ -385,7 +386,8 @@ package org.tbyrne.display.containers
 			unbindView(_bufferBar);
 			
 			if(_progressLabel){
-				_progressLabel.data = _assumedPattern;
+				_progressLabel.data = null;
+				_progressLabel.stringData = _assumedPattern;
 			}
 			unbindView(_progressLabel);
 			

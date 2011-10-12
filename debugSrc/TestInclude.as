@@ -20,6 +20,7 @@ package
 	import org.tbyrne.bezier.Path;
 	import org.tbyrne.collections.utils.arraysEqual;
 	import org.tbyrne.collections.utils.randomSort;
+	import org.tbyrne.core.Application;
 	import org.tbyrne.data.actions.Link;
 	import org.tbyrne.data.operators.NumberRange;
 	import org.tbyrne.debug.DebugManager;
@@ -80,15 +81,16 @@ package
 	import org.tbyrne.gateways.FlashVarsGateway;
 	import org.tbyrne.gateways.methodCalls.GetPropertyCall;
 	import org.tbyrne.gateways.methodCalls.SetPropertyCall;
-	import org.tbyrne.input.items.ActInputItem;
-	import org.tbyrne.input.items.EventInputItem;
-	import org.tbyrne.input.items.MethodCallInputItem;
+	import org.tbyrne.input.InputMediator;
+	import org.tbyrne.input.items.InputGroup;
 	import org.tbyrne.input.items.NotificationInputItem;
+	import org.tbyrne.input.items.TogglableInputItem;
 	import org.tbyrne.media.MediaProgressDisplayAdaptor;
 	import org.tbyrne.media.image.GifSource;
 	import org.tbyrne.media.video.ProgressiveVideoSource;
 	import org.tbyrne.media.video.StreamingVideoSource;
 	import org.tbyrne.media.video.VolumeMemory;
+	import org.tbyrne.mediatorTypes.IMenuMediator;
 	import org.tbyrne.reflection.ReflectionUtils;
 	import org.tbyrne.sound.soundControls.CompositeSoundControl;
 	import org.tbyrne.sound.soundControls.IntroOutroSoundControl;
@@ -176,10 +178,6 @@ package
 			ToolTipDisplay;
 			SliderButton;
 			ToolTipAnnotator;
-			ActInputItem;
-			NotificationInputItem;
-			EventInputItem;
-			MethodCallInputItem;
 			ServerProxy;
 			CallMethodCommand;
 			SetPropertyCall;
@@ -191,10 +189,13 @@ package
 			Bezier;
 			BezierPoint;
 			DisplayValidationFlag;
-			
-			//PLATFORM::air{
 			XMLFileLogger;
-			//}
+			Application;
+			IMenuMediator;
+			InputGroup;
+			InputMediator;
+			NotificationInputItem;
+			TogglableInputItem;
 			
 			var type:Class= ReflectionUtils.getClassByName("flash.display.Sprite");
 		}

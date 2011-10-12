@@ -6,16 +6,18 @@ package org.tbyrne.display.containers.accordion
 	import flash.geom.Point;
 	import flash.geom.Rectangle;
 	
+	import org.goasap.events.GoEvent;
 	import org.tbyrne.acting.actTypes.IAct;
 	import org.tbyrne.acting.acts.Act;
+	import org.tbyrne.data.controls.IControlData;
 	import org.tbyrne.data.dataTypes.IBooleanConsumer;
 	import org.tbyrne.data.dataTypes.IBooleanProvider;
 	import org.tbyrne.data.dataTypes.IStringProvider;
 	import org.tbyrne.display.DisplayNamespace;
 	import org.tbyrne.display.assets.AssetNames;
+	import org.tbyrne.display.assets.nativeAssets.actInfo.MouseActInfo;
 	import org.tbyrne.display.assets.nativeTypes.IDisplayObject;
 	import org.tbyrne.display.assets.nativeTypes.IInteractiveObject;
-	import org.tbyrne.display.assets.nativeAssets.actInfo.MouseActInfo;
 	import org.tbyrne.display.assets.states.StateDef;
 	import org.tbyrne.display.constants.Anchor;
 	import org.tbyrne.display.constants.Direction;
@@ -26,7 +28,6 @@ package org.tbyrne.display.containers.accordion
 	import org.tbyrne.display.layout.IMinimisableLayoutSubject;
 	import org.tbyrne.display.validation.ValidationFlag;
 	import org.tbyrne.tweening.LooseTween;
-	import org.goasap.events.GoEvent;
 	
 	use namespace DisplayNamespace;
 	
@@ -106,29 +107,35 @@ package org.tbyrne.display.containers.accordion
 			}
 		}
 		
-		public function get label():String{
-			return _label.data;
+		/*public function get label():String{
+			return _label.data.label;
 		}
-		public function set label(value:String):void{
+		public function set label(value:IString):void{
 			_label.data = value;
-		}
+		}*/
 		
-		public function get data():IBooleanProvider{
-			return _booleanProvider;
+		public function get data():IControlData{
+			return _data;
 		}
-		public function set data(value:IBooleanProvider):void{
-			if(_booleanProvider != value){
+		public function set data(value:IControlData):void{
+			if(_data != value){
 				if(_booleanProvider){
 					_booleanProvider.booleanValueChanged.removeHandler(onOpenChanged);
 				}
 				_openFract = NaN;
-				_booleanProvider = value;
+				_data = value;
 				_label.data = value;
-				if(_booleanProvider){
-					_booleanConsumer = (value as IBooleanConsumer);
-					_booleanProvider.booleanValueChanged.addHandler(onOpenChanged);
-					booleanValue = value.booleanValue;
-					if(_booleanConsumer)commitProviderState();
+				if(_data){
+					_booleanProvider = _data.selected;
+					if(_booleanProvider){
+						_booleanConsumer = (_booleanProvider as IBooleanConsumer);
+						_booleanProvider.booleanValueChanged.addHandler(onOpenChanged);
+						booleanValue = _booleanProvider.booleanValue;
+						if(_booleanConsumer)commitProviderState();
+					}else{
+						_booleanConsumer = null;
+						booleanValue = false;
+					}
 				}else{
 					_booleanConsumer = null;
 					booleanValue = false;
@@ -144,6 +151,7 @@ package org.tbyrne.display.containers.accordion
 		protected var _openFractChanged:Act;
 		protected var _userChangedOpen:Act;
 		
+		protected var _data:IControlData;
 		protected var _booleanProvider:IBooleanProvider;
 		protected var _booleanConsumer:IBooleanConsumer;
 		

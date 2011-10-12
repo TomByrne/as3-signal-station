@@ -4,7 +4,7 @@ package org.tbyrne.display.controls.toolTip
 
 	public interface IToolTipDisplay extends ILayoutView
 	{
-		function set data(value:*):void;
+		function set toolTipData(value:Array):void;
 		function set anchor(value:String):void;
 		function set anchorView(value:ILayoutView):void;
 		function set tipType(value:String):void;

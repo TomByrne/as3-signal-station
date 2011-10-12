@@ -22,7 +22,6 @@ package org.tbyrne.core
 	import org.tbyrne.display.core.ILayoutView;
 	import org.tbyrne.display.core.LayoutView;
 	import org.tbyrne.display.core.ScopedObject;
-	import org.tbyrne.input.items.MethodCallInputItem;
 	import org.tbyrne.math.units.MemoryUnitConverter;
 	
 	/**

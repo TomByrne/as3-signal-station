@@ -1,9 +1,10 @@
 package org.tbyrne.input.menu
 {
 	import org.tbyrne.acting.actTypes.IAct;
+	import org.tbyrne.data.controls.IControlData;
 	import org.tbyrne.data.dataTypes.IStringProvider;
 
-	public interface IMenuInputItem extends IStringProvider
+	public interface IMenuInputItem extends IControlData
 	{
 		/**
 		 * handler(from:IMenuInputItem)

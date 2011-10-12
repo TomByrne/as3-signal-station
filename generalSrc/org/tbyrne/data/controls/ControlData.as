@@ -58,13 +58,13 @@ package org.tbyrne.data.controls
 			_childData = value;
 		}
 		
-		private var _childData:*;
-		private var _selectedAction:ITriggerableAction;
-		private var _stringValue:IStringProvider;
-		private var _numberValue:INumberProvider;
-		private var _selected:IBooleanProvider;
-		private var _active:IBooleanProvider;
-		private var _label:IStringProvider;
+		protected var _childData:*;
+		protected var _selectedAction:ITriggerableAction;
+		protected var _stringValue:IStringProvider;
+		protected var _numberValue:INumberProvider;
+		protected var _selected:IBooleanProvider;
+		protected var _active:IBooleanProvider;
+		protected var _label:IStringProvider;
 		
 		
 		public function ControlData(label:IStringProvider=null, selected:IBooleanProvider=null){

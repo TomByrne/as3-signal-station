@@ -6,6 +6,7 @@ package org.tbyrne.display.controls.popout {
 	
 	import org.tbyrne.acting.actTypes.IAct;
 	import org.tbyrne.acting.acts.Act;
+	import org.tbyrne.data.controls.ControlData;
 	import org.tbyrne.display.DisplayNamespace;
 	import org.tbyrne.display.assets.AssetNames;
 	import org.tbyrne.display.assets.nativeTypes.IDisplayObject;
@@ -79,7 +80,7 @@ package org.tbyrne.display.controls.popout {
 			_listBox.selectionChangeAct.addHandler(onListSelect);
 			
 			_proxyStringProvider = new ProxyStringProvider();
-			_textLabelButton.data = _proxyStringProvider;
+			_textLabelButton.data = new ControlData(_proxyStringProvider);
 		}
 		protected function onListSelect(list:ListBox, selectedIndices:Array, selectedData:Dictionary):void {
 			assessSelected();

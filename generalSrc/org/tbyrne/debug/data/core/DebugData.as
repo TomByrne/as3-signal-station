@@ -27,7 +27,7 @@ package org.tbyrne.debug.data.core
 		
 		private var _layoutView:ILayoutView;
 		private var _bitmapDataValue:IBitmapDataProvider;
-		private var _childData:LinkedList;
+		private var _childList:LinkedList;
 		
 		public function DebugData(label:IStringProvider=null, selectedAction:ITriggerableAction=null)
 		{
@@ -36,14 +36,15 @@ package org.tbyrne.debug.data.core
 		}
 		
 		public function addChildData(data:IDebugData):void{
-			if(!_childData){
-				_childData = new LinkedList();
+			if(!_childList){
+				_childList = new LinkedList();
+				childData = _childList;
 			}
-			_childData.push(data);
+			_childList.push(data);
 		}
 		public function removeChildData(data:IDebugData):void{
-			if(_childData){
-				_childData.removeFirst(data);
+			if(_childList){
+				_childList.removeFirst(data);
 			}
 		}
 	}

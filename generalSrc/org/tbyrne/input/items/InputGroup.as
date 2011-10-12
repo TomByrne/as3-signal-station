@@ -3,12 +3,11 @@ package org.tbyrne.input.items
 	import org.tbyrne.acting.actTypes.IAct;
 	import org.tbyrne.acting.acts.Act;
 	import org.tbyrne.collections.linkedList.LinkedList;
-	import org.tbyrne.data.core.StringData;
-	import org.tbyrne.data.dataTypes.IDataProvider;
+	import org.tbyrne.data.controls.ControlData;
 	import org.tbyrne.data.dataTypes.IStringProvider;
 	import org.tbyrne.input.menu.IMenuInputItem;
 
-	public class InputGroup extends StringData implements IDataProvider, IMenuInputItem
+	public class InputGroup extends ControlData implements IMenuInputItem
 	{
 		/**
 		 * @inheritDoc
@@ -28,15 +27,11 @@ package org.tbyrne.input.items
 		
 		
 		
-		public function get data():*{
-			if(_children && _children.length){
-				return _children;
-			}else{
-				return null;
-			}
-		}
 		public function get childList():LinkedList{
-			if(!_children)_children = new LinkedList();
+			if(!_children){
+				_children = new LinkedList();
+				childData = _children;
+			}
 			return _children;
 		}
 		
@@ -64,7 +59,7 @@ package org.tbyrne.input.items
 		private var _children:LinkedList;
 		
 		
-		public function InputGroup(stringValue:String=null, children:Array=null){
+		public function InputGroup(stringValue:IStringProvider=null, children:Array=null){
 			super(stringValue);
 			if(children){
 				addChildren(children);
@@ -72,7 +67,10 @@ package org.tbyrne.input.items
 		}
 		public function addChild(child:IStringProvider):void{
 			if(child){
-				if(!_children)_children = new LinkedList();
+				if(!_children){
+					_children = new LinkedList();
+					childData = _children;
+				}
 				_children.push(child);
 			}else{
 				Log.log(Log.SUSPICIOUS_IMPLEMENTATION, "NavGroup.addChild: must be provided a IStringProvider argument");

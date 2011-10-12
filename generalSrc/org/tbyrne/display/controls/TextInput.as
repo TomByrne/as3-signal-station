@@ -27,6 +27,13 @@ package org.tbyrne.display.controls
 		DisplayNamespace static const STATE_UNFOCUSED:String = "unfocused";
 		
 		
+		override public function set stringData(value:String):void{
+			if(isBound){
+				_stringData = value || "";
+				_labelField.htmlText = value;
+				syncDataToField();
+			}
+		}
 		public function get prompt():String{
 			return _prompt;
 		}

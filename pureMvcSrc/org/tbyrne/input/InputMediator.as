@@ -9,7 +9,7 @@ package org.tbyrne.input
 	import org.tbyrne.collections.linkedList.LinkedListConverter;
 	import org.tbyrne.core.AbstractMediator;
 	import org.tbyrne.core.SignalStationMediatorNames;
-	import org.tbyrne.data.dataTypes.IDataProvider;
+	import org.tbyrne.data.controls.IControlData;
 	import org.tbyrne.data.dataTypes.IStringProvider;
 	import org.tbyrne.input.menu.IMenuInputItem;
 	import org.tbyrne.input.shortcuts.IShortcutInputItem;
@@ -108,15 +108,15 @@ package org.tbyrne.input
 		}
 		
 		private function addChildData(menuData:*):void{
-			var dataProv:IDataProvider = (menuData as IDataProvider);
+			var dataProv:IControlData = (menuData as IControlData);
 			if(dataProv){
-				if(dataProv.data){
-					var list:ICollection = (dataProv.data as ICollection);
+				if(dataProv.childData){
+					var list:ICollection = (dataProv.childData as ICollection);
 					if(list){
 						_collectionToProvider[list] = menuData;
 						list.collectionChanged.addHandler(onCollectionChanged);
 					}else{
-						list = (LinkedListConverter.fromNativeCollection(dataProv.data))
+						list = (LinkedListConverter.fromNativeCollection(dataProv.childData))
 					}
 					
 					var iterater:IIterator = list.getIterator();
@@ -137,9 +137,9 @@ package org.tbyrne.input
 			if(shortcut)addShortcut(shortcut);
 		}
 		private function removeChildData(menuData:*):void{
-			var dataProv:IDataProvider = (menuData as IDataProvider);
+			var dataProv:IControlData = (menuData as IControlData);
 			if(dataProv){
-				var list:ICollection = (dataProv.data as ICollection);
+				var list:ICollection = (dataProv.childData as ICollection);
 				if(list){
 					delete _collectionToProvider[list];
 					list.collectionChanged.removeHandler(onCollectionChanged);

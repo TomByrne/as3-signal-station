@@ -97,8 +97,8 @@ package org.tbyrne.display.layout.accordion
 			var renderer:IMinimisableLayoutSubject = getChildRenderer(key,length,breadth) as IMinimisableLayoutSubject;
 			var cast:IGridLayoutSubject = (renderer as IGridLayoutSubject);
 			if(cast){
-				cast[_lengthRendAxis.indexRef] = length;
-				cast[_breadthRendAxis.indexRef] = breadth;
+				cast[_acrossFlowAxis.indexRef] = length;
+				cast[_flowDirectionAxis.indexRef] = breadth;
 			}
 			
 			var posIndex:int = (key as int)*int(4);

@@ -66,7 +66,7 @@ package org.tbyrne.display.controls.toolTip
 				if(_toolTipDisplay){
 					_popoutDisplay.popout = _toolTipDisplay;
 					//_toolTipDisplay.measurementsChanged.addHandler(onDisplayMeasChanged);
-					value.data = _data;
+					value.toolTipData = _data;
 					value.anchor = _anchor;
 					value.anchorView = _anchorView;
 					//setPosition();
@@ -245,10 +245,10 @@ package org.tbyrne.display.controls.toolTip
 				_data = _currentlyShown.data;
 				_anchor = _currentlyShown.anchor;
 				
-				_toolTipDisplay.data = _data;
+				_toolTipDisplay.toolTipData = _data;
 				_toolTipDisplay.anchor = _anchor;
 			}else{
-				_toolTipDisplay.data = null;
+				_toolTipDisplay.toolTipData = null;
 				_toolTipDisplay.anchor = null;
 			}
 			if(newAnchorView!=_anchorView){
