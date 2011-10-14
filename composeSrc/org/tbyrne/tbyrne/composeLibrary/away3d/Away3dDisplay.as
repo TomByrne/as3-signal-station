@@ -8,6 +8,7 @@ package org.tbyrne.tbyrne.composeLibrary.away3d
 	import away3d.containers.View3D;
 	import away3d.core.math.*;
 	import away3d.lights.DirectionalLight;
+	import away3d.lights.PointLight;
 	import away3d.materials.ColorMaterial;
 	import away3d.materials.MaterialBase;
 	import away3d.primitives.Cube;
@@ -133,15 +134,15 @@ package org.tbyrne.tbyrne.composeLibrary.away3d
 			cube.z = 400;
 			var cont:ObjectContainer3D = new ObjectContainer3D();
 			cont.addChild(cube);
-			_scene.addChild(cont);
+			_scene.addChild(cont);*/
 			
-			var light:DirectionalLight = new DirectionalLight();
-			light.direction = new Vector3D(-1, -1, 1);
+			var light:PointLight = new PointLight();
+			//light.direction = new Vector3D(-1, -1, 1);
+			_scene.addChild(light);
 			//light.ambient = 0.2;
 			
-			material.lights = [light];
+			//material.lights = [light];
 			
-			_scene.addChild(light);*/
 			
 			_focalLengthFlag = new ValidationFlag(commitFocalLength,false);
 			_matrixFlag = new ValidationFlag(commitMatrix,false);

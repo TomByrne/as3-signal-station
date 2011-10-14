@@ -19,7 +19,7 @@ package org.tbyrne.tbyrne.composeLibrary.draw
 			
 			_frameSizeTraits = new IndexedList();
 			
-			addConcern(new TraitConcern(false,true,IFrameAwareTrait));
+			addConcern(new TraitConcern(true,true,IFrameAwareTrait));
 		}
 		
 		public function setSize(width:Number, height:Number):void{

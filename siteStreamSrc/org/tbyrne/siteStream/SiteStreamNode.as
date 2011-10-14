@@ -55,10 +55,6 @@ package org.tbyrne.siteStream
 			}
 			return path;
 		}
-		public function get allResolved():Boolean{
-			checkResolved();
-			return _allResolved;
-		}
 		protected function get rootNode():SiteStreamNode{
 			if(!_rootNode){
 				_rootNode = this;
@@ -74,7 +70,6 @@ package org.tbyrne.siteStream
 		
 		private var children:LinkedList = LinkedList.getNew();
 		private var _id:String;
-		private var _allResolved:Boolean = false;
 		private var loadingData:Boolean = false;
 		private var parsedLazy:Boolean = false;
 		private var isCreating:Boolean = false;
@@ -85,7 +80,7 @@ package org.tbyrne.siteStream
 			/*CONFIG::debug{
 				if(!gettingNew)Log.error("SiteStreamNode should be created via SiteStreamNode.getNew");
 			}*/
-			this.addEventListener(SiteStreamEvent.PARSED,checkResolved,false,0,true);
+			//this.addEventListener(SiteStreamEvent.PARSED,checkResolved,false,0,true);
 		}
 		public function getChildIterator():IIterator{
 			return children.getIterator();
@@ -97,8 +92,12 @@ package org.tbyrne.siteStream
 		public function addChild(child:SiteStreamNode):void{
 			child.parentNode = this;
 			children.unshift(child);
-			child.addEventListener(SiteStreamEvent.RESOLVED,checkResolved,false,0,true);
+			child.addEventListener(SiteStreamEvent.RESOLVED,onChildNodeResolved,false,0,true);
 			child.addEventListener(SiteStreamEvent.PARSED, onChildParsed);
+		}
+		
+		protected function onChildNodeResolved(event:SiteStreamEvent):void{
+			checkResolved(true);
 		}
 		public function beginResolve():void{
 			beginProcess(false);
@@ -310,13 +309,6 @@ package org.tbyrne.siteStream
 			return ret;
 		}
 		
-		override protected function onPendingRefParsed(e:SiteStreamEvent):void{
-			super.onPendingRefParsed(e);
-			checkResolved();
-		}
-		protected function onChildParsed(e:Event):void{
-			checkParsed();
-		}
 		override protected function testAllParsed():Boolean{
 			var ret:Boolean = false;
 			
@@ -348,15 +340,8 @@ package org.tbyrne.siteStream
 			}
 			return ret;
 		}
-		protected function checkResolved(e:Event=null):void{
-			var oldVal:Boolean = _allResolved;
-			_allResolved = testAllResolved();
-			if((!oldVal || e!=null) && _allResolved){
-				dispatchEvent(new SiteStreamEvent(SiteStreamEvent.RESOLVED));
-			}
-		}
-		protected function testAllResolved():Boolean{
-			if(allParsed && !parsedLazy && valueCommited){
+		override protected function testAllResolved():Boolean{
+			if(super.testAllResolved() && !parsedLazy){
 				var iterator:IIterator = children.getIterator();
 				var child:SiteStreamNode;
 				var ret:Boolean = true;

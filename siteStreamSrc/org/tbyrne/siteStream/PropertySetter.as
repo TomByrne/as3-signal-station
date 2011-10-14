@@ -1,5 +1,6 @@
 package org.tbyrne.siteStream
 {
+	import flash.events.Event;
 	import flash.events.EventDispatcher;
 	import flash.utils.Dictionary;
 	
@@ -39,6 +40,10 @@ package org.tbyrne.siteStream
 			checkParsed();
 			return _allParsed;
 		}
+		public function get allResolved():Boolean{
+			checkResolved(false);
+			return _allResolved;
+		}
 		public function get siteStreamItem():ISiteStreamParser{
 			return _siteStreamItem;
 		}
@@ -70,9 +75,12 @@ package org.tbyrne.siteStream
 		protected var valueCommited:Boolean = false;
 		protected var _isReference:Boolean = false;
 		protected var _allParsed:Boolean = false;
+		protected var _allResolved:Boolean = false;
 		protected var _siteStreamItem:ISiteStreamParser;
 		protected var pendingChildren:Dictionary = new Dictionary();
 		protected var pendingRefChildren:Dictionary = new Dictionary();
+		
+		public var testReference:Boolean;
 		
 		public function PropertySetter(siteStreamItem:ISiteStreamParser=null, propertyInfo:IPropertyInfo=null){
 			/*CONFIG::debug{
@@ -82,30 +90,38 @@ package org.tbyrne.siteStream
 			this.propertyInfo = propertyInfo;
 		}
 		public function addPropertyChild(child:IPropertySetter):void{
-			if(child.isReference){
-				// This is high priority to make sure its value is commited immediately when
-				// children references are parsed. Otherwise the child parsing triggers the
-				// complete in the sitestream request before objects with reference children
-				// are commited. Maybe site stream requests or the resolved property need
-				// to take in to account the commited status
-				child.addEventListener(SiteStreamEvent.PARSED, onPendingRefParsed, false, int.MAX_VALUE);
-				pendingRefChildren[child] = true;
-			}else{
-				if(!child.allParsed){
-					child.addEventListener(SiteStreamEvent.PARSED, onPendingParsed, false, int.MAX_VALUE);
+			if(!child.allResolved){
+				if(child.isReference){
+					// This is high priority to make sure its value is commited immediately when
+					// children references are parsed. Otherwise the child parsing triggers the
+					// complete in the sitestream request before objects with reference children
+					// are commited. Maybe site stream requests or the resolved property need
+					// to take in to account the commited status
+					child.addEventListener(SiteStreamEvent.PARSED, onChildParsed, false, int.MAX_VALUE);
+					child.addEventListener(SiteStreamEvent.RESOLVED, onPendingRefResolved, false, int.MAX_VALUE);
+					pendingRefChildren[child] = true;
+					testReference = true;
+				}else{
+					child.addEventListener(SiteStreamEvent.PARSED, onChildParsed, false, int.MAX_VALUE);
+					child.addEventListener(SiteStreamEvent.RESOLVED, onPendingResolved, false, int.MAX_VALUE);
 					pendingChildren[child] = true;
 				}
 			}
 		}
-		protected function onPendingParsed(e:SiteStreamEvent):void{
+		protected function onChildParsed(e:Event):void{
+			checkParsed();
+		}
+		protected function onPendingResolved(e:SiteStreamEvent):void{
 			var child:IPropertySetter = (e.target as IPropertySetter);
-			child.removeEventListener(SiteStreamEvent.PARSED, onPendingParsed);
+			child.removeEventListener(SiteStreamEvent.PARSED, onChildParsed);
+			child.removeEventListener(SiteStreamEvent.RESOLVED, onPendingResolved);
 			delete pendingChildren[child];
 			checkParsed();
 		}
-		protected function onPendingRefParsed(e:SiteStreamEvent):void{
+		protected function onPendingRefResolved(e:SiteStreamEvent):void{
 			var child:IPropertySetter = (e.target as IPropertySetter);
-			child.removeEventListener(SiteStreamEvent.PARSED, onPendingParsed);
+			child.removeEventListener(SiteStreamEvent.PARSED, onChildParsed);
+			child.removeEventListener(SiteStreamEvent.RESOLVED, onPendingResolved);
 			delete pendingRefChildren[child];
 			checkParsed();
 		}
@@ -113,8 +129,16 @@ package org.tbyrne.siteStream
 			var oldVal:Boolean = _allParsed;
 			_allParsed = testAllParsed();
 			commitValue();
-			if(!oldVal && _allParsed){
-				dispatchEvent(new SiteStreamEvent(SiteStreamEvent.PARSED));
+			if(_allParsed){
+				if(!oldVal)dispatchEvent(new SiteStreamEvent(SiteStreamEvent.PARSED));
+				checkResolved(true);
+			}
+		}
+		protected function checkResolved(overrideOld:Boolean):void{
+			var oldVal:Boolean = _allResolved;
+			_allResolved = testAllResolved();
+			if((!oldVal || overrideOld) && _allResolved){
+				dispatchEvent(new SiteStreamEvent(SiteStreamEvent.RESOLVED));
 			}
 		}
 		protected function commitValue():void{
@@ -154,9 +178,21 @@ package org.tbyrne.siteStream
 		}
 		protected function testAllParsed():Boolean{
 			for(var i:* in pendingChildren){
-				return false;
+				var child:IPropertySetter = i;
+				if(!child.allParsed){
+					return false;
+				}
 			}
 			return valueSet && (propertyInfo!=null);
+		}
+		protected function testAllResolved():Boolean{
+			if(_allParsed && valueCommited){
+				for(var i:* in pendingChildren){
+					return false;
+				}
+				return true;
+			}
+			return false;
 		}
 		public function release():void{
 			pool.releaseObject(this);

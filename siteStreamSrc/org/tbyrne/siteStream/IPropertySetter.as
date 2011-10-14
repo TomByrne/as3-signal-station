@@ -11,6 +11,7 @@ package org.tbyrne.siteStream
 		function get isReference():Boolean;
 		function get propertyInfo():IPropertyInfo;
 		function get allParsed():Boolean;
+		function get allResolved():Boolean;
 		function set value(value:*):void;
 		function addPropertyChild(child:IPropertySetter):void;
 	}
