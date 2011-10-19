@@ -1,25 +1,55 @@
 package org.tbyrne.siteStream
 {
 	import flash.display.*;
-	import flash.events.*;
 	import flash.net.*;
 	
+	import org.tbyrne.acting.actTypes.IAct;
+	import org.tbyrne.acting.acts.Act;
 	import org.tbyrne.collections.IIterator;
 	import org.tbyrne.memory.garbageCollect;
-	import org.tbyrne.siteStream.events.SiteStreamErrorEvent;
-	import org.tbyrne.siteStream.events.SiteStreamEvent;
 	import org.tbyrne.siteStream.parsers.ISiteStreamParser;
 	import org.tbyrne.siteStream.parsers.ParserProxy;
 	
 	use namespace SiteStreamNamespace;
 	
-	[Event(name="classFailure",type="org.tbyrne.siteStream.events.SiteStreamErrorEvent")]
-	[Event(name="dataFailure",type="org.tbyrne.siteStream.events.SiteStreamErrorEvent")]
 	// TODO: Error reporting which includes which file the offending text is in
 	// TODO: Track which namespaces are and aren't used in an xml file and display
 	// a trace warning if there are some that aren't
-	public class AbstractSiteStream extends EventDispatcher
+	public class AbstractSiteStream
 	{
+		/**
+		 * handler(from:AbstractSiteStream)
+		 */
+		public function get dataLoadFailure():IAct{
+			return (_dataLoadFailure || (_dataLoadFailure = new Act()));
+		}
+		
+		/**
+		 * handler(from:AbstractSiteStream)
+		 */
+		public function get classLoadFailure():IAct{
+			return (_classLoadFailure || (_classLoadFailure = new Act()));
+		}
+		/**
+		 * handler(from:AbstractSiteStream, path:String)
+		 */
+		public function get beginResolve():IAct{
+			return (_beginResolve || (_beginResolve = new Act()));
+		}
+		
+		/**
+		 * handler(from:AbstractSiteStream, path:String)
+		 */
+		public function get completeResolve():IAct{
+			return (_completeResolve || (_completeResolve = new Act()));
+		}
+		
+		protected var _completeResolve:Act;
+		protected var _beginResolve:Act;
+		protected var _classLoadFailure:Act;
+		protected var _dataLoadFailure:Act;
+		
+		
 		// testing
 		public function get nodeCount():int{
 			return countDescendants(rootNode)+1;
@@ -49,37 +79,31 @@ package org.tbyrne.siteStream
 		SiteStreamNamespace function set rootNode(value:SiteStreamNode):void{
 			if(_rootNode!=value){
 				if(_rootNode){
-					_rootNode.removeEventListener(SiteStreamEvent.PARSED, onRootLoaded);
+					_rootNode.wasParsed.removeHandler(onRootLoaded);
 				}
 				_rootNode = value;
 				if(_rootNode){
-					_rootNode.addEventListener(SiteStreamEvent.PARSED, onRootLoaded);
+					_rootNode.wasParsed.addHandler(onRootLoaded);
 				}
 			}
 		}
 		SiteStreamNamespace function get rootNode():SiteStreamNode{
 			return _rootNode;
 		}
-		SiteStreamNamespace function set dispatchResolvingEvents(value:Boolean):void{
-			if(_rootNode!=value){
-				_dispatchResolvingEvents = value;
-			}
-		}
-		SiteStreamNamespace function get dispatchResolvingEvents():Boolean{
-			return _dispatchResolvingEvents;
-		}
 		
 		private var _defaultItem:ParserProxy = new ParserProxy();
 		private var _rootNode:SiteStreamNode;
 		private var _pendingNodeResolvers:Array = [];
-		private var _dispatchResolvingEvents:Boolean = false;
 		
 		public function AbstractSiteStream(){
-			_defaultItem.addEventListener(SiteStreamErrorEvent.CLASS_FAILURE, bubbleEvent);
-			_defaultItem.addEventListener(SiteStreamErrorEvent.DATA_FAILURE, bubbleEvent);
+			_defaultItem.classLoadFailure.addHandler(onClassLoadFailure);
+			_defaultItem.dataLoadFailure.addHandler(onDataLoadFailure);
 		}
-		protected function bubbleEvent(e:Event):void{
-			dispatchEvent(e);
+		private function onDataLoadFailure():void{
+			if(_dataLoadFailure)_dataLoadFailure.perform(this);
+		}
+		private function onClassLoadFailure():void{
+			if(_classLoadFailure)_classLoadFailure.perform(this);
 		}
 		public function isObjectLoaded(path:String):Boolean{
 			if(_rootNode){
@@ -118,14 +142,10 @@ package org.tbyrne.siteStream
 			return null;
 		}
 		public function getObject(path:String, success:Function):void{
-			if(dispatchResolvingEvents){
-				dispatchEvent(new SiteStreamEvent(SiteStreamEvent.BEGIN_RESOLVE, null, path));
-			}
+			if(_beginResolve)_beginResolve.perform(this,path);
 			var nodeResolver:NodeResolver = new NodeResolver(_rootNode,path);
-			nodeResolver.addEventListener(SiteStreamEvent.RESOLVED, createObjectHandler(success));
-			if(dispatchResolvingEvents){
-				nodeResolver.addEventListener(SiteStreamEvent.RESOLVED, onNodeResolved);
-			}
+			nodeResolver.wasResolved.addHandler(createObjectHandler(success));
+			nodeResolver.wasResolved.addHandler(onNodeResolved);
 			if(_rootNode){
 				nodeResolver.load();
 			}else{
@@ -133,12 +153,9 @@ package org.tbyrne.siteStream
 			}
 		}
 		
-		protected function onNodeResolved(e:SiteStreamEvent):void{
-			var nodeResolver:NodeResolver = (e.target as NodeResolver);
-			nodeResolver.removeEventListener(SiteStreamEvent.RESOLVED, onNodeResolved);
-			if(dispatchResolvingEvents){
-				dispatchEvent(new SiteStreamEvent(SiteStreamEvent.COMPLETE_RESOLVE, null, nodeResolver.path));
-			}
+		protected function onNodeResolved(nodeResolver:NodeResolver, value:*):void{
+			nodeResolver.wasResolved.removeHandler(onNodeResolved);
+			if(_completeResolve)_completeResolve.perform(this,nodeResolver.path);
 		}
 		public function releaseObject(path:String):void{
 			var nodeResolver:NodeResolver = new NodeResolver(_rootNode,path);
@@ -151,12 +168,12 @@ package org.tbyrne.siteStream
 			getObject("",success/*,failure*/);
 		}
 		private function createObjectHandler(handler:Function):Function{
-			return function(e:SiteStreamEvent):void{
-				handler(e.object);
+			return function(from:NodeResolver, value:*):void{
+				handler(value);
 			}
 		}
-		protected function onRootLoaded(e:Event):void{
-			_rootNode.removeEventListener(SiteStreamEvent.PARSED, onRootLoaded);
+		protected function onRootLoaded(from:SiteStreamNode):void{
+			_rootNode.wasParsed.removeHandler(onRootLoaded);
 			this.resolvePendingNodes();
 		}
 		

@@ -1,17 +1,27 @@
 package org.tbyrne.siteStream.dataLoader
 {
-	import flash.events.EventDispatcher;
 	import flash.net.URLLoader;
 	import flash.net.URLRequest;
 	import flash.utils.Dictionary;
 	
+	import org.tbyrne.acting.actTypes.IAct;
+	import org.tbyrne.acting.acts.Act;
 	import org.tbyrne.core.IPendingResult;
 	import org.tbyrne.queueing.IQueue;
 	import org.tbyrne.queueing.queueItems.external.URLLoaderQI;
-	import org.tbyrne.siteStream.events.SiteStreamErrorEvent;
 	
-	public class XMLFileDataLoader extends EventDispatcher implements IDataLoader
+	public class XMLFileDataLoader implements IDataLoader
 	{
+		
+		/**
+		 * @inheritDoc
+		 */
+		public function get dataLoadFailure():IAct{
+			return (_dataLoadFailure || (_dataLoadFailure = new Act()));
+		}
+		
+		protected var _dataLoadFailure:Act;
+		
 		public function get urlAttribute():String{
 			return _urlAttribute;
 		}
@@ -93,9 +103,7 @@ package org.tbyrne.siteStream.dataLoader
 			pend.fail.removeHandler(onLoadFail);
 			delete pending[pend];
 			
-			var errorEvent:SiteStreamErrorEvent = new SiteStreamErrorEvent(SiteStreamErrorEvent.DATA_FAILURE);
-			errorEvent.text = "Failed to load file: "+pend.urlRequest.url;
-			dispatchEvent(errorEvent);
+			if(_dataLoadFailure)_dataLoadFailure.perform(this);
 		}
 		protected function isRootXML(xml:XML):Boolean{
 			return !xml || !xml.parent();

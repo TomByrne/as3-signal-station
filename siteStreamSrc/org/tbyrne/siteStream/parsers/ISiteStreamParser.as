@@ -1,15 +1,22 @@
 package org.tbyrne.siteStream.parsers
 {
-	import flash.events.IEventDispatcher;
-	
+	import org.tbyrne.acting.actTypes.IAct;
 	import org.tbyrne.core.IPendingResult;
 	import org.tbyrne.siteStream.SiteStreamNode;
 	import org.tbyrne.siteStream.propertyInfo.IPropertyInfo;
 	
-	[Event(name="classFailure",type="org.tbyrne.siteStream.events.SiteStreamErrorEvent")]
-	[Event(name="dataFailure",type="org.tbyrne.siteStream.events.SiteStreamErrorEvent")]
-	public interface ISiteStreamParser extends IEventDispatcher
+	public interface ISiteStreamParser
 	{
+		
+		/**
+		 * handler(from:ISiteStreamParser)
+		 */
+		function get dataLoadFailure():IAct;
+		/**
+		 * handler(from:ISiteStreamParser)
+		 */
+		function get classLoadFailure():IAct;
+		
 		function set parentParser(value:ISiteStreamParser):void;
 		
 		// data loading phase
