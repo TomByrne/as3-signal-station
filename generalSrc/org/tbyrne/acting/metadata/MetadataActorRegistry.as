@@ -1,5 +1,7 @@
 package org.tbyrne.acting.metadata
 {
+	import away3d.animators.data.NullAnimation;
+	
 	import flash.utils.Dictionary;
 	
 	import org.tbyrne.acting.ActingNamspace;
@@ -88,7 +90,7 @@ package org.tbyrne.acting.metadata
 				}
 				if(rules){
 					if(!reactionTagFound){
-						var phases:Array;
+						var phases:Array = null;
 						for each(var rule:IUniversalRule in rules){
 							var phasedRule:IUniversalPhasedRule = (rule as IUniversalPhasedRule);
 							if(phasedRule){

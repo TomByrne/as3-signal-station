@@ -8,6 +8,12 @@ package org.tbyrne.binding
 		private static var _destPropLookup:Dictionary;
 		
 		public static function bind(destObject:Object, destProp:String, srcBindable:Object, srcProp:String):void{
+			if(!destObject){
+				Log.error("Binder.bind: destObject can not be null");
+			}
+			if(!srcBindable){
+				Log.error("Binder.bind: srcBindable can not be null");
+			}
 			
 			var srcObjectLookup:Dictionary;
 			var destObjectLookup:Dictionary;
