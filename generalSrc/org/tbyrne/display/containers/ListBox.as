@@ -36,6 +36,45 @@ package org.tbyrne.display.containers
 		public function set verticalGap(value:Number):void{
 			_layout.verticalGap = value;
 		}
+		
+		public function get marginTop():Number{
+			return _layout.marginTop;
+		}
+		public function set marginTop(value:Number):void{
+			_layout.marginTop = value;
+		}
+		public function get marginBottom():Number{
+			return _layout.marginBottom;
+		}
+		public function set marginBottom(value:Number):void{
+			_layout.marginBottom = value;
+		}
+		public function get marginLeft():Number{
+			return _layout.marginLeft;
+		}
+		public function set marginLeft(value:Number):void{
+			_layout.marginLeft = value;
+		}
+		public function get marginRight():Number{
+			return _layout.marginRight;
+		}
+		public function set marginRight(value:Number):void{
+			_layout.marginRight = value;
+		}
+		
+		public function get columnWidths():Array{
+			return _layout.columnWidths;
+		}
+		public function set columnWidths(value:Array):void{
+			_layout.columnWidths = value;
+		}
+		public function get rowHeights():Array{
+			return _layout.rowHeights;
+		}
+		public function set rowHeights(value:Array):void{
+			_layout.rowHeights = value;
+		}
+		
 		public function get dataCount():int{
 			return _layout.getDataCount();
 		}

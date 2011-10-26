@@ -18,7 +18,7 @@
 		 * }</code>
 		 */
 		public static function confirm(requiredMetadata: Array, instance:*):Boolean{
-			var type: XML = ReflectionUtils.describeType(instance);
+			var type: XML = ReflectionUtils.describeObject(instance);
 			for each(var metaName:String in requiredMetadata){
 				if(!type..metadata.(@name==metaName).length()){
 					return false;

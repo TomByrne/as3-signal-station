@@ -186,11 +186,11 @@ package org.tbyrne.siteStream
 		}
 		public function reset():void{
 			unloadData();
+			isReference = false;
 			parentNode = null;
 			value = null;
 			siteStreamItem = null;
 			propertyInfo = null;
-			isReference = false;
 		}
 		protected function testAllParsed():Boolean{
 			if(isReference){

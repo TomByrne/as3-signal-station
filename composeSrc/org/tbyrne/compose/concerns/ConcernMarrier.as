@@ -113,7 +113,7 @@ package org.tbyrne.compose.concerns
 					traitList = new IndexedList();
 					_traitLookup[trait] = traitList;
 				}
-				traitList.push(trait);
+				traitList.push(traitConcern);
 				
 				traitConcern.concernAdded(trait);
 			}

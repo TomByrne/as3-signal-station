@@ -7,7 +7,7 @@ package org.tbyrne.input.shortcuts
 	import org.tbyrne.binding.PropertyWatcher;
 	import org.tbyrne.collections.linkedList.LinkedList;
 	import org.tbyrne.core.IApplication;
-	import org.tbyrne.display.actInfo.IKeyActInfo;
+	import org.tbyrne.actInfo.IKeyActInfo;
 	import org.tbyrne.display.assets.nativeTypes.IDisplayObjectContainer;
 	import org.tbyrne.display.assets.nativeTypes.IDisplayObject;
 	import org.tbyrne.display.assets.nativeTypes.IInteractiveObject;

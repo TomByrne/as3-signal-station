@@ -1,4 +1,4 @@
-package org.tbyrne.display.actInfo
+package org.tbyrne.actInfo
 {
 	import org.tbyrne.display.assets.nativeTypes.IDisplayObject;
 
@@ -12,6 +12,6 @@ package org.tbyrne.display.actInfo
 		function get keyCode():uint;
 		function get keyLocation():uint;
 		
-		function get keyTarget():IDisplayObject;
+		function get keyTarget():*;
 	}
 }

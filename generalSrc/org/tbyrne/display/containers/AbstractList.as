@@ -31,6 +31,7 @@ package org.tbyrne.display.containers
 		DisplayNamespace const ASSUMED_DATA_FIELD:String = "data";
 		
 		DisplayNamespace function get assumedRendererFactory():SimpleInstanceFactory{
+			if(isBound)assessFactory();
 			return _assumedRendererFactory;
 		}
 		DisplayNamespace function get layout():RendererGridLayout{
@@ -47,7 +48,7 @@ package org.tbyrne.display.containers
 					_factoryAssumedAssetSet = false;
 				}
 				_rendererFactory = value;
-				assessFactory();
+				if(isBound)assessFactory();
 			}
 		}
 		

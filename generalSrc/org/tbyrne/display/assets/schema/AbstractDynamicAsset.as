@@ -22,13 +22,13 @@ package org.tbyrne.display.assets.schema
 	import org.tbyrne.acting.actTypes.IAct;
 	import org.tbyrne.acting.acts.Act;
 	import org.tbyrne.acting.acts.NativeAct;
-	import org.tbyrne.display.actInfo.IKeyActInfo;
-	import org.tbyrne.display.actInfo.IMouseActInfo;
+	import org.tbyrne.actInfo.IKeyActInfo;
+	import org.tbyrne.actInfo.IMouseActInfo;
 	import org.tbyrne.display.assets.IAssetFactory;
 	import org.tbyrne.display.assets.assetTypes.IAsset;
 	import org.tbyrne.display.assets.nativeAssets.INativeAsset;
-	import org.tbyrne.display.assets.nativeAssets.actInfo.KeyActInfo;
-	import org.tbyrne.display.assets.nativeAssets.actInfo.MouseActInfo;
+	import org.tbyrne.actInfo.KeyActInfo;
+	import org.tbyrne.actInfo.MouseActInfo;
 	import org.tbyrne.display.assets.nativeTypes.*;
 	import org.tbyrne.display.assets.schemaTypes.*;
 	import org.tbyrne.display.assets.utils.isDescendant;
@@ -671,7 +671,7 @@ package org.tbyrne.display.assets.schema
 		}
 		protected function createMouseInfo(e:MouseEvent):IMouseActInfo{
 			var target:IDisplayObject = (e.target==_interactiveObject?this:DISPLAY_MAP[e.target]);
-			return new MouseActInfo(target, e.altKey, e.ctrlKey, e.shiftKey);
+			return new MouseActInfo(target, e.altKey, e.ctrlKey, e.shiftKey, e.stageX, e.stageY);
 		}
 		
 		

@@ -8,7 +8,7 @@ package org.tbyrne.input.items
 	import org.tbyrne.data.dataTypes.IStringProvider;
 	import org.tbyrne.data.expressions.ParameterisedExpression;
 	import org.tbyrne.data.operators.StringProxy;
-	import org.tbyrne.display.actInfo.IKeyActInfo;
+	import org.tbyrne.actInfo.IKeyActInfo;
 	import org.tbyrne.display.assets.nativeTypes.IDisplayObject;
 	import org.tbyrne.display.core.IScopedObject;
 	import org.tbyrne.input.shortcuts.ShortcutLiterator;

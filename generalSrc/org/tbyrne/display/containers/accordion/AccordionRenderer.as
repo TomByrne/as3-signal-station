@@ -15,7 +15,7 @@ package org.tbyrne.display.containers.accordion
 	import org.tbyrne.data.dataTypes.IStringProvider;
 	import org.tbyrne.display.DisplayNamespace;
 	import org.tbyrne.display.assets.AssetNames;
-	import org.tbyrne.display.assets.nativeAssets.actInfo.MouseActInfo;
+	import org.tbyrne.actInfo.MouseActInfo;
 	import org.tbyrne.display.assets.nativeTypes.IDisplayObject;
 	import org.tbyrne.display.assets.nativeTypes.IInteractiveObject;
 	import org.tbyrne.display.assets.states.StateDef;

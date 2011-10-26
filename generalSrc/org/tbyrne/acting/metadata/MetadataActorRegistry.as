@@ -42,7 +42,7 @@ package org.tbyrne.acting.metadata
 					Log.error( "MetadataActorRegistry.addActor: Actor already registered");
 				}
 			}
-			var classDesc: XML = ReflectionUtils.describeType(actor);
+			var classDesc: XML = ReflectionUtils.describeObject(actor);
 			var memberList: XMLList = classDesc.descendants().(name()=="method"||name()=="variable"||name()=="accessor");
 			var scopedObjects:Array = [];
 			var classPath:String;

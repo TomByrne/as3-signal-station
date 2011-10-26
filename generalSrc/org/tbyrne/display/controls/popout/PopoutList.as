@@ -1,7 +1,7 @@
 package org.tbyrne.display.controls.popout {
 	import flash.geom.Point;
 	
-	import org.tbyrne.display.actInfo.IMouseActInfo;
+	import org.tbyrne.actInfo.IMouseActInfo;
 	import org.tbyrne.display.assets.assetTypes.IAsset;
 	import org.tbyrne.display.assets.nativeTypes.IDisplayObjectContainer;
 	import org.tbyrne.display.assets.nativeTypes.IDisplayObject;

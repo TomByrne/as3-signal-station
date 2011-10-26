@@ -24,8 +24,14 @@ package org.tbyrne.composeSodality
 			
 			_actorHelper = new UniversalActorHelper();
 			_actorHelper.metadataTarget = this;
+			_actorHelper.addedChanged.addHandler(onAdded);
 			
 			ComposeActTypes;
+		}
+		
+		private function onAdded(... params):void
+		{
+			params = params;
 		}
 		
 		override protected function onItemRemove():void{

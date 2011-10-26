@@ -5,16 +5,11 @@ package org.tbyrne.composeLibrary.ui
 	import flash.events.MouseEvent;
 	import flash.utils.getTimer;
 	
-	import org.tbyrne.acting.actTypes.IAct;
-	import org.tbyrne.acting.acts.Act;
+	import org.tbyrne.actInfo.MouseActInfo;
 	import org.tbyrne.compose.concerns.ITraitConcern;
 	import org.tbyrne.compose.concerns.TraitConcern;
 	import org.tbyrne.compose.traits.ITrait;
 	import org.tbyrne.composeLibrary.types.display2D.IInteractiveObjectTrait;
-	import org.tbyrne.data.core.BooleanData;
-	import org.tbyrne.data.dataTypes.IBooleanProvider;
-	import org.tbyrne.display.actInfo.IMouseActInfo;
-	import org.tbyrne.display.assets.nativeAssets.actInfo.MouseActInfo;
 	
 	public class MouseActsTrait extends AbstractMouseActsTraits
 	{
@@ -144,11 +139,11 @@ package org.tbyrne.composeLibrary.ui
 		}
 		
 		protected function onMouseMove(event:MouseEvent):void{
-			_mouseMoved.perform(this,createActInfo(event));
+			if(_mouseMoved)_mouseMoved.perform(this,createActInfo(event));
 		}
 		
-		private function createActInfo(event:MouseEvent):IMouseActInfo{
-			var ret:MouseActInfo = new MouseActInfo(null, event.altKey, event.ctrlKey, event.shiftKey);
+		private function createActInfo(event:MouseEvent):MouseActInfo{
+			var ret:MouseActInfo = new MouseActInfo(null, event.altKey, event.ctrlKey, event.shiftKey, event.stageX, event.stageY);
 			return ret;
 		}
 		
@@ -173,11 +168,14 @@ package org.tbyrne.composeLibrary.ui
 				if(dist>_dragTreshold){
 					// start dragging
 					_isDragging = true;
-					if(_mouseDragStart)_mouseDragStart.perform(this);
+					var mouseActInfo:MouseActInfo = createActInfo(event);
+					mouseActInfo.screenX = _dragX;
+					mouseActInfo.screenY = _dragY;
+					if(_mouseDragStart)_mouseDragStart.perform(this,mouseActInfo);
 				}
 			}
 			if(_isDragging){
-				if(_mouseDrag)_mouseDrag.perform(this,xDist,yDist);
+				if(_mouseDrag)_mouseDrag.perform(this,createActInfo(event),xDist,yDist);
 				
 				_dragX = _stage.mouseX;
 				_dragY = _stage.mouseY;
@@ -194,13 +192,13 @@ package org.tbyrne.composeLibrary.ui
 			
 			if(_isDragging){
 				_isDragging = false;
-				if(_mouseDragFinish)_mouseDragFinish.perform(this);
+				if(_mouseDragFinish)_mouseDragFinish.perform(this,createActInfo(event));
 			}else if(_mouseIsOver.booleanValue){
 				var timeDiff:int = getTimer()-_clickBegan;
 				if(timeDiff<_clickSpeedMS){
-					if(_mouseClick)_mouseClick.perform(this);
+					if(_mouseClick)_mouseClick.perform(this,createActInfo(event));
 				}else{
-					if(_mouseLongClick)_mouseLongClick.perform(this);
+					if(_mouseLongClick)_mouseLongClick.perform(this,createActInfo(event));
 				}
 			}
 		}

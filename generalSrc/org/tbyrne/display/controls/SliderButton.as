@@ -8,7 +8,7 @@ package org.tbyrne.display.controls
 	import org.goasap.events.GoEvent;
 	import org.tbyrne.acting.actTypes.IAct;
 	import org.tbyrne.acting.acts.Act;
-	import org.tbyrne.display.actInfo.IMouseActInfo;
+	import org.tbyrne.actInfo.IMouseActInfo;
 	import org.tbyrne.display.assets.nativeTypes.IDisplayObject;
 	import org.tbyrne.display.assets.nativeTypes.IInteractiveObject;
 	import org.tbyrne.display.constants.Anchor;

@@ -1,14 +1,12 @@
-package org.tbyrne.display.assets.nativeAssets.actInfo
+package org.tbyrne.actInfo
 {
-	import org.tbyrne.display.actInfo.IMouseActInfo;
-	import org.tbyrne.display.assets.nativeTypes.IDisplayObject;
 	
 	public class MouseActInfo implements IMouseActInfo
 	{
-		public function get mouseTarget():IDisplayObject{
+		public function get mouseTarget():*{
 			return _mouseTarget;
 		}
-		public function set mouseTarget(value:IDisplayObject):void{
+		public function set mouseTarget(value:*):void{
 			_mouseTarget = value;
 		}
 		
@@ -33,16 +31,34 @@ package org.tbyrne.display.assets.nativeAssets.actInfo
 			_shiftKey = value;
 		}
 		
+		public function get screenX():Number{
+			return _screenX;
+		}
+		public function set screenX(value:Number):void{
+			_screenX = value;
+		}
+		
+		public function get screenY():Number{
+			return _screenY;
+		}
+		public function set screenY(value:Number):void{
+			_screenY = value;
+		}
+		
+		private var _screenY:Number;
+		private var _screenX:Number;
 		private var _shiftKey:Boolean;
 		private var _ctrlKey:Boolean;
 		private var _altKey:Boolean;
-		private var _mouseTarget:IDisplayObject;
+		private var _mouseTarget:*;
 		
-		public function MouseActInfo(mouseTarget:IDisplayObject, altKey:Boolean, ctrlKey:Boolean, shiftKey:Boolean){
+		public function MouseActInfo(mouseTarget:*, altKey:Boolean, ctrlKey:Boolean, shiftKey:Boolean, screenX:Number, screenY:Number){
 			this.mouseTarget = mouseTarget;
 			this.altKey = altKey;
 			this.ctrlKey = ctrlKey;
 			this.shiftKey = shiftKey;
+			this.screenX = screenX;
+			this.screenY = screenY;
 		}
 	}
 }

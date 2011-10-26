@@ -1,8 +1,11 @@
 package org.tbyrne.composeLibrary.display3D
 {
-	import org.tbyrne.composeLibrary.controls.ICameraControls;
+	import flash.geom.Matrix3D;
+	import flash.geom.Vector3D;
 	
 	import org.tbyrne.acting.actTypes.IAct;
+	import org.tbyrne.acting.acts.Act;
+	import org.tbyrne.composeLibrary.controls.ICameraControls;
 	import org.tbyrne.composeLibrary.types.display3D.IOrientation3dTrait;
 	import org.tbyrne.data.core.BooleanData;
 	import org.tbyrne.data.core.NumberData;
@@ -81,7 +84,46 @@ package org.tbyrne.composeLibrary.display3D
 		public function set rotZ(value:Number):void{
 			setRotZ(value);
 		}
+		/**
+		 * @inheritDoc
+		 */
+		public function get positionOffsetChanged():IAct{
+			return _positionOffsetProvider.numericalValueChanged;
+		}
+		public function get positionOffsetProvider():INumberProvider{
+			return _positionOffsetProvider;
+		}
+		public function get positionOffset():Number{
+			return _positionOffsetProvider.numericalValue;
+		}
+		public function set positionOffset(value:Number):void{
+			_positionOffsetProvider.numericalValue = value;
+		}
+		protected var _positionOffsetProvider:NumberData = new NumberData(0);
 		
+		/**
+		 * @inheritDoc
+		 */
+		public function get sceneScaleChanged():IAct{
+			return _sceneScaleProvider.numericalValueChanged;
+		}
+		public function get sceneScaleProvider():INumberProvider{
+			return _sceneScaleProvider;
+		}
+		public function get sceneScale():Number{
+			return _sceneScaleProvider.numericalValue;
+		}
+		public function set sceneScale(value:Number):void{
+			_sceneScaleProvider.numericalValue = value;
+		}
+		protected var _sceneScaleProvider:NumberData = new NumberData(1);
+		
+		/**
+		 * @inheritDoc
+		 */
+		public function get rotationChanged():IAct{
+			return rotation3dChanged;
+		}
 		
 		protected var _focalLengthProvider:NumberData = new NumberData(Number.POSITIVE_INFINITY);
 		protected var _fieldOfViewProvider:NumberData = new NumberData(Number.POSITIVE_INFINITY);
@@ -181,13 +223,15 @@ package org.tbyrne.composeLibrary.display3D
 					if(_posZChanged)_posZChanged.perform(this);
 				}
 				if(_position3dChanged)_position3dChanged.perform(this);
+				invalidateMatrix();
 			}
 		}
 		public function setRotation(x:Number, y:Number, z:Number):void{
-			var xDif:Boolean = (_rotX!=x);
-			var yDif:Boolean = (_rotY!=y);
-			var zDif:Boolean = (_rotZ!=z);
+			var xDif:Number = (x-_rotX);
+			var yDif:Number = (y-_rotY);
+			var zDif:Number = (z-_rotZ);
 			if(xDif || yDif || zDif){
+				
 				if(xDif){
 					_rotX = x;
 					if(_rotXChanged)_rotXChanged.perform(this);
@@ -201,7 +245,9 @@ package org.tbyrne.composeLibrary.display3D
 					if(_rotZChanged)_rotZChanged.perform(this);
 				}
 				if(_rotation3dChanged)_rotation3dChanged.perform(this);
+				invalidateMatrix();
+				
 			}
-		}
+		}	
 	}
 }

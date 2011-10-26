@@ -99,7 +99,7 @@
 		{
 			var lineage: Array = new Array();
 			
-			var desc: XML = ReflectionUtils.describeType(targetClass);
+			var desc: XML = ReflectionUtils.describeClass(targetClass);
 			for each (var interfaceXML: XML in desc.factory.implementsInterface)
 			{
 				var interfaceName: String = interfaceXML.@type;
@@ -141,6 +141,15 @@
 				}
 			}
 			return classLineage;
+		}
+		public static function isClassDynamic(object:*): Boolean{
+			var typeDesc:XML
+			if(object is Class){
+				typeDesc = describeObject(new object());
+			}else{
+				typeDesc = describeObject(object);
+			}
+			return String(typeDesc.@isDynamic)=="true";
 		}
 		
 		public static function getClassName(obj:*): String{
@@ -202,7 +211,7 @@
 				try
 				{
 					var def: Class = getDefinitionByName(classType) as Class;
-					var classDef: XML = ReflectionUtils.describeType(def);
+					var classDef: XML = ReflectionUtils.describeClass(def);
 					
 					var lineageNodes: XMLList = classDef[lineageNodeName];
 					for each (var lNode: XML in lineageNodes)
@@ -223,50 +232,150 @@
 			return containsLineage;
 		}
 		
-		/**
-		 * DescribeTypeCache style functionality. DescribeTypeCache has at least one known bug:
-		 * 	- if you first request a description like DescribeTypeCache.describeType(MyClass),
-		 * 		it will return the Class's definition for all description requests of instances
-		 * 		of that class
-		 */
 		public static function describeType(object: *): XML
 		{
-			var cacheKey: String = null;
-			if (object is String)
-			{
-				cacheKey = object;
-				var klass:Class = getClassByName(cacheKey);
-				try{
-					object = new klass();
-				}catch(e:Error){
-					//Log.trace("WARNING: ReflectionUtils.describeType couldn't describe object "+cacheKey);
-					return null;
-				}
+			if(object is Class){
+				return describeClass(object as Class);
+			}else{
+				return describeObject(object);
 			}
-			else if (object is Class)
-			{
-				cacheKey = getQualifiedClassName(object) + ReflectionUtils.CLASS_SEP + "Class";
-			}
-			else
-			{
-				cacheKey = getQualifiedClassName(object);
-			}
+		}
+		public static function describeClass(object:Class): XML
+		{
+			var cacheKey: String = getQualifiedClassName(object);
 			
-			var type: XML = null;
-			if (cacheKey in ReflectionUtils.describeTypeCache)
-			{
-				type = ReflectionUtils.describeTypeCache[cacheKey];
+			if (cacheKey in ReflectionUtils.describeClassCache){
+				return ReflectionUtils.describeClassCache[cacheKey];
+			}else{
+				var type:XML = flash.utils.describeType(object);
+				ReflectionUtils.describeClassCache[cacheKey] = type;
+				return type;
 			}
-			else
-			{
-				type = flash.utils.describeType(object);
-				ReflectionUtils.describeTypeCache[cacheKey] = type;
+		}
+		public static function describeObject(object: *): XML
+		{
+			if(object is Class){
+				Log.error("Use describeClass to inspect classes");
 			}
+			var cacheKey: String = getQualifiedClassName(object);
 			
-			return type;
+			if (cacheKey in ReflectionUtils.describeObjectCache){
+				return ReflectionUtils.describeObjectCache[cacheKey];
+			}else{
+				var type:XML = flash.utils.describeType(object);
+				ReflectionUtils.describeObjectCache[cacheKey] = type;
+				return type;
+			}
 		}
 		
-		private static const CLASS_SEP: String = " ";
-		private static var describeTypeCache: Dictionary = new Dictionary();
+		private static var describeClassCache: Dictionary = new Dictionary();
+		private static var describeObjectCache: Dictionary = new Dictionary();
+		
+		
+		/**
+		 * Function should have a signature:
+		 * function(parentObject:*, value:*, memberName:String, isMethod:Boolean, definedBy:Class, definedType:Class, ... additionalParams):Boolean;
+		 * 
+		 * By returning true the calls will be aborted.
+		 */
+		public static function callForMembers(object:*, func:Function, props:Boolean, methods:Boolean, inheritedMembers:Boolean=true, additionalParams:Array=null, doDynamic:Boolean=true, doArray:Boolean=true):void{
+			var type:Class = getClass(object);
+			var i:int;
+			var doneProps:Dictionary = new Dictionary();
+			
+			var inheritance:Array;
+			if(inheritedMembers){
+				inheritance = getClassLineage(type);
+				for(i=inheritance.length-1; i>=0; --i){ // traverse from super to subclass
+					var type2:Class = inheritance[i];
+					if(_callForMembers(type2, object, func, props, methods, inheritedMembers, additionalParams, doneProps)){
+						return;
+					}
+				}
+			}else{
+				_callForMembers(type, object, func, props, methods, inheritedMembers, additionalParams, doneProps);
+			}
+			
+			var doDyn:Boolean = (doDynamic && ReflectionUtils.isClassDynamic(object));
+			
+			var params:Array;
+			if(doDyn || doArray){
+				params = [object, null, null, true, type, null];
+				if(additionalParams){
+					params = params.concat(additionalParams);
+				}
+			}
+			
+			if(doDyn){
+				for(var j:* in object){
+					if(!doneProps[i]){
+						doneProps[j] = true;
+						params[1] = object[j];
+						params[2] = j;
+						if(func.apply(null,params)){
+							return;
+						}
+					}
+				}
+			}else if(doArray){
+				const VECTOR_TEST:RegExp = /\[class Vector\.<.*>\]/;
+				
+				var arrayCheck:Boolean = (type==Array || VECTOR_TEST.test(String(type)));
+				if(arrayCheck){
+					for(i=0; i<object.length; ++i){
+						if(!doneProps[i]){
+							doneProps[i] = true;
+							params[1] = object[i];
+							params[2] = i;
+							if(func.apply(null,params)){
+								return;
+							}
+						}
+					}
+				}
+			}
+		}
+		
+		private static function _callForMembers(type:Class, object:*, func:Function, props:Boolean, methods:Boolean, inheritedMembers:Boolean, additionalParams:Array, doneProps:Dictionary):Boolean{
+			var typeDesc:XML = describeClass(type);
+			
+			var params:Array = [object, null, null, null, type, null];
+			if(additionalParams){
+				params = params.concat(additionalParams);
+			}
+			
+			if(props){
+				params[3] = false;
+				if(_doMemberCalls(func,object,params,typeDesc.factory.children().(name()=="variable" || (name()=="accessor" && @access.toString()=="readwrite")),doneProps)){
+					return true;
+				}
+			}
+			if(methods){
+				params[3] = true;
+				if(_doMemberCalls(func,object,params,typeDesc.factory.method,doneProps)){
+					return true;
+				}
+			}
+			return false;
+		}
+		
+		private static function _doMemberCalls(func:Function, object:*, params:Array, memList:XMLList, doneProps:Dictionary):Boolean{
+			for each(var memXML:XML in memList){
+				var memberName:String = memXML.@name;
+				if(!doneProps[memberName]){
+					var definedType:Class = getClassByName(memXML.@type);
+					
+					doneProps[memberName] = true;
+					params[1] = object[memberName];
+					params[2] = memberName;
+					params[5] = definedType;
+					if(func.apply(null,params)){
+						return true;
+					}
+				}
+			}
+			return false;
+		}
 	}
+	
 }

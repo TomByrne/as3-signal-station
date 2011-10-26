@@ -102,12 +102,12 @@ package org.tbyrne.display.controls
 			if(_scrollDirection==Direction.HORIZONTAL){
 				_foreButton.setPosition(0,0);
 				_foreButton.setSize(foreMeas.x,size.y);
-				_aftButton.setPosition(position.x-aftMeas.x,0);
+				_aftButton.setPosition(size.x-aftMeas.x,0);
 				_aftButton.setSize(aftMeas.x,position.y);
 			}else{
 				_foreButton.setPosition(0,0);
 				_foreButton.setSize(size.x,foreMeas.y);
-				_aftButton.setPosition(0,position.y-aftMeas.y);
+				_aftButton.setPosition(0,size.y-aftMeas.y);
 				_aftButton.setSize(position.x,aftMeas.y);
 			}
 		}

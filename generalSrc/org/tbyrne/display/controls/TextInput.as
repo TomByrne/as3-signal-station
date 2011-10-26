@@ -11,7 +11,7 @@ package org.tbyrne.display.controls
 	import org.tbyrne.data.dataTypes.IStringProvider;
 	import org.tbyrne.data.dataTypes.IValueConsumer;
 	import org.tbyrne.display.DisplayNamespace;
-	import org.tbyrne.display.actInfo.IKeyActInfo;
+	import org.tbyrne.actInfo.IKeyActInfo;
 	import org.tbyrne.display.assets.nativeTypes.IDisplayObject;
 	import org.tbyrne.display.assets.nativeTypes.IInteractiveObject;
 	import org.tbyrne.display.assets.nativeTypes.ITextField;

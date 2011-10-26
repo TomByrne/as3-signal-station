@@ -52,8 +52,9 @@ package org.tbyrne.composeLibrary.display2D
 		protected var _interactiveObjectChanged:Act;
 		protected var _interactiveObject:InteractiveObject;
 		
-		public function DisplayObjectTrait(){
+		public function DisplayObjectTrait(displayObject:DisplayObject){
 			super();
+			this.displayObject = displayObject;
 		}
 		
 	}

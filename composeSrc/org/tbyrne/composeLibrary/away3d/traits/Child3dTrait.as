@@ -22,9 +22,11 @@ package org.tbyrne.composeLibrary.away3d.traits
 		
 		protected var _child:ObjectContainer3D;
 		
-		public function Child3dTrait()
+		public function Child3dTrait(child:ObjectContainer3D=null)
 		{
 			super();
+			
+			this.child = child;
 		}
 	}
 }

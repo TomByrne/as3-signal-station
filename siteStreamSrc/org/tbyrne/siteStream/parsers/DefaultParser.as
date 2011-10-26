@@ -430,7 +430,7 @@ package org.tbyrne.siteStream.parsers
 			return packageName;
 		}
 		protected function getTypeDescription(object:Object):XML{
-			return ReflectionUtils.describeType(object is String?String:object);
+			return ReflectionUtils.describeType(object);
 		}
 		public function commitValue(propertyInfo:IPropertyInfo, node:SiteStreamNode):void{
 			var castPropInfo:PropertyInfo = (propertyInfo as PropertyInfo);

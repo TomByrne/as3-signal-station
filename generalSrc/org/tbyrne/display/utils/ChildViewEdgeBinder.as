@@ -12,8 +12,7 @@ package org.tbyrne.display.utils
 		public static const PIXEL:String = "bindPixel";
 		public static const PERCENT:String = "bindPercent";
 		
-		public var obeyMinWidth:Boolean = false;
-		public var obeyMinHeight:Boolean = false;
+		public var overrideMeasurements:Point;
 		
 		protected var _childAsset:IDisplayObject;
 		protected var _childLayout:ILayoutSubject;
@@ -181,6 +180,9 @@ package org.tbyrne.display.utils
 			if(_childAsset){
 				minW = _childAsset.naturalWidth;
 				minH = _childAsset.naturalHeight;
+			}else if(overrideMeasurements){
+				minW = overrideMeasurements.x;
+				minH = overrideMeasurements.y;
 			}else{
 				var meas:Point = _childLayout.measurements;
 				minW = meas.x;
@@ -192,7 +194,7 @@ package org.tbyrne.display.utils
 				if(doBindBottom){
 					// is bound to both top and bottom
 					if(padTop+padBottom+minH>height){
-						_destH = (obeyMinHeight?minH:(height-padTop-padBottom));
+						_destH = (!isNaN(minH)?minH:(height-padTop-padBottom));
 						_destY = y+padTop+(height-padTop-padBottom-_destH)/2;
 					}else{
 						_destY = y+padTop;
@@ -224,7 +226,7 @@ package org.tbyrne.display.utils
 				if(doBindRight){
 					// is bound to both left and right
 					if(padLeft+padRight+minW>width){
-						_destW = (obeyMinWidth?minW:(width-padLeft-padRight));
+						_destW = (!isNaN(minW)?minW:(width-padLeft-padRight));
 						_destX = x+padLeft+(width-padLeft-padRight-_destW)/2;
 					}else{
 						_destX = x+padLeft;

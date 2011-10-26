@@ -1,6 +1,6 @@
 package org.tbyrne.input.shortcuts
 {
-	import org.tbyrne.display.actInfo.IKeyActInfo;
+	import org.tbyrne.actInfo.IKeyActInfo;
 	import org.tbyrne.display.assets.nativeTypes.IDisplayObject;
 	import org.tbyrne.display.core.IScopedObject;
 

@@ -14,7 +14,7 @@ package org.tbyrne.collections.linkedList
 					return fromDictionary(dict);
 				}
 			}
-			return null;
+			return fromObject(collection);
 		}
 		public static function fromArray(array:Array):LinkedList{
 			var ret:LinkedList = new LinkedList();
@@ -28,6 +28,13 @@ package org.tbyrne.collections.linkedList
 			var ret:LinkedList = new LinkedList();
 			for each(var obj:* in dictionary){
 				ret.unshift(obj);
+			}
+			return ret;
+		}
+		public static function fromObject(object:Object):LinkedList{
+			var ret:LinkedList = new LinkedList();
+			for each(var obj:* in object){
+				ret.push(obj);
 			}
 			return ret;
 		}

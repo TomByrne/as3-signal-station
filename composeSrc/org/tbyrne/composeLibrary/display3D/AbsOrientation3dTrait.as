@@ -180,7 +180,7 @@ package org.tbyrne.composeLibrary.display3D
 			_invMatrixFlag.validate();
 			return _invMatrix3d;
 		}
-		private function invalidateMatrix():void{
+		protected function invalidateMatrix():void{
 			_matrixFlag.invalidate();
 			_invMatrixFlag.invalidate();
 			if(_matrix3dChanged)_matrix3dChanged.perform(this);

@@ -10,21 +10,21 @@ package org.tbyrne.composeLibrary.types.ui
 		function get mouseIsDown():IBooleanProvider;
 		
 		/**
-		 * handler(from:IMouseActsTrait)
+		 * handler(from:IMouseActsTrait, actInfo:IMouseActInfo)
 		 */
 		function get mouseClick():IAct;
 		
 		
 		/**
-		 * handler(from:IMouseActsTrait)
+		 * handler(from:IMouseActsTrait, actInfo:IMouseActInfo)
 		 */
 		function get mouseDragStart():IAct;
 		/**
-		 * handler(from:IMouseActsTrait, byX:Number, byY:Number)
+		 * handler(from:IMouseActsTrait, actInfo:IMouseActInfo, byX:Number, byY:Number)
 		 */
 		function get mouseDrag():IAct;
 		/**
-		 * handler(from:IMouseActsTrait)
+		 * handler(from:IMouseActsTrait, actInfo:IMouseActInfo)
 		 */
 		function get mouseDragFinish():IAct;
 		/**
@@ -34,7 +34,7 @@ package org.tbyrne.composeLibrary.types.ui
 		
 		
 		/**
-		 * handler(from:IMouseActsTrait)
+		 * handler(from:IMouseActsTrait, actInfo:IMouseActInfo)
 		 */
 		function get mouseLongClick():IAct;
 	}

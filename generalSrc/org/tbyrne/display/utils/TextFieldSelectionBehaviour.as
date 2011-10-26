@@ -5,8 +5,8 @@ package org.tbyrne.display.utils
 	import flash.ui.Keyboard;
 	
 	import org.tbyrne.display.DisplayNamespace;
-	import org.tbyrne.display.actInfo.IKeyActInfo;
-	import org.tbyrne.display.actInfo.IMouseActInfo;
+	import org.tbyrne.actInfo.IKeyActInfo;
+	import org.tbyrne.actInfo.IMouseActInfo;
 	import org.tbyrne.display.assets.AssetNames;
 	import org.tbyrne.display.assets.nativeTypes.IDisplayObject;
 	import org.tbyrne.display.assets.nativeTypes.IInteractiveObject;

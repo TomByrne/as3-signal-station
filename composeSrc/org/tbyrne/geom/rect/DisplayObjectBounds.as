@@ -1,42 +1,12 @@
-package org.tbyrne.composeLibrary.display2D
+package org.tbyrne.geom.rect
 {
 	import flash.display.DisplayObject;
 	import flash.geom.Rectangle;
 	
-	import org.tbyrne.acting.actTypes.IAct;
-	import org.tbyrne.acting.acts.Act;
-	import org.tbyrne.compose.traits.AbstractTrait;
-	import org.tbyrne.composeLibrary.types.display2D.IRectangleTrait;
 	import org.tbyrne.core.EnterFrameHook;
 	
-	public class DisplayObjectBounds extends AbstractTrait implements IRectangleTrait
+	public class DisplayObjectBounds extends AbstractRectangleData
 	{
-		
-		/**
-		 * @inheritDoc
-		 */
-		public function get rectangleChanged():IAct{
-			return (_rectangleChanged || (_rectangleChanged = new Act()));
-		}
-		
-		/**
-		 * @inheritDoc
-		 */
-		public function get size2dChanged():IAct{
-			return (_size2dChanged || (_size2dChanged = new Act()));
-		}
-		
-		/**
-		 * @inheritDoc
-		 */
-		public function get position2dChanged():IAct{
-			return (_position2dChanged || (_position2dChanged = new Act()));
-		}
-		
-		protected var _position2dChanged:Act;
-		protected var _size2dChanged:Act;
-		protected var _rectangleChanged:Act;
-		
 		
 		
 		public function get displayObject():DisplayObject{
@@ -114,13 +84,11 @@ package org.tbyrne.composeLibrary.display2D
 				_x = x;
 				_y = y;
 				change = true;
-				if(_position2dChanged)_position2dChanged.perform(this);
 			}
 			if(_width!=width || _height!=height){
 				_width = width;
 				_height = height;
 				change = true;
-				if(_size2dChanged)_size2dChanged.perform(this);
 			}
 			if(change && _rectangleChanged)_rectangleChanged.perform(this);
 		}

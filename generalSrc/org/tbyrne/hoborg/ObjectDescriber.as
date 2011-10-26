@@ -48,7 +48,7 @@ package org.tbyrne.hoborg
 			if(desc)return desc;
 			
 			// else generate description
-			var typeInfo:XML = ReflectionUtils.describeType(object is String?String:object);
+			var typeInfo:XML = ReflectionUtils.describeType(object);
 			var objectType: Class = ReflectionUtils.getClass(object);
 			var properties:Array = [];
 			var members:XMLList = (typeInfo..metadata.(@name=="Property") as XMLList)

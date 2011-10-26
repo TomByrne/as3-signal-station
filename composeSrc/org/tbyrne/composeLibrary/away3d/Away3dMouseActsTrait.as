@@ -6,13 +6,14 @@ package org.tbyrne.composeLibrary.away3d
 	
 	import flash.utils.getTimer;
 	
+	import org.tbyrne.actInfo.IMouseActInfo;
+	import org.tbyrne.actInfo.MouseActInfo;
 	import org.tbyrne.compose.concerns.ITraitConcern;
 	import org.tbyrne.compose.concerns.TraitConcern;
 	import org.tbyrne.compose.traits.ITrait;
 	import org.tbyrne.composeLibrary.away3d.types.IChild3dTrait;
 	import org.tbyrne.composeLibrary.ui.AbstractMouseActsTraits;
-	import org.tbyrne.display.actInfo.IMouseActInfo;
-	import org.tbyrne.display.assets.nativeAssets.actInfo.MouseActInfo;
+	import org.tbyrne.utils.KeyTracker;
 	
 	public class Away3dMouseActsTrait extends AbstractMouseActsTraits 
 	{
@@ -117,7 +118,7 @@ package org.tbyrne.composeLibrary.away3d
 				
 				if(_isDragging){
 					_isDragging = false;
-					if(_mouseDragFinish)_mouseDragFinish.perform(this);
+					if(_mouseDragFinish)_mouseDragFinish.perform(this, new MouseActInfo(trait,false,false,false,0,0));
 				}
 			}
 			_mouseIsOver.booleanValue = false;
@@ -141,7 +142,7 @@ package org.tbyrne.composeLibrary.away3d
 		}
 		
 		private function createActInfo(event:MouseEvent3D):IMouseActInfo{
-			var ret:MouseActInfo = new MouseActInfo(null, event.altKey, event.ctrlKey, event.shiftKey);
+			var ret:MouseActInfo = new MouseActInfo(null, event.altKey, event.ctrlKey, event.shiftKey, event.screenX, event.screenY);
 			return ret;
 		}
 		
@@ -166,11 +167,11 @@ package org.tbyrne.composeLibrary.away3d
 				if(dist>_dragTreshold){
 					// start dragging
 					_isDragging = true;
-					if(_mouseDragStart)_mouseDragStart.perform(this);
+					if(_mouseDragStart)_mouseDragStart.perform(this, createActInfo(event));
 				}
 			}
 			if(_isDragging){
-				if(_mouseDrag)_mouseDrag.perform(this,xDist,yDist);
+				if(_mouseDrag)_mouseDrag.perform(this, createActInfo(event),xDist,yDist);
 				
 				_dragX = event.screenX;
 				_dragY = event.screenY;
@@ -187,13 +188,13 @@ package org.tbyrne.composeLibrary.away3d
 			
 			if(_isDragging){
 				_isDragging = false;
-				if(_mouseDragFinish)_mouseDragFinish.perform(this);
+				if(_mouseDragFinish)_mouseDragFinish.perform(this, createActInfo(event));
 			}else if(_mouseIsOver.booleanValue){
 				var timeDiff:int = getTimer()-_clickBegan;
 				if(timeDiff<_clickSpeedMS){
-					if(_mouseClick)_mouseClick.perform(this);
+					if(_mouseClick)_mouseClick.perform(this, createActInfo(event));
 				}else{
-					if(_mouseLongClick)_mouseLongClick.perform(this);
+					if(_mouseLongClick)_mouseLongClick.perform(this, createActInfo(event));
 				}
 			}
 		}

@@ -1,6 +1,6 @@
 package org.tbyrne.display.scrolling
 {
-	import org.tbyrne.display.actInfo.IMouseActInfo;
+	import org.tbyrne.actInfo.IMouseActInfo;
 	import org.tbyrne.display.assets.nativeTypes.IDisplayObject;
 	import org.tbyrne.display.assets.nativeTypes.IDisplayObjectContainer;
 	import org.tbyrne.display.assets.nativeTypes.IInteractiveObject;

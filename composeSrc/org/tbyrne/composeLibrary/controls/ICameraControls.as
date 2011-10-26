@@ -60,8 +60,29 @@ package org.tbyrne.composeLibrary.controls
 		function get rotZChanged():IAct;
 		function get rotZ():Number;
 		function set rotZ(value:Number):void;
+		/**
+		 * handler(from:ICameraControls)
+		 */
+		function get rotationChanged():IAct;
+		
+		
+		/**
+		 * handler(from:ICameraControls)
+		 */
+		function get sceneScaleChanged():IAct;
+		function get sceneScale():Number;
+		function set sceneScale(value:Number):void;
+		
+		
+		/**
+		 * handler(from:ICameraControls)
+		 */
+		function get positionOffsetChanged():IAct;
+		function get positionOffset():Number;
+		function set positionOffset(value:Number):void;
 		
 		function setPosition(x:Number, y:Number, z:Number):void;
 		function setRotation(x:Number, y:Number, z:Number):void;
+		
 	}
 }

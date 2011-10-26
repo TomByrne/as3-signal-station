@@ -55,7 +55,7 @@ package org.tbyrne.display.containers
 		
 		public function set selectedIndices(value: Array):void{
 			if(_selectedIndices!=value){
-				assessFactory();
+				if(isBound)assessFactory();
 				if(!_protoRenderer){
 					Log.error( "selectedIndices cannot be set without a renderer that implements ISelectableRenderer");
 				}

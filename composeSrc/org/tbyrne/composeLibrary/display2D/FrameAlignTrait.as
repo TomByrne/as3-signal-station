@@ -3,8 +3,8 @@ package org.tbyrne.composeLibrary.display2D
 	import flash.display.DisplayObject;
 	
 	import org.tbyrne.compose.traits.AbstractTrait;
-	import org.tbyrne.composeLibrary.types.display2D.IRectangleTrait;
 	import org.tbyrne.composeLibrary.types.draw.IFrameAwareTrait;
+	import org.tbyrne.geom.rect.IRectangleProvider;
 	import org.tbyrne.display.constants.Anchor;
 	
 	public class FrameAlignTrait extends AbstractTrait implements IFrameAwareTrait
@@ -51,10 +51,10 @@ package org.tbyrne.composeLibrary.display2D
 			}
 		}
 		
-		public function get bounds():IRectangleTrait{
+		public function get bounds():IRectangleProvider{
 			return _bounds;
 		}
-		public function set bounds(value:IRectangleTrait):void{
+		public function set bounds(value:IRectangleProvider):void{
 			if(_bounds!=value){
 				if(_bounds){
 					_bounds.rectangleChanged.removeHandler(onRectChanged);
@@ -67,7 +67,7 @@ package org.tbyrne.composeLibrary.display2D
 			}
 		}
 		
-		private var _bounds:IRectangleTrait;
+		private var _bounds:IRectangleProvider;
 		private var _anchor:String;
 		private var _display:DisplayObject;
 		private var _width:Number;
@@ -75,7 +75,7 @@ package org.tbyrne.composeLibrary.display2D
 		private var _offsetY:Number;
 		private var _offsetX:Number;
 		
-		public function FrameAlignTrait(display:DisplayObject=null, anchor:String=null, bounds:IRectangleTrait=null){
+		public function FrameAlignTrait(display:DisplayObject=null, anchor:String=null, bounds:IRectangleProvider=null){
 			super();
 			
 			this.display = display;
@@ -83,7 +83,7 @@ package org.tbyrne.composeLibrary.display2D
 			this.bounds = bounds;
 		}
 		
-		private function onRectChanged(from:IRectangleTrait):void{
+		private function onRectChanged(from:IRectangleProvider):void{
 			attemptAlign();
 		}
 		

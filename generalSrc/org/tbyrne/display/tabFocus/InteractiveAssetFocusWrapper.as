@@ -2,7 +2,7 @@ package org.tbyrne.display.tabFocus
 {
 	import flash.ui.Keyboard;
 	
-	import org.tbyrne.display.actInfo.IKeyActInfo;
+	import org.tbyrne.actInfo.IKeyActInfo;
 	import org.tbyrne.display.assets.nativeTypes.IInteractiveObject;
 	import org.tbyrne.display.assets.nativeTypes.IStage;
 	import org.tbyrne.display.assets.nativeTypes.ITextField;
