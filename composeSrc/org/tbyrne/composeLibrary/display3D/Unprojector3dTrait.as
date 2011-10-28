@@ -173,6 +173,7 @@ package org.tbyrne.composeLibrary.display3D
 					}
 				}else{
 					for(i=0; i<invalid2dList.length; ++i){
+						pos2d = invalid2dList[i];
 						//pos2d.setUnprojectedPoint(pos2d.x2d,pos2d.y2d,pos2d.cameraDistance);
 						unprojectToPlane(pos2d,_dummyVector,null,isFocalInf);
 						pos2d.setUnprojectedPoint(_dummyVector.x,_dummyVector.y,_dummyVector.z);
@@ -243,38 +244,6 @@ package org.tbyrne.composeLibrary.display3D
 				fillVector.z = pos2d.cameraDistance;
 			}
 		}
-		
-		/*protected function getCameraDistance(pos2d:I2dTo3dTrait):Number{
-			var planeTrans:IMatrix3dTrait = pos2d.planeTransform;
-			if(planeTrans){
-				var planeNormal:Vector3D = planeTrans.matrix3d.transformVector(UP_VECTOR);
-				//var cameraNormal:Vector3D = _matrix3dTrait.matrix3d.transformVector(UP_VECTOR);
-				
-				var z:Number = Math.sqrt(1-Math.sqrt(pos2d.x2d*pos2d.x2d + pos2d.y2d*pos2d.y2d));
-				var cameraNormal:Vector3D = new Vector3D(pos2d.x2d, pos2d.y2d, z);
-				
-				var dot:Number = planeNormal.dotProduct(cameraNormal);
-				if(dot==0){
-					// plane parallel to camera normal, no intersection
-					return pos2d.cameraDistance;
-				}else{
-					var vectorBetween:Vector3D;
-					var cameraPos:Vector3D = _matrix3dTrait.matrix3d.position;
-					var planePos:Vector3D = planeTrans.matrix3d.position;
-					vectorBetween = cameraPos.subtract(planePos);
-					var t:Number = planeNormal.dotProduct(vectorBetween)/dot;
-					
-					/* t is a fractional distance between our camera position and plane intersection,
-					because we're using a vector of length 1 (the transformed up vector), this fractional
-					length will also be in world units.*/
-					/*trace("getCameraDistance: "+t);
-					return t;
-				}
-				
-			}else{
-				return pos2d.cameraDistance;
-			}
-		}*/
 		
 		
 		protected function roundTo(number:Number, decimalPlace:int):Number{

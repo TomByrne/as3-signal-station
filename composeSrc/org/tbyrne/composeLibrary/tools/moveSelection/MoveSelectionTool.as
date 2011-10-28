@@ -75,7 +75,7 @@ package org.tbyrne.composeLibrary.tools.moveSelection
 			}
 		}
 		
-		private function getAct(selectable:ISelectable2dTrait, traitType:Class):ITrait{
+		private function getAct(selectable:ISelectable2dTrait, traitType:Class):*{
 			return (selectable as traitType) || selectable.item.getTrait(traitType);
 		}
 		
@@ -84,9 +84,9 @@ package org.tbyrne.composeLibrary.tools.moveSelection
 			from.mouseDragFinish.addHandler(onDragFinish);
 		}
 		
-		private function onDrag(from:IMouseActsTrait, byX:Number, byY:Number, info:IMouseActInfo):void{
+		private function onDrag(from:IMouseActsTrait, info:IMouseActInfo, byX:Number, byY:Number):void{
 			for each(var position2d:IPosition2dTrait in _positions){
-				position2d.setPosition2d(position2d.x + byX, position2d.y + byY);
+				position2d.setPosition2d(position2d.x2d + byX, position2d.y2d + byY);
 			}
 		}
 		

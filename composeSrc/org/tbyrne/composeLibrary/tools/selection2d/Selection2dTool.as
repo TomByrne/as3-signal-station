@@ -183,10 +183,18 @@ package org.tbyrne.composeLibrary.tools.selection2d
 		private function onMouseDragStart(from:IMouseActsTrait, actInfo:IMouseActInfo):void{
 			var retObj:Object = {};
 			_depthCollection.callOnTraits(checkHit,false,[actInfo,retObj]);
+			var hit:ISelectable2dTrait = retObj.hit;
 			if(!retObj.hit){
 				_openMarquee = true;
 				_marqueeProvider.setRectangle(actInfo.screenX, actInfo.screenY,0,0);
 				_mouseActsTrait.mouseDrag.addHandler(onMouseDrag);
+			}else{
+				if(_selection.indexOf(hit)!=1){
+					if(!_ctrlBoolean.booleanValue && !_shiftBoolean.booleanValue){
+						deselectAll();
+					}
+					select(hit);
+				}
 			}
 			_dragging = true;
 		}

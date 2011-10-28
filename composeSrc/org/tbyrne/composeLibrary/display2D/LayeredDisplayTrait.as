@@ -1,22 +1,15 @@
 package org.tbyrne.composeLibrary.display2D
 {
 	import flash.display.DisplayObject;
+	import flash.display.DisplayObjectContainer;
 	
 	import org.tbyrne.acting.actTypes.IAct;
 	import org.tbyrne.acting.acts.Act;
 	import org.tbyrne.compose.traits.AbstractTrait;
 	import org.tbyrne.composeLibrary.types.display2D.ILayeredDisplayTrait;
 	
-	public class LayeredDisplayTrait extends AbstractTrait implements ILayeredDisplayTrait
+	public class LayeredDisplayTrait extends DisplayObjectContainerTrait implements ILayeredDisplayTrait
 	{
-		
-		/**
-		 * @inheritDoc
-		 */
-		public function get displayObjectChanged():IAct{
-			return (_displayObjectChanged || (_displayObjectChanged = new Act()));
-		}
-		
 		
 		/**
 		 * @inheritDoc
@@ -74,15 +67,10 @@ package org.tbyrne.composeLibrary.display2D
 		protected var _moveToTop:Act;
 		protected var _moveDown:Act;
 		protected var _moveUp:Act;
-		protected var _displayObjectChanged:Act;
 		
 		
 		public function get layerId():String{
 			return _layerId;
-		}
-		
-		public function get displayObject():DisplayObject{
-			return _display;
 		}
 		
 		public function get visible():Boolean{
@@ -97,19 +85,17 @@ package org.tbyrne.composeLibrary.display2D
 		}
 		
 		protected var _visible:Boolean = true;
-		protected var _display:DisplayObject;
 		protected var _layerId:String;
 		
 		
-		public function LayeredDisplayTrait(display:DisplayObject=null, layerId:String=null){
-			super();
+		public function LayeredDisplayTrait(display:DisplayObjectContainer=null, layerId:String=null){
+			super(display);
 			_layerId = layerId;
-			_display = display;
 			
 			checkVisibility();
 		}
 		protected function checkVisibility():void{
-			_display.visible = _visible;
+			_container.visible = _visible;
 		}
 	}
 }

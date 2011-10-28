@@ -6,9 +6,12 @@ package org.tbyrne.composeLibrary.factory
 	import org.tbyrne.compose.core.ComposeItem;
 	import org.tbyrne.compose.traits.ITrait;
 	import org.tbyrne.factories.IInstanceFactory;
+	import org.tbyrne.hoborg.ObjectPool;
 
 	public class ComposeItemFactory implements IInstanceFactory
 	{
+		private static var _itemPool:ObjectPool;
+		private static var _groupPool:ObjectPool;
 		
 		public function get useGroup():Boolean{
 			return _useGroup;
@@ -22,6 +25,7 @@ package org.tbyrne.composeLibrary.factory
 		private var _useGroup:Boolean;
 		private var _traitTypes:Vector.<Class> = new Vector.<Class>();
 		private var _traitFactories:Vector.<IInstanceFactory> = new Vector.<IInstanceFactory>();
+		private var _childFactories:Vector.<IInstanceFactory> = new Vector.<IInstanceFactory>();
 		
 		
 		public function ComposeItemFactory(useGroup:Boolean=false, traitTypes:*=null){
@@ -78,15 +82,48 @@ package org.tbyrne.composeLibrary.factory
 		
 		
 		
+		public function addChildFactories(childFactories:*):void{
+			for each(var childFactory:IInstanceFactory in childFactories){
+				addChildFactory(childFactory)
+			}
+		}
+		public function removeChildFactories(childFactories:*):void{
+			for each(var childFactory:IInstanceFactory in childFactories){
+				removeChildFactory(childFactory);
+			}
+		}
+		public function addChildFactory(childFactory:IInstanceFactory):void{
+			if(_childFactories.indexOf(childFactory)==-1){
+				_childFactories.push(childFactory);
+			}
+		}
+		public function removeChildFactory(childFactory:IInstanceFactory):void{
+			var index:int = _childFactories.indexOf(childFactory);
+			if(index!=-1){
+				_childFactories.splice(index,1);
+			}
+		}
+		
+		
+		
 		
 		public function createInstance():*{
 			var instance:ComposeItem;
 			if(_useGroup){
-				instance = new ComposeGroup();
+				if(_groupPool){
+					instance = _groupPool.takeObject();
+				}else{
+					instance = new ComposeGroup();
+				}
 			}else{
-				instance = new ComposeItem();
+				if(_itemPool){
+					instance = _itemPool.takeObject();
+				}else{
+					instance = new ComposeItem();
+				}
 			}
 			initialiseInstance(instance);
+			return instance;
 		}
 		public function initialiseInstance(object:*):void{
 			var trait:ITrait;
@@ -100,15 +137,36 @@ package org.tbyrne.composeLibrary.factory
 				trait = traitFactory.createInstance();
 				instance.addTrait(trait);
 			}
+			if(_useGroup){
+				var group:ComposeGroup = (object as ComposeGroup);
+				
+				for each(var childFactory:IInstanceFactory in _childFactories){
+					var item:ComposeItem = childFactory.createInstance();
+					group.addItem(item);
+				}
+			}
 		}
 		
 		
 		
 		public function returnInstance(object:*):void{
-			
+			deinitialiseInstance(object);
+			var group:ComposeGroup = (object as ComposeGroup);
+			if(group){
+				if(!_groupPool)_groupPool = new ObjectPool(ComposeGroup);
+				_groupPool.releaseObject(object);
+			}else{
+				if(!_itemPool)_itemPool = new ObjectPool(ComposeItem);
+				_itemPool.releaseObject(object);
+			}
 		}
 		public function deinitialiseInstance(object:*):void{
-			
+			var instance:ComposeItem = (object as ComposeItem);
+			instance.removeAllTraits();
+			var group:ComposeGroup = (object as ComposeGroup);
+			if(group){
+				group.removeAllItem();
+			}
 		}
 		
 		

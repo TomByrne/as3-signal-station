@@ -12,10 +12,13 @@ package org.tbyrne.composeLibrary.away3d
 	import away3d.materials.MaterialBase;
 	import away3d.primitives.Cube;
 	
+	import org.tbyrne.acting.actTypes.IAct;
+	import org.tbyrne.acting.acts.Act;
 	import org.tbyrne.binding.Binder;
 	import org.tbyrne.collections.IndexedList;
 	import org.tbyrne.compose.concerns.ITraitConcern;
 	import org.tbyrne.compose.concerns.TraitConcern;
+	import org.tbyrne.compose.traits.AbstractTrait;
 	import org.tbyrne.compose.traits.ITrait;
 	import org.tbyrne.composeLibrary.away3d.types.IChild3dTrait;
 	import org.tbyrne.composeLibrary.away3d.types.IContainer3dTrait;
@@ -28,9 +31,20 @@ package org.tbyrne.composeLibrary.away3d
 	import org.tbyrne.data.dataTypes.INumberProvider;
 	import org.tbyrne.display.validation.ValidationFlag;
 	
-	public class Away3dDisplay extends LayeredDisplayTrait implements IFrameAwareTrait, IDrawAwareTrait
+	public class Away3dDisplay extends AbstractTrait implements IFrameAwareTrait, IDrawAwareTrait
 	{
 		private static const RADS_TO_DEGS:Number = 180/Math.PI;
+		
+		
+		/**
+		 * handler(from:Away3dDisplay)
+		 */
+		public function get cameraChanged():IAct{
+			return (_cameraChanged || (_cameraChanged = new Act()));
+		}
+		
+		protected var _cameraChanged:Act;
+		
 		
 		public function get matrix3dTrait():IMatrix3dTrait{
 			return _matrix3dTrait;
@@ -158,7 +172,7 @@ package org.tbyrne.composeLibrary.away3d
 		private var _perspectiveLens:PerspectiveLens;
 		private var _orthogonalLens:OrthographicLens;
 		
-		public function Away3dDisplay(layerId:String=null)
+		public function Away3dDisplay()
 		{
 			_view = new View3D();
 			_view.antiAlias = 2;
@@ -184,7 +198,7 @@ package org.tbyrne.composeLibrary.away3d
 			_orthogonalLens.far = 30000;
 			_camera.lens = _orthogonalLens;
 			
-			super(_view, layerId);
+			super();
 			
 			/*var material:MaterialBase = new ColorMaterial(0xff0000);
 			var cube:Cube = new Cube(material,100,100,100);
@@ -269,6 +283,7 @@ package org.tbyrne.composeLibrary.away3d
 		}
 		protected function commitMatrix():void{
 			_cameraContainer.transform = _matrix3dTrait?_matrix3dTrait.matrix3d:null;
+			if(_cameraChanged)_cameraChanged.perform(this);
 		}
 		protected function commitFocalLength():void{
 			var focalLength:Number = _focalLength.numericalValue;
@@ -278,6 +293,7 @@ package org.tbyrne.composeLibrary.away3d
 				_perspectiveLens.fieldOfView = (2*Math.atan((_height/2) / focalLength))*RADS_TO_DEGS;
 				_camera.lens = _perspectiveLens;
 			}
+			if(_cameraChanged)_cameraChanged.perform(this);
 		}
 		
 		private function onSceneScaleChanged(from:INumberProvider):void

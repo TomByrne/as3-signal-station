@@ -33,9 +33,10 @@ package org.tbyrne.compose.concerns
 		private var _unlessHasTraits:Vector.<Class>;
 		
 		
-		public function TraitConcern(siblings:Boolean, descendants:Boolean, interestedTraitType:Class, stopDescendingAt:Array=null){
+		public function TraitConcern(siblings:Boolean, descendants:Boolean, interestedTraitType:Class, stopDescendingAt:Array=null, unlessHasTraits:Array=null){
 			super(siblings, descendants, interestedTraitType);
 			if(stopDescendingAt!=null)this.stopDescendingAt = Vector.<Class>(stopDescendingAt);
+			if(unlessHasTraits!=null)this.unlessHasTraits = Vector.<Class>(unlessHasTraits);
 		}
 		
 		

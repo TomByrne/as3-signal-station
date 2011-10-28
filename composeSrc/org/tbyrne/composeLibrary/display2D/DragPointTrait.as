@@ -45,7 +45,7 @@ package org.tbyrne.composeLibrary.display2D
 		
 		protected function onDrag(from:IMouseActsTrait, byX:Number, byY:Number):void{
 			for each(var point:IPosition2dTrait in _points.list){
-				point.setPosition2d(point.x + byX, point.y + byY);
+				point.setPosition2d(point.x2d + byX, point.y2d + byY);
 			}
 		}
 		

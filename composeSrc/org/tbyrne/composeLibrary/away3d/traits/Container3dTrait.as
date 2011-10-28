@@ -17,11 +17,15 @@ package org.tbyrne.composeLibrary.away3d.traits
 		}
 		override protected function onConcernedTraitAdded(from:ITraitConcern, trait:ITrait):void{
 			var castTrait:IChild3dTrait = (trait as IChild3dTrait);
+			if(castTrait==this)return;
+			
 			_child.addChild(castTrait.object3d);
 		}
 		
 		override protected function onConcernedTraitRemoved(from:ITraitConcern, trait:ITrait):void{
 			var castTrait:IChild3dTrait = (trait as IChild3dTrait);
+			if(castTrait==this)return;
+			
 			if(_child.contains(castTrait.object3d))_child.removeChild(castTrait.object3d);
 		}
 	}

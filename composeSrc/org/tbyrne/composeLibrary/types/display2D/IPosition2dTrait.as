@@ -9,8 +9,8 @@ package org.tbyrne.composeLibrary.types.display2D
 		 * handler(from:IPosition2dTrait)
 		 */
 		function get position2dChanged():IAct;
-		function get x():Number;
-		function get y():Number;
+		function get x2d():Number;
+		function get y2d():Number;
 		function setPosition2d(x:Number, y:Number):void;
 	}
 }

@@ -64,6 +64,11 @@ package org.tbyrne.compose.core
 			
 			item.setRoot(null);
 		}
+		public function removeAllItem():void{
+			while( _children.list.length ){
+				removeItem(_children.list[0]);
+			}
+		}
 		ComposeNamespace function addChildTrait(trait:ITrait):void{
 			_descendantTraits.addTrait(trait);
 			if(_parentItem)_parentItem.addChildTrait(trait);
