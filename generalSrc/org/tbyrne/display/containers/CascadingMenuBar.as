@@ -9,8 +9,8 @@ package org.tbyrne.display.containers
 	import org.tbyrne.display.constants.Direction;
 	import org.tbyrne.display.controls.MenuBarRenderer;
 	import org.tbyrne.display.core.ILayoutView;
-	import org.tbyrne.instanceFactory.IInstanceFactory;
-	import org.tbyrne.instanceFactory.SimpleInstanceFactory;
+	import org.tbyrne.factories.IInstanceFactory;
+	import org.tbyrne.factories.InstanceFactory;
 	
 	use namespace DisplayNamespace;
 	
@@ -48,7 +48,7 @@ package org.tbyrne.display.containers
 		private var _clickAutoClose:Boolean;
 		
 		protected var _assumedListAsset:IDisplayObject;
-		protected var _assumedListFactory:SimpleInstanceFactory;
+		protected var _assumedListFactory:InstanceFactory;
 		protected var _listFactory:IInstanceFactory;
 		protected var _currListFactory:IInstanceFactory;
 		protected var _rootWatcher:ListWatcher;
@@ -82,7 +82,7 @@ package org.tbyrne.display.containers
 				_assumedListAsset = null;
 				
 				if(_assumedListFactory){
-					_assumedListFactory.instanceProperties = null;
+					_assumedListFactory.objectProps = null;
 					_assumedListFactory = null;
 					assessListFactory();
 				}
@@ -107,11 +107,10 @@ package org.tbyrne.display.containers
 				updateListFactory(factory);
 			}
 		}
-		protected function createAssumedListFactory(asset:IDisplayObject):SimpleInstanceFactory{
-			var factory:SimpleInstanceFactory = new SimpleInstanceFactory(CascadingListBox);
+		protected function createAssumedListFactory(asset:IDisplayObject):InstanceFactory{
+			var factory:InstanceFactory = new InstanceFactory(CascadingListBox);
 			factory.useChildFactories = true;
-			factory.instanceProperties = new Dictionary();
-			factory.instanceProperties["asset"] = asset.getCloneFactory();
+			factory.objectProps = {asset:asset.getCloneFactory()};
 			return factory;
 		}
 		protected function updateListFactory(factory:IInstanceFactory):void{
@@ -126,9 +125,9 @@ package org.tbyrne.display.containers
 }
 import flash.utils.Dictionary;
 
+import org.tbyrne.actInfo.IMouseActInfo;
 import org.tbyrne.data.controls.IControlData;
 import org.tbyrne.display.DisplayNamespace;
-import org.tbyrne.actInfo.IMouseActInfo;
 import org.tbyrne.display.assets.nativeTypes.IDisplayObject;
 import org.tbyrne.display.assets.nativeTypes.IDisplayObjectContainer;
 import org.tbyrne.display.assets.nativeTypes.IInteractiveObject;
@@ -143,7 +142,7 @@ import org.tbyrne.display.core.ILayoutView;
 import org.tbyrne.display.layout.ILayout;
 import org.tbyrne.display.layout.ILayoutSubject;
 import org.tbyrne.display.scrolling.IScrollMetrics;
-import org.tbyrne.instanceFactory.IInstanceFactory;
+import org.tbyrne.factories.IInstanceFactory;
 
 use namespace DisplayNamespace;
 class ListWatcher{

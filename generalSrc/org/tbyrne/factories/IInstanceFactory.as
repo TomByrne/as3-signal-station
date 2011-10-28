@@ -1,4 +1,4 @@
-package org.tbyrne.instanceFactory
+package org.tbyrne.factories
 {
 	import org.tbyrne.acting.actTypes.IAct;
 
@@ -6,14 +6,13 @@ package org.tbyrne.instanceFactory
 	{
 		function createInstance():*;
 		function initialiseInstance(object:*):void;
+		
+		function returnInstance(object:*):void;
+		function deinitialiseInstance(object:*):void;
 		/**
 		 * Should return true if the object supplied can be repurposed
 		 * (using initialiseInstance()) to match this factories output.
 		 */
 		function matchesType(object:*):Boolean;
-		/**
-		 * handler(instanceFactory:IInstanceFactory, instance:*)
-		 */
-		function get itemCreatedAct():IAct;
 	}
 }

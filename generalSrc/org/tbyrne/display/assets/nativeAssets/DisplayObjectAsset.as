@@ -14,7 +14,7 @@ package org.tbyrne.display.assets.nativeAssets {
 	import org.tbyrne.display.assets.nativeTypes.IDisplayObject;
 	import org.tbyrne.display.assets.nativeTypes.IDisplayObjectContainer;
 	import org.tbyrne.display.assets.nativeTypes.IStage;
-	import org.tbyrne.instanceFactory.*;
+	import org.tbyrne.factories.*;
 	
 	
 	public class DisplayObjectAsset extends NativeAsset implements IDisplayObject, INativeAsset {

@@ -4,7 +4,7 @@ package org.tbyrne.display.assets.schema
 	import org.tbyrne.display.assets.assetTypes.IAsset;
 	import org.tbyrne.display.assets.nativeTypes.*;
 	import org.tbyrne.display.assets.schemaTypes.*;
-	import org.tbyrne.instanceFactory.IInstanceFactory;
+	import org.tbyrne.factories.IInstanceFactory;
 
 	public class AbstractSchemaAssetFactory implements IAssetFactory
 	{
@@ -91,7 +91,7 @@ import org.tbyrne.display.assets.assetTypes.IAsset;
 import org.tbyrne.display.assets.schema.AbstractSchemaAssetFactory;
 import org.tbyrne.display.assets.schema.AbstractSchemaBasedAsset;
 import org.tbyrne.display.assets.schemaTypes.IAssetSchema;
-import org.tbyrne.instanceFactory.IInstanceFactory;
+import org.tbyrne.factories.IInstanceFactory;
 
 class CloneAssetFactory implements IInstanceFactory{
 	
@@ -105,7 +105,6 @@ class CloneAssetFactory implements IInstanceFactory{
 	
 	public function createInstance():*{
 		var ret:IAsset = factory.createAssetFromSchema(schema);
-		if(_itemCreatedAct)_itemCreatedAct.perform(this,ret);
 		return ret;
 	}
 	public function initialiseInstance(object:*):void{
@@ -117,14 +116,11 @@ class CloneAssetFactory implements IInstanceFactory{
 		return (cast && cast.schema==schema);
 	}
 	
-	
-	/**
-	 * @inheritDoc
-	 */
-	public function get itemCreatedAct():IAct{
-		if(!_itemCreatedAct)_itemCreatedAct = new Act();
-		return _itemCreatedAct;
+	public function returnInstance(object:*):void{
+		deinitialiseInstance(object);
 	}
-	
-	protected var _itemCreatedAct:Act;
+	public function deinitialiseInstance(object:*):void{
+		var cast:AbstractSchemaBasedAsset = (object as AbstractSchemaBasedAsset);
+		cast.schema = null;
+	}
 }

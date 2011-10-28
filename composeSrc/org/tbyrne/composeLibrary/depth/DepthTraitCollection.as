@@ -84,7 +84,7 @@ package org.tbyrne.composeLibrary.depth
 			if(ascend){
 				for(i=0; i<_sortedTraits.length; ++i){
 					params[0] = i;
-					params[0] = _sortedTraits[i];
+					params[1] = _sortedTraits[i];
 					if(func.apply(null,params)){
 						return;
 					}
@@ -92,7 +92,7 @@ package org.tbyrne.composeLibrary.depth
 			}else{
 				for(i=_sortedTraits.length-1; i>=0; --i){
 					params[0] = i;
-					params[0] = _sortedTraits[i];
+					params[1] = _sortedTraits[i];
 					if(func.apply(null,params)){
 						return;
 					}

@@ -128,6 +128,10 @@ package org.tbyrne.composeLibrary.away3d
 			}
 		}
 		
+		public function get view3D():View3D{
+			return _view;
+		}
+		
 		private var _sceneScale:INumberProvider;
 		private var _cameraZOffset:INumberProvider;
 		private var _backgroundAlpha:INumberProvider;
@@ -177,15 +181,16 @@ package org.tbyrne.composeLibrary.away3d
 			//_camera.zoom = 1;
 			_perspectiveLens = _camera.lens as PerspectiveLens;
 			_orthogonalLens = new OrthographicLens();
+			_orthogonalLens.far = 30000;
 			_camera.lens = _orthogonalLens;
 			
 			super(_view, layerId);
 			
-			var material:MaterialBase = new ColorMaterial(0xff0000);
+			/*var material:MaterialBase = new ColorMaterial(0xff0000);
 			var cube:Cube = new Cube(material,100,100,100);
 			var cont:ObjectContainer3D = new ObjectContainer3D();
 			cont.addChild(cube);
-			_scene.addChild(cont);
+			_scene.addChild(cont);*/
 			
 			
 			_focalLengthFlag = new ValidationFlag(commitFocalLength,false);

@@ -1,7 +1,7 @@
 package org.tbyrne.display.containers
 {
 	import org.tbyrne.display.assets.nativeTypes.IDisplayObject;
-	import org.tbyrne.instanceFactory.IInstanceFactory;
+	import org.tbyrne.factories.IInstanceFactory;
 	
 	public class ListBox extends AbstractSelectableList
 	{

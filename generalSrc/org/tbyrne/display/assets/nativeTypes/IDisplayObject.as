@@ -8,7 +8,7 @@ package org.tbyrne.display.assets.nativeTypes
 	
 	import org.tbyrne.acting.actTypes.IAct;
 	import org.tbyrne.display.assets.assetTypes.IBaseDisplayAsset;
-	import org.tbyrne.instanceFactory.IInstanceFactory;
+	import org.tbyrne.factories.IInstanceFactory;
 
 	public interface IDisplayObject extends IBaseDisplayAsset
 	{

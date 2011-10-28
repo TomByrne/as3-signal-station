@@ -1,6 +1,6 @@
 package org.tbyrne.actLibrary.display.visualSockets.mappers
 {
-	import org.tbyrne.instanceFactory.IInstanceFactory;
+	import org.tbyrne.factories.IInstanceFactory;
 	import org.tbyrne.actLibrary.display.visualSockets.plugs.IPlugDisplay;
 	
 	public class NullPlugMapper extends AbstractPlugMapper

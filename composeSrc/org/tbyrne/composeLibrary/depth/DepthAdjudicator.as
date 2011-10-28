@@ -12,7 +12,7 @@ package org.tbyrne.composeLibrary.depth
 			var ret:Function = function(trait:ITrait):Number{
 				return trait[propNameCopy];
 			}
-			return null;
+			return ret;
 		}
 		
 		

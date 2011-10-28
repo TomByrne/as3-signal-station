@@ -9,7 +9,7 @@ package org.tbyrne.actLibrary.display.visualSockets.mappers
 	import org.tbyrne.actLibrary.external.siteStream.acts.ResolvePathsAct;
 	import org.tbyrne.acting.universal.reactions.MethodReaction;
 	import org.tbyrne.acting.universal.rules.ActInstanceRule;
-	import org.tbyrne.instanceFactory.IInstanceFactory;
+	import org.tbyrne.factories.IInstanceFactory;
 	
 	public class SiteStreamPlugMapper extends UniversalActorHelper implements IPlugMapper
 	{

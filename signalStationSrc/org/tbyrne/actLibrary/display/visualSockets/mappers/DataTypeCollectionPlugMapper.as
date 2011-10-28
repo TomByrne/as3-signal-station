@@ -2,7 +2,7 @@ package org.tbyrne.actLibrary.display.visualSockets.mappers
 {
 	import flash.utils.Dictionary;
 	
-	import org.tbyrne.instanceFactory.IInstanceFactory;
+	import org.tbyrne.factories.IInstanceFactory;
 	import org.tbyrne.actLibrary.display.visualSockets.plugs.IPlugDisplay;
 	
 	public class DataTypeCollectionPlugMapper extends DataTypePlugMapper

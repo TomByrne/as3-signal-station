@@ -186,15 +186,11 @@ package org.tbyrne.composeLibrary.display3D
 			if(_matrix3dChanged)_matrix3dChanged.perform(this);
 		}
 		private function compileMatrix():void{
-			var v3:Vector.<Vector3D> = new Vector.<Vector3D>(3);
-			v3[0] = new Vector3D(_posX,_posY,_posZ);
-			v3[1] = new Vector3D(0,0,0);
-			v3[2] = new Vector3D(1,1,1);
-			_matrix3d.recompose(v3)
+			_matrix3d.identity()
 			_matrix3d.appendRotation( _rotX, Vector3D.X_AXIS );
 			_matrix3d.appendRotation( _rotY, Vector3D.Y_AXIS );
 			_matrix3d.appendRotation( _rotZ, Vector3D.Z_AXIS );
-			
+			_matrix3d.appendTranslation(_posX,_posY,_posZ);
 		}
 		private function createInvMatrix():void{
 			_matrixFlag.validate();

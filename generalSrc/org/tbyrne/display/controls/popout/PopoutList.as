@@ -11,7 +11,7 @@ package org.tbyrne.display.controls.popout {
 	import org.tbyrne.display.containers.ListBox;
 	import org.tbyrne.display.controls.Control;
 	import org.tbyrne.display.layout.ILayoutSubject;
-	import org.tbyrne.instanceFactory.IInstanceFactory;
+	import org.tbyrne.factories.IInstanceFactory;
 	
 	/**
 	 * The PopoutList class forms the base functionality for both DropDownLists

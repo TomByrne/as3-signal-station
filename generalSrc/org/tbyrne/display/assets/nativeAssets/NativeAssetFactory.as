@@ -8,7 +8,7 @@ package org.tbyrne.display.assets.nativeAssets
 	import org.tbyrne.display.assets.*;
 	import org.tbyrne.display.assets.assetTypes.IAsset;
 	import org.tbyrne.display.assets.nativeTypes.*;
-	import org.tbyrne.instanceFactory.*;
+	import org.tbyrne.factories.*;
 
 	public class NativeAssetFactory implements IAssetFactory
 	{
@@ -128,24 +128,23 @@ package org.tbyrne.display.assets.nativeAssets
 		}
 		internal function getCloneFactory(from:DisplayObjectAsset):IInstanceFactory{
 			if(!bundles)init();
-			var ret:MultiInstanceFactory = new MultiInstanceFactory(getBundleByAsset(from).assetClass);
-			
-			var earlyProps:Dictionary = new Dictionary();
-			earlyProps["factory"] = this;
-			ret.addProperties(earlyProps);
 			
 			var displayClass:Class = from.displayObject["constructor"];
 			CONFIG::debug{
 				checkFactoryType(displayClass);
 			}
+			
+			// nesting the factories makes sure that the factory prop gets set first
+			
+			var initFact:InstanceFactory = new InstanceFactory(getBundleByAsset(from).assetClass,{factory:this});
+			
 			var lateProps:Dictionary = new Dictionary();
-			lateProps["displayObject"] = new MultiInstanceFactory(displayClass);
+			lateProps["displayObject"] = new InstanceFactory(displayClass);
 			lateProps["pixelSnapping"] = pixelSnapping;
 			lateProps["noFilters"] = noFilters;
-			ret.addProperties(lateProps);
+			var proxyFact:ProxyInstanceFactory = new ProxyInstanceFactory(initFact,lateProps,true);
 			
-			ret.useChildFactories = true;
-			return ret;
+			return proxyFact;
 		}
 		
 		

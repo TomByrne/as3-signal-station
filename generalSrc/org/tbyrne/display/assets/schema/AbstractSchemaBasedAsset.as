@@ -3,7 +3,7 @@ package org.tbyrne.display.assets.schema
 	import org.tbyrne.display.assets.AbstractAsset;
 	import org.tbyrne.display.assets.IAssetFactory;
 	import org.tbyrne.display.assets.schemaTypes.IAssetSchema;
-	import org.tbyrne.instanceFactory.IInstanceFactory;
+	import org.tbyrne.factories.IInstanceFactory;
 
 	/**
 	 * This serves as a super-class for all schema-based assets.

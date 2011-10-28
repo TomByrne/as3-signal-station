@@ -8,14 +8,17 @@ package org.tbyrne.composeLibrary.tools.selection2d
 	import org.tbyrne.acting.acts.Act;
 	import org.tbyrne.compose.concerns.ITraitConcern;
 	import org.tbyrne.compose.concerns.TraitConcern;
+	import org.tbyrne.compose.core.ComposeItem;
 	import org.tbyrne.compose.traits.AbstractTrait;
 	import org.tbyrne.compose.traits.ITrait;
 	import org.tbyrne.composeLibrary.controls.ISelectionControls;
 	import org.tbyrne.composeLibrary.depth.DepthTraitCollection;
 	import org.tbyrne.composeLibrary.depth.IDepthAdjudicator;
 	import org.tbyrne.composeLibrary.depth.IDepthAdjudicatorTrait;
+	import org.tbyrne.composeLibrary.types.display2D.IHitTestTrait;
 	import org.tbyrne.composeLibrary.types.ui.IKeyActsTrait;
 	import org.tbyrne.composeLibrary.types.ui.IMouseActsTrait;
+	import org.tbyrne.data.core.BooleanData;
 	import org.tbyrne.data.core.ValueData;
 	import org.tbyrne.data.dataTypes.IBooleanProvider;
 	import org.tbyrne.data.dataTypes.IValueProvider;
@@ -23,7 +26,7 @@ package org.tbyrne.composeLibrary.tools.selection2d
 	import org.tbyrne.geom.rect.IRectangleProvider;
 	import org.tbyrne.geom.rect.RectangleData;
 	
-	public class Selection2dTool extends AbstractTrait implements ISelectionControls
+	public class Selection2dTool extends AbstractTrait implements ISelectorTrait
 	{
 		
 		/**
@@ -66,10 +69,17 @@ package org.tbyrne.composeLibrary.tools.selection2d
 		private var _ctrlBoolean:IBooleanProvider;
 		private var _shiftBoolean:IBooleanProvider;
 		
+		private var _mouseActsTrait:IMouseActsTrait;
+		private var _hitTesters:Vector.<IHitTestTrait> = new Vector.<IHitTestTrait>();
+		
 		private var _marqueeProvider:RectangleData;
 		
 		private var _selection:Vector.<ISelectable2dTrait> = new Vector.<ISelectable2dTrait>();
 		private var _interested:Vector.<ISelectable2dTrait> = new Vector.<ISelectable2dTrait>();
+		
+		private var _openMarquee:Boolean;
+		private var _dragging:Boolean;
+		private var _isOver:ISelectable2dTrait;
 		
 		public function Selection2dTool()
 		{
@@ -81,19 +91,20 @@ package org.tbyrne.composeLibrary.tools.selection2d
 			addConcern(new TraitConcern(true,false,IDepthAdjudicatorTrait));
 			addConcern(new TraitConcern(true,false,IMouseActsTrait));
 			addConcern(new TraitConcern(true,false,IKeyActsTrait));
+			addConcern(new TraitConcern(true,false,IHitTestTrait));
 		}
 		override protected function onConcernedTraitAdded(from:ITraitConcern, trait:ITrait):void{
 			var mouseActsTrait:IMouseActsTrait;
 			var keyActsTrait:IKeyActsTrait;
 			var depthAdjudicatorTrait:IDepthAdjudicatorTrait;
+			var hitTestTrait:IHitTestTrait;
 			
 			if(mouseActsTrait = trait as IMouseActsTrait){
-				
-				mouseActsTrait.mouseClick.addHandler(onMouseClicked);
-				
-				mouseActsTrait.mouseDragStart.addHandler(onMouseDragStart);
-				mouseActsTrait.mouseDrag.addHandler(onMouseDrag);
-				mouseActsTrait.mouseDragFinish.addHandler(onMouseDragFinish);
+				_mouseActsTrait = mouseActsTrait;
+				_mouseActsTrait.mouseClick.addHandler(onMouseClicked);
+				_mouseActsTrait.mouseMoved.addHandler(onMouseMoved);
+				_mouseActsTrait.mouseDragStart.addHandler(onMouseDragStart);
+				_mouseActsTrait.mouseDragFinish.addHandler(onMouseDragFinish);
 				
 			}else if(keyActsTrait = trait as IKeyActsTrait){
 				
@@ -103,6 +114,8 @@ package org.tbyrne.composeLibrary.tools.selection2d
 				if(!depthAdjudicator){
 					depthAdjudicator = depthAdjudicatorTrait.depthAdjudicator;
 				}
+			}else if(hitTestTrait = trait as IHitTestTrait){
+				_hitTesters.push(hitTestTrait);
 			}else{
 				_depthCollection.addTrait(trait);
 			}
@@ -111,14 +124,20 @@ package org.tbyrne.composeLibrary.tools.selection2d
 			var mouseActsTrait:IMouseActsTrait;
 			var keyActsTrait:IKeyActsTrait;
 			var depthAdjudicatorTrait:IDepthAdjudicatorTrait;
+			var hitTestTrait:IHitTestTrait;
 			
-			if(mouseActsTrait = trait as IMouseActsTrait){
+			if(_mouseActsTrait = trait as IMouseActsTrait){
+				_dragging = false;
+				if(_openMarquee){
+					_openMarquee = false;
+					_mouseActsTrait.mouseDrag.removeHandler(onMouseDrag);
+				}
 				
-				mouseActsTrait.mouseClick.removeHandler(onMouseClicked);
-				
-				mouseActsTrait.mouseDragStart.removeHandler(onMouseDragStart);
-				mouseActsTrait.mouseDrag.removeHandler(onMouseDrag);
-				mouseActsTrait.mouseDragFinish.removeHandler(onMouseDragFinish);
+				_mouseActsTrait.mouseClick.removeHandler(onMouseClicked);
+				_mouseActsTrait.mouseMoved.removeHandler(onMouseMoved);
+				_mouseActsTrait.mouseDragStart.removeHandler(onMouseDragStart);
+				_mouseActsTrait.mouseDragFinish.removeHandler(onMouseDragFinish);
+				_mouseActsTrait = null;
 				
 			}else if(keyActsTrait = trait as IKeyActsTrait){
 				_ctrlBoolean = null;
@@ -127,8 +146,28 @@ package org.tbyrne.composeLibrary.tools.selection2d
 				if(depthAdjudicator == depthAdjudicatorTrait.depthAdjudicator){
 					depthAdjudicator = null;
 				}
+			}else if(hitTestTrait = trait as IHitTestTrait){
+				var index:int = _hitTesters.indexOf(hitTestTrait);
+				_hitTesters.splice(index,1);
 			}else{
 				_depthCollection.removeTrait(trait);
+			}
+		}
+		
+		private function onMouseMoved(from:IMouseActsTrait, actInfo:IMouseActInfo):void
+		{
+			if(!_dragging){
+				var retObj:Object = {};
+				_depthCollection.callOnTraits(checkHit,false,[actInfo,retObj]);
+				if(_isOver!=retObj.hit){
+					if(_isOver){
+						_isOver.setInterested(false);
+					}
+					_isOver = retObj.hit;
+					if(_isOver){
+						_isOver.setInterested(true);
+					}
+				}
 			}
 		}
 		
@@ -142,8 +181,14 @@ package org.tbyrne.composeLibrary.tools.selection2d
 		}
 		
 		private function onMouseDragStart(from:IMouseActsTrait, actInfo:IMouseActInfo):void{
-			_marqueeProvider.setRectangle(actInfo.screenX, actInfo.screenY,0,0);
-			
+			var retObj:Object = {};
+			_depthCollection.callOnTraits(checkHit,false,[actInfo,retObj]);
+			if(!retObj.hit){
+				_openMarquee = true;
+				_marqueeProvider.setRectangle(actInfo.screenX, actInfo.screenY,0,0);
+				_mouseActsTrait.mouseDrag.addHandler(onMouseDrag);
+			}
+			_dragging = true;
 		}
 		
 		private function onMouseDrag(from:IMouseActsTrait, actInfo:IMouseActInfo, byX:Number, byY:Number):void{
@@ -154,19 +199,24 @@ package org.tbyrne.composeLibrary.tools.selection2d
 		}
 		
 		private function onMouseDragFinish(from:IMouseActsTrait, actInfo:IMouseActInfo):void{
-			_marqueeProvider.setRectangle(NaN,NaN,NaN,NaN);
-			
-			if(!_ctrlBoolean.booleanValue && !_shiftBoolean.booleanValue){
-				deselectAll();
-			}
-			if(_interested.length){
-				for each(var trait:ISelectable2dTrait in _interested){
-					if(addToCollection(_selection,trait)){
-						trait.setSelected(true);
-					}
-					trait.setInterested(false);
+			_dragging = false;
+			if(_openMarquee){
+				_openMarquee = false;
+				_marqueeProvider.setRectangle(NaN,NaN,NaN,NaN);
+				if(!_ctrlBoolean.booleanValue && !_shiftBoolean.booleanValue){
+					deselectAll();
 				}
-				_interested = new Vector.<ISelectable2dTrait>();
+				if(_interested.length){
+					for each(var trait:ISelectable2dTrait in _interested){
+						if(addToCollection(_selection,trait)){
+							trait.setSelected(true);
+						}
+						trait.setInterested(false);
+					}
+					_interested = new Vector.<ISelectable2dTrait>();
+					if(_selectionChanged)_selectionChanged.perform(this);
+				}
+				_mouseActsTrait.mouseDrag.removeHandler(onMouseDrag);
 			}
 		}
 		
@@ -201,8 +251,6 @@ package org.tbyrne.composeLibrary.tools.selection2d
 		
 		private function addToCollection(collection:Vector.<ISelectable2dTrait>, trait:ISelectable2dTrait):Boolean{
 			if(collection.indexOf(trait)==-1){
-				trait.setSelected(true);
-				
 				collection.push(trait);
 				return true;
 			}
@@ -211,7 +259,6 @@ package org.tbyrne.composeLibrary.tools.selection2d
 		private function removeFromCollection(collection:Vector.<ISelectable2dTrait>, trait:ISelectable2dTrait):Boolean{
 			var index:int = collection.indexOf(trait);
 			if(index!=-1){
-				trait.setSelected(false);
 				collection.splice(index,1);
 				return true;
 			}
@@ -220,12 +267,18 @@ package org.tbyrne.composeLibrary.tools.selection2d
 		
 		
 		
-		
+		private function checkHit(index:int, trait:ISelectable2dTrait, actInfo:IMouseActInfo, retObj:Object):Boolean{
+			if(checkPoint(trait,actInfo.screenX,actInfo.screenY)){
+				retObj.hit = trait;
+				return true;
+			}
+			return false;
+		}
 		
 		private function doClicked(index:int, trait:ISelectable2dTrait, actInfo:IMouseActInfo, doToggle:Boolean):void{
 			var selected:Boolean = (_selection.indexOf(trait)!=-1);
 			var changed:Boolean;
-			if((!selected || doToggle) && trait.checkPoint(actInfo.screenX,actInfo.screenY)){
+			if((!selected || doToggle) && checkPoint(trait,actInfo.screenX,actInfo.screenY)){
 				if(selected){
 					changed = removeFromCollection(_selection,trait);
 				}else{
@@ -255,9 +308,9 @@ package org.tbyrne.composeLibrary.tools.selection2d
 		}
 		
 		
-		private function checkInterested(index:int, trait:ISelectable2dTrait, actInfo:IMouseActInfo, doToggle:Boolean):void{
+		private function checkInterested(index:int, trait:ISelectable2dTrait):void{
 			var interested:Boolean = (_interested.indexOf(trait)!=-1);
-			var shouldBe:Boolean = trait.checkRectangle(_marqueeProvider.x,_marqueeProvider.y,_marqueeProvider.width,_marqueeProvider.height)>_marqueeSelectionPercent;
+			var shouldBe:Boolean = checkRectangle(trait,_marqueeProvider.x,_marqueeProvider.y,_marqueeProvider.width,_marqueeProvider.height)>_marqueeSelectionPercent;
 			if(interested){
 				if(!shouldBe){
 					if(removeFromCollection(_interested, trait)){
@@ -269,6 +322,20 @@ package org.tbyrne.composeLibrary.tools.selection2d
 					trait.setInterested(true);
 				}
 			}
+		}
+		
+		
+		private function checkPoint(trait:ISelectable2dTrait, screenX:Number, screenY:Number):Boolean{
+			for each(var hitTester:IHitTestTrait in _hitTesters){
+				if(hitTester.hitTest(trait,screenX,screenY)){
+					return true;
+				}
+			}
+			return false;
+		}
+		private function checkRectangle(trait:ISelectable2dTrait, x:Number, y:Number, width:Number, height:Number):Number{
+			// TODO Auto Generated method stub
+			return 0;
 		}
 	}
 }

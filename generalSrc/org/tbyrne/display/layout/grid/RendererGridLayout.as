@@ -18,7 +18,7 @@ package org.tbyrne.display.layout.grid
 	import org.tbyrne.display.layout.list.ListLayoutInfo;
 	import org.tbyrne.display.scrolling.ScrollMetrics;
 	import org.tbyrne.display.validation.ValidationFlag;
-	import org.tbyrne.instanceFactory.IInstanceFactory;
+	import org.tbyrne.factories.IInstanceFactory;
 
 	public class RendererGridLayout extends AbstractGridLayout
 	{

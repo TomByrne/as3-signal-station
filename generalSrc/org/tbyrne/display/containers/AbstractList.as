@@ -20,9 +20,9 @@ package org.tbyrne.display.containers
 	import org.tbyrne.display.scrolling.MouseDragScroller;
 	import org.tbyrne.display.scrolling.MouseWheelScroller;
 	import org.tbyrne.display.scrolling.ScrollMultiplier;
-	import org.tbyrne.instanceFactory.IInstanceFactory;
-	import org.tbyrne.instanceFactory.MultiInstanceFactory;
-	import org.tbyrne.instanceFactory.SimpleInstanceFactory;
+	import org.tbyrne.factories.IInstanceFactory;
+	import org.tbyrne.factories.InstanceFactory;
+	import org.tbyrne.factories.ProxyInstanceFactory;
 	
 	use namespace DisplayNamespace;
 	
@@ -30,7 +30,7 @@ package org.tbyrne.display.containers
 	{
 		DisplayNamespace const ASSUMED_DATA_FIELD:String = "data";
 		
-		DisplayNamespace function get assumedRendererFactory():SimpleInstanceFactory{
+		DisplayNamespace function get assumedRendererFactory():InstanceFactory{
 			if(isBound)assessFactory();
 			return _assumedRendererFactory;
 		}
@@ -43,11 +43,10 @@ package org.tbyrne.display.containers
 		}
 		public function set rendererFactory(value:IInstanceFactory):void{
 			if(_rendererFactory != value){
-				if(_factoryAssumedAssetSet){
-					(_rendererFactory as MultiInstanceFactory).removeProperties(_factoryAssumedAssetProps);
-					_factoryAssumedAssetSet = false;
-				}
 				_rendererFactory = value;
+				if(_assumedAssetProxyFactory){
+					_assumedAssetProxyFactory.nestedFactory = _rendererFactory;
+				}
 				if(isBound)assessFactory();
 			}
 		}
@@ -89,14 +88,15 @@ package org.tbyrne.display.containers
 		
 		protected var _assumedRendererAsset:IDisplayObject;
 		protected var _assumedAssetFactory:IInstanceFactory;
-		protected var _assumedRendererFactory:SimpleInstanceFactory;
+		protected var _assumedRendererFactory:InstanceFactory;
 		protected var _scrollRect:Rectangle = new Rectangle();
 		protected var _scrollMetrics:IScrollMetrics;
 		protected var _mouseWheelScroller:MouseWheelScroller;
 		protected var _mouseDragScroller:MouseDragScroller;
 		
-		protected var _factoryAssumedAssetSet:Boolean;
-		protected var _factoryAssumedAssetProps:Dictionary;
+		//protected var _factoryAssumedAssetSet:Boolean;
+		//protected var _factoryAssumedAssetProps:Dictionary;
+		protected var _assumedAssetProxyFactory:ProxyInstanceFactory;
 		
 		protected var _renderers:Array = [];
 		
@@ -189,7 +189,7 @@ package org.tbyrne.display.containers
 					_assumedAssetFactory = null;
 				}
 				if(_assumedRendererFactory){
-					_assumedRendererFactory.instanceProperties = null;
+					_assumedRendererFactory.objectProps = null;
 					_assumedRendererFactory = null;
 					assessFactory();
 				}
@@ -323,14 +323,14 @@ package org.tbyrne.display.containers
 				factory = _rendererFactory;
 				dataField = _dataField || ASSUMED_DATA_FIELD;
 				
-				var castFactory:MultiInstanceFactory = (factory as MultiInstanceFactory);
-				if(castFactory && !castFactory.hasProperty("asset") && castFactory.useChildFactories && _assumedRendererAsset){
-					if(!_factoryAssumedAssetProps){
-						_factoryAssumedAssetProps = new Dictionary();
+				var castFactory:InstanceFactory = (factory as InstanceFactory);
+				if(castFactory && (!castFactory.objectProps || castFactory.objectProps["asset"]==null) && _assumedRendererAsset){
+					if(!_assumedAssetProxyFactory){
+						_assumedAssetProxyFactory = new ProxyInstanceFactory(_rendererFactory,null,true);
 					}
 					checkAssetFactory();
-					castFactory.addProperties(_factoryAssumedAssetProps);
-					_factoryAssumedAssetSet = true;
+					_assumedAssetProxyFactory.addProp("asset", _assumedAssetFactory);
+					factory = _assumedAssetProxyFactory;
 				}
 			}else if(_assumedRendererAsset){
 				if(!_assumedRendererFactory){
@@ -346,12 +346,10 @@ package org.tbyrne.display.containers
 				updateFactory(factory,dataField);
 			}
 		}
-		protected function createAssumedFactory():SimpleInstanceFactory{
-			var factory:SimpleInstanceFactory = new SimpleInstanceFactory(getAssumedRendererClass());
-			factory.useChildFactories = true;
-			factory.instanceProperties = new Dictionary();
+		protected function createAssumedFactory():InstanceFactory{
+			var factory:InstanceFactory = new InstanceFactory(getAssumedRendererClass(),null,true);
 			checkAssetFactory();
-			factory.instanceProperties["asset"] = _assumedAssetFactory;
+			factory.addProp("asset", _assumedAssetFactory);
 			return factory;
 		}
 		protected function getAssumedRendererClass():Class{
@@ -360,9 +358,6 @@ package org.tbyrne.display.containers
 		protected function checkAssetFactory():void{
 			if(!_assumedAssetFactory && _assumedRendererAsset){
 				_assumedAssetFactory = createAssumedAssetFactory(_assumedRendererAsset);
-				if(_factoryAssumedAssetProps){
-					_factoryAssumedAssetProps["asset"] = _assumedAssetFactory;
-				}
 			}
 		}
 		protected function createAssumedAssetFactory(asset:IDisplayObject):IInstanceFactory{

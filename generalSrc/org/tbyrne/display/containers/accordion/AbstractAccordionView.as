@@ -8,7 +8,7 @@ package org.tbyrne.display.containers.accordion
 	import org.tbyrne.display.core.ILayoutView;
 	import org.tbyrne.display.layout.accordion.AccordionLayout;
 	import org.tbyrne.display.layout.grid.RendererGridLayout;
-	import org.tbyrne.instanceFactory.SimpleInstanceFactory;
+	import org.tbyrne.factories.SimpleInstanceFactory;
 	
 	public class AbstractAccordionView extends AbstractList
 	{

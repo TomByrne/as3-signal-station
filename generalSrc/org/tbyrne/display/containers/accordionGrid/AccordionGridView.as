@@ -1,7 +1,6 @@
 package org.tbyrne.display.containers.accordionGrid
 {
 	import flash.geom.Point;
-	import flash.geom.Rectangle;
 	import flash.utils.Dictionary;
 	
 	import org.tbyrne.collections.ICollection;
@@ -12,11 +11,10 @@ package org.tbyrne.display.containers.accordionGrid
 	import org.tbyrne.display.constants.Direction;
 	import org.tbyrne.display.containers.accordion.AbstractAccordionView;
 	import org.tbyrne.display.core.ILayoutView;
-	import org.tbyrne.display.layout.ILayoutSubject;
 	import org.tbyrne.display.layout.accordion.AccordionLayout;
 	import org.tbyrne.display.layout.grid.RendererGridLayout;
-	import org.tbyrne.instanceFactory.IInstanceFactory;
-	import org.tbyrne.instanceFactory.SimpleInstanceFactory;
+	import org.tbyrne.factories.IInstanceFactory;
+	import org.tbyrne.factories.InstanceFactory;
 
 	public class AccordionGridView extends AbstractAccordionView
 	{
@@ -138,7 +136,7 @@ package org.tbyrne.display.containers.accordionGrid
 		private var _gridLayout:RendererGridLayout;
 		private var _gridDataField:String;
 		private var _gridRendererFactory:IInstanceFactory;
-		private var _assumedGridRendererFactory:SimpleInstanceFactory;
+		private var _assumedGridRendererFactory:InstanceFactory;
 		private var _assumedGridRendererAsset:IDisplayObject;
 		
 		// mapped parentData > accordionGridRenderer
@@ -186,7 +184,7 @@ package org.tbyrne.display.containers.accordionGrid
 				_assumedGridRendererAsset = null;
 				
 				if(_assumedGridRendererFactory){
-					_assumedGridRendererFactory.instanceProperties = null;
+					_assumedGridRendererFactory.objectProps = null;
 					_assumedGridRendererFactory = null;
 					assessGridFactory();
 				}
@@ -376,19 +374,17 @@ package org.tbyrne.display.containers.accordionGrid
 			_gridLayout.rendererFactory = factory;
 			_gridLayout.dataField = dataField;
 		}
-		override protected function createAssumedFactory():SimpleInstanceFactory{
-			_assumedRendererFactory = new SimpleInstanceFactory(AccordionGridRenderer);
+		override protected function createAssumedFactory():InstanceFactory{
+			_assumedRendererFactory = new InstanceFactory(AccordionGridRenderer);
 			_assumedRendererFactory.useChildFactories = true;
-			_assumedRendererFactory.instanceProperties = new Dictionary();
 			checkAssetFactory();
-			_assumedRendererFactory.instanceProperties["asset"] = _assumedAssetFactory;
+			_assumedRendererFactory.addProp("asset", _assumedAssetFactory);
 			return _assumedRendererFactory;
 		}
 		protected function createAssumedGridFactory():void{
-			_assumedGridRendererFactory = new SimpleInstanceFactory(AccordionGridRenderer);
+			_assumedGridRendererFactory = new InstanceFactory(AccordionGridRenderer);
 			_assumedGridRendererFactory.useChildFactories = true;
-			_assumedGridRendererFactory.instanceProperties = new Dictionary();
-			_assumedGridRendererFactory.instanceProperties["asset"] = _assumedGridRendererAsset.getCloneFactory();
+			_assumedGridRendererFactory.addProp(asset, _assumedGridRendererAsset.getCloneFactory());
 		}
 	}
 }

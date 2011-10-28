@@ -2,7 +2,6 @@ package org.tbyrne.display.containers
 {
 	import org.tbyrne.display.assets.AssetNames;
 	import org.tbyrne.display.constants.Direction;
-	import org.tbyrne.instanceFactory.IInstanceFactory;
 
 	public class GridView extends AbstractList
 	{

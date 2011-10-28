@@ -1,9 +1,12 @@
 package org.tbyrne.composeLibrary.ui
 {
 	import flash.display.InteractiveObject;
+	import flash.events.Event;
 	import flash.events.KeyboardEvent;
 	import flash.utils.Dictionary;
 	
+	import org.tbyrne.actInfo.IKeyActInfo;
+	import org.tbyrne.actInfo.KeyActInfo;
 	import org.tbyrne.acting.actTypes.IAct;
 	import org.tbyrne.acting.acts.Act;
 	import org.tbyrne.compose.concerns.ITraitConcern;
@@ -14,8 +17,6 @@ package org.tbyrne.composeLibrary.ui
 	import org.tbyrne.composeLibrary.types.ui.IKeyActsTrait;
 	import org.tbyrne.data.core.BooleanData;
 	import org.tbyrne.data.dataTypes.IBooleanProvider;
-	import org.tbyrne.actInfo.IKeyActInfo;
-	import org.tbyrne.actInfo.KeyActInfo;
 	
 	public class KeyActsTrait extends AbstractTrait implements IKeyActsTrait
 	{
@@ -34,6 +35,20 @@ package org.tbyrne.composeLibrary.ui
 			return (_keyReleased || (_keyReleased = new Act()));
 		}
 		
+		
+		
+		public function get stageMode():Boolean{
+			return _stageMode;
+		}
+		public function set stageMode(value:Boolean):void{
+			if(_stageMode!=value){
+				_stageMode = value;
+				checkInteractiveObject();
+			}
+		}
+		
+		private var _stageMode:Boolean;
+		
 		protected var _keyReleased:Act;
 		protected var _keyPressed:Act;
 		
@@ -49,10 +64,10 @@ package org.tbyrne.composeLibrary.ui
 		private var _keyLocationsDown:Dictionary = new Dictionary();
 		private var _charsDown:Dictionary = new Dictionary();
 		
-		public function KeyActsTrait()
+		public function KeyActsTrait(stageMode:Boolean=false)
 		{
 			super();
-			
+			this.stageMode = stageMode;
 			addConcern(new TraitConcern(true,false,IInteractiveObjectTrait));
 		}
 		
@@ -66,7 +81,28 @@ package org.tbyrne.composeLibrary.ui
 			}
 			_interactiveObjectTrait = trait as IInteractiveObjectTrait;
 			_interactiveObjectTrait.interactiveObjectChanged.addHandler(onInteractiveObjectChanged);
-			setInteractiveObject(_interactiveObjectTrait.interactiveObject);
+			
+			checkInteractiveObject();
+		}
+		
+		private function checkInteractiveObject():void{
+			if(!_interactiveObjectTrait)return;
+			
+			if(_stageMode){
+				if(_interactiveObjectTrait.interactiveObject.stage){
+					_interactiveObjectTrait.interactiveObject.removeEventListener(Event.ADDED_TO_STAGE, onAddedToStage);
+					setInteractiveObject(_interactiveObjectTrait.interactiveObject.stage);
+				}else{
+					_interactiveObjectTrait.interactiveObject.addEventListener(Event.ADDED_TO_STAGE, onAddedToStage);
+				}
+			}else{
+				_interactiveObjectTrait.interactiveObject.removeEventListener(Event.ADDED_TO_STAGE, onAddedToStage);
+				setInteractiveObject(_interactiveObjectTrait.interactiveObject);
+			}
+		}
+		
+		protected function onAddedToStage(event:Event):void{
+			checkInteractiveObject();
 		}
 		
 		private function setInteractiveObject(interactiveObject:InteractiveObject):void

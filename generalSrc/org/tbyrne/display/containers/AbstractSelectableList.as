@@ -13,7 +13,7 @@ package org.tbyrne.display.containers
 	import org.tbyrne.display.layout.grid.RendererGridLayout;
 	import org.tbyrne.display.layout.list.ListLayoutInfo;
 	import org.tbyrne.display.scrolling.IScrollMetrics;
-	import org.tbyrne.instanceFactory.IInstanceFactory;
+	import org.tbyrne.factories.IInstanceFactory;
 	
 	use namespace DisplayNamespace;
 	

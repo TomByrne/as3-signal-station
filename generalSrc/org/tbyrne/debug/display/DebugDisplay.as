@@ -12,11 +12,10 @@ package org.tbyrne.debug.display
 	import org.tbyrne.display.DisplayNamespace;
 	import org.tbyrne.display.assets.AssetNames;
 	import org.tbyrne.display.assets.nativeTypes.IDisplayObject;
-	import org.tbyrne.display.assets.nativeTypes.IDisplayObjectContainer;
 	import org.tbyrne.display.containers.CascadingMenuBar;
 	import org.tbyrne.display.layout.ILayoutSubject;
+	import org.tbyrne.factories.InstanceFactory;
 	import org.tbyrne.formatters.patternFormatters.PatternFormatter;
-	import org.tbyrne.instanceFactory.MultiInstanceFactory;
 	
 	use namespace DisplayNamespace;
 	
@@ -53,8 +52,7 @@ package org.tbyrne.debug.display
 		override protected function init() : void{
 			super.init();
 			
-			var factory:MultiInstanceFactory = new MultiInstanceFactory(DebugItemRenderer);
-			factory.useChildFactories = true;
+			var factory:InstanceFactory = new InstanceFactory(DebugItemRenderer,null,true);
 			this.rendererFactory = factory;
 			
 			_graph = new DebugGraph(200,200);
