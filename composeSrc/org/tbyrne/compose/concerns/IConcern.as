@@ -4,7 +4,7 @@ package org.tbyrne.compose.concerns
 	import org.tbyrne.compose.core.ComposeItem;
 	import org.tbyrne.compose.traits.ITrait;
 
-	public interface ITraitConcern
+	public interface IConcern
 	{
 		
 		/**

@@ -2,11 +2,11 @@ package org.tbyrne.composeLibrary.adjust
 {
 	import org.tbyrne.adjust.Adjustment;
 	import org.tbyrne.adjust.AdjustmentManager;
-	import org.tbyrne.compose.concerns.TraitConcern;
+	import org.tbyrne.compose.concerns.Concern;
 	import org.tbyrne.compose.traits.AbstractTrait;
 	import org.tbyrne.compose.traits.ITrait;
 	import org.tbyrne.composeLibrary.types.adjust.IAdjustableTrait;
-	import org.tbyrne.compose.concerns.ITraitConcern;
+	import org.tbyrne.compose.concerns.IConcern;
 	
 	public class AdjustmentManagerTrait extends AbstractTrait
 	{
@@ -17,15 +17,15 @@ package org.tbyrne.composeLibrary.adjust
 			
 			_adjustmentManager = new AdjustmentManager();
 			
-			addConcern(new TraitConcern(false,true,IAdjustableTrait,[AdjustmentManagerTrait]));
+			addConcern(new Concern(false,true,IAdjustableTrait,[AdjustmentManagerTrait]));
 		}
 		
-		override protected function onConcernedTraitAdded(from:ITraitConcern, trait:ITrait):void{
+		override protected function onConcernedTraitAdded(from:IConcern, trait:ITrait):void{
 			var castTrait:IAdjustableTrait = trait as IAdjustableTrait;
 			_adjustmentManager.addAdjustable(castTrait);
 			
 		}
-		override protected function onConcernedTraitRemoved(from:ITraitConcern, trait:ITrait):void{
+		override protected function onConcernedTraitRemoved(from:IConcern, trait:ITrait):void{
 			var castTrait:IAdjustableTrait = trait as IAdjustableTrait;
 			_adjustmentManager.removeAdjustable(castTrait);
 		}

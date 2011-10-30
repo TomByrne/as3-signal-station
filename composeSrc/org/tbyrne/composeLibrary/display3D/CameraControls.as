@@ -140,7 +140,7 @@ package org.tbyrne.composeLibrary.display3D
 		
 		public function CameraControls(){
 			super();
-			
+			_positionOffsetProvider.numericalValueChanged.addHandler(onPosOffsetChanged);
 			_focalLengthProvider.numericalValueChanged.addHandler(onFocalLengthChanged);
 			_fieldOfViewProvider.numericalValueChanged.addHandler(onFieldOfViewChanged);
 			_orthographicProvider.booleanValueChanged.addHandler(onOrthographicChanged);
@@ -157,6 +157,9 @@ package org.tbyrne.composeLibrary.display3D
 				_focalLengthMode = true;
 				calcFieldOfView();
 			}
+		}
+		private function onPosOffsetChanged(from:NumberData):void{
+			invalidateMatrix();
 		}
 		private function onOrthographicChanged(from:BooleanData):void{
 			if(!_ignoreEvents){
@@ -249,5 +252,20 @@ package org.tbyrne.composeLibrary.display3D
 				
 			}
 		}	
+		override protected function compileMatrix():void{
+			_matrix3d.identity()
+			_matrix3d.appendRotation( _rotX, Vector3D.X_AXIS );
+			_matrix3d.appendRotation( _rotY, Vector3D.Y_AXIS );
+			_matrix3d.appendRotation( _rotZ, Vector3D.Z_AXIS );
+			
+			if(!isNaN(_positionOffsetProvider.numericalValue) && _positionOffsetProvider.numericalValue!=0){
+				var distVec:Vector3D = new Vector3D(0,0,_positionOffsetProvider.numericalValue);
+				distVec = _matrix3d.transformVector(distVec);
+				
+				_matrix3d.appendTranslation(_posX+distVec.x,_posY+distVec.y,_posZ+distVec.z);
+			}else{
+				_matrix3d.appendTranslation(_posX,_posY,_posZ);
+			}
+		}
 	}
 }

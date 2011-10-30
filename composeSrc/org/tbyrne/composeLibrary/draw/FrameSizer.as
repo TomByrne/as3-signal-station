@@ -1,9 +1,9 @@
 package org.tbyrne.composeLibrary.draw
 {
-	import org.tbyrne.compose.concerns.TraitConcern;
+	import org.tbyrne.compose.concerns.Concern;
 	import org.tbyrne.compose.traits.AbstractTrait;
 	import org.tbyrne.compose.traits.ITrait;
-	import org.tbyrne.compose.concerns.ITraitConcern;
+	import org.tbyrne.compose.concerns.IConcern;
 	import org.tbyrne.composeLibrary.types.draw.IFrameAwareTrait;
 	import org.tbyrne.collections.IndexedList;
 	
@@ -19,7 +19,7 @@ package org.tbyrne.composeLibrary.draw
 			
 			_frameSizeTraits = new IndexedList();
 			
-			addConcern(new TraitConcern(true,true,IFrameAwareTrait));
+			addConcern(new Concern(true,true,IFrameAwareTrait));
 		}
 		
 		public function setSize(width:Number, height:Number):void{
@@ -33,12 +33,12 @@ package org.tbyrne.composeLibrary.draw
 			}
 		}
 		
-		override protected function onConcernedTraitAdded(from:ITraitConcern, trait:ITrait):void{
+		override protected function onConcernedTraitAdded(from:IConcern, trait:ITrait):void{
 			var cast:IFrameAwareTrait = trait as IFrameAwareTrait
 			_frameSizeTraits.push(cast);
 			if(_set)cast.setSize(_width,_height);
 		}
-		override protected function onConcernedTraitRemoved(from:ITraitConcern, trait:ITrait):void{
+		override protected function onConcernedTraitRemoved(from:IConcern, trait:ITrait):void{
 			_frameSizeTraits.remove(trait);
 		}
 	}

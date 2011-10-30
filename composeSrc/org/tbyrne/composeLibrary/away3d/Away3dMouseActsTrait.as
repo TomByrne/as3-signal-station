@@ -8,8 +8,8 @@ package org.tbyrne.composeLibrary.away3d
 	
 	import org.tbyrne.actInfo.IMouseActInfo;
 	import org.tbyrne.actInfo.MouseActInfo;
-	import org.tbyrne.compose.concerns.ITraitConcern;
-	import org.tbyrne.compose.concerns.TraitConcern;
+	import org.tbyrne.compose.concerns.IConcern;
+	import org.tbyrne.compose.concerns.Concern;
 	import org.tbyrne.compose.traits.ITrait;
 	import org.tbyrne.composeLibrary.away3d.types.IChild3dTrait;
 	import org.tbyrne.composeLibrary.ui.AbstractMouseActsTraits;
@@ -64,10 +64,10 @@ package org.tbyrne.composeLibrary.away3d
 			dragTreshold = DEFAULT_DRAG_THRESHOLD;
 			clickSpeed = DEFAULT_CLICK_SPEED;
 			
-			addConcern(new TraitConcern(true,false,IChild3dTrait));
+			addConcern(new Concern(true,false,IChild3dTrait));
 		}
 		
-		override protected function onConcernedTraitAdded(from:ITraitConcern, trait:ITrait):void{
+		override protected function onConcernedTraitAdded(from:IConcern, trait:ITrait):void{
 			if(_away3dObjectTrait)return;
 			
 			_away3dObjectTrait = trait as IChild3dTrait;
@@ -104,7 +104,7 @@ package org.tbyrne.composeLibrary.away3d
 		}*/
 		
 		
-		override protected function onConcernedTraitRemoved(from:ITraitConcern, trait:ITrait):void{
+		override protected function onConcernedTraitRemoved(from:IConcern, trait:ITrait):void{
 			if(trait != _away3dObjectTrait){
 				return;
 			}

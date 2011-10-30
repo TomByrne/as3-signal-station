@@ -16,8 +16,8 @@ package org.tbyrne.composeLibrary.away3d
 	import org.tbyrne.acting.acts.Act;
 	import org.tbyrne.binding.Binder;
 	import org.tbyrne.collections.IndexedList;
-	import org.tbyrne.compose.concerns.ITraitConcern;
-	import org.tbyrne.compose.concerns.TraitConcern;
+	import org.tbyrne.compose.concerns.IConcern;
+	import org.tbyrne.compose.concerns.Concern;
 	import org.tbyrne.compose.traits.AbstractTrait;
 	import org.tbyrne.compose.traits.ITrait;
 	import org.tbyrne.composeLibrary.away3d.types.IChild3dTrait;
@@ -161,7 +161,6 @@ package org.tbyrne.composeLibrary.away3d
 		private var _scene:Scene3D;
 		private var _sceneProxy:Away3dSceneProxy;
 		private var _camera:Camera3D;
-		private var _cameraContainer:ObjectContainer3D;
 		private var _view:View3D;
 		private var _lights:Array;
 		
@@ -183,19 +182,15 @@ package org.tbyrne.composeLibrary.away3d
 			_scene = _view.scene;
 			_sceneProxy = new Away3dSceneProxy(_scene);
 			
-			_cameraContainer = new ObjectContainer3D();
-			_scene.addChild(_cameraContainer);
-			
 			_camera = _view.camera;
 			_camera.z = 0;
-			//_scene.removeChild(_camera);
-			_cameraContainer.addChild(_camera);
 			
 			//_camera.fixedZoom = false;
 			//_camera.zoom = 1;
 			_perspectiveLens = _camera.lens as PerspectiveLens;
+			_perspectiveLens.far = 100000;
 			_orthogonalLens = new OrthographicLens();
-			_orthogonalLens.far = 30000;
+			_orthogonalLens.far = 100000;
 			_camera.lens = _orthogonalLens;
 			
 			super();
@@ -211,11 +206,11 @@ package org.tbyrne.composeLibrary.away3d
 			_matrixFlag = new ValidationFlag(commitMatrix,false);
 			_renderFlag = new ValidationFlag(_view.render,false);
 			
-			addConcern(new TraitConcern(true,true,IScene3dAwareTrait));
-			addConcern(new TraitConcern(true,true,IChild3dTrait,[IContainer3dTrait]));
-			addConcern(new TraitConcern(true,true,ICameraDistanceAwareTrait));
+			addConcern(new Concern(true,true,IScene3dAwareTrait));
+			addConcern(new Concern(true,true,IChild3dTrait,[IContainer3dTrait]));
+			addConcern(new Concern(true,true,ICameraDistanceAwareTrait));
 		}
-		override protected function onConcernedTraitAdded(from:ITraitConcern, trait:ITrait):void{
+		override protected function onConcernedTraitAdded(from:IConcern, trait:ITrait):void{
 			var awareTrait:IScene3dAwareTrait;
 			var child3d:IChild3dTrait;
 			var cameraDistanceAware:ICameraDistanceAwareTrait;
@@ -228,7 +223,7 @@ package org.tbyrne.composeLibrary.away3d
 				_camDistAwareTraits.push(cameraDistanceAware);
 			}
 		}
-		override protected function onConcernedTraitRemoved(from:ITraitConcern, trait:ITrait):void{
+		override protected function onConcernedTraitRemoved(from:IConcern, trait:ITrait):void{
 			var awareTrait:IScene3dAwareTrait;
 			var child3d:IChild3dTrait;
 			var cameraDistanceAware:ICameraDistanceAwareTrait;
@@ -282,7 +277,7 @@ package org.tbyrne.composeLibrary.away3d
 			_renderFlag.invalidate();
 		}
 		protected function commitMatrix():void{
-			_cameraContainer.transform = _matrix3dTrait?_matrix3dTrait.matrix3d:null;
+			_camera.transform = _matrix3dTrait?_matrix3dTrait.matrix3d:null;
 			if(_cameraChanged)_cameraChanged.perform(this);
 		}
 		protected function commitFocalLength():void{

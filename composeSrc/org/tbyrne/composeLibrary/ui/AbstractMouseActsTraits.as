@@ -4,7 +4,7 @@ package org.tbyrne.composeLibrary.ui
 	import org.tbyrne.acting.acts.Act;
 	import org.tbyrne.data.core.BooleanData;
 	import org.tbyrne.data.dataTypes.IBooleanProvider;
-	import org.tbyrne.compose.concerns.ITraitConcern;
+	import org.tbyrne.compose.concerns.IConcern;
 	import org.tbyrne.compose.core.ComposeItem;
 	import org.tbyrne.compose.traits.AbstractTrait;
 	import org.tbyrne.composeLibrary.types.ui.IMouseActsTrait;

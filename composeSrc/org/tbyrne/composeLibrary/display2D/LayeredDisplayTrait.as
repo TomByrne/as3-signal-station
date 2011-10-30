@@ -83,14 +83,22 @@ package org.tbyrne.composeLibrary.display2D
 				checkVisibility();
 			}
 		}
+		public function get addChildren():Boolean{
+			return _addChildren;
+		}
+		public function set addChildren(value:Boolean):void{
+			_addChildren = value;
+		}
 		
 		protected var _visible:Boolean = true;
 		protected var _layerId:String;
 		
 		
-		public function LayeredDisplayTrait(display:DisplayObjectContainer=null, layerId:String=null){
+		public function LayeredDisplayTrait(display:DisplayObjectContainer=null, layerId:String=null, addChildren:Boolean=true){
 			super(display);
 			_layerId = layerId;
+			
+			this.addChildren = addChildren;
 			
 			checkVisibility();
 		}

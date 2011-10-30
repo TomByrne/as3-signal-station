@@ -5,8 +5,8 @@ package org.tbyrne.composeLibrary.display3D
 	
 	import org.tbyrne.collections.IndexedList;
 	import org.tbyrne.data.dataTypes.INumberProvider;
-	import org.tbyrne.compose.concerns.ITraitConcern;
-	import org.tbyrne.compose.concerns.TraitConcern;
+	import org.tbyrne.compose.concerns.IConcern;
+	import org.tbyrne.compose.concerns.Concern;
 	import org.tbyrne.compose.traits.AbstractTrait;
 	import org.tbyrne.compose.traits.ITrait;
 	import org.tbyrne.composeLibrary.types.display3D.I2dTo3dTrait;
@@ -66,13 +66,13 @@ package org.tbyrne.composeLibrary.display3D
 			_2dInvalid = new IndexedList();
 			_dummyVector = new Vector3D();
 			
-			addConcern(new TraitConcern(false,true,I2dTo3dTrait,[I2dTo3dTrait]));
+			addConcern(new Concern(false,true,I2dTo3dTrait,[I2dTo3dTrait]));
 			
 			this.matrix3dTrait = matrix3dTrait;
 			this.focalLength = focalLength;
 		}
 		
-		override protected function onConcernedTraitAdded(from:ITraitConcern, trait:ITrait):void{
+		override protected function onConcernedTraitAdded(from:IConcern, trait:ITrait):void{
 			var trait2d:I2dTo3dTrait;
 			
 			if(trait2d = (trait as I2dTo3dTrait)){
@@ -83,7 +83,7 @@ package org.tbyrne.composeLibrary.display3D
 			}
 		}
 		
-		override protected function onConcernedTraitRemoved(from:ITraitConcern, trait:ITrait):void{
+		override protected function onConcernedTraitRemoved(from:IConcern, trait:ITrait):void{
 			var trait2d:I2dTo3dTrait;
 			
 			if(trait2d = (trait as I2dTo3dTrait)){
@@ -129,7 +129,7 @@ package org.tbyrne.composeLibrary.display3D
 			var pos2d:I2dTo3dTrait;
 			var z2d:Number;
 			
-			if(invalid2dList){
+			if(invalid2dList && invalid2dList.length){
 				var isFocalInf:Boolean = (focalLength==Number.POSITIVE_INFINITY || focalLength==Number.NEGATIVE_INFINITY);
 				if(invMatrix){
 					

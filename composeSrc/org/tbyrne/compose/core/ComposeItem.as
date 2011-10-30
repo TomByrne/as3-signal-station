@@ -5,7 +5,7 @@ package org.tbyrne.compose.core
 	import org.tbyrne.collections.IndexedList;
 	import org.tbyrne.compose.ComposeNamespace;
 	import org.tbyrne.compose.concerns.ConcernMarrier;
-	import org.tbyrne.compose.concerns.ITraitConcern;
+	import org.tbyrne.compose.concerns.IConcern;
 	import org.tbyrne.compose.traits.ITrait;
 	import org.tbyrne.compose.traits.TraitCollection;
 	
@@ -85,7 +85,7 @@ package org.tbyrne.compose.core
 			_traitCollection.addTrait(trait);
 			if(_parentItem)_parentItem.addChildTrait(trait);
 			
-			for each(var concern:ITraitConcern in trait.concerns){
+			for each(var concern:IConcern in trait.concerns){
 				addTraitConcern(concern);
 			}
 		}
@@ -114,18 +114,18 @@ package org.tbyrne.compose.core
 			trait.item = null;
 			if(_parentItem)_parentItem.removeChildTrait(trait);
 			
-			for each(var concern:ITraitConcern in trait.concerns){
+			for each(var concern:IConcern in trait.concerns){
 				removeTraitConcern(concern);
 			}
 		}
 		
 		
-		protected function addTraitConcern(concern:ITraitConcern):void{
+		protected function addTraitConcern(concern:IConcern):void{
 			if(concern.siblings){
 				_siblingMarrier.addConcern(concern);
 			}
 		}
-		protected function removeTraitConcern(concern:ITraitConcern):void{
+		protected function removeTraitConcern(concern:IConcern):void{
 			if(concern.siblings){
 				_siblingMarrier.removeConcern(concern);
 			}
@@ -144,11 +144,11 @@ package org.tbyrne.compose.core
 		}
 		
 		
-		ComposeNamespace function addParentConcern(concern:ITraitConcern):void{
+		ComposeNamespace function addParentConcern(concern:IConcern):void{
 			_parentMarrier.addConcern(concern);
 		}
 		
-		ComposeNamespace function removeParentConcern(concern:ITraitConcern):void{
+		ComposeNamespace function removeParentConcern(concern:IConcern):void{
 			_parentMarrier.removeConcern(concern);
 		}
 	}

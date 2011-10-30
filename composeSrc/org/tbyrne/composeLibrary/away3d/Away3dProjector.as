@@ -1,6 +1,7 @@
 package org.tbyrne.composeLibrary.away3d
 {
 	import away3d.cameras.Camera3D;
+	import away3d.containers.View3D;
 	
 	import flash.geom.Matrix3D;
 	import flash.geom.Point;
@@ -8,8 +9,8 @@ package org.tbyrne.composeLibrary.away3d
 	
 	import org.tbyrne.acting.actTypes.IAct;
 	import org.tbyrne.collections.IndexedList;
-	import org.tbyrne.compose.concerns.ITraitConcern;
-	import org.tbyrne.compose.concerns.TraitConcern;
+	import org.tbyrne.compose.concerns.IConcern;
+	import org.tbyrne.compose.concerns.Concern;
 	import org.tbyrne.compose.traits.AbstractTrait;
 	import org.tbyrne.compose.traits.ITrait;
 	import org.tbyrne.composeLibrary.types.display3D.I3dTo2dTrait;
@@ -22,13 +23,11 @@ package org.tbyrne.composeLibrary.away3d
 		private const DUMMY_VECTOR:Vector3D = new Vector3D();
 		
 		
-		public function get camera():Camera3D{
-			return _camera;
+		public function get view():View3D{
+			return _view;
 		}
-		public function set camera(value:Camera3D):void{
-			if(_camera!=value){
-				_camera = value;
-			}
+		public function set view(value:View3D):void{
+			_view = value;
 		}
 		
 		public function get cameraChanged():IAct{
@@ -47,25 +46,25 @@ package org.tbyrne.composeLibrary.away3d
 		}
 		
 		private var _cameraChanged:IAct;
-		private var _camera:Camera3D;
+		private var _view:View3D;
 		
 		private var _3dPositions:IndexedList;
 		private var _3dInvalid:IndexedList;
 		private var _3dAllInvalid:Boolean;
 		
-		public function Away3dProjector(camera:Camera3D=null, cameraChanged:IAct=null){
+		public function Away3dProjector(view:View3D=null, cameraChanged:IAct=null){
 			super();
 			
 			_3dPositions = new IndexedList();
 			_3dInvalid = new IndexedList();
 			
-			addConcern(new TraitConcern(false,true,I3dTo2dTrait,[I3dTo2dTrait]));
+			addConcern(new Concern(false,true,I3dTo2dTrait,[I3dTo2dTrait]));
 			
 			this.cameraChanged = cameraChanged;
-			this.camera = camera;
+			this.view = view;
 		}
 		
-		override protected function onConcernedTraitAdded(from:ITraitConcern, trait:ITrait):void{
+		override protected function onConcernedTraitAdded(from:IConcern, trait:ITrait):void{
 			var trait3d:I3dTo2dTrait;
 			
 			if(trait3d = (trait as I3dTo2dTrait)){ 
@@ -76,7 +75,7 @@ package org.tbyrne.composeLibrary.away3d
 			}
 		}
 		
-		override protected function onConcernedTraitRemoved(from:ITraitConcern, trait:ITrait):void{
+		override protected function onConcernedTraitRemoved(from:IConcern, trait:ITrait):void{
 			var trait3d:I3dTo2dTrait;
 			
 			if(trait3d = (trait as I3dTo2dTrait)){ 
@@ -118,7 +117,8 @@ package org.tbyrne.composeLibrary.away3d
 				_3dInvalid.clear();
 			}
 			
-			if(invalid3dList && _camera && _camera.lens){
+			if(invalid3dList && _view && _view.camera.lens){
+				
 				for(i=0; i<invalid3dList.length; ++i){
 					pos3d = invalid3dList[i];
 					if(!isNaN(pos3d.x3d) && !isNaN(pos3d.y3d) && !isNaN(pos3d.z3d)){
@@ -126,8 +126,14 @@ package org.tbyrne.composeLibrary.away3d
 						DUMMY_VECTOR.y = pos3d.y3d;
 						DUMMY_VECTOR.z = pos3d.z3d;
 						
-						var v : Vector3D = _camera.lens.matrix.transformVector(DUMMY_VECTOR);
-						pos3d.setProjectedPoint(v.x/v.w, -v.y/v.w, 1/v.w, v.z);
+						var test:Point = _view.project(DUMMY_VECTOR);
+						
+						var cameraPos:Vector3D = _view.camera.inverseSceneTransform.transformVector(DUMMY_VECTOR);
+						var v : Vector3D = _view.camera.lens.matrix.transformVector(cameraPos);
+						var x:Number = ((v.x/v.w) + 1.0)*_view.width/2.0;
+						var y:Number = ((-v.y/v.w) + 1.0)*_view.height/2.0;
+						
+						pos3d.setProjectedPoint(x, y, 1/v.w, cameraPos.z);
 					}
 				}
 			}

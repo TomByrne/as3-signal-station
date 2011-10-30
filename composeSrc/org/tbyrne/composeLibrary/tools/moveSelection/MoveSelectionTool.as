@@ -1,8 +1,8 @@
 package org.tbyrne.composeLibrary.tools.moveSelection
 {
 	import org.tbyrne.actInfo.IMouseActInfo;
-	import org.tbyrne.compose.concerns.ITraitConcern;
-	import org.tbyrne.compose.concerns.TraitConcern;
+	import org.tbyrne.compose.concerns.IConcern;
+	import org.tbyrne.compose.concerns.Concern;
 	import org.tbyrne.compose.traits.AbstractTrait;
 	import org.tbyrne.compose.traits.ITrait;
 	import org.tbyrne.composeLibrary.tools.selection2d.ISelectable2dTrait;
@@ -20,9 +20,9 @@ package org.tbyrne.composeLibrary.tools.moveSelection
 		{
 			super();
 			
-			addConcern(new TraitConcern(true, false, ISelectorTrait));
+			addConcern(new Concern(true, false, ISelectorTrait));
 		}
-		override protected function onConcernedTraitAdded(from:ITraitConcern, trait:ITrait):void{
+		override protected function onConcernedTraitAdded(from:IConcern, trait:ITrait):void{
 			var selectorTrait:ISelectorTrait;
 			
 			if(selectorTrait = (trait as ISelectorTrait)){
@@ -32,7 +32,7 @@ package org.tbyrne.composeLibrary.tools.moveSelection
 			}
 		}
 		
-		override protected function onConcernedTraitRemoved(from:ITraitConcern, trait:ITrait):void{
+		override protected function onConcernedTraitRemoved(from:IConcern, trait:ITrait):void{
 			var selectorTrait:ISelectorTrait;
 			
 			if(selectorTrait = (trait as ISelectorTrait)){

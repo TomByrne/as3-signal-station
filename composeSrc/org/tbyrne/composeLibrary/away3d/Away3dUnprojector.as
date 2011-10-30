@@ -1,6 +1,8 @@
 package org.tbyrne.composeLibrary.away3d
 {
+	import away3d.arcane;
 	import away3d.cameras.Camera3D;
+	import away3d.containers.View3D;
 	import away3d.core.math.Plane3D;
 	import away3d.tools.utils.Ray;
 	
@@ -9,26 +11,26 @@ package org.tbyrne.composeLibrary.away3d
 	
 	import org.tbyrne.acting.actTypes.IAct;
 	import org.tbyrne.collections.IndexedList;
-	import org.tbyrne.compose.concerns.ITraitConcern;
-	import org.tbyrne.compose.concerns.TraitConcern;
+	import org.tbyrne.compose.concerns.IConcern;
+	import org.tbyrne.compose.concerns.Concern;
 	import org.tbyrne.compose.traits.AbstractTrait;
 	import org.tbyrne.compose.traits.ITrait;
 	import org.tbyrne.composeLibrary.types.display3D.I2dTo3dTrait;
 	import org.tbyrne.composeLibrary.types.display3D.IMatrix3dTrait;
 	import org.tbyrne.composeLibrary.types.draw.IDrawAwareTrait;
+	
+	use namespace arcane;
 
 	public class Away3dUnprojector extends AbstractTrait implements IDrawAwareTrait
 	{
 		//private static const ROUND_REPROJECT_VALUES:int = 3; //decimal places
 		private static const UP_VECTOR:Vector3D = new Vector3D(0,1,0);
 		
-		public function get camera():Camera3D{
-			return _camera;
+		public function get view():View3D{
+			return _view;
 		}
-		public function set camera(value:Camera3D):void{
-			if(_camera!=value){
-				_camera = value;
-			}
+		public function set view(value:View3D):void{
+			_view = value;
 		}
 		
 		public function get cameraChanged():IAct{
@@ -47,7 +49,7 @@ package org.tbyrne.composeLibrary.away3d
 		}
 		
 		private var _cameraChanged:IAct;
-		private var _camera:Camera3D;
+		private var _view:View3D;
 		
 		private var _2dPositions:IndexedList;
 		private var _2dInvalid:IndexedList;
@@ -55,20 +57,20 @@ package org.tbyrne.composeLibrary.away3d
 		
 		private var _dummyVector:Vector3D;
 		
-		public function Away3dUnprojector(camera:Camera3D=null, cameraChanged:IAct=null){
+		public function Away3dUnprojector(view:View3D=null, cameraChanged:IAct=null){
 			super();
 			
 			_2dPositions = new IndexedList();
 			_2dInvalid = new IndexedList();
 			_dummyVector = new Vector3D();
 			
-			addConcern(new TraitConcern(false,true,I2dTo3dTrait,[I2dTo3dTrait]));
+			addConcern(new Concern(false,true,I2dTo3dTrait,[I2dTo3dTrait]));
 			
 			this.cameraChanged = cameraChanged;
-			this.camera = camera;
+			this.view = view;
 		}
 		
-		override protected function onConcernedTraitAdded(from:ITraitConcern, trait:ITrait):void{
+		override protected function onConcernedTraitAdded(from:IConcern, trait:ITrait):void{
 			var trait2d:I2dTo3dTrait;
 			
 			if(trait2d = (trait as I2dTo3dTrait)){
@@ -79,7 +81,7 @@ package org.tbyrne.composeLibrary.away3d
 			}
 		}
 		
-		override protected function onConcernedTraitRemoved(from:ITraitConcern, trait:ITrait):void{
+		override protected function onConcernedTraitRemoved(from:IConcern, trait:ITrait):void{
 			var trait2d:I2dTo3dTrait;
 			
 			if(trait2d = (trait as I2dTo3dTrait)){
@@ -136,36 +138,55 @@ package org.tbyrne.composeLibrary.away3d
 						planePos = pos2d.planeTransform.matrix3d.position;
 						planeNormal = pos2d.planeTransform.matrix3d.transformVector(new Vector3D(1,0,0));
 					}else{
-						var distance:Vector3D = new Vector3D(0,0,pos2d.cameraDistance);
+						planeNormal = new Vector3D(0,0,pos2d.cameraDistance);
 						
-						var values:Vector.<Number> = _camera.sceneTransform.rawData;
+						var values:Vector.<Number> = _view.camera.sceneTransform.rawData;
 						values[12] = 0;
 						values[13] = 0; // reset translation
 						values[14] = 0;
 						var matrix:Matrix3D = new Matrix3D(values);
 						
-						distance = matrix.transformVector(distance);
+						planeNormal = matrix.transformVector(planeNormal);
 						
-						planePos = _camera.sceneTransform.position.clone();
-						planePos.x += distance.x;
-						planePos.y += distance.y;
-						planePos.z += distance.z;
-						planeNormal = _camera.sceneTransform.transformVector(new Vector3D(1,0,0));
+						planePos = _view.camera.sceneTransform.position.clone();
+						planePos.x += planeNormal.x;
+						planePos.y += planeNormal.y;
+						planePos.z += planeNormal.z;
+						
+						planeNormal.normalize();
 					}
-					
 					var planeD:Number = planePos.x*planeNormal.x + planePos.y*planeNormal.y + planePos.z*planeNormal.z;
 					
-					var pMouse:Vector3D = _camera.unproject(pos2d.x2d, pos2d.y2d);
-					var cam:Vector3D = _camera.position;
-					var d0: Number = planeNormal.x * cam.x + planeNormal.y * cam.y + planeNormal.z * cam.z - planeD;
-					var d1: Number = planeNormal.x * pMouse.x + planeNormal.y * pMouse.y + planeNormal.z * pMouse.z - planeD;
+					var ray:Vector3D = _view.unproject(pos2d.x2d, pos2d.y2d);
+					var camPos:Vector3D = _view.camera.scenePosition;
+					
+					var d0: Number = planeNormal.x * camPos.x + planeNormal.y * camPos.y + planeNormal.z * camPos.z - planeD;
+					var d1: Number = planeNormal.x * ray.x    + planeNormal.y * ray.y    + planeNormal.z * ray.z    - planeD;
 					var m: Number = d1 / ( d1 - d0 );
 					
-					var x3d:Number = pMouse.x + ( cam.x - pMouse.x ) * m;
-					var y3d:Number = pMouse.y + ( cam.y - pMouse.y ) * m;
-					var z3d:Number = pMouse.z + ( cam.z - pMouse.z ) * m;
+					if(isNaN(m))m = 0;
+					
+					var x3d:Number = ray.x + ( camPos.x - ray.x ) * m;
+					var y3d:Number = ray.y + ( camPos.y - ray.y ) * m;
+					var z3d:Number = ray.z + ( camPos.z - ray.z ) * m;
 					
 					pos2d.setUnprojectedPoint(x3d,y3d,z3d);
+					
+					/*
+					var d0: Number = _point.x * v0.x + _point.y * v0.y + _point.z * v0.z - d;
+					var d1: Number = _point.x * v1.x + _point.y * v1.y + _point.z * v1.z - d;
+					var m: Number = d1 / ( d1 - d0 );
+					
+					return new Vector3D(
+						
+						v1.x + ( v0.x - v1.x ) * m,
+						
+						v1.y + ( v0.y - v1.y ) * m,
+						
+						v1.z + ( v0.z - v1.z ) * m
+						
+					);*/
+					
 				}
 			}
 		}

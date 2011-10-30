@@ -1,12 +1,12 @@
 package org.tbyrne.compose.traits
 {
 	import org.tbyrne.compose.core.ComposeItem;
-	import org.tbyrne.compose.concerns.ITraitConcern;
+	import org.tbyrne.compose.concerns.IConcern;
 
 	public interface ITrait
 	{
 		function set item(value:org.tbyrne.compose.core.ComposeItem):void;
 		function get item():ComposeItem;
-		function get concerns():Vector.<ITraitConcern>;
+		function get concerns():Vector.<IConcern>;
 	}
 }

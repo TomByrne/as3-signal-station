@@ -1,6 +1,6 @@
 package org.tbyrne.compose.traits
 {
-	import org.tbyrne.compose.concerns.ITraitConcern;
+	import org.tbyrne.compose.concerns.IConcern;
 	import org.tbyrne.compose.core.ComposeGroup;
 	import org.tbyrne.compose.core.ComposeItem;
 	
@@ -25,14 +25,14 @@ package org.tbyrne.compose.traits
 			}
 		}
 		
-		public function get concerns():Vector.<ITraitConcern>{
+		public function get concerns():Vector.<IConcern>{
 			return _concerns;
 		}
 		
 		
 		protected var _item:ComposeItem;
 		protected var _group:ComposeGroup;
-		protected var _concerns:Vector.<ITraitConcern>;
+		protected var _concerns:Vector.<IConcern>;
 		
 		/**
 		 * Set to true to force Trait to only be added for groups.
@@ -40,7 +40,7 @@ package org.tbyrne.compose.traits
 		protected var _groupOnly:Boolean = false;
 		
 		public function AbstractTrait(){
-			_concerns = new Vector.<ITraitConcern>();
+			_concerns = new Vector.<IConcern>();
 		}
 		protected function onItemRemove():void{
 			// override me
@@ -49,7 +49,7 @@ package org.tbyrne.compose.traits
 			// override me
 		}
 		
-		protected function addConcern(concern:ITraitConcern):void{
+		protected function addConcern(concern:IConcern):void{
 			CONFIG::debug{
 				if(_concerns.indexOf(concern)!=-1){
 					Log.error("Attempting to add concern twice");
@@ -60,7 +60,7 @@ package org.tbyrne.compose.traits
 			concern.traitRemoved.addHandler(onConcernedTraitRemoved);
 			concern.ownerTrait = this;
 		}
-		protected function removeConcern(concern:ITraitConcern):void{
+		protected function removeConcern(concern:IConcern):void{
 			var index:int = _concerns.indexOf(concern);
 			CONFIG::debug{
 				if(index==-1){
@@ -74,10 +74,10 @@ package org.tbyrne.compose.traits
 		}
 		
 		
-		protected function onConcernedTraitAdded(from:ITraitConcern, trait:ITrait):void{
+		protected function onConcernedTraitAdded(from:IConcern, trait:ITrait):void{
 			// override
 		}
-		protected function onConcernedTraitRemoved(from:ITraitConcern, trait:ITrait):void{
+		protected function onConcernedTraitRemoved(from:IConcern, trait:ITrait):void{
 			// override
 		}
 		

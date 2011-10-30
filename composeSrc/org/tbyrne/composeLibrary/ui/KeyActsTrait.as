@@ -9,8 +9,8 @@ package org.tbyrne.composeLibrary.ui
 	import org.tbyrne.actInfo.KeyActInfo;
 	import org.tbyrne.acting.actTypes.IAct;
 	import org.tbyrne.acting.acts.Act;
-	import org.tbyrne.compose.concerns.ITraitConcern;
-	import org.tbyrne.compose.concerns.TraitConcern;
+	import org.tbyrne.compose.concerns.IConcern;
+	import org.tbyrne.compose.concerns.Concern;
 	import org.tbyrne.compose.traits.AbstractTrait;
 	import org.tbyrne.compose.traits.ITrait;
 	import org.tbyrne.composeLibrary.types.display2D.IInteractiveObjectTrait;
@@ -37,6 +37,16 @@ package org.tbyrne.composeLibrary.ui
 		
 		
 		
+		public function get interactiveObject():InteractiveObject{
+			return _interactiveObject;
+		}
+		public function set interactiveObject(value:InteractiveObject):void{
+			if(_interactiveObject!=value){
+				_interactiveObject = value;
+				checkInteractiveObject();
+			}
+		}
+		
 		public function get stageMode():Boolean{
 			return _stageMode;
 		}
@@ -54,6 +64,7 @@ package org.tbyrne.composeLibrary.ui
 		
 		
 		private var _interactiveObjectTrait:IInteractiveObjectTrait;
+		private var _usedInteractiveObject:InteractiveObject;
 		private var _interactiveObject:InteractiveObject;
 		
 		private var _keyData:Dictionary = new Dictionary();
@@ -64,18 +75,19 @@ package org.tbyrne.composeLibrary.ui
 		private var _keyLocationsDown:Dictionary = new Dictionary();
 		private var _charsDown:Dictionary = new Dictionary();
 		
-		public function KeyActsTrait(stageMode:Boolean=false)
+		public function KeyActsTrait(interactiveObject:InteractiveObject=null, stageMode:Boolean=false)
 		{
 			super();
+			this.interactiveObject = interactiveObject;
 			this.stageMode = stageMode;
-			addConcern(new TraitConcern(true,false,IInteractiveObjectTrait));
+			addConcern(new Concern(true,false,IInteractiveObjectTrait));
 		}
 		
 		
 		
-		override protected function onConcernedTraitAdded(from:ITraitConcern, trait:ITrait):void{
+		override protected function onConcernedTraitAdded(from:IConcern, trait:ITrait):void{
 			CONFIG::debug{
-				if(_interactiveObjectTrait){
+				if(_interactiveObjectTrait && !_interactiveObject){
 					Log.error("Two IInteractiveObjectTrait objects were found, unsure which to use");
 				}
 			}
@@ -88,16 +100,18 @@ package org.tbyrne.composeLibrary.ui
 		private function checkInteractiveObject():void{
 			if(!_interactiveObjectTrait)return;
 			
+			var intObj:InteractiveObject = (_interactiveObject || _interactiveObjectTrait.interactiveObject);
+			
 			if(_stageMode){
-				if(_interactiveObjectTrait.interactiveObject.stage){
-					_interactiveObjectTrait.interactiveObject.removeEventListener(Event.ADDED_TO_STAGE, onAddedToStage);
-					setInteractiveObject(_interactiveObjectTrait.interactiveObject.stage);
+				if(intObj.stage){
+					intObj.removeEventListener(Event.ADDED_TO_STAGE, onAddedToStage);
+					setInteractiveObject(intObj.stage);
 				}else{
-					_interactiveObjectTrait.interactiveObject.addEventListener(Event.ADDED_TO_STAGE, onAddedToStage);
+					intObj.addEventListener(Event.ADDED_TO_STAGE, onAddedToStage);
 				}
 			}else{
-				_interactiveObjectTrait.interactiveObject.removeEventListener(Event.ADDED_TO_STAGE, onAddedToStage);
-				setInteractiveObject(_interactiveObjectTrait.interactiveObject);
+				intObj.removeEventListener(Event.ADDED_TO_STAGE, onAddedToStage);
+				setInteractiveObject(intObj);
 			}
 		}
 		
@@ -107,17 +121,17 @@ package org.tbyrne.composeLibrary.ui
 		
 		private function setInteractiveObject(interactiveObject:InteractiveObject):void
 		{
-			if(_interactiveObject!=interactiveObject){
-				if(_interactiveObject){
-					_interactiveObject.addEventListener(KeyboardEvent.KEY_DOWN, onKeyDown);
-					_interactiveObject.addEventListener(KeyboardEvent.KEY_UP, onKeyUp);
+			if(_usedInteractiveObject!=interactiveObject){
+				if(_usedInteractiveObject){
+					_usedInteractiveObject.addEventListener(KeyboardEvent.KEY_DOWN, onKeyDown);
+					_usedInteractiveObject.addEventListener(KeyboardEvent.KEY_UP, onKeyUp);
 				}
 				
-				_interactiveObject = interactiveObject;
+				_usedInteractiveObject = interactiveObject;
 				
-				if(_interactiveObject){
-					_interactiveObject.addEventListener(KeyboardEvent.KEY_DOWN, onKeyDown);
-					_interactiveObject.addEventListener(KeyboardEvent.KEY_UP, onKeyUp);
+				if(_usedInteractiveObject){
+					_usedInteractiveObject.addEventListener(KeyboardEvent.KEY_DOWN, onKeyDown);
+					_usedInteractiveObject.addEventListener(KeyboardEvent.KEY_UP, onKeyUp);
 				}
 			}
 		}
@@ -128,14 +142,15 @@ package org.tbyrne.composeLibrary.ui
 		}
 		
 		
-		override protected function onConcernedTraitRemoved(from:ITraitConcern, trait:ITrait):void{
+		override protected function onConcernedTraitRemoved(from:IConcern, trait:ITrait):void{
 			CONFIG::debug{
 				if(trait != _interactiveObjectTrait){
 					Log.error("Two IInteractiveObjectTrait objects were found, unsure which to use");
 				}
 			}
-			setInteractiveObject(null);
+			if(!_interactiveObject)setInteractiveObject(null);
 			
+			_interactiveObjectTrait.interactiveObject.removeEventListener(Event.ADDED_TO_STAGE, onAddedToStage);
 			_interactiveObjectTrait.interactiveObjectChanged.removeHandler(onInteractiveObjectChanged);
 			_interactiveObjectTrait = null;
 		}

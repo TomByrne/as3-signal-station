@@ -4,10 +4,10 @@ package org.tbyrne.composeLibrary.display3D
 	import flash.geom.Matrix3D;
 	import flash.utils.Dictionary;
 	
-	import org.tbyrne.compose.concerns.TraitConcern;
+	import org.tbyrne.compose.concerns.Concern;
 	import org.tbyrne.compose.traits.AbstractTrait;
 	import org.tbyrne.compose.traits.ITrait;
-	import org.tbyrne.compose.concerns.ITraitConcern;
+	import org.tbyrne.compose.concerns.IConcern;
 	import org.tbyrne.composeLibrary.types.display3D.I3dTo2dTrait;
 	import org.tbyrne.composeLibrary.types.display3D.IMatrix3dTrait;
 	import org.tbyrne.composeLibrary.types.draw.IDrawAwareTrait;
@@ -62,13 +62,13 @@ package org.tbyrne.composeLibrary.display3D
 			_3dPositions = new IndexedList();
 			_3dInvalid = new IndexedList();
 			
-			addConcern(new TraitConcern(false,true,I3dTo2dTrait,[I3dTo2dTrait]));
+			addConcern(new Concern(false,true,I3dTo2dTrait,[I3dTo2dTrait]));
 			
 			this.matrix3dTrait = matrix3dTrait;
 			this.focalLength = focalLength;
 		}
 		
-		override protected function onConcernedTraitAdded(from:ITraitConcern, trait:ITrait):void{
+		override protected function onConcernedTraitAdded(from:IConcern, trait:ITrait):void{
 			var trait3d:I3dTo2dTrait;
 			
 			if(trait3d = (trait as I3dTo2dTrait)){ 
@@ -79,7 +79,7 @@ package org.tbyrne.composeLibrary.display3D
 			}
 		}
 		
-		override protected function onConcernedTraitRemoved(from:ITraitConcern, trait:ITrait):void{
+		override protected function onConcernedTraitRemoved(from:IConcern, trait:ITrait):void{
 			var trait3d:I3dTo2dTrait;
 			
 			if(trait3d = (trait as I3dTo2dTrait)){ 

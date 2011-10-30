@@ -1,10 +1,10 @@
 package org.tbyrne.composeLibrary.adjust
 {
-	import org.tbyrne.compose.concerns.TraitConcern;
+	import org.tbyrne.compose.concerns.Concern;
 	import org.tbyrne.compose.traits.AbstractTrait;
 	import org.tbyrne.compose.traits.ITrait;
 	import org.tbyrne.composeLibrary.types.adjust.ITogglableTrait;
-	import org.tbyrne.compose.concerns.ITraitConcern;
+	import org.tbyrne.compose.concerns.IConcern;
 	import org.tbyrne.collections.IndexedList;
 	
 	public class TogglableGroup extends AbstractTrait
@@ -27,12 +27,12 @@ package org.tbyrne.composeLibrary.adjust
 			this.togglableGroupId = togglableGroupId;
 			
 			
-			var concern:TraitConcern = new TraitConcern(true,true,ITogglableTrait);
+			var concern:Concern = new Concern(true,true,ITogglableTrait);
 			concern.stopDescendingAt = Vector.<Class>([TogglableGroup]);
 			addConcern(concern);
 		}
 		
-		override protected function onConcernedTraitAdded(from:ITraitConcern, trait:ITrait):void{
+		override protected function onConcernedTraitAdded(from:IConcern, trait:ITrait):void{
 			var castTrait:ITogglableTrait = (trait as ITogglableTrait);
 			
 			if(castTrait.togglableGroup==togglableGroupId){
@@ -42,7 +42,7 @@ package org.tbyrne.composeLibrary.adjust
 			}
 		}
 		
-		override protected function onConcernedTraitRemoved(from:ITraitConcern, trait:ITrait):void{
+		override protected function onConcernedTraitRemoved(from:IConcern, trait:ITrait):void{
 			var castTrait:ITogglableTrait = (trait as ITogglableTrait);
 			
 			if(_traits.containsItem(castTrait)){

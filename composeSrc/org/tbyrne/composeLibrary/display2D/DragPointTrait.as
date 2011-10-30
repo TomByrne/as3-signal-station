@@ -1,9 +1,9 @@
 package org.tbyrne.composeLibrary.display2D
 {
-	import org.tbyrne.compose.concerns.TraitConcern;
+	import org.tbyrne.compose.concerns.Concern;
 	import org.tbyrne.compose.traits.AbstractTrait;
 	import org.tbyrne.compose.traits.ITrait;
-	import org.tbyrne.compose.concerns.ITraitConcern;
+	import org.tbyrne.compose.concerns.IConcern;
 	import org.tbyrne.composeLibrary.types.display2D.IPosition2dTrait;
 	import org.tbyrne.composeLibrary.types.ui.IMouseActsTrait;
 	import org.tbyrne.collections.IndexedList;
@@ -19,11 +19,11 @@ package org.tbyrne.composeLibrary.display2D
 			
 			_points = new IndexedList();
 			
-			addConcern(new TraitConcern(true,true,IPosition2dTrait));
-			addConcern(new TraitConcern(true,false,IMouseActsTrait));
+			addConcern(new Concern(true,true,IPosition2dTrait));
+			addConcern(new Concern(true,false,IMouseActsTrait));
 		}
 		
-		override protected function onConcernedTraitAdded(from:ITraitConcern, trait:ITrait):void{
+		override protected function onConcernedTraitAdded(from:IConcern, trait:ITrait):void{
 			var castMouse:IMouseActsTrait = trait as IMouseActsTrait;
 			if(castMouse){
 				CONFIG::debug{
@@ -49,7 +49,7 @@ package org.tbyrne.composeLibrary.display2D
 			}
 		}
 		
-		override protected function onConcernedTraitRemoved(from:ITraitConcern, trait:ITrait):void{
+		override protected function onConcernedTraitRemoved(from:IConcern, trait:ITrait):void{
 			if(trait==_mouseTrait){
 				_mouseTrait.mouseDrag.removeHandler(onDrag);
 				_mouseTrait = null;

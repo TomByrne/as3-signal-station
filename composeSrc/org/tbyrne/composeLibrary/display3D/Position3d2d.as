@@ -62,9 +62,6 @@ package org.tbyrne.composeLibrary.display3D
 		public function get z3d():Number{
 			return _z3d;
 		}
-		public function get depthIndex():Number{
-			return _cameraDistance;
-		}
 		
 		public function get planeTransform():IMatrix3dTrait{
 			return _planeTransform;

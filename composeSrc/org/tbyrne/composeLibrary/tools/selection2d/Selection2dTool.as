@@ -6,8 +6,8 @@ package org.tbyrne.composeLibrary.tools.selection2d
 	import org.tbyrne.actInfo.IMouseActInfo;
 	import org.tbyrne.acting.actTypes.IAct;
 	import org.tbyrne.acting.acts.Act;
-	import org.tbyrne.compose.concerns.ITraitConcern;
-	import org.tbyrne.compose.concerns.TraitConcern;
+	import org.tbyrne.compose.concerns.IConcern;
+	import org.tbyrne.compose.concerns.Concern;
 	import org.tbyrne.compose.core.ComposeItem;
 	import org.tbyrne.compose.traits.AbstractTrait;
 	import org.tbyrne.compose.traits.ITrait;
@@ -87,13 +87,13 @@ package org.tbyrne.composeLibrary.tools.selection2d
 			
 			_marqueeProvider = new RectangleData();
 			
-			addConcern(new TraitConcern(true,true,ISelectable2dTrait));
-			addConcern(new TraitConcern(true,false,IDepthAdjudicatorTrait));
-			addConcern(new TraitConcern(true,false,IMouseActsTrait));
-			addConcern(new TraitConcern(true,false,IKeyActsTrait));
-			addConcern(new TraitConcern(true,false,IHitTestTrait));
+			addConcern(new Concern(true,true,ISelectable2dTrait));
+			addConcern(new Concern(true,false,IDepthAdjudicatorTrait));
+			addConcern(new Concern(true,false,IMouseActsTrait));
+			addConcern(new Concern(true,false,IKeyActsTrait));
+			addConcern(new Concern(true,false,IHitTestTrait));
 		}
-		override protected function onConcernedTraitAdded(from:ITraitConcern, trait:ITrait):void{
+		override protected function onConcernedTraitAdded(from:IConcern, trait:ITrait):void{
 			var mouseActsTrait:IMouseActsTrait;
 			var keyActsTrait:IKeyActsTrait;
 			var depthAdjudicatorTrait:IDepthAdjudicatorTrait;
@@ -120,7 +120,7 @@ package org.tbyrne.composeLibrary.tools.selection2d
 				_depthCollection.addTrait(trait);
 			}
 		}
-		override protected function onConcernedTraitRemoved(from:ITraitConcern, trait:ITrait):void{
+		override protected function onConcernedTraitRemoved(from:IConcern, trait:ITrait):void{
 			var mouseActsTrait:IMouseActsTrait;
 			var keyActsTrait:IKeyActsTrait;
 			var depthAdjudicatorTrait:IDepthAdjudicatorTrait;

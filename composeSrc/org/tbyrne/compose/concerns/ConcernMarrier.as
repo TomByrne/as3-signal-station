@@ -42,7 +42,7 @@ package org.tbyrne.compose.concerns
 			this.traits = traits;
 		}
 		
-		public function addConcern(traitConcern:ITraitConcern):void{
+		public function addConcern(traitConcern:IConcern):void{
 			CONFIG::debug{
 				if(!traitConcern)Log.error("ConcernMarrier.addConcern must have concern supplied");
 				if(_traitConcerns.containsItem(traitConcern))Log.error("ComposeGroup.addConcern already contains concern.");
@@ -54,7 +54,7 @@ package org.tbyrne.compose.concerns
 				compareTrait(trait, traitConcern);
 			}
 		}
-		public function removeConcern(traitConcern:ITraitConcern):void{
+		public function removeConcern(traitConcern:IConcern):void{
 			CONFIG::debug{
 				if(!traitConcern)Log.error("ConcernMarrier.removeConcern must have concern supplied");
 				if(!_traitConcerns.containsItem(traitConcern))Log.error("ComposeGroup.removeConcern doesn't contain concern.");
@@ -76,7 +76,7 @@ package org.tbyrne.compose.concerns
 		}
 		
 		protected function onTraitAdded(from:TraitCollection, trait:ITrait):void{
-			for each(var traitConcern:ITraitConcern in _traitConcerns.list){
+			for each(var traitConcern:IConcern in _traitConcerns.list){
 				compareTrait(trait, traitConcern);
 			}
 		}
@@ -84,7 +84,7 @@ package org.tbyrne.compose.concerns
 		protected function onTraitRemoved(from:TraitCollection, trait:ITrait):void{
 			var concerns:IndexedList = _traitLookup[trait];
 			if(concerns){
-				for each(var traitConcern:ITraitConcern in concerns.list){
+				for each(var traitConcern:IConcern in concerns.list){
 					traitConcern.concernRemoved(trait);
 					
 					var concernLookup:IndexedList = _concernLookup[traitConcern];
@@ -96,7 +96,7 @@ package org.tbyrne.compose.concerns
 		}
 		
 		
-		protected function compareTrait(trait:ITrait, traitConcern:ITraitConcern):void{
+		protected function compareTrait(trait:ITrait, traitConcern:IConcern):void{
 			if((trait is traitConcern.interestedTraitType) && (trait!=traitConcern.ownerTrait || traitConcern.acceptOwnerTrait)){
 				
 				// add to concern lookup

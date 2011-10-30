@@ -9,8 +9,8 @@ package org.tbyrne.composeLibrary.display2D
 	import org.tbyrne.acting.actTypes.IAct;
 	import org.tbyrne.acting.acts.Act;
 	import org.tbyrne.collections.IndexedList;
-	import org.tbyrne.compose.concerns.ITraitConcern;
-	import org.tbyrne.compose.concerns.TraitConcern;
+	import org.tbyrne.compose.concerns.IConcern;
+	import org.tbyrne.compose.concerns.Concern;
 	import org.tbyrne.compose.core.ComposeItem;
 	import org.tbyrne.compose.traits.AbstractTrait;
 	import org.tbyrne.compose.traits.ITrait;
@@ -54,7 +54,7 @@ package org.tbyrne.composeLibrary.display2D
 			_layerIdLookup = new Dictionary();
 		}
 		
-		override protected function onConcernedTraitAdded(from:ITraitConcern, trait:ITrait):void{
+		override protected function onConcernedTraitAdded(from:IConcern, trait:ITrait):void{
 			var castTrait:ILayeredDisplayTrait = (trait as ILayeredDisplayTrait);
 			
 			if(castTrait){
@@ -88,7 +88,7 @@ package org.tbyrne.composeLibrary.display2D
 				super.onConcernedTraitAdded(from,trait);
 			}
 		}
-		override protected function onConcernedTraitRemoved(from:ITraitConcern, trait:ITrait):void{
+		override protected function onConcernedTraitRemoved(from:IConcern, trait:ITrait):void{
 			var castTrait:ILayeredDisplayTrait = (trait as ILayeredDisplayTrait);
 			
 			if(castTrait){

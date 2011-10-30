@@ -2,7 +2,7 @@ package org.tbyrne.compose.core
 {
 	import org.tbyrne.collections.IndexedList;
 	import org.tbyrne.compose.ComposeNamespace;
-	import org.tbyrne.compose.concerns.ITraitConcern;
+	import org.tbyrne.compose.concerns.IConcern;
 	import org.tbyrne.compose.traits.ITrait;
 	import org.tbyrne.compose.traits.TraitCollection;
 	
@@ -35,7 +35,7 @@ package org.tbyrne.compose.core
 			_children.push(item);
 			item.parentItem = this;
 			
-			var traitConcern:ITraitConcern;
+			var traitConcern:IConcern;
 			for each(traitConcern in _descConcerns.list){
 				item.addParentConcern(traitConcern);
 			}
@@ -54,7 +54,7 @@ package org.tbyrne.compose.core
 			_children.remove(item);
 			item.parentItem = null;
 			
-			var traitConcern:ITraitConcern;
+			var traitConcern:IConcern;
 			for each(traitConcern in _descConcerns.list){
 				item.removeParentConcern(traitConcern);
 			}
@@ -97,7 +97,7 @@ package org.tbyrne.compose.core
 			super.removeAllTraits();
 			uncheckParentConcerns();
 		}
-		override protected function addTraitConcern(concern:ITraitConcern):void{
+		override protected function addTraitConcern(concern:IConcern):void{
 			super.addTraitConcern(concern);
 			if(concern.descendants){
 				_descConcerns.push(concern);
@@ -106,7 +106,7 @@ package org.tbyrne.compose.core
 				}
 			}
 		}
-		override protected function removeTraitConcern(concern:ITraitConcern):void{
+		override protected function removeTraitConcern(concern:IConcern):void{
 			super.removeTraitConcern(concern);
 			if(_descConcerns.containsItem(concern)){
 				_descConcerns.remove(concern);
@@ -138,7 +138,7 @@ package org.tbyrne.compose.core
 		}
 		
 		
-		override ComposeNamespace function addParentConcern(concern:ITraitConcern):void{
+		override ComposeNamespace function addParentConcern(concern:IConcern):void{
 			super.addParentConcern(concern);
 			if(concern.shouldDescend(this)){
 				addDescParentConcern(concern);
@@ -147,7 +147,7 @@ package org.tbyrne.compose.core
 			}
 		}
 		
-		override ComposeNamespace function removeParentConcern(concern:ITraitConcern):void{
+		override ComposeNamespace function removeParentConcern(concern:IConcern):void{
 			super.removeParentConcern(concern);
 			
 			if(_parentDescConcerns.containsItem(concern)){
@@ -160,7 +160,7 @@ package org.tbyrne.compose.core
 		protected function checkParentConcerns():void{
 			var i:int=0;
 			while(i<_parentDescConcerns.list.length){
-				var concern:ITraitConcern = _parentDescConcerns.list[i];
+				var concern:IConcern = _parentDescConcerns.list[i];
 				if(!concern.shouldDescend(this)){
 					removeDescParentConcern(concern);
 					_ignoredParentConcerns.push(concern);
@@ -172,7 +172,7 @@ package org.tbyrne.compose.core
 		protected function uncheckParentConcerns():void{
 			var i:int=0;
 			while(i<_ignoredParentConcerns.list.length){
-				var concern:ITraitConcern = _ignoredParentConcerns.list[i];
+				var concern:IConcern = _ignoredParentConcerns.list[i];
 				if(concern.shouldDescend(this)){
 					addDescParentConcern(concern);
 					_ignoredParentConcerns.remove(concern);
@@ -183,13 +183,13 @@ package org.tbyrne.compose.core
 		}
 		
 		
-		protected function addDescParentConcern(concern:ITraitConcern):void{
+		protected function addDescParentConcern(concern:IConcern):void{
 			_parentDescConcerns.push(concern);
 			for each(var child:ComposeItem in _children.list){
 				child.addParentConcern(concern);
 			}
 		}
-		private function removeDescParentConcern(concern:ITraitConcern):void{
+		private function removeDescParentConcern(concern:IConcern):void{
 			_parentDescConcerns.remove(concern);
 			for each(var child:ComposeItem in _children.list){
 				child.removeParentConcern(concern);

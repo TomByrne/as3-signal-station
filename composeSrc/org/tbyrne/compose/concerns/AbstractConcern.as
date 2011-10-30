@@ -8,7 +8,7 @@ package org.tbyrne.compose.concerns
 	import org.tbyrne.compose.core.ComposeItem;
 	import org.tbyrne.compose.traits.ITrait;
 	
-	public class AbstractTraitConcern implements ITraitConcern
+	public class AbstractConcern implements IConcern
 	{
 		
 		/**
@@ -59,7 +59,7 @@ package org.tbyrne.compose.concerns
 		
 		protected var _addedTraits:Dictionary;
 		
-		public function AbstractTraitConcern(siblings:Boolean, descendants:Boolean, interestedTraitType:Class){
+		public function AbstractConcern(siblings:Boolean, descendants:Boolean, interestedTraitType:Class){
 			_interestedTraitType = interestedTraitType;
 			_siblings = siblings;
 			_descendants = descendants;

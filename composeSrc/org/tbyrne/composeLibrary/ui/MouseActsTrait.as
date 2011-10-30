@@ -6,8 +6,8 @@ package org.tbyrne.composeLibrary.ui
 	import flash.utils.getTimer;
 	
 	import org.tbyrne.actInfo.MouseActInfo;
-	import org.tbyrne.compose.concerns.ITraitConcern;
-	import org.tbyrne.compose.concerns.TraitConcern;
+	import org.tbyrne.compose.concerns.IConcern;
+	import org.tbyrne.compose.concerns.Concern;
 	import org.tbyrne.compose.traits.ITrait;
 	import org.tbyrne.composeLibrary.types.display2D.IInteractiveObjectTrait;
 	
@@ -18,6 +18,16 @@ package org.tbyrne.composeLibrary.ui
 		public static const DEFAULT_CLICK_SPEED:Number = 0.25;
 		
 		
+		
+		public function get interactiveObject():InteractiveObject{
+			return _interactiveObject;
+		}
+		public function set interactiveObject(value:InteractiveObject):void{
+			if(_interactiveObject!=value){
+				_interactiveObject = value;
+				assessInteractiveObject();
+			}
+		}
 		
 		
 		public function get dragTreshold():uint{
@@ -43,6 +53,7 @@ package org.tbyrne.composeLibrary.ui
 		private var _clickSpeedMS:int;
 		private var _dragTreshold:uint;
 		private var _interactiveObjectTrait:IInteractiveObjectTrait;
+		private var _usedInteractiveObject:InteractiveObject;
 		private var _interactiveObject:InteractiveObject;
 		
 		private var _clickBegan:int;
@@ -52,57 +63,62 @@ package org.tbyrne.composeLibrary.ui
 		private var _stage:Stage;
 		
 		
-		public function MouseActsTrait(){
+		public function MouseActsTrait(interactiveObject:InteractiveObject=null){
 			super();
+			this.interactiveObject = interactiveObject;
 			
 			dragTreshold = DEFAULT_DRAG_THRESHOLD;
 			clickSpeed = DEFAULT_CLICK_SPEED;
 			
-			addConcern(new TraitConcern(true,false,IInteractiveObjectTrait));
+			addConcern(new Concern(true,false,IInteractiveObjectTrait));
 		}
 		
 		
-		override protected function onConcernedTraitAdded(from:ITraitConcern, trait:ITrait):void{
+		override protected function onConcernedTraitAdded(from:IConcern, trait:ITrait):void{
 			CONFIG::debug{
-				if(_interactiveObjectTrait){
+				if(_interactiveObjectTrait && !_interactiveObject){
 					Log.error("Two IInteractiveObjectTrait objects were found, unsure which to use");
 				}
 			}
 			_interactiveObjectTrait = trait as IInteractiveObjectTrait;
 			_interactiveObjectTrait.interactiveObjectChanged.addHandler(onInteractiveObjectChanged);
-			setInteractiveObject(_interactiveObjectTrait.interactiveObject);
+			assessInteractiveObject();
+		}
+		
+		private function assessInteractiveObject():void{
+			setInteractiveObject(_interactiveObject || _interactiveObjectTrait.interactiveObject);
+		}
+		private function onInteractiveObjectChanged(from:IInteractiveObjectTrait):void{
+			if(!_interactiveObject)setInteractiveObject(from.interactiveObject);
 		}
 		
 		private function setInteractiveObject(interactiveObject:InteractiveObject):void
 		{
-			if(_interactiveObject!=interactiveObject){
-				if(_interactiveObject){
-					_interactiveObject.removeEventListener(MouseEvent.ROLL_OVER, onMouseOver);
-					_interactiveObject.removeEventListener(MouseEvent.ROLL_OUT, onMouseOut);
-					_interactiveObject.removeEventListener(MouseEvent.MOUSE_MOVE, onMouseMove);
+			if(_usedInteractiveObject!=interactiveObject){
+				if(_usedInteractiveObject){
+					_usedInteractiveObject.removeEventListener(MouseEvent.ROLL_OVER, onMouseOver);
+					_usedInteractiveObject.removeEventListener(MouseEvent.ROLL_OUT, onMouseOut);
+					_usedInteractiveObject.removeEventListener(MouseEvent.MOUSE_MOVE, onMouseMove);
 					
-					_interactiveObject.removeEventListener(MouseEvent.MOUSE_DOWN, onMouseDown);
+					_usedInteractiveObject.removeEventListener(MouseEvent.MOUSE_DOWN, onMouseDown);
 				}
 				
-				_interactiveObject = interactiveObject;
+				_usedInteractiveObject = interactiveObject;
 				
-				if(_interactiveObject){
-					_interactiveObject.addEventListener(MouseEvent.ROLL_OVER, onMouseOver);
-					_interactiveObject.addEventListener(MouseEvent.ROLL_OUT, onMouseOut);
-					_interactiveObject.addEventListener(MouseEvent.MOUSE_MOVE, onMouseMove);
+				if(_usedInteractiveObject){
+					_usedInteractiveObject.addEventListener(MouseEvent.ROLL_OVER, onMouseOver);
+					_usedInteractiveObject.addEventListener(MouseEvent.ROLL_OUT, onMouseOut);
+					_usedInteractiveObject.addEventListener(MouseEvent.MOUSE_MOVE, onMouseMove);
 					
-					_interactiveObject.addEventListener(MouseEvent.MOUSE_DOWN, onMouseDown);
+					_usedInteractiveObject.addEventListener(MouseEvent.MOUSE_DOWN, onMouseDown);
 				}
 			}
 		}
 		
 		
-		private function onInteractiveObjectChanged(from:IInteractiveObjectTrait):void{
-			setInteractiveObject(from.interactiveObject);
-		}
 		
 		
-		override protected function onConcernedTraitRemoved(from:ITraitConcern, trait:ITrait):void{
+		override protected function onConcernedTraitRemoved(from:IConcern, trait:ITrait):void{
 			CONFIG::debug{
 				if(trait != _interactiveObjectTrait){
 					Log.error("Two IInteractiveObjectTrait objects were found, unsure which to use");
@@ -124,7 +140,7 @@ package org.tbyrne.composeLibrary.ui
 			}
 			_mouseIsOver.booleanValue = false;
 			
-			setInteractiveObject(null);
+			if(!_interactiveObject)setInteractiveObject(null);
 			
 			_interactiveObjectTrait.interactiveObjectChanged.removeHandler(onInteractiveObjectChanged);
 			_interactiveObjectTrait = null;
@@ -150,7 +166,7 @@ package org.tbyrne.composeLibrary.ui
 		protected function onMouseDown(event:MouseEvent):void{
 			_mouseIsDown.booleanValue = true;
 			
-			_stage = _interactiveObject.stage;
+			_stage = _usedInteractiveObject.stage;
 			_stage.addEventListener(MouseEvent.MOUSE_MOVE, onDownMove);
 			_stage.addEventListener(MouseEvent.MOUSE_UP, onMouseUp);
 			

@@ -185,7 +185,7 @@ package org.tbyrne.composeLibrary.display3D
 			_invMatrixFlag.invalidate();
 			if(_matrix3dChanged)_matrix3dChanged.perform(this);
 		}
-		private function compileMatrix():void{
+		protected function compileMatrix():void{
 			_matrix3d.identity()
 			_matrix3d.appendRotation( _rotX, Vector3D.X_AXIS );
 			_matrix3d.appendRotation( _rotY, Vector3D.Y_AXIS );
@@ -194,7 +194,7 @@ package org.tbyrne.composeLibrary.display3D
 		}
 		private function createInvMatrix():void{
 			_matrixFlag.validate();
-			_invMatrix3d = _matrix3d.clone();
+			_invMatrix3d.copyFrom(_matrix3d);
 			_invMatrix3d.invert();
 		}
 		protected var _matrix3dChanged:Act;
