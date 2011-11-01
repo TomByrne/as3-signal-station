@@ -49,7 +49,7 @@ package org.tbyrne.composeLibrary.display3D
 		public function set cameraDistance(value:Number):void{
 			if(_cameraDistance!=value){
 				_cameraDistance = value;
-				if(!_planeTransform && _requestUnprojection)_requestUnprojection.perform(this);
+				if(!_planeTransform && _requestUnprojection)_requestUnprojection.perform(this,false);
 			}
 		}
 		
@@ -69,7 +69,7 @@ package org.tbyrne.composeLibrary.display3D
 		public function set planeTransform(value:IMatrix3dTrait):void{
 			if(_planeTransform!=value){
 				_planeTransform = value;
-				if(_empirical2d && _requestUnprojection)_requestUnprojection.perform(this);
+				if(_empirical2d && _requestUnprojection)_requestUnprojection.perform(this,false);
 			}
 		}
 		
@@ -107,8 +107,8 @@ package org.tbyrne.composeLibrary.display3D
 				
 				_empirical3d = true;
 				_empirical2d = false;
+				if(_requestProjection)_requestProjection.perform(this,true);
 				if(_position3dChanged)_position3dChanged.perform(this);
-				if(_requestProjection)_requestProjection.perform(this);
 			}
 		}
 		override public function setPosition2d(x:Number, y:Number):void{
@@ -122,7 +122,7 @@ package org.tbyrne.composeLibrary.display3D
 				_y = y;
 				
 				if(_position2dChanged)_position2dChanged.perform(this);
-				if(_requestUnprojection)_requestUnprojection.perform(this);
+				if(_requestUnprojection)_requestUnprojection.perform(this,true);
 			}
 		}
 		
@@ -145,12 +145,12 @@ package org.tbyrne.composeLibrary.display3D
 			}
 		}
 		public function setProjectedPoint(x:Number, y:Number, scale:Number, cameraDistance:Number):void{
+			
 			var pointChanged:Boolean;
 			if(_empirical3d && (_projectedX!=x || _projectedY!=y)){
 				_empirical2d = false;
 				_projectedX = x;
 				_projectedY = y;
-				if(_position2dChanged)_position2dChanged.perform(this);
 				pointChanged = true;
 			}
 			if(_cameraDistance!=cameraDistance){

@@ -87,11 +87,11 @@ package org.tbyrne.composeLibrary.tools.selection2d
 			
 			_marqueeProvider = new RectangleData();
 			
-			addConcern(new Concern(true,true,ISelectable2dTrait));
-			addConcern(new Concern(true,false,IDepthAdjudicatorTrait));
-			addConcern(new Concern(true,false,IMouseActsTrait));
-			addConcern(new Concern(true,false,IKeyActsTrait));
-			addConcern(new Concern(true,false,IHitTestTrait));
+			addConcern(new Concern(true,true,false,ISelectable2dTrait));
+			addConcern(new Concern(true,false,false,IDepthAdjudicatorTrait));
+			addConcern(new Concern(true,false,false,IMouseActsTrait));
+			addConcern(new Concern(true,false,false,IKeyActsTrait));
+			addConcern(new Concern(true,false,false,IHitTestTrait));
 		}
 		override protected function onConcernedTraitAdded(from:IConcern, trait:ITrait):void{
 			var mouseActsTrait:IMouseActsTrait;

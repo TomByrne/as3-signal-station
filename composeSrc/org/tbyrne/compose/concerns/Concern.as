@@ -33,8 +33,8 @@ package org.tbyrne.compose.concerns
 		private var _unlessHasTraits:Vector.<Class>;
 		
 		
-		public function Concern(siblings:Boolean, descendants:Boolean, interestedTraitType:Class, stopDescendingAt:Array=null, unlessHasTraits:Array=null){
-			super(siblings, descendants, interestedTraitType);
+		public function Concern(siblings:Boolean, descendants:Boolean, ascendants:Boolean, interestedTraitType:Class, stopDescendingAt:Array=null, unlessHasTraits:Array=null){
+			super(siblings, descendants, ascendants, interestedTraitType);
 			if(stopDescendingAt!=null)this.stopDescendingAt = Vector.<Class>(stopDescendingAt);
 			if(unlessHasTraits!=null)this.unlessHasTraits = Vector.<Class>(unlessHasTraits);
 		}

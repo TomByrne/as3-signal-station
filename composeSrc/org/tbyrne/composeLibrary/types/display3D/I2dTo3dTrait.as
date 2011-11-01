@@ -6,7 +6,7 @@ package org.tbyrne.composeLibrary.types.display3D
 	public interface I2dTo3dTrait extends ITrait
 	{
 		/**
-		 * handler(from:I2dTo3dTrait)
+		 * handler(from:I2dTo3dTrait, immediate:Boolean)
 		 */
 		function get requestUnprojection():IAct;
 		function get x2d():Number;

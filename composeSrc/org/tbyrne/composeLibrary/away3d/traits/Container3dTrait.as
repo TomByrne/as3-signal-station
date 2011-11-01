@@ -13,7 +13,7 @@ package org.tbyrne.composeLibrary.away3d.traits
 		public function Container3dTrait(child:ObjectContainer3D=null){
 			super(child);
 			
-			addConcern(new Concern(true,true,IChild3dTrait,[IContainer3dTrait]));
+			addConcern(new Concern(true,true,false,IChild3dTrait,[IContainer3dTrait]));
 		}
 		override protected function onConcernedTraitAdded(from:IConcern, trait:ITrait):void{
 			var castTrait:IChild3dTrait = (trait as IChild3dTrait);

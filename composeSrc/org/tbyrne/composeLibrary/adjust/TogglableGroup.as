@@ -27,7 +27,7 @@ package org.tbyrne.composeLibrary.adjust
 			this.togglableGroupId = togglableGroupId;
 			
 			
-			var concern:Concern = new Concern(true,true,ITogglableTrait);
+			var concern:Concern = new Concern(true,true,false,ITogglableTrait);
 			concern.stopDescendingAt = Vector.<Class>([TogglableGroup]);
 			addConcern(concern);
 		}

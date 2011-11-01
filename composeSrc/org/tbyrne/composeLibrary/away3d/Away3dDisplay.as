@@ -12,12 +12,14 @@ package org.tbyrne.composeLibrary.away3d
 	import away3d.materials.MaterialBase;
 	import away3d.primitives.Cube;
 	
+	import flash.display.BitmapData;
+	
 	import org.tbyrne.acting.actTypes.IAct;
 	import org.tbyrne.acting.acts.Act;
 	import org.tbyrne.binding.Binder;
 	import org.tbyrne.collections.IndexedList;
-	import org.tbyrne.compose.concerns.IConcern;
 	import org.tbyrne.compose.concerns.Concern;
+	import org.tbyrne.compose.concerns.IConcern;
 	import org.tbyrne.compose.traits.AbstractTrait;
 	import org.tbyrne.compose.traits.ITrait;
 	import org.tbyrne.composeLibrary.away3d.types.IChild3dTrait;
@@ -135,9 +137,13 @@ package org.tbyrne.composeLibrary.away3d
 					_sceneScale.numericalValueChanged.addHandler(onSceneScaleChanged);
 					onSceneScaleChanged(_sceneScale);
 				}else{
-					_camera.scaleX = 1;
+					/*_camera.scaleX = 1;
 					_camera.scaleY = 1;
-					_camera.scaleZ = 1;
+					_camera.scaleZ = 1;*/
+					
+					_sceneContainer.scaleX = 1;
+					_sceneContainer.scaleY = 1;
+					_sceneContainer.scaleZ = 1;
 				}
 			}
 		}
@@ -159,6 +165,7 @@ package org.tbyrne.composeLibrary.away3d
 		private var _camDistAwareTraits:IndexedList = new IndexedList();
 		
 		private var _scene:Scene3D;
+		private var _sceneContainer:ObjectContainer3D;
 		private var _sceneProxy:Away3dSceneProxy;
 		private var _camera:Camera3D;
 		private var _view:View3D;
@@ -182,6 +189,9 @@ package org.tbyrne.composeLibrary.away3d
 			_scene = _view.scene;
 			_sceneProxy = new Away3dSceneProxy(_scene);
 			
+			_sceneContainer = new ObjectContainer3D();
+			_scene.addChild(_sceneContainer);
+			
 			_camera = _view.camera;
 			_camera.z = 0;
 			
@@ -199,16 +209,16 @@ package org.tbyrne.composeLibrary.away3d
 			var cube:Cube = new Cube(material,100,100,100);
 			var cont:ObjectContainer3D = new ObjectContainer3D();
 			cont.addChild(cube);
-			_scene.addChild(cont);*/
+			_sceneContainer.addChild(cont);*/
 			
 			
 			_focalLengthFlag = new ValidationFlag(commitFocalLength,false);
 			_matrixFlag = new ValidationFlag(commitMatrix,false);
 			_renderFlag = new ValidationFlag(_view.render,false);
 			
-			addConcern(new Concern(true,true,IScene3dAwareTrait));
-			addConcern(new Concern(true,true,IChild3dTrait,[IContainer3dTrait]));
-			addConcern(new Concern(true,true,ICameraDistanceAwareTrait));
+			addConcern(new Concern(true,true,false,IScene3dAwareTrait));
+			addConcern(new Concern(true,true,false,IChild3dTrait,[IContainer3dTrait]));
+			addConcern(new Concern(true,true,false,ICameraDistanceAwareTrait));
 		}
 		override protected function onConcernedTraitAdded(from:IConcern, trait:ITrait):void{
 			var awareTrait:IScene3dAwareTrait;
@@ -218,7 +228,7 @@ package org.tbyrne.composeLibrary.away3d
 			if(awareTrait = (trait as IScene3dAwareTrait)){
 				awareTrait.scene3d = _sceneProxy;
 			}else if(child3d = (trait as IChild3dTrait)){
-				_scene.addChild(child3d.object3d);
+				_sceneContainer.addChild(child3d.object3d);
 			}else if(cameraDistanceAware = (trait as ICameraDistanceAwareTrait)){
 				_camDistAwareTraits.push(cameraDistanceAware);
 			}
@@ -255,7 +265,6 @@ package org.tbyrne.composeLibrary.away3d
 				// if a more accurate equation is needed, check out this http://away3d.com/forum/viewthread/1053/
 				var objTrait:IChild3dTrait = camAware.item.getTrait(IChild3dTrait);
 				camAware.cameraDistance = objTrait.object3d.scenePosition.subtract(_camera.scenePosition).length;
-				trace(camAware.cameraDistance);
 			}
 		}
 		
@@ -290,13 +299,22 @@ package org.tbyrne.composeLibrary.away3d
 			}
 			if(_cameraChanged)_cameraChanged.perform(this);
 		}
+		public function render():void{
+			_focalLengthFlag.validate();
+			_matrixFlag.validate();
+			_renderFlag.validate(true);
+		}
 		
 		private function onSceneScaleChanged(from:INumberProvider):void
 		{
-			var scale:Number = 1/from.numericalValue;
+			/*var scale:Number = 1/from.numericalValue;
 			_camera.scaleX = scale;
 			_camera.scaleY = scale;
-			_camera.scaleZ = scale;
+			_camera.scaleZ = scale;*/
+			
+			/*_sceneContainer.scaleX = from.numericalValue;
+			_sceneContainer.scaleY = from.numericalValue;
+			_sceneContainer.scaleZ = from.numericalValue;*/
 		}
 	}
 }

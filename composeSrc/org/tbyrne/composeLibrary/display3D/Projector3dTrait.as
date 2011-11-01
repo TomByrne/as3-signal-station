@@ -62,7 +62,7 @@ package org.tbyrne.composeLibrary.display3D
 			_3dPositions = new IndexedList();
 			_3dInvalid = new IndexedList();
 			
-			addConcern(new Concern(false,true,I3dTo2dTrait,[I3dTo2dTrait]));
+			addConcern(new Concern(false,true,false,I3dTo2dTrait,[I3dTo2dTrait]));
 			
 			this.matrix3dTrait = matrix3dTrait;
 			this.focalLength = focalLength;
@@ -91,8 +91,13 @@ package org.tbyrne.composeLibrary.display3D
 			}
 		}
 		
-		protected function on3dPositionChanged(from:I3dTo2dTrait):void{
-			if(!_3dAllInvalid && !_3dInvalid.containsItem(from))_3dInvalid.push(from);
+		protected function on3dPositionChanged(from:I3dTo2dTrait, immediate:Boolean):void{
+			if(immediate){
+				validateList([from]);
+				_3dInvalid.remove(from);
+			}else{
+				if(!_3dAllInvalid && !_3dInvalid.containsItem(from))_3dInvalid.push(from);
+			}
 		}
 		
 		protected function invalidateAll():void{
@@ -104,15 +109,7 @@ package org.tbyrne.composeLibrary.display3D
 		
 		
 		
-		
 		public function tick(timeStep:Number):void{
-			var invMatrix:Matrix3D = _matrix3dTrait.invMatrix3d;
-			var focalLength:Number = _focalLength.numericalValue;
-			var i:int;
-			var translate:Vector.<Number>;
-			var output:Vector.<Number>;
-			
-			var pos3d:I3dTo2dTrait;
 			
 			var invalid3dList:Array;
 			if(_3dAllInvalid){
@@ -122,13 +119,24 @@ package org.tbyrne.composeLibrary.display3D
 				invalid3dList = _3dInvalid.list;
 				_3dInvalid.clear();
 			}
+			validateList(invalid3dList);
+		}
+		
+		public function validateList(invalid:Array):void{
+			var invMatrix:Matrix3D = _matrix3dTrait.invMatrix3d;
+			var focalLength:Number = _focalLength.numericalValue;
+			var i:int;
+			var translate:Vector.<Number>;
+			var output:Vector.<Number>;
 			
-			if(invalid3dList){
+			var pos3d:I3dTo2dTrait;
+			
+			if(invalid && invalid.length){
 				if(invMatrix){
 					translate = new Vector.<Number>();
 					output = new Vector.<Number>();
 					var readyTraits:Vector.<I3dTo2dTrait> = new Vector.<I3dTo2dTrait>();
-					for each(pos3d in invalid3dList){
+					for each(pos3d in invalid){
 						if(!isNaN(pos3d.x3d) && !isNaN(pos3d.y3d) && !isNaN(pos3d.z3d)){
 							readyTraits.push(pos3d);
 							translate.push(pos3d.x3d);
@@ -142,8 +150,8 @@ package org.tbyrne.composeLibrary.display3D
 						project3dPoint(pos3d,focalLength,output[i*3],output[i*3+1],output[i*3+2]);
 					}
 				}else{
-					for(i=0; i<invalid3dList.length; ++i){
-						pos3d = invalid3dList[i];
+					for(i=0; i<invalid.length; ++i){
+						pos3d = invalid[i];
 						if(!isNaN(pos3d.x3d) && !isNaN(pos3d.y3d) && !isNaN(pos3d.z3d)){
 							project3dPoint(pos3d,focalLength,pos3d.x3d,pos3d.y3d,pos3d.z3d);
 						}

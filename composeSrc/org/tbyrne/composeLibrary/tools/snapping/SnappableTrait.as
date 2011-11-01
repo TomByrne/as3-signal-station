@@ -57,7 +57,7 @@ package org.tbyrne.composeLibrary.tools.snapping
 		public function SnappableTrait(){
 			super();
 			
-			addConcern(new Concern(true,false,IPosition3dTrait));
+			addConcern(new Concern(true,false,false,IPosition3dTrait));
 		}
 		
 		protected function onConcernedTraitAdded(from:IConcern, trait:ITrait):void{

@@ -1,8 +1,12 @@
 package org.tbyrne.composeLibrary.tools.moveSelection
 {
+	import flash.geom.Point;
+	import flash.utils.Dictionary;
+	
 	import org.tbyrne.actInfo.IMouseActInfo;
-	import org.tbyrne.compose.concerns.IConcern;
 	import org.tbyrne.compose.concerns.Concern;
+	import org.tbyrne.compose.concerns.IConcern;
+	import org.tbyrne.compose.core.ComposeGroup;
 	import org.tbyrne.compose.traits.AbstractTrait;
 	import org.tbyrne.compose.traits.ITrait;
 	import org.tbyrne.composeLibrary.tools.selection2d.ISelectable2dTrait;
@@ -20,7 +24,7 @@ package org.tbyrne.composeLibrary.tools.moveSelection
 		{
 			super();
 			
-			addConcern(new Concern(true, false, ISelectorTrait));
+			addConcern(new Concern(true, false,false, ISelectorTrait));
 		}
 		override protected function onConcernedTraitAdded(from:IConcern, trait:ITrait):void{
 			var selectorTrait:ISelectorTrait;
@@ -59,14 +63,14 @@ package org.tbyrne.composeLibrary.tools.moveSelection
 			_selection = null;
 			if(selection){
 				for each(selectable in selection){
-					mouseActTrait = getAct(selectable, IMouseActsTrait);
-					positionTrait = getAct(selectable, IPosition2dTrait);
+					mouseActTrait = getAct(selectable, IMouseActsTrait, false);
+					positionTrait = getAct(selectable, IPosition2dTrait, false);
 					if(mouseActTrait && positionTrait){
 						if(!_selection){
 							_selection = new Vector.<IMouseActsTrait>();
 							_positions = new Vector.<IPosition2dTrait>();
 						}
-						mouseActTrait.mouseDragStart.addHandler(onDragStart);
+						mouseActTrait.mouseDragStart.addHandler(onDragStart,[getAct(selectable, IMoveTrait, true)]);
 						
 						_selection.push(mouseActTrait);
 						_positions.push(positionTrait);
@@ -75,24 +79,39 @@ package org.tbyrne.composeLibrary.tools.moveSelection
 			}
 		}
 		
-		private function getAct(selectable:ISelectable2dTrait, traitType:Class):*{
-			return (selectable as traitType) || selectable.item.getTrait(traitType);
+		private function getAct(selectable:ISelectable2dTrait, traitType:Class, doDesc:Boolean):*{
+			var ret:* = (selectable as traitType) || selectable.item.getTrait(traitType);
+			if(!ret && doDesc){
+				ret = (selectable.item as ComposeGroup).getDescTrait(traitType);
+			}
+			return ret;
 		}
 		
-		private function onDragStart(from:IMouseActsTrait, info:IMouseActInfo):void{
-			from.mouseDrag.addHandler(onDrag);
-			from.mouseDragFinish.addHandler(onDragFinish);
-		}
-		
-		private function onDrag(from:IMouseActsTrait, info:IMouseActInfo, byX:Number, byY:Number):void{
+		private function onDragStart(from:IMouseActsTrait, info:IMouseActInfo, moveTrait:IMoveTrait):void{
+			var dragPositions:Vector.<Point> = new Vector.<Point>();
 			for each(var position2d:IPosition2dTrait in _positions){
-				position2d.setPosition2d(position2d.x2d + byX, position2d.y2d + byY);
+				dragPositions.push(new Point(position2d.x2d, position2d.y2d));
+			}
+			from.mouseDrag.addHandler(onDrag,[dragPositions]);
+			from.mouseDragFinish.addHandler(onDragFinish,[moveTrait]);
+			if(moveTrait)moveTrait.isMoving = true;
+		}
+		
+		private function onDrag(from:IMouseActsTrait, info:IMouseActInfo, byX:Number, byY:Number, dragPositions:Vector.<Point>):void{
+			for(var i:int=0; i<_positions.length; ++i){
+				var position2d:IPosition2dTrait = _positions[i];
+				var dragPoint:Point = dragPositions[i];
+				dragPoint.x += byX;
+				dragPoint.y += byY;
+				
+				position2d.setPosition2d(dragPoint.x, dragPoint.y);
 			}
 		}
 		
-		private function onDragFinish(from:IMouseActsTrait, info:IMouseActInfo):void{
+		private function onDragFinish(from:IMouseActsTrait, info:IMouseActInfo, moveTrait:IMoveTrait):void{
 			from.mouseDrag.removeHandler(onDrag);
 			from.mouseDragFinish.removeHandler(onDragFinish);
+			if(moveTrait)moveTrait.isMoving = false;
 		}
 	}
 }

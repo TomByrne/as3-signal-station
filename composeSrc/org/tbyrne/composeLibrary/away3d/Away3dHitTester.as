@@ -5,6 +5,7 @@ package org.tbyrne.composeLibrary.away3d
 	import away3d.containers.View3D;
 	import away3d.core.base.IRenderable;
 	import away3d.core.base.SubMesh;
+	import away3d.core.managers.Stage3DManager;
 	import away3d.core.managers.Stage3DProxy;
 	import away3d.core.render.HitTestRenderer;
 	import away3d.core.traverse.EntityCollector;
@@ -12,6 +13,8 @@ package org.tbyrne.composeLibrary.away3d
 	import flash.events.Event;
 	import flash.geom.Point;
 	
+	import org.tbyrne.acting.actTypes.IAct;
+	import org.tbyrne.acting.acts.Act;
 	import org.tbyrne.compose.core.ComposeItem;
 	import org.tbyrne.compose.traits.AbstractTrait;
 	import org.tbyrne.compose.traits.ITrait;
@@ -22,6 +25,15 @@ package org.tbyrne.composeLibrary.away3d
 	
 	public class Away3dHitTester extends AbstractTrait implements IHitTestTrait
 	{
+		
+		/**
+		 * handler(from:Away3dHitTester)
+		 */
+		public function get requestRender():IAct{
+			return (_requestRender || (_requestRender = new Act()));
+		}
+		
+		protected var _requestRender:Act;
 		
 		public function get view3D():View3D{
 			return _view3D;
@@ -75,6 +87,7 @@ package org.tbyrne.composeLibrary.away3d
 					
 					var localPoint:Point = _view3D.globalToLocal(new Point(screenX,screenY));
 					_hitTestRenderer.update((localPoint.x/_view3D.width), (localPoint.y/_view3D.height), collector);
+					//if(_requestRender)_requestRender.perform(this);
 				}
 				
 				var subMesh:SubMesh = _hitTestRenderer.hitRenderable as SubMesh;

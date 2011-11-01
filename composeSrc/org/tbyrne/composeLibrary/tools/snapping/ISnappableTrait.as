@@ -4,14 +4,15 @@ package org.tbyrne.composeLibrary.tools.snapping
 	import org.tbyrne.compose.traits.ITrait;
 	import org.tbyrne.composeLibrary.types.display3D.IPosition3dTrait;
 	
-	public interface ISnappableTrait extends IPosition3dTrait
+	public interface ISnappableTrait extends ITrait
 	{
-		function get snappingGroup():String;
 		
 		function get snappingActive():Boolean;
 		/**
 		 * handler(from:ISnappableTrait)
 		 */
 		function get snappingActiveChanged():IAct;
+		
+		function get snapPoints():Vector.<ISnapPoint>;
 	}
 }

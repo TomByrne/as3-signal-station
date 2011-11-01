@@ -66,7 +66,7 @@ package org.tbyrne.composeLibrary.display3D
 			_2dInvalid = new IndexedList();
 			_dummyVector = new Vector3D();
 			
-			addConcern(new Concern(false,true,I2dTo3dTrait,[I2dTo3dTrait]));
+			addConcern(new Concern(false,true,false,I2dTo3dTrait,[I2dTo3dTrait]));
 			
 			this.matrix3dTrait = matrix3dTrait;
 			this.focalLength = focalLength;
@@ -95,8 +95,13 @@ package org.tbyrne.composeLibrary.display3D
 			}
 		}
 		
-		protected function on2dPositionChanged(from:I2dTo3dTrait):void{
-			if(!_2dAllInvalid && !_2dInvalid.containsItem(from))_2dInvalid.push(from);
+		protected function on2dPositionChanged(from:I2dTo3dTrait, immediate:Boolean):void{
+			if(immediate){
+				validateList([from]);
+				_2dInvalid.remove(from);
+			}else{
+				if(!_2dAllInvalid && !_2dInvalid.containsItem(from))_2dInvalid.push(from);
+			}
 		}
 		
 		protected function invalidateAll():void{
@@ -108,14 +113,7 @@ package org.tbyrne.composeLibrary.display3D
 		
 		
 		
-		
 		public function tick(timeStep:Number):void{
-			var matrix:Matrix3D = _matrix3dTrait.matrix3d;
-			var invMatrix:Matrix3D = _matrix3dTrait.invMatrix3d;
-			var focalLength:Number = _focalLength.numericalValue;
-			var i:int;
-			var translate:Vector.<Number>;
-			var output:Vector.<Number>;
 			
 			var invalid2dList:Array;
 			if(_2dAllInvalid){
@@ -125,19 +123,29 @@ package org.tbyrne.composeLibrary.display3D
 				invalid2dList = _2dInvalid.list;
 				_2dInvalid.clear();
 			}
+			validateList(invalid2dList);
+		}
+		
+		public function validateList(invalid:Array):void{
+			var matrix:Matrix3D = _matrix3dTrait.matrix3d;
+			var invMatrix:Matrix3D = _matrix3dTrait.invMatrix3d;
+			var focalLength:Number = _focalLength.numericalValue;
+			var i:int;
+			var translate:Vector.<Number>;
+			var output:Vector.<Number>;
 			
 			var pos2d:I2dTo3dTrait;
 			var z2d:Number;
 			
-			if(invalid2dList && invalid2dList.length){
+			if(invalid && invalid.length){
 				var isFocalInf:Boolean = (focalLength==Number.POSITIVE_INFINITY || focalLength==Number.NEGATIVE_INFINITY);
 				if(invMatrix){
 					
 					translate = new Vector.<Number>();
 					output = new Vector.<Number>();
 					var readyTraits:Vector.<I2dTo3dTrait> = new Vector.<I2dTo3dTrait>();
-					for(i=0; i<invalid2dList.length; ++i){
-						pos2d = invalid2dList[i];
+					for(i=0; i<invalid.length; ++i){
+						pos2d = invalid[i];
 						
 						var x2d:Number;
 						var y2d:Number;
@@ -172,8 +180,8 @@ package org.tbyrne.composeLibrary.display3D
 						pos2d.setUnprojectedPoint(output[i*3],output[i*3+1],output[i*3+2]);
 					}
 				}else{
-					for(i=0; i<invalid2dList.length; ++i){
-						pos2d = invalid2dList[i];
+					for(i=0; i<invalid.length; ++i){
+						pos2d = invalid[i];
 						//pos2d.setUnprojectedPoint(pos2d.x2d,pos2d.y2d,pos2d.cameraDistance);
 						unprojectToPlane(pos2d,_dummyVector,null,isFocalInf);
 						pos2d.setUnprojectedPoint(_dummyVector.x,_dummyVector.y,_dummyVector.z);

@@ -70,7 +70,7 @@ package org.tbyrne.composeLibrary.ui
 			dragTreshold = DEFAULT_DRAG_THRESHOLD;
 			clickSpeed = DEFAULT_CLICK_SPEED;
 			
-			addConcern(new Concern(true,false,IInteractiveObjectTrait));
+			addConcern(new Concern(true,false,false,IInteractiveObjectTrait));
 		}
 		
 		

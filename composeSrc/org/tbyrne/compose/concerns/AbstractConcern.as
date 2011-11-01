@@ -38,6 +38,9 @@ package org.tbyrne.compose.concerns
 		public function get descendants():Boolean{
 			return _descendants;
 		}
+		public function get ascendants():Boolean{
+			return _ascendants;
+		}
 		public function get acceptOwnerTrait():Boolean{
 			return _acceptOwnerTrait;
 		}
@@ -55,14 +58,16 @@ package org.tbyrne.compose.concerns
 		protected var _interestedTraitType:Class;
 		protected var _descendants:Boolean;
 		protected var _siblings:Boolean;
+		protected var _ascendants:Boolean;
 		protected var _acceptOwnerTrait:Boolean;
 		
 		protected var _addedTraits:Dictionary;
 		
-		public function AbstractConcern(siblings:Boolean, descendants:Boolean, interestedTraitType:Class){
+		public function AbstractConcern(siblings:Boolean, descendants:Boolean, ascendants:Boolean, interestedTraitType:Class){
 			_interestedTraitType = interestedTraitType;
 			_siblings = siblings;
 			_descendants = descendants;
+			_ascendants = ascendants;
 			_addedTraits = new Dictionary(true);
 		}
 		

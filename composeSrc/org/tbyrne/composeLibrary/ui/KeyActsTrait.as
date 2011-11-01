@@ -80,7 +80,7 @@ package org.tbyrne.composeLibrary.ui
 			super();
 			this.interactiveObject = interactiveObject;
 			this.stageMode = stageMode;
-			addConcern(new Concern(true,false,IInteractiveObjectTrait));
+			addConcern(new Concern(true,false,false,IInteractiveObjectTrait));
 		}
 		
 		

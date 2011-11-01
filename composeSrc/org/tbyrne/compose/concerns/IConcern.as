@@ -19,6 +19,7 @@ package org.tbyrne.compose.concerns
 		
 		function get interestedTraitType():Class;
 		function get siblings():Boolean;
+		function get ascendants():Boolean;
 		function get descendants():Boolean;
 		function get acceptOwnerTrait():Boolean;
 		

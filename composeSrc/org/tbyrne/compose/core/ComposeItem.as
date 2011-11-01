@@ -38,6 +38,7 @@ package org.tbyrne.compose.core
 		protected var _traitCollection:TraitCollection;
 		protected var _siblingMarrier:ConcernMarrier;
 		protected var _parentMarrier:ConcernMarrier;
+		protected var _ascConcerns:IndexedList;
 		
 		public function ComposeItem(initTraits:Array=null){
 			_traitCollection = new TraitCollection();
@@ -124,10 +125,19 @@ package org.tbyrne.compose.core
 			if(concern.siblings){
 				_siblingMarrier.addConcern(concern);
 			}
+			if(concern.ascendants){
+				if(!_ascConcerns)_ascConcerns = new IndexedList();
+				_ascConcerns.remove(concern);
+				if(_parentItem)_parentItem.addAscendingConcern(concern);
+			}
 		}
 		protected function removeTraitConcern(concern:IConcern):void{
 			if(concern.siblings){
 				_siblingMarrier.removeConcern(concern);
+			}
+			if(concern.ascendants){
+				_ascConcerns.remove(concern);
+				if(_parentItem)_parentItem.removeAscendingConcern(concern);
 			}
 		}
 		
@@ -136,10 +146,20 @@ package org.tbyrne.compose.core
 			for each(var trait:ITrait in _traitCollection.traits.list){
 				_parentItem.addChildTrait(trait);
 			}
+			if(_ascConcerns){
+				for each(var concern:IConcern in _ascConcerns.list){
+					_parentItem.addAscendingConcern(concern);
+				}
+			}
 		}
 		protected function onParentRemove():void{
 			for each(var trait:ITrait in _traitCollection.traits.list){
 				_parentItem.removeChildTrait(trait);
+			}
+			if(_ascConcerns){
+				for each(var concern:IConcern in _ascConcerns.list){
+					_parentItem.removeAscendingConcern(concern);
+				}
 			}
 		}
 		

@@ -58,7 +58,7 @@ package org.tbyrne.composeLibrary.away3d
 			_3dPositions = new IndexedList();
 			_3dInvalid = new IndexedList();
 			
-			addConcern(new Concern(false,true,I3dTo2dTrait,[I3dTo2dTrait]));
+			addConcern(new Concern(false,true,false,I3dTo2dTrait));
 			
 			this.cameraChanged = cameraChanged;
 			this.view = view;
@@ -87,8 +87,13 @@ package org.tbyrne.composeLibrary.away3d
 			}
 		}
 		
-		protected function on3dPositionChanged(from:I3dTo2dTrait):void{
-			if(!_3dAllInvalid && !_3dInvalid.containsItem(from))_3dInvalid.push(from);
+		protected function on3dPositionChanged(from:I3dTo2dTrait, immediate:Boolean):void{
+			if(immediate){
+				validatePos(from);
+				_3dInvalid.remove(from)
+			}else{
+				if(!_3dAllInvalid && !_3dInvalid.containsItem(from))_3dInvalid.push(from);
+			}
 		}
 		
 		protected function invalidateAll():void{
@@ -121,21 +126,25 @@ package org.tbyrne.composeLibrary.away3d
 				
 				for(i=0; i<invalid3dList.length; ++i){
 					pos3d = invalid3dList[i];
-					if(!isNaN(pos3d.x3d) && !isNaN(pos3d.y3d) && !isNaN(pos3d.z3d)){
-						DUMMY_VECTOR.x = pos3d.x3d;
-						DUMMY_VECTOR.y = pos3d.y3d;
-						DUMMY_VECTOR.z = pos3d.z3d;
-						
-						var test:Point = _view.project(DUMMY_VECTOR);
-						
-						var cameraPos:Vector3D = _view.camera.inverseSceneTransform.transformVector(DUMMY_VECTOR);
-						var v : Vector3D = _view.camera.lens.matrix.transformVector(cameraPos);
-						var x:Number = ((v.x/v.w) + 1.0)*_view.width/2.0;
-						var y:Number = ((-v.y/v.w) + 1.0)*_view.height/2.0;
-						
-						pos3d.setProjectedPoint(x, y, 1/v.w, cameraPos.z);
-					}
+					validatePos(pos3d);
 				}
+			}
+		}
+		
+		private function validatePos(pos3d:I3dTo2dTrait):void{
+			if(!isNaN(pos3d.x3d) && !isNaN(pos3d.y3d) && !isNaN(pos3d.z3d)){
+				DUMMY_VECTOR.x = pos3d.x3d;
+				DUMMY_VECTOR.y = pos3d.y3d;
+				DUMMY_VECTOR.z = pos3d.z3d;
+				
+				var test:Point = _view.project(DUMMY_VECTOR);
+				
+				var cameraPos:Vector3D = _view.camera.inverseSceneTransform.transformVector(DUMMY_VECTOR);
+				var v : Vector3D = _view.camera.lens.matrix.transformVector(cameraPos);
+				var x:Number = ((v.x/v.w) + 1.0)*_view.width/2.0;
+				var y:Number = ((-v.y/v.w) + 1.0)*_view.height/2.0;
+				
+				pos3d.setProjectedPoint(x, y, 1/v.w, cameraPos.z);
 			}
 		}
 		

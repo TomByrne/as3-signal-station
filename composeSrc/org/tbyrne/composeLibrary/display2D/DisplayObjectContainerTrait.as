@@ -21,7 +21,7 @@ package org.tbyrne.composeLibrary.display2D
 			
 			super(_container);
 			
-			addConcern(new Concern(true,true,IDisplayObjectTrait,[IDisplayContainerTrait]));
+			addConcern(new Concern(true,true,false,IDisplayObjectTrait,[IDisplayContainerTrait]));
 		}
 		override protected function onConcernedTraitAdded(from:IConcern, trait:ITrait):void{
 			if(trait==this || !_addChildren)return;

@@ -64,7 +64,7 @@ package org.tbyrne.composeLibrary.away3d
 			dragTreshold = DEFAULT_DRAG_THRESHOLD;
 			clickSpeed = DEFAULT_CLICK_SPEED;
 			
-			addConcern(new Concern(true,false,IChild3dTrait));
+			addConcern(new Concern(true,false,false,IChild3dTrait));
 		}
 		
 		override protected function onConcernedTraitAdded(from:IConcern, trait:ITrait):void{

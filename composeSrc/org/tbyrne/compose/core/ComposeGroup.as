@@ -2,6 +2,7 @@ package org.tbyrne.compose.core
 {
 	import org.tbyrne.collections.IndexedList;
 	import org.tbyrne.compose.ComposeNamespace;
+	import org.tbyrne.compose.concerns.ConcernMarrier;
 	import org.tbyrne.compose.concerns.IConcern;
 	import org.tbyrne.compose.traits.ITrait;
 	import org.tbyrne.compose.traits.TraitCollection;
@@ -15,10 +16,13 @@ package org.tbyrne.compose.core
 		private var _children:IndexedList = new IndexedList();
 		private var _descConcerns:IndexedList = new IndexedList();
 		private var _parentDescConcerns:IndexedList = new IndexedList();
+		private var _childAscConcerns:IndexedList;
 		private var _ignoredParentConcerns:IndexedList = new IndexedList();
+		private var _childAscendingMarrier:ConcernMarrier;
 		
 		public function ComposeGroup(initTraits:Array=null){
 			super(initTraits);
+			_childAscendingMarrier = new ConcernMarrier(_traitCollection);
 		}
 		override ComposeNamespace function setRoot(game:ComposeRoot):void{
 			super.setRoot(game);
@@ -129,14 +133,34 @@ package org.tbyrne.compose.core
 			for each(var trait:ITrait in _descendantTraits.traits){
 				_parentItem.addChildTrait(trait);
 			}
+			if(_childAscConcerns){
+				for each(var concern:IConcern in _childAscConcerns.list){
+					_parentItem.addAscendingConcern(concern);
+				}
+			}
 		}
 		override protected function onParentRemove():void{
 			super.onParentRemove();
 			for each(var trait:ITrait in _descendantTraits.traits){
 				_parentItem.removeChildTrait(trait);
 			}
+			if(_childAscConcerns){
+				for each(var concern:IConcern in _childAscConcerns.list){
+					_parentItem.removeTraitConcern(concern);
+				}
+			}
 		}
-		
+		ComposeNamespace function addAscendingConcern(concern:IConcern):void{
+			_childAscendingMarrier.addConcern(concern);
+			if(!_childAscConcerns)_childAscConcerns = new IndexedList();
+			_childAscConcerns.push(concern);
+			if(_parentItem)_parentItem.addAscendingConcern(concern);
+		}
+		ComposeNamespace function removeAscendingConcern(concern:IConcern):void{
+			_childAscendingMarrier.removeConcern(concern);
+			_childAscConcerns.remove(concern);
+			if(_parentItem)_parentItem.removeAscendingConcern(concern);
+		}
 		
 		override ComposeNamespace function addParentConcern(concern:IConcern):void{
 			super.addParentConcern(concern);

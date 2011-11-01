@@ -19,8 +19,8 @@ package org.tbyrne.composeLibrary.display2D
 			
 			_points = new IndexedList();
 			
-			addConcern(new Concern(true,true,IPosition2dTrait));
-			addConcern(new Concern(true,false,IMouseActsTrait));
+			addConcern(new Concern(true,true,false,IPosition2dTrait));
+			addConcern(new Concern(true,false,false,IMouseActsTrait));
 		}
 		
 		override protected function onConcernedTraitAdded(from:IConcern, trait:ITrait):void{
