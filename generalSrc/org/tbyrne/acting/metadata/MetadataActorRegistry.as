@@ -1,11 +1,8 @@
 package org.tbyrne.acting.metadata
 {
-	import away3d.animators.data.NullAnimation;
-	
 	import flash.utils.Dictionary;
 	
 	import org.tbyrne.acting.ActingNamspace;
-	import org.tbyrne.acting.actTypes.IUniversalAct;
 	import org.tbyrne.acting.metadata.ruleTypes.IUniversalClassRule;
 	import org.tbyrne.acting.metadata.ruleTypes.IUniversalPhasedRule;
 	import org.tbyrne.acting.universal.UniversalActExecution;
@@ -16,7 +13,6 @@ package org.tbyrne.acting.metadata
 	import org.tbyrne.reflection.Deliterator;
 	import org.tbyrne.reflection.ReflectionUtils;
 	import org.tbyrne.utils.MetadataConfirmer;
-	import org.tbyrne.utils.ObjectUtils;
 	
 	use namespace ActingNamspace;
 

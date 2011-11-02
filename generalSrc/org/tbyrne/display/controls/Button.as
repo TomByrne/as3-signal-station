@@ -7,12 +7,12 @@ package org.tbyrne.display.controls
 	import flash.geom.Rectangle;
 	import flash.ui.Keyboard;
 	
+	import org.tbyrne.actInfo.IKeyActInfo;
+	import org.tbyrne.actInfo.IMouseActInfo;
 	import org.tbyrne.acting.actTypes.IAct;
 	import org.tbyrne.acting.acts.Act;
 	import org.tbyrne.data.dataTypes.ITriggerableAction;
 	import org.tbyrne.display.DisplayNamespace;
-	import org.tbyrne.actInfo.IKeyActInfo;
-	import org.tbyrne.actInfo.IMouseActInfo;
 	import org.tbyrne.display.assets.assetTypes.IAsset;
 	import org.tbyrne.display.assets.nativeTypes.IDisplayObject;
 	import org.tbyrne.display.assets.nativeTypes.IInteractiveObject;
@@ -39,8 +39,8 @@ package org.tbyrne.display.controls
 		public function set useHandCursor(value:Boolean):void{
 			if(_useHandCursor!=value){
 				_useHandCursor = value;
-				if(_interactiveArea && _active){
-					_interactiveArea.useHandCursor = _useHandCursor && _active;
+				if(_interactiveSprite && _active){
+					_interactiveSprite.useHandCursor = _useHandCursor && _active;
 				}
 			}
 		}
@@ -126,7 +126,8 @@ package org.tbyrne.display.controls
 		protected var _overState:StateDef = new StateDef([STATE_OVER,STATE_OUT],1);
 		protected var _downState:StateDef = new StateDef([STATE_DOWN,STATE_UP],1);
 		
-		protected var _interactiveArea:ISprite;
+		protected var _interactiveSprite:ISprite;
+		protected var _interactiveAsset:IInteractiveObject;
 		
 		protected var _clicked:Act;
 		protected var _mousePressed:Act;
@@ -142,60 +143,69 @@ package org.tbyrne.display.controls
 		override protected function bindToAsset() : void{
 			super.bindToAsset();
 			
-			_interactiveArea = _asset.factory.createHitArea();
-			_containerAsset.addAsset(_interactiveArea);
 			_asset.added.addHandler(onChildAdded);
-			
-			_interactiveArea.mousePressed.addHandler(onMouseDown);
-			_interactiveArea.rolledOver.addHandler(onRollOver);
-			_interactiveArea.rolledOut.addHandler(onRollOut);
-			_interactiveArea.focusIn.addHandler(onFocusIn);
-			_interactiveArea.focusOut.addHandler(onFocusOut);
-			_interactiveArea.clicked.addHandler(onClick);
-			_interactiveArea.keyUp.addHandler(onKeyUp);
-			_interactiveArea.focusRect = false;
-			
-			//_containerAsset.mouseChildren = false;
-			
-			_interactiveArea.buttonMode = _active;
-			_interactiveArea.useHandCursor = (_active && _useHandCursor);
+			setInteractiveArea(_interactiveObjectAsset);
 		}
 		override protected function unbindFromAsset() : void{
 			_asset.added.removeHandler(onChildAdded);
-			_containerAsset.removeAsset(_interactiveArea);
 			
-			_interactiveArea.mousePressed.removeHandler(onMouseDown);
-			_interactiveArea.rolledOver.removeHandler(onRollOver);
-			_interactiveArea.rolledOut.removeHandler(onRollOut);
-			_interactiveArea.focusIn.removeHandler(onFocusIn);
-			_interactiveArea.focusOut.removeHandler(onFocusOut);
-			_interactiveArea.clicked.removeHandler(onClick);
-			_interactiveArea.keyUp.removeHandler(onKeyUp);
-			_interactiveArea.focusRect = null;
-			
-			_asset.factory.destroyAsset(_interactiveArea);
-			_interactiveArea = null;
-			
-			//_containerAsset.mouseChildren = true;
+			if(_interactiveAsset==_interactiveObjectAsset)setInteractiveArea(null);
 			super.unbindFromAsset();
+		}
+		protected function setInteractiveArea(interactiveAsset:IInteractiveObject):void{
+			if(_interactiveAsset!=interactiveAsset){
+				if(_interactiveAsset){
+					_interactiveAsset.mousePressed.removeHandler(onMouseDown);
+					_interactiveAsset.rolledOver.removeHandler(onRollOver);
+					_interactiveAsset.rolledOut.removeHandler(onRollOut);
+					_interactiveAsset.focusIn.removeHandler(onFocusIn);
+					_interactiveAsset.focusOut.removeHandler(onFocusOut);
+					_interactiveAsset.clicked.removeHandler(onClick);
+					_interactiveAsset.keyUp.removeHandler(onKeyUp);
+					_interactiveAsset.focusRect = null;
+					_interactiveSprite = null;
+				}
+				_interactiveAsset = interactiveAsset;
+				if(_interactiveAsset){
+					_interactiveAsset.mousePressed.addHandler(onMouseDown);
+					_interactiveAsset.rolledOver.addHandler(onRollOver);
+					_interactiveAsset.rolledOut.addHandler(onRollOut);
+					_interactiveAsset.focusIn.addHandler(onFocusIn);
+					_interactiveAsset.focusOut.addHandler(onFocusOut);
+					_interactiveAsset.clicked.addHandler(onClick);
+					_interactiveAsset.keyUp.addHandler(onKeyUp);
+					_interactiveAsset.focusRect = false;
+					
+					_interactiveSprite = (_interactiveAsset as ISprite);
+					if(_interactiveSprite){
+						_interactiveSprite.mouseChildren = false;
+						_interactiveSprite.buttonMode = _active;
+						_interactiveSprite.useHandCursor = (_active && _useHandCursor);
+					}
+				}
+			}
 		}
 		override protected function onRemovedFromStage(from:IAsset=null):void{
 			if(down)killMouseDown();
-			if(_over)onRollOut(_interactiveArea);
+			if(_over)onRollOut(_interactiveAsset);
 			super.onRemovedFromStage(from);
 		}
 		protected function onChildAdded(e:Event, from:IDisplayObject) : void{
 			//TODO: when events are replaced with Info objects, do a check here to see if it's a descendant or not
-			_containerAsset.setAssetIndex(_interactiveArea,_containerAsset.numChildren-1);
+			if(_interactiveAsset!=_asset)_containerAsset.setAssetIndex(_interactiveAsset,_containerAsset.numChildren-1);
 		}
 		override protected function commitSize() : void{
 			if(_scaleAsset){
-				_interactiveArea.setSize(0.01,0.01);
 				asset.setSize(size.x,size.y);
-				_interactiveArea.setSize(size.x/asset.scaleX,size.y/asset.scaleY);
+				if(_interactiveAsset!=_asset){
+					_interactiveAsset.setSize(size.x,size.y);
+				}
 			}else{
 				var meas:Point = measurements;
-				_interactiveArea.setSize(meas.x/asset.scaleX,meas.y/asset.scaleY);
+				asset.setSize(meas.x,meas.y);
+				if(_interactiveAsset!=_asset){
+					_interactiveAsset.setSize(meas.x,meas.y);
+				}
 			}
 		}
 		protected function onRollOver(from:IInteractiveObject, info:IMouseActInfo):void{
@@ -268,7 +278,7 @@ package org.tbyrne.display.controls
 		}
 		
 		protected final function onClick(from:IInteractiveObject, info:IMouseActInfo):void{
-			if(_active && _acceptClick && info.mouseTarget==_interactiveArea){
+			if(_active && _acceptClick && info.mouseTarget==_interactiveAsset){
 				acceptClick();
 			}
 			_acceptClick = false;
@@ -304,9 +314,9 @@ package org.tbyrne.display.controls
 					_over = false;
 					_down = false;
 				}
-				if(_interactiveArea){
-					_interactiveArea.buttonMode = value;
-					_interactiveArea.useHandCursor = (value && _useHandCursor);
+				if(_interactiveSprite){
+					_interactiveSprite.buttonMode = value;
+					_interactiveSprite.useHandCursor = (value && _useHandCursor);
 				}
 				super.setActive(value);
 			}

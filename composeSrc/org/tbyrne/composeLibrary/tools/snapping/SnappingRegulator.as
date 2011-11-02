@@ -150,7 +150,6 @@ package org.tbyrne.composeLibrary.tools.snapping
 				influence.setAcceptedProposal(snapTrait,bestProposal);
 			}
 			if(bestProposal){
-				trace("snap: "+bestProposal.x,bestProposal.y,bestProposal.z);
 				posTrait.setPosition3d(bestProposal.x,bestProposal.y,bestProposal.z);
 			}
 			

@@ -8,6 +8,7 @@ package org.tbyrne.composeLibrary.types.ui
 	{
 		function get mouseIsOver():IBooleanProvider;
 		function get mouseIsDown():IBooleanProvider;
+		function get mouseIsDragging():IBooleanProvider;
 		
 		/**
 		 * handler(from:IMouseActsTrait, actInfo:IMouseActInfo)

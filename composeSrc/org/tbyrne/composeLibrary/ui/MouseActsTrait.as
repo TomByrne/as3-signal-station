@@ -57,7 +57,6 @@ package org.tbyrne.composeLibrary.ui
 		private var _interactiveObject:InteractiveObject;
 		
 		private var _clickBegan:int;
-		private var _isDragging:Boolean;
 		private var _dragX:int;
 		private var _dragY:int;
 		private var _stage:Stage;
@@ -133,8 +132,8 @@ package org.tbyrne.composeLibrary.ui
 				_stage.removeEventListener(MouseEvent.MOUSE_UP, onMouseUp);
 				_stage = null;
 				
-				if(_isDragging){
-					_isDragging = false;
+				if(_mouseIsDragging.booleanValue){
+					_mouseIsDragging.booleanValue = false;
 					if(_mouseDragFinish)_mouseDragFinish.perform(this);
 				}
 			}
@@ -179,18 +178,18 @@ package org.tbyrne.composeLibrary.ui
 		protected function onDownMove(event:MouseEvent):void{
 			var xDist:Number = _stage.mouseX-_dragX;
 			var yDist:Number = _stage.mouseY-_dragY;
-			if(!_isDragging){
+			if(!_mouseIsDragging.booleanValue){
 				var dist:Number = Math.sqrt((xDist*xDist)+(yDist*yDist));
 				if(dist>_dragTreshold){
 					// start dragging
-					_isDragging = true;
+					_mouseIsDragging.booleanValue = true;
 					var mouseActInfo:MouseActInfo = createActInfo(event);
 					mouseActInfo.screenX = _dragX;
 					mouseActInfo.screenY = _dragY;
 					if(_mouseDragStart)_mouseDragStart.perform(this,mouseActInfo);
 				}
 			}
-			if(_isDragging){
+			if(_mouseIsDragging.booleanValue){
 				if(_mouseDrag)_mouseDrag.perform(this,createActInfo(event),xDist,yDist);
 				
 				_dragX = _stage.mouseX;
@@ -206,8 +205,8 @@ package org.tbyrne.composeLibrary.ui
 			_stage.removeEventListener(MouseEvent.MOUSE_UP, onMouseUp);
 			_stage = null;
 			
-			if(_isDragging){
-				_isDragging = false;
+			if(_mouseIsDragging.booleanValue){
+				_mouseIsDragging.booleanValue = false;
 				if(_mouseDragFinish)_mouseDragFinish.perform(this,createActInfo(event));
 			}else if(_mouseIsOver.booleanValue){
 				var timeDiff:int = getTimer()-_clickBegan;

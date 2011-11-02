@@ -1,8 +1,9 @@
 package org.tbyrne.composeLibrary.types.display3D
 {
 	import org.tbyrne.acting.actTypes.IAct;
+	import org.tbyrne.compose.traits.ITrait;
 
-	public interface I3dTo2dTrait
+	public interface I3dTo2dTrait extends ITrait
 	{
 		/**
 		 * handler(from:I3dTo2dTrait, immediate:Boolean)

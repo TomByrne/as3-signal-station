@@ -74,8 +74,10 @@ package org.tbyrne.composeLibrary.away3d
 		}
 		
 		public function hitTest(trait:ITrait, screenX:Number, screenY:Number):Boolean{
+			var ret:Boolean = false;
 			var childTrait:IChild3dTrait = (trait as IChild3dTrait) || trait.item.getTrait(IChild3dTrait);
 			var object3d:ObjectContainer3D;
+			var doReRender:Boolean;
 			if(childTrait && (object3d = childTrait.object3d)){
 				var collector : EntityCollector = _view3D.entityCollector;
 				
@@ -87,19 +89,28 @@ package org.tbyrne.composeLibrary.away3d
 					
 					var localPoint:Point = _view3D.globalToLocal(new Point(screenX,screenY));
 					_hitTestRenderer.update((localPoint.x/_view3D.width), (localPoint.y/_view3D.height), collector);
-					//if(_requestRender)_requestRender.perform(this);
+					
+					doReRender = true;
 				}
 				
 				var subMesh:SubMesh = _hitTestRenderer.hitRenderable as SubMesh;
 				if(subMesh){
 					var hitObject3D:ObjectContainer3D = subMesh.parentMesh;
 					do{
-						if(hitObject3D==object3d)return true;
+						if(hitObject3D==object3d){
+							ret = true;
+							break;
+						}
 						hitObject3D = hitObject3D.parent;
 					}while(hitObject3D)
 				}
 			}
-			return false;
+			if(doReRender && _requestRender)_requestRender.perform(this);
+			//trace("hitTest: "+_lastScreenX, _lastScreenY, ret, doReRender);
+			return ret;
 		}
+		/*public function hitTestMany(traits:Vector.<ITrait>, screenX:Number, screenY:Number):ITrait{
+			
+		}*/
 	}
 }

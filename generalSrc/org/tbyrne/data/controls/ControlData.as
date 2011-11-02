@@ -67,10 +67,10 @@ package org.tbyrne.data.controls
 		protected var _label:IStringProvider;
 		
 		
-		public function ControlData(label:IStringProvider=null, selected:IBooleanProvider=null){
+		public function ControlData(label:IStringProvider=null, selected:IBooleanProvider=null, childData:*=null){
 			this.label = label;
 			this.selected = selected;
-			
+			this.childData = childData;
 		}
 	}
 }

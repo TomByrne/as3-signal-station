@@ -190,10 +190,7 @@ package org.tbyrne.composeLibrary.tools.selection2d
 				_mouseActsTrait.mouseDrag.addHandler(onMouseDrag);
 			}else{
 				if(_selection.indexOf(hit)!=1){
-					if(!_ctrlBoolean.booleanValue && !_shiftBoolean.booleanValue){
-						deselectAll();
-					}
-					select(hit);
+					select(hit, (_ctrlBoolean.booleanValue  || _shiftBoolean.booleanValue));
 				}
 			}
 			_dragging = true;
@@ -241,9 +238,14 @@ package org.tbyrne.composeLibrary.tools.selection2d
 				if(_selectionChanged)_selectionChanged.perform(this);
 			}
 		}
-		public function select(trait:ISelectable2dTrait):void{
-			var changed:Boolean = addToCollection(_selection, trait);
-			if(changed){
+		public function select(trait:ISelectable2dTrait, addToSelection:Boolean):void{
+			var removed:Boolean;
+			if(!addToSelection && _selection.length){
+				removed = true;
+				_depthCollection.callOnTraits(doDeselect,false,[false]);
+			}
+			var added:Boolean = addToCollection(_selection, trait);
+			if(added || removed){
 				trait.setSelected(false);
 				if(_selectionChanged)_selectionChanged.perform(this);
 			}

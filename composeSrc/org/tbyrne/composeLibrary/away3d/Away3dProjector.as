@@ -9,14 +9,15 @@ package org.tbyrne.composeLibrary.away3d
 	
 	import org.tbyrne.acting.actTypes.IAct;
 	import org.tbyrne.collections.IndexedList;
-	import org.tbyrne.compose.concerns.IConcern;
 	import org.tbyrne.compose.concerns.Concern;
+	import org.tbyrne.compose.concerns.IConcern;
 	import org.tbyrne.compose.traits.AbstractTrait;
 	import org.tbyrne.compose.traits.ITrait;
 	import org.tbyrne.composeLibrary.types.display3D.I3dTo2dTrait;
 	import org.tbyrne.composeLibrary.types.display3D.IMatrix3dTrait;
 	import org.tbyrne.composeLibrary.types.draw.IDrawAwareTrait;
 	import org.tbyrne.data.dataTypes.INumberProvider;
+	import org.tbyrne.evolvex.traits.IAllocationTrait;
 	
 	public class Away3dProjector extends AbstractTrait implements IDrawAwareTrait
 	{
@@ -133,6 +134,7 @@ package org.tbyrne.composeLibrary.away3d
 		
 		private function validatePos(pos3d:I3dTo2dTrait):void{
 			if(!isNaN(pos3d.x3d) && !isNaN(pos3d.y3d) && !isNaN(pos3d.z3d)){
+				
 				DUMMY_VECTOR.x = pos3d.x3d;
 				DUMMY_VECTOR.y = pos3d.y3d;
 				DUMMY_VECTOR.z = pos3d.z3d;

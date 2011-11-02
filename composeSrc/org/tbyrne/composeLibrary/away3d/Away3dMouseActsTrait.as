@@ -52,7 +52,6 @@ package org.tbyrne.composeLibrary.away3d
 		private var _object3d:ObjectContainer3D;
 		
 		private var _clickBegan:int;
-		private var _isDragging:Boolean;
 		private var _dragX:int;
 		private var _dragY:int;
 		private var _scene:Scene3D;
@@ -116,8 +115,8 @@ package org.tbyrne.composeLibrary.away3d
 				_scene.removeEventListener(MouseEvent3D.MOUSE_UP, onMouseUp);
 				_scene = null;
 				
-				if(_isDragging){
-					_isDragging = false;
+				if(_mouseIsDragging.booleanValue){
+					_mouseIsDragging.booleanValue = false;
 					if(_mouseDragFinish)_mouseDragFinish.perform(this, new MouseActInfo(trait,false,false,false,0,0));
 				}
 			}
@@ -162,15 +161,15 @@ package org.tbyrne.composeLibrary.away3d
 		protected function onDownMove(event:MouseEvent3D):void{
 			var xDist:Number = event.screenX-_dragX;
 			var yDist:Number = event.screenY-_dragY;
-			if(!_isDragging){
+			if(!_mouseIsDragging.booleanValue){
 				var dist:Number = Math.sqrt((xDist*xDist)+(yDist*yDist));
 				if(dist>_dragTreshold){
 					// start dragging
-					_isDragging = true;
+					_mouseIsDragging.booleanValue = true;
 					if(_mouseDragStart)_mouseDragStart.perform(this, createActInfo(event));
 				}
 			}
-			if(_isDragging){
+			if(_mouseIsDragging.booleanValue){
 				if(_mouseDrag)_mouseDrag.perform(this, createActInfo(event),xDist,yDist);
 				
 				_dragX = event.screenX;
@@ -186,8 +185,8 @@ package org.tbyrne.composeLibrary.away3d
 			_scene.removeEventListener(MouseEvent3D.MOUSE_UP, onMouseUp);
 			_scene = null;
 			
-			if(_isDragging){
-				_isDragging = false;
+			if(_mouseIsDragging.booleanValue){
+				_mouseIsDragging.booleanValue = false;
 				if(_mouseDragFinish)_mouseDragFinish.perform(this, createActInfo(event));
 			}else if(_mouseIsOver.booleanValue){
 				var timeDiff:int = getTimer()-_clickBegan;

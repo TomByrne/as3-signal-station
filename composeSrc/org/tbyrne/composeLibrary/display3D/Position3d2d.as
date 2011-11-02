@@ -146,6 +146,7 @@ package org.tbyrne.composeLibrary.display3D
 		}
 		public function setProjectedPoint(x:Number, y:Number, scale:Number, cameraDistance:Number):void{
 			
+			//trace("setProjectedPoint: "+cameraDistance);
 			var pointChanged:Boolean;
 			if(_empirical3d && (_projectedX!=x || _projectedY!=y)){
 				_empirical2d = false;

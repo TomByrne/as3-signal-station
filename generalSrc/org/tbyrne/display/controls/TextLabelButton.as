@@ -78,8 +78,9 @@ package org.tbyrne.display.controls
 			_measurements = _textLabel.measurements;
 		}
 		override protected function commitSize():void{
-			super.commitSize();
-			_interactiveArea.setSize(size.x,size.y);
+			if(_interactiveAsset!=_asset){
+				_interactiveAsset.setSize(size.x,size.y);
+			}
 		}
 		protected function onMeasurementsChange(from:ILayoutSubject, oldWidth:Number, oldHeight:Number):void{
 			invalidateMeasurements();

@@ -68,6 +68,11 @@ package org.tbyrne.composeLibrary.ui
 			return _mouseIsDown;
 		}
 		
+		public function get mouseIsDragging():IBooleanProvider{
+			return _mouseIsDragging;
+		}
+		
+		protected var _mouseIsDragging:BooleanData;
 		protected var _mouseIsOver:BooleanData;
 		protected var _mouseIsDown:BooleanData;
 		
@@ -76,6 +81,7 @@ package org.tbyrne.composeLibrary.ui
 		{
 			_mouseIsOver = new BooleanData();
 			_mouseIsDown = new BooleanData();
+			_mouseIsDragging = new BooleanData();
 		}
 	}
 }

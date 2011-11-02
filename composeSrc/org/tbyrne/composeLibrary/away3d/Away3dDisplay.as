@@ -137,10 +137,6 @@ package org.tbyrne.composeLibrary.away3d
 					_sceneScale.numericalValueChanged.addHandler(onSceneScaleChanged);
 					onSceneScaleChanged(_sceneScale);
 				}else{
-					/*_camera.scaleX = 1;
-					_camera.scaleY = 1;
-					_camera.scaleZ = 1;*/
-					
 					_sceneContainer.scaleX = 1;
 					_sceneContainer.scaleY = 1;
 					_sceneContainer.scaleZ = 1;
@@ -307,14 +303,9 @@ package org.tbyrne.composeLibrary.away3d
 		
 		private function onSceneScaleChanged(from:INumberProvider):void
 		{
-			/*var scale:Number = 1/from.numericalValue;
-			_camera.scaleX = scale;
-			_camera.scaleY = scale;
-			_camera.scaleZ = scale;*/
-			
-			/*_sceneContainer.scaleX = from.numericalValue;
+			_sceneContainer.scaleX = from.numericalValue;
 			_sceneContainer.scaleY = from.numericalValue;
-			_sceneContainer.scaleZ = from.numericalValue;*/
+			_sceneContainer.scaleZ = from.numericalValue;
 		}
 	}
 }

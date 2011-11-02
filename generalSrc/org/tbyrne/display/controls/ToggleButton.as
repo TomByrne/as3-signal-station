@@ -1,13 +1,13 @@
 package org.tbyrne.display.controls
 {
 	
+	import org.tbyrne.actInfo.IMouseActInfo;
 	import org.tbyrne.acting.actTypes.IAct;
 	import org.tbyrne.acting.acts.Act;
 	import org.tbyrne.data.controls.IControlData;
 	import org.tbyrne.data.dataTypes.IBooleanConsumer;
 	import org.tbyrne.data.dataTypes.IBooleanProvider;
 	import org.tbyrne.display.DisplayNamespace;
-	import org.tbyrne.actInfo.IMouseActInfo;
 	import org.tbyrne.display.assets.nativeTypes.IDisplayObject;
 	import org.tbyrne.display.assets.nativeTypes.IInteractiveObject;
 	import org.tbyrne.display.assets.states.StateDef;
@@ -109,13 +109,9 @@ package org.tbyrne.display.controls
 			super.init();
 			_tabFocusable = new InteractiveAssetFocusWrapper(_interactiveObjectAsset);
 		}
-		override protected function bindToAsset() : void{
-			super.bindToAsset();
-			_tabFocusable.interactiveAsset = _interactiveArea;
-		}
-		override protected function unbindFromAsset() : void{
-			_tabFocusable.interactiveAsset = null;
-			super.unbindFromAsset();
+		override protected function setInteractiveArea(interactiveAsset:IInteractiveObject):void{
+			_tabFocusable.interactiveAsset = interactiveAsset;
+			super.setInteractiveArea(interactiveAsset);
 		}
 		private function onProviderChanged(from:IBooleanProvider):void{
 			if(useDataForSelected && !_ignoreDataChanges)this.selected = from.booleanValue;
