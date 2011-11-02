@@ -113,6 +113,9 @@ package org.tbyrne.composeLibrary.tools.snapping
 			var pos:Vector3D;
 			
 			var proposals:Dictionary = new Dictionary();
+			var snapMap:Dictionary = new Dictionary(); // key > influence > snapPoint
+			var snapList:Dictionary;
+			var key:String;
 			
 			for each(var snapPoint:ISnapPoint in snapTrait.snapPoints){
 				var list:IndexedList = (snapPoint.snappingGroup?_groups[snapPoint.snappingGroup]:_influences);
@@ -121,10 +124,15 @@ package org.tbyrne.composeLibrary.tools.snapping
 					influence = list.list[i];
 					pos = influence.makeProposal(snapTrait,snapPoint);
 					if(pos){
-						var key:String = int(pos.x+05)+"_"+int(pos.y+05)+"_"+int(pos.z+05);
+						key = int(pos.x+05)+"_"+int(pos.y+05)+"_"+int(pos.z+05);
 						if(!proposals[key]){
 							proposals[key] = pos;
+							snapList = new Dictionary();
+							snapMap[key] = snapList;
+						}else{
+							snapList = snapMap[key];
 						}
+						snapList[influence] = snapPoint;
 					}
 				}
 			}
@@ -146,11 +154,17 @@ package org.tbyrne.composeLibrary.tools.snapping
 					bestProposalValue = propValue;
 				}
 			}
-			for each(influence in _influences.list){
-				influence.setAcceptedProposal(snapTrait,bestProposal);
-			}
 			if(bestProposal){
+				key = int(bestProposal.x+05)+"_"+int(bestProposal.y+05)+"_"+int(bestProposal.z+05);
+				snapList = snapMap[key];
+				for each(influence in _influences.list){
+					influence.setAcceptedProposal(snapTrait,bestProposal,snapList[influence]);
+				}
 				posTrait.setPosition3d(bestProposal.x,bestProposal.y,bestProposal.z);
+			}else{
+				for each(influence in _influences.list){
+					influence.setAcceptedProposal(snapTrait,bestProposal,null);
+				}
 			}
 			
 			

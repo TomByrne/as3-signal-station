@@ -19,7 +19,7 @@
         	<value>true</value>
     	</define>
 		
-		<define>
+		<define append="true">
         	<name>PLATFORM::web</name>
         	<value>true</value>
     	</define>
