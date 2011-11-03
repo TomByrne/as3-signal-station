@@ -8,11 +8,6 @@ package org.tbyrne.composeLibrary.away3d
 	import away3d.containers.Scene3D;
 	import away3d.containers.View3D;
 	import away3d.core.math.*;
-	import away3d.materials.ColorMaterial;
-	import away3d.materials.MaterialBase;
-	import away3d.primitives.Cube;
-	
-	import flash.display.BitmapData;
 	
 	import org.tbyrne.acting.actTypes.IAct;
 	import org.tbyrne.acting.acts.Act;
@@ -25,8 +20,6 @@ package org.tbyrne.composeLibrary.away3d
 	import org.tbyrne.composeLibrary.away3d.types.IChild3dTrait;
 	import org.tbyrne.composeLibrary.away3d.types.IContainer3dTrait;
 	import org.tbyrne.composeLibrary.away3d.types.IScene3dAwareTrait;
-	import org.tbyrne.composeLibrary.display2D.LayeredDisplayTrait;
-	import org.tbyrne.composeLibrary.types.display3D.ICameraDistanceAwareTrait;
 	import org.tbyrne.composeLibrary.types.display3D.IMatrix3dTrait;
 	import org.tbyrne.composeLibrary.types.draw.IDrawAwareTrait;
 	import org.tbyrne.composeLibrary.types.draw.IFrameAwareTrait;
@@ -214,33 +207,26 @@ package org.tbyrne.composeLibrary.away3d
 			
 			addConcern(new Concern(true,true,false,IScene3dAwareTrait));
 			addConcern(new Concern(true,true,false,IChild3dTrait,[IContainer3dTrait]));
-			addConcern(new Concern(true,true,false,ICameraDistanceAwareTrait));
 		}
 		override protected function onConcernedTraitAdded(from:IConcern, trait:ITrait):void{
 			var awareTrait:IScene3dAwareTrait;
 			var child3d:IChild3dTrait;
-			var cameraDistanceAware:ICameraDistanceAwareTrait;
 			
 			if(awareTrait = (trait as IScene3dAwareTrait)){
 				awareTrait.scene3d = _sceneProxy;
 			}else if(child3d = (trait as IChild3dTrait)){
 				_sceneContainer.addChild(child3d.object3d);
-			}else if(cameraDistanceAware = (trait as ICameraDistanceAwareTrait)){
-				_camDistAwareTraits.push(cameraDistanceAware);
 			}
 		}
 		override protected function onConcernedTraitRemoved(from:IConcern, trait:ITrait):void{
 			var awareTrait:IScene3dAwareTrait;
 			var child3d:IChild3dTrait;
-			var cameraDistanceAware:ICameraDistanceAwareTrait;
 			
 			if(awareTrait = (trait as IScene3dAwareTrait)){
 				awareTrait.scene3d = null;
 			}else if(child3d = (trait as IChild3dTrait)){
 				if(_scene.contains(child3d.object3d))
 					_scene.removeChild(child3d.object3d);
-			}else if(cameraDistanceAware = (trait as ICameraDistanceAwareTrait)){
-				_camDistAwareTraits.remove(cameraDistanceAware);
 			}
 		}
 		
@@ -256,12 +242,6 @@ package org.tbyrne.composeLibrary.away3d
 			_focalLengthFlag.validate();
 			_matrixFlag.validate();
 			_renderFlag.validate(true);
-			
-			for each(var camAware:ICameraDistanceAwareTrait in _camDistAwareTraits){
-				// if a more accurate equation is needed, check out this http://away3d.com/forum/viewthread/1053/
-				var objTrait:IChild3dTrait = camAware.item.getTrait(IChild3dTrait);
-				camAware.cameraDistance = objTrait.object3d.scenePosition.subtract(_camera.scenePosition).length;
-			}
 		}
 		
 		protected function onMatrixChanged(from:IMatrix3dTrait=null):void{

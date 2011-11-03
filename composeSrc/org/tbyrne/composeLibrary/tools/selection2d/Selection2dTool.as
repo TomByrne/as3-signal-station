@@ -1,28 +1,21 @@
 package org.tbyrne.composeLibrary.tools.selection2d
 {
-	import flash.geom.Rectangle;
 	import flash.ui.Keyboard;
 	
 	import org.tbyrne.actInfo.IMouseActInfo;
 	import org.tbyrne.acting.actTypes.IAct;
 	import org.tbyrne.acting.acts.Act;
-	import org.tbyrne.compose.concerns.IConcern;
 	import org.tbyrne.compose.concerns.Concern;
-	import org.tbyrne.compose.core.ComposeItem;
+	import org.tbyrne.compose.concerns.IConcern;
 	import org.tbyrne.compose.traits.AbstractTrait;
 	import org.tbyrne.compose.traits.ITrait;
-	import org.tbyrne.composeLibrary.controls.ISelectionControls;
 	import org.tbyrne.composeLibrary.depth.DepthTraitCollection;
 	import org.tbyrne.composeLibrary.depth.IDepthAdjudicator;
 	import org.tbyrne.composeLibrary.depth.IDepthAdjudicatorTrait;
 	import org.tbyrne.composeLibrary.types.display2D.IHitTestTrait;
 	import org.tbyrne.composeLibrary.types.ui.IKeyActsTrait;
 	import org.tbyrne.composeLibrary.types.ui.IMouseActsTrait;
-	import org.tbyrne.data.core.BooleanData;
-	import org.tbyrne.data.core.ValueData;
 	import org.tbyrne.data.dataTypes.IBooleanProvider;
-	import org.tbyrne.data.dataTypes.IValueProvider;
-	import org.tbyrne.display.DisplayNamespace;
 	import org.tbyrne.geom.rect.IRectangleProvider;
 	import org.tbyrne.geom.rect.RectangleData;
 	
@@ -98,6 +91,7 @@ package org.tbyrne.composeLibrary.tools.selection2d
 			var keyActsTrait:IKeyActsTrait;
 			var depthAdjudicatorTrait:IDepthAdjudicatorTrait;
 			var hitTestTrait:IHitTestTrait;
+			var selectableTrait:ISelectable2dTrait;
 			
 			if(mouseActsTrait = trait as IMouseActsTrait){
 				_mouseActsTrait = mouseActsTrait;
@@ -116,8 +110,11 @@ package org.tbyrne.composeLibrary.tools.selection2d
 				}
 			}else if(hitTestTrait = trait as IHitTestTrait){
 				_hitTesters.push(hitTestTrait);
-			}else{
-				_depthCollection.addTrait(trait);
+			}
+			if(selectableTrait = (trait as ISelectable2dTrait)){
+				_depthCollection.addTrait(selectableTrait);
+				selectableTrait.setInterested(false);
+				selectableTrait.setSelected(false);
 			}
 		}
 		override protected function onConcernedTraitRemoved(from:IConcern, trait:ITrait):void{
@@ -125,8 +122,10 @@ package org.tbyrne.composeLibrary.tools.selection2d
 			var keyActsTrait:IKeyActsTrait;
 			var depthAdjudicatorTrait:IDepthAdjudicatorTrait;
 			var hitTestTrait:IHitTestTrait;
+			var selectableTrait:ISelectable2dTrait;
 			
-			if(_mouseActsTrait = trait as IMouseActsTrait){
+			if(mouseActsTrait = trait as IMouseActsTrait){
+				_mouseActsTrait = mouseActsTrait;
 				_dragging = false;
 				if(_openMarquee){
 					_openMarquee = false;
@@ -149,8 +148,19 @@ package org.tbyrne.composeLibrary.tools.selection2d
 			}else if(hitTestTrait = trait as IHitTestTrait){
 				var index:int = _hitTesters.indexOf(hitTestTrait);
 				_hitTesters.splice(index,1);
-			}else{
-				_depthCollection.removeTrait(trait);
+			}
+			if(selectableTrait = (trait as ISelectable2dTrait)){
+				_depthCollection.removeTrait(selectableTrait);
+				var selected:int = _selection.indexOf(selectableTrait);
+				if(selected!=-1){
+					_selection.splice(selected,1);
+					selectableTrait.setSelected(false);
+					if(_selectionChanged)_selectionChanged.perform(this);
+				}
+				if(_isOver==selectableTrait){
+					selectableTrait.setInterested(false);
+					_isOver = null;
+				}
 			}
 		}
 		
@@ -246,7 +256,7 @@ package org.tbyrne.composeLibrary.tools.selection2d
 			}
 			var added:Boolean = addToCollection(_selection, trait);
 			if(added || removed){
-				trait.setSelected(false);
+				trait.setSelected(true);
 				if(_selectionChanged)_selectionChanged.perform(this);
 			}
 		}

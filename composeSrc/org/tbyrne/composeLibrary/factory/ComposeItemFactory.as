@@ -1,5 +1,7 @@
 package org.tbyrne.composeLibrary.factory
 {
+	import flash.utils.Dictionary;
+	
 	import org.tbyrne.acting.actTypes.IAct;
 	import org.tbyrne.acting.acts.Act;
 	import org.tbyrne.compose.core.ComposeGroup;
@@ -26,6 +28,9 @@ package org.tbyrne.composeLibrary.factory
 		private var _traitTypes:Vector.<Class> = new Vector.<Class>();
 		private var _traitFactories:Vector.<IInstanceFactory> = new Vector.<IInstanceFactory>();
 		private var _childFactories:Vector.<IInstanceFactory> = new Vector.<IInstanceFactory>();
+		
+		private var _initedTraits:Dictionary = new Dictionary(true);
+		private var _initedItems:Dictionary = new Dictionary(true);
 		
 		
 		public function ComposeItemFactory(useGroup:Boolean=false, traitTypes:*=null){
@@ -128,21 +133,38 @@ package org.tbyrne.composeLibrary.factory
 		public function initialiseInstance(object:*):void{
 			var trait:ITrait;
 			
+			var traits:Vector.<ITrait>;
+			
 			var instance:ComposeItem = (object as ComposeItem);
 			for each(var traitType:Class in _traitTypes){
+				if(!traits)traits = new Vector.<ITrait>();
 				trait = new traitType();
-				instance.addTrait(trait);
+				traits.push(trait);
 			}
 			for each(var traitFactory:IInstanceFactory in _traitFactories){
+				if(!traits)traits = new Vector.<ITrait>();
 				trait = traitFactory.createInstance();
-				instance.addTrait(trait);
+				traits.push(trait);
 			}
+			
+			if(traits){
+				_initedTraits[object] = traits;
+				instance.addTraits(traits);
+			}
+			
 			if(_useGroup){
 				var group:ComposeGroup = (object as ComposeGroup);
 				
-				for each(var childFactory:IInstanceFactory in _childFactories){
-					var item:ComposeItem = childFactory.createInstance();
-					group.addItem(item);
+				if(_childFactories && _childFactories.length){
+					
+					var children:Vector.<ComposeItem> = new Vector.<ComposeItem>();
+					_initedItems[object] = children;
+					
+					for each(var childFactory:IInstanceFactory in _childFactories){
+						var item:ComposeItem = childFactory.createInstance();
+						children.push(item);
+						group.addItem(item);
+					}
 				}
 			}
 		}
@@ -162,10 +184,20 @@ package org.tbyrne.composeLibrary.factory
 		}
 		public function deinitialiseInstance(object:*):void{
 			var instance:ComposeItem = (object as ComposeItem);
-			instance.removeAllTraits();
+			var traits:Vector.<ITrait> = _initedTraits[object];
+			if(traits){
+				instance.removeTraits(traits);
+				delete _initedTraits[object];
+			}
+			
 			var group:ComposeGroup = (object as ComposeGroup);
 			if(group){
-				group.removeAllItem();
+				var items:Vector.<ComposeItem> = _initedItems[object];
+				if(items){
+					for each(var item:ComposeItem in items)group.removeItem(item);
+					
+					delete _initedItems[object];
+				}
 			}
 		}
 		

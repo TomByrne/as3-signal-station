@@ -9,8 +9,8 @@ package org.tbyrne.composeLibrary.ui
 	import org.tbyrne.actInfo.KeyActInfo;
 	import org.tbyrne.acting.actTypes.IAct;
 	import org.tbyrne.acting.acts.Act;
-	import org.tbyrne.compose.concerns.IConcern;
 	import org.tbyrne.compose.concerns.Concern;
+	import org.tbyrne.compose.concerns.IConcern;
 	import org.tbyrne.compose.traits.AbstractTrait;
 	import org.tbyrne.compose.traits.ITrait;
 	import org.tbyrne.composeLibrary.types.display2D.IInteractiveObjectTrait;
@@ -71,9 +71,17 @@ package org.tbyrne.composeLibrary.ui
 		private var _keyLocationData:Dictionary = new Dictionary();
 		private var _charData:Dictionary = new Dictionary();
 		
-		private var _keysDown:Dictionary = new Dictionary();
-		private var _keyLocationsDown:Dictionary = new Dictionary();
-		private var _charsDown:Dictionary = new Dictionary();
+		private var _keysDownProv:Dictionary = new Dictionary();
+		private var _keyLocationsDownProv:Dictionary = new Dictionary();
+		private var _charsDownProv:Dictionary = new Dictionary();
+		
+		private var _keysDownAct:Dictionary = new Dictionary();
+		private var _keyLocationsDownAct:Dictionary = new Dictionary();
+		private var _charsDownAct:Dictionary = new Dictionary();
+		
+		private var _keysUpAct:Dictionary = new Dictionary();
+		private var _keyLocationsUpAct:Dictionary = new Dictionary();
+		private var _charsUpAct:Dictionary = new Dictionary();
 		
 		public function KeyActsTrait(interactiveObject:InteractiveObject=null, stageMode:Boolean=false)
 		{
@@ -155,11 +163,16 @@ package org.tbyrne.composeLibrary.ui
 			_interactiveObjectTrait = null;
 		}
 		protected function onKeyDown(e:KeyboardEvent):void{
-			setDataValue(_keyData,_keysDown,e.keyCode,true);
-			setDataValue(_keyLocationData,_keyLocationsDown,e.keyCode+"_"+e.keyLocation,true);
-			setDataValue(_charData,_charsDown,e.charCode,true);
+			setDataValue(_keyData,_keysDownProv,e.keyCode,true);
+			setDataValue(_keyLocationData,_keyLocationsDownProv,e.keyCode+"_"+e.keyLocation,true);
+			setDataValue(_charData,_charsDownProv,e.charCode,true);
 			
-			if(_keyPressed)_keyPressed.perform(this,createActInfo(e));
+			var actInfo:IKeyActInfo = createActInfo(e);
+			performAct(_keysDownAct,e.keyCode,actInfo);
+			performAct(_keyLocationsDownAct,e.keyCode+"_"+e.keyLocation,actInfo);
+			performAct(_charsDownAct,e.charCode,actInfo);
+			
+			if(_keyPressed)_keyPressed.perform(this,actInfo);
 		}
 		private function createActInfo(event:KeyboardEvent):IKeyActInfo{
 			var ret:KeyActInfo = new KeyActInfo(null,event.altKey,event.ctrlKey,event.shiftKey,event.charCode,event.keyCode,event.keyLocation);
@@ -167,11 +180,16 @@ package org.tbyrne.composeLibrary.ui
 		}
 		
 		protected function onKeyUp(e:KeyboardEvent):void{
-			setDataValue(_keyData,_keysDown,e.keyCode,false);
-			setDataValue(_keyLocationData,_keyLocationsDown,e.keyCode+"_"+e.keyLocation,false);
-			setDataValue(_charData,_charsDown,e.charCode,false);
+			setDataValue(_keyData,_keysDownProv,e.keyCode,false);
+			setDataValue(_keyLocationData,_keyLocationsDownProv,e.keyCode+"_"+e.keyLocation,false);
+			setDataValue(_charData,_charsDownProv,e.charCode,false);
 			
-			if(_keyReleased)_keyReleased.perform(this,createActInfo(e));
+			var actInfo:IKeyActInfo = createActInfo(e);
+			performAct(_keysUpAct,e.keyCode,actInfo);
+			performAct(_keyLocationsUpAct,e.keyCode+"_"+e.keyLocation,actInfo);
+			performAct(_charsUpAct,e.charCode,actInfo);
+			
+			if(_keyReleased)_keyReleased.perform(this,actInfo);
 		}
 		
 		
@@ -182,6 +200,11 @@ package org.tbyrne.composeLibrary.ui
 			downDict[key] = value;
 		}
 		
+		private function performAct(actDict:Dictionary, key:*, actInfo:IKeyActInfo):void{
+			var act:IAct = actDict[key];
+			if(act)act.perform(this,actInfo);
+		}
+		
 		public function getKeyIsDown(keyCode:uint, keyLocation:int=-1):IBooleanProvider{
 			var key:*;
 			var dataLookup:Dictionary;
@@ -189,11 +212,11 @@ package org.tbyrne.composeLibrary.ui
 			if(keyLocation!=-1){
 				key = keyCode+"_"+keyLocation;
 				dataLookup = _keyLocationData;
-				downLookup = _keyLocationsDown;
+				downLookup = _keyLocationsDownProv;
 			}else{
 				key = keyCode;
 				dataLookup = _keyData;
-				downLookup = _keysDown;
+				downLookup = _keysDownProv;
 			}
 			
 			var ret:BooleanData = dataLookup[key];
@@ -203,12 +226,69 @@ package org.tbyrne.composeLibrary.ui
 			}
 			return ret;
 		}
-		
 		public function getCharIsDown(charCode:uint):IBooleanProvider{
 			var ret:BooleanData = _charData[charCode];
 			if(!ret){
-				ret = new BooleanData(_charsDown[charCode]);
+				ret = new BooleanData(_charsDownProv[charCode]);
 				_charData[charCode] = ret;
+			}
+			return ret;
+		}
+		
+		
+		
+		public function getKeyDownAct(keyCode:uint, keyLocation:int=-1):IAct{
+			var key:*;
+			var dataLookup:Dictionary;
+			if(keyLocation!=-1){
+				key = keyCode+"_"+keyLocation;
+				dataLookup = _keyLocationsDownAct;
+			}else{
+				key = keyCode;
+				dataLookup = _keysDownAct;
+			}
+			
+			var ret:Act = dataLookup[key];
+			if(!ret){
+				ret = new Act();
+				dataLookup[key] = ret;
+			}
+			return ret;
+		}
+		public function getCharDownAct(charCode:uint):IAct{
+			var ret:Act = _charsDownAct[charCode];
+			if(!ret){
+				ret = new Act();
+				_charsDownAct[charCode] = ret;
+			}
+			return ret;
+		}
+		
+		
+		
+		public function getKeyUpAct(keyCode:uint, keyLocation:int=-1):IAct{
+			var key:*;
+			var dataLookup:Dictionary;
+			if(keyLocation!=-1){
+				key = keyCode+"_"+keyLocation;
+				dataLookup = _keyLocationsUpAct;
+			}else{
+				key = keyCode;
+				dataLookup = _keysUpAct;
+			}
+			
+			var ret:Act = dataLookup[key];
+			if(!ret){
+				ret = new Act();
+				dataLookup[key] = ret;
+			}
+			return ret;
+		}
+		public function getCharUpAct(charCode:uint):IAct{
+			var ret:Act = _charsUpAct[charCode];
+			if(!ret){
+				ret = new Act();
+				_charsUpAct[charCode] = ret;
 			}
 			return ret;
 		}

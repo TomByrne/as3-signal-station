@@ -77,11 +77,11 @@ package org.tbyrne.compose.core
 			}
 		}
 		protected function _addTrait(trait:ITrait):void{
-			CONFIG::debug{
+			/*CONFIG::debug{
 				if(_root && _root!=this){
 					Log.trace("WARNING:: ITrait being added while ComposeItem added to root");
 				}
-			}
+			}*/
 			trait.item = this;
 			_traitCollection.addTrait(trait);
 			if(_parentItem)_parentItem.addChildTrait(trait);
@@ -106,18 +106,18 @@ package org.tbyrne.compose.core
 			}
 		}
 		protected function _removeTrait(trait:ITrait):void{
-			CONFIG::debug{
+			/*CONFIG::debug{
 				if(_root){
 					Log.trace("WARNING:: ITrait being removed while ComposeItem added to root");
 				}
-			}
+			}*/
 			_traitCollection.removeTrait(trait);
-			trait.item = null;
 			if(_parentItem)_parentItem.removeChildTrait(trait);
 			
 			for each(var concern:IConcern in trait.concerns){
 				removeTraitConcern(concern);
 			}
+			trait.item = null;
 		}
 		
 		
@@ -127,7 +127,7 @@ package org.tbyrne.compose.core
 			}
 			if(concern.ascendants){
 				if(!_ascConcerns)_ascConcerns = new IndexedList();
-				_ascConcerns.remove(concern);
+				_ascConcerns.push(concern);
 				if(_parentItem)_parentItem.addAscendingConcern(concern);
 			}
 		}

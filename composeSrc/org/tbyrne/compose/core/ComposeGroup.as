@@ -146,7 +146,7 @@ package org.tbyrne.compose.core
 			}
 			if(_childAscConcerns){
 				for each(var concern:IConcern in _childAscConcerns.list){
-					_parentItem.removeTraitConcern(concern);
+					_parentItem.removeAscendingConcern(concern);
 				}
 			}
 		}

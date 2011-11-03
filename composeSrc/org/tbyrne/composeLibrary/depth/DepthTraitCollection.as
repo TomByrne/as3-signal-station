@@ -42,6 +42,7 @@ package org.tbyrne.composeLibrary.depth
 			}
 		}
 		public function removeTrait(trait:ITrait):void{
+			removeFromArray(trait,_allTraits);
 			removeFromArray(trait,_sortedTraits);
 			removeFromArray(trait,_unsortedTraits);
 		}
@@ -63,6 +64,7 @@ package org.tbyrne.composeLibrary.depth
 			if(_allUnsorted){
 				_allUnsorted = false;
 				_sortedTraits = _allTraits.sort(_depthAdjudicator.compare);
+				_unsortedTraits = null;
 			}else if(_unsortedTraits && _unsortedTraits.length){
 				for each(var trait:ITrait in _unsortedTraits){
 					for(i=0; i<_sortedTraits.length; ++i){
