@@ -57,6 +57,12 @@ package org.tbyrne.display.controls
 		private var _scrollMetrics:IScrollMetrics;
 		
 		public function ScrollButtons(asset:IDisplayObject=null){
+			super(asset);
+			scrollDirection = Direction.VERTICAL;
+		}
+		override protected function init():void{
+			super.init();
+			
 			_foreButton = new Button();
 			_foreButton.mousePressed.addHandler(onForeDown);
 			_foreButton.mouseReleased.addHandler(onButtonUp);
@@ -65,10 +71,9 @@ package org.tbyrne.display.controls
 			_aftButton.mousePressed.addHandler(onAftDown);
 			_aftButton.mouseReleased.addHandler(onButtonUp);
 			
-			super(asset);
-			scrollDirection = Direction.VERTICAL;
-			
 			_holdTimer = new Timer(DEF_INITIAL_HOLD_DELAY,1);
+			
+			validateScroll();
 		}
 		protected function setScrollMetrics(scrollMetrics:IScrollMetrics) : void{
 			if(_scrollMetrics!=scrollMetrics){
