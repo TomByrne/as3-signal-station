@@ -1,4 +1,4 @@
-package org.tbyrne.composeLibrary.types.display2D
+package org.tbyrne.composeLibrary.display2D.types
 {
 	import flash.display.InteractiveObject;
 	

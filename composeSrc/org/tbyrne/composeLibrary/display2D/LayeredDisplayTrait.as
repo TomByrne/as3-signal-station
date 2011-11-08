@@ -6,52 +6,10 @@ package org.tbyrne.composeLibrary.display2D
 	import org.tbyrne.acting.actTypes.IAct;
 	import org.tbyrne.acting.acts.Act;
 	import org.tbyrne.compose.traits.AbstractTrait;
-	import org.tbyrne.composeLibrary.types.display2D.ILayeredDisplayTrait;
+	import org.tbyrne.composeLibrary.display2D.types.ILayeredDisplayTrait;
 	
 	public class LayeredDisplayTrait extends DisplayObjectContainerTrait implements ILayeredDisplayTrait
 	{
-		
-		/**
-		 * @inheritDoc
-		 */
-		public function get moveUp():IAct{
-			return (_moveUp || (_moveUp = new Act()));
-		}
-		
-		/**
-		 * @inheritDoc
-		 */
-		public function get moveDown():IAct{
-			return (_moveDown || (_moveDown = new Act()));
-		}
-		
-		/**
-		 * @inheritDoc
-		 */
-		public function get moveToTop():IAct{
-			return (_moveToTop || (_moveToTop = new Act()));
-		}
-		
-		/**
-		 * @inheritDoc
-		 */
-		public function get moveToBottom():IAct{
-			return (_moveToBottom || (_moveToBottom = new Act()));
-		}
-		
-		/**
-		 * @inheritDoc
-		 */
-		public function get moveAbove():IAct{
-			return (_moveAbove || (_moveAbove = new Act()));
-		}
-		
-		/**
-		 * @inheritDoc
-		 */
-		public function get moveBelow():IAct{
-			return (_moveBelow || (_moveBelow = new Act()));
-		}
 		
 		/**
 		 * handler(from:LayeredDisplayTrait)
@@ -60,13 +18,15 @@ package org.tbyrne.composeLibrary.display2D
 			return (_visibleChanged || (_visibleChanged = new Act()));
 		}
 		
+		/**
+		 * @inheritDoc
+		 */
+		public function get requestRedraw():IAct{
+			return (_requestRedraw || (_requestRedraw = new Act()));
+		}
+		
+		protected var _requestRedraw:Act;
 		protected var _visibleChanged:Act;
-		protected var _moveBelow:Act;
-		protected var _moveAbove:Act;
-		protected var _moveToBottom:Act;
-		protected var _moveToTop:Act;
-		protected var _moveDown:Act;
-		protected var _moveUp:Act;
 		
 		
 		public function get layerId():String{
@@ -90,20 +50,25 @@ package org.tbyrne.composeLibrary.display2D
 			_addChildren = value;
 		}
 		
+		override public function set displayObject(value:DisplayObject):void{
+			super.displayObject = value;
+			checkVisibility();
+		}
+		
 		protected var _visible:Boolean = true;
 		protected var _layerId:String;
 		
 		
-		public function LayeredDisplayTrait(display:DisplayObjectContainer=null, layerId:String=null, addChildren:Boolean=true){
+		public function LayeredDisplayTrait(display:DisplayObject=null, layerId:String=null, addChildren:Boolean=true){
 			super(display);
 			_layerId = layerId;
 			
 			this.addChildren = addChildren;
 			
-			checkVisibility();
+			//checkVisibility();
 		}
 		protected function checkVisibility():void{
-			_container.visible = _visible;
+			if(_displayObject)_displayObject.visible = _visible;
 		}
 	}
 }

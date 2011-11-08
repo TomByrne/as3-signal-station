@@ -1,4 +1,4 @@
-package org.tbyrne.composeLibrary.types.display2D
+package org.tbyrne.composeLibrary.display2D.types
 {
 	import flash.display.DisplayObject;
 	
@@ -9,7 +9,7 @@ package org.tbyrne.composeLibrary.types.display2D
 	{
 		
 		/**
-		 * handler(from:IDisplayObjectTrait)
+		 * handler(from:IDisplayObjectTrait, oldDisplayObject:DisplayObject)
 		 */
 		function get displayObjectChanged():IAct;
 		function get displayObject():DisplayObject;

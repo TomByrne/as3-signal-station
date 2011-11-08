@@ -1,4 +1,4 @@
-package org.tbyrne.composeLibrary.types.draw
+package org.tbyrne.composeLibrary.draw.types
 {
 	import org.tbyrne.compose.traits.ITrait;
 

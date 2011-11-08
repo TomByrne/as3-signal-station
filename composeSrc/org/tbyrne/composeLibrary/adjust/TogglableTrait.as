@@ -4,7 +4,7 @@ package org.tbyrne.composeLibrary.adjust
 	import org.tbyrne.acting.acts.Act;
 	import org.tbyrne.binding.Binder;
 	import org.tbyrne.compose.traits.AbstractTrait;
-	import org.tbyrne.composeLibrary.types.adjust.ITogglableTrait;
+	import org.tbyrne.composeLibrary.adjust.types.ITogglableTrait;
 	
 	public class TogglableTrait extends AbstractTrait implements ITogglableTrait
 	{

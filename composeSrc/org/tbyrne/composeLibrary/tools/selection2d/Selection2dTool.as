@@ -12,9 +12,9 @@ package org.tbyrne.composeLibrary.tools.selection2d
 	import org.tbyrne.composeLibrary.depth.DepthTraitCollection;
 	import org.tbyrne.composeLibrary.depth.IDepthAdjudicator;
 	import org.tbyrne.composeLibrary.depth.IDepthAdjudicatorTrait;
-	import org.tbyrne.composeLibrary.types.display2D.IHitTestTrait;
-	import org.tbyrne.composeLibrary.types.ui.IKeyActsTrait;
-	import org.tbyrne.composeLibrary.types.ui.IMouseActsTrait;
+	import org.tbyrne.composeLibrary.display2D.types.IHitTestTrait;
+	import org.tbyrne.composeLibrary.ui.types.IKeyActsTrait;
+	import org.tbyrne.composeLibrary.ui.types.IMouseActsTrait;
 	import org.tbyrne.data.dataTypes.IBooleanProvider;
 	import org.tbyrne.geom.rect.IRectangleProvider;
 	import org.tbyrne.geom.rect.RectangleData;

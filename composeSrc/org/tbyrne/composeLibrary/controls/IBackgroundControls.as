@@ -1,5 +1,7 @@
 package org.tbyrne.composeLibrary.controls
 {
+	import flash.display.BitmapData;
+	
 	import org.tbyrne.acting.actTypes.IAct;
 
 	public interface IBackgroundControls
@@ -10,12 +12,5 @@ package org.tbyrne.composeLibrary.controls
 		function get backgroundColourChanged():IAct;
 		function get backgroundColour():uint;
 		function set backgroundColour(value:uint):void;
-		
-		/**
-		 * handler(from:IBackgroundControls)
-		 */
-		function get backgroundAlphaChanged():IAct;
-		function get backgroundAlpha():Number;
-		function set backgroundAlpha(value:Number):void;
 	}
 }

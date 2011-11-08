@@ -3,7 +3,7 @@ package org.tbyrne.composeLibrary.draw
 	import flash.utils.getTimer;
 	
 	import org.tbyrne.compose.traits.AbstractTrait;
-	import org.tbyrne.composeLibrary.types.draw.IDrawAwareTrait;
+	import org.tbyrne.composeLibrary.draw.types.IDrawAwareTrait;
 	import org.tbyrne.core.EnterFrameHook;
 
 	public class IntervalDrawer extends AbstractTrait

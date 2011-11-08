@@ -6,7 +6,7 @@ package org.tbyrne.composeLibrary.tools.snapping
 	import org.tbyrne.compose.concerns.IConcern;
 	import org.tbyrne.compose.traits.AbstractTrait;
 	import org.tbyrne.compose.traits.ITrait;
-	import org.tbyrne.composeLibrary.types.display3D.IPosition3dTrait;
+	import org.tbyrne.composeLibrary.display3D.types.IPosition3dTrait;
 	
 	public class SnappableTrait extends AbstractTrait implements ISnappableTrait
 	{

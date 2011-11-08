@@ -4,7 +4,7 @@ package org.tbyrne.composeLibrary.draw
 	import org.tbyrne.compose.traits.AbstractTrait;
 	import org.tbyrne.compose.traits.ITrait;
 	import org.tbyrne.compose.concerns.IConcern;
-	import org.tbyrne.composeLibrary.types.draw.IFrameAwareTrait;
+	import org.tbyrne.composeLibrary.draw.types.IFrameAwareTrait;
 	import org.tbyrne.collections.IndexedList;
 	
 	public class FrameSizer extends AbstractTrait

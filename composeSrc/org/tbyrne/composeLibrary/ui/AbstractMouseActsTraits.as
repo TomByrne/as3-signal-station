@@ -7,7 +7,7 @@ package org.tbyrne.composeLibrary.ui
 	import org.tbyrne.compose.concerns.IConcern;
 	import org.tbyrne.compose.core.ComposeItem;
 	import org.tbyrne.compose.traits.AbstractTrait;
-	import org.tbyrne.composeLibrary.types.ui.IMouseActsTrait;
+	import org.tbyrne.composeLibrary.ui.types.IMouseActsTrait;
 	
 	public class AbstractMouseActsTraits extends AbstractTrait implements IMouseActsTrait
 	{

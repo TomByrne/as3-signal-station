@@ -13,8 +13,8 @@ package org.tbyrne.composeLibrary.ui
 	import org.tbyrne.compose.concerns.IConcern;
 	import org.tbyrne.compose.traits.AbstractTrait;
 	import org.tbyrne.compose.traits.ITrait;
-	import org.tbyrne.composeLibrary.types.display2D.IInteractiveObjectTrait;
-	import org.tbyrne.composeLibrary.types.ui.IKeyActsTrait;
+	import org.tbyrne.composeLibrary.display2D.types.IInteractiveObjectTrait;
+	import org.tbyrne.composeLibrary.ui.types.IKeyActsTrait;
 	import org.tbyrne.data.core.BooleanData;
 	import org.tbyrne.data.dataTypes.IBooleanProvider;
 	

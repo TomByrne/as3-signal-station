@@ -3,7 +3,7 @@ package org.tbyrne.composeLibrary.display3D
 	import org.tbyrne.acting.actTypes.IAct;
 	import org.tbyrne.acting.acts.Act;
 	import org.tbyrne.compose.traits.AbstractTrait;
-	import org.tbyrne.composeLibrary.types.display3D.IVectorNormalPairTrait;
+	import org.tbyrne.composeLibrary.display3D.types.IVectorNormalPairTrait;
 	
 	public class VectorNormalPairTrait extends AbstractTrait implements IVectorNormalPairTrait
 	{

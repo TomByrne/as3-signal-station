@@ -6,8 +6,8 @@ package org.tbyrne.composeLibrary.display3D
 	import org.tbyrne.acting.actTypes.IAct;
 	import org.tbyrne.acting.acts.Act;
 	import org.tbyrne.compose.traits.AbstractTrait;
-	import org.tbyrne.composeLibrary.types.display3D.IMatrix3dTrait;
-	import org.tbyrne.composeLibrary.types.display3D.IOrientation3dTrait;
+	import org.tbyrne.composeLibrary.display3D.types.IMatrix3dTrait;
+	import org.tbyrne.composeLibrary.display3D.types.IOrientation3dTrait;
 	import org.tbyrne.display.validation.ValidationFlag;
 	
 	public class AbsOrientation3dTrait extends AbstractTrait implements IOrientation3dTrait, IMatrix3dTrait

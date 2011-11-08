@@ -5,7 +5,7 @@ package org.tbyrne.composeLibrary.adjust
 	import org.tbyrne.acting.actTypes.IAct;
 	import org.tbyrne.acting.acts.Act;
 	import org.tbyrne.compose.traits.AbstractTrait;
-	import org.tbyrne.composeLibrary.types.adjust.IAdjustableTrait;
+	import org.tbyrne.composeLibrary.adjust.types.IAdjustableTrait;
 	import org.tbyrne.display.assets.nativeTypes.IDisplayObject;
 	
 	public class ProxyAdjustableTrait extends AbstractTrait implements IAdjustableTrait

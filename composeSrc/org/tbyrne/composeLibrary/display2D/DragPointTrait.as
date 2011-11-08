@@ -4,8 +4,8 @@ package org.tbyrne.composeLibrary.display2D
 	import org.tbyrne.compose.traits.AbstractTrait;
 	import org.tbyrne.compose.traits.ITrait;
 	import org.tbyrne.compose.concerns.IConcern;
-	import org.tbyrne.composeLibrary.types.display2D.IPosition2dTrait;
-	import org.tbyrne.composeLibrary.types.ui.IMouseActsTrait;
+	import org.tbyrne.composeLibrary.display2D.types.IPosition2dTrait;
+	import org.tbyrne.composeLibrary.ui.types.IMouseActsTrait;
 	import org.tbyrne.collections.IndexedList;
 	
 	public class DragPointTrait extends AbstractTrait

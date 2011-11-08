@@ -6,9 +6,9 @@ package org.tbyrne.composeLibrary.display2D
 	import org.tbyrne.acting.actTypes.IAct;
 	import org.tbyrne.acting.acts.Act;
 	import org.tbyrne.compose.traits.AbstractTrait;
-	import org.tbyrne.composeLibrary.types.display2D.IDisplayConsumerTrait;
-	import org.tbyrne.composeLibrary.types.display2D.IDisplayObjectTrait;
-	import org.tbyrne.composeLibrary.types.display2D.IInteractiveObjectTrait;
+	import org.tbyrne.composeLibrary.display2D.types.IDisplayConsumerTrait;
+	import org.tbyrne.composeLibrary.display2D.types.IDisplayObjectTrait;
+	import org.tbyrne.composeLibrary.display2D.types.IInteractiveObjectTrait;
 	
 	public class DisplayObjectTrait extends AbstractTrait implements IDisplayObjectTrait, IInteractiveObjectTrait, IDisplayConsumerTrait
 	{
@@ -28,8 +28,9 @@ package org.tbyrne.composeLibrary.display2D
 		}
 		public function set displayObject(value:DisplayObject):void{
 			if(_displayObject!=value){
+				var oldDisplay:DisplayObject = _displayObject;
 				_displayObject = value;
-				if(_displayObjectChanged)_displayObjectChanged.perform(this);
+				if(_displayObjectChanged)_displayObjectChanged.perform(this,oldDisplay);
 			}
 			
 			var interactive:InteractiveObject = (value as InteractiveObject);

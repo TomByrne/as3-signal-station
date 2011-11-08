@@ -3,7 +3,7 @@ package org.tbyrne.composeLibrary.display2D
 	import org.tbyrne.acting.actTypes.IAct;
 	import org.tbyrne.acting.acts.Act;
 	import org.tbyrne.compose.traits.AbstractTrait;
-	import org.tbyrne.composeLibrary.types.display2D.IPosition2dTrait;
+	import org.tbyrne.composeLibrary.display2D.types.IPosition2dTrait;
 	
 	public class Position2d extends AbstractTrait implements IPosition2dTrait
 	{

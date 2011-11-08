@@ -13,9 +13,9 @@ package org.tbyrne.composeLibrary.away3d
 	import org.tbyrne.compose.concerns.IConcern;
 	import org.tbyrne.compose.traits.AbstractTrait;
 	import org.tbyrne.compose.traits.ITrait;
-	import org.tbyrne.composeLibrary.types.display3D.I3dTo2dTrait;
-	import org.tbyrne.composeLibrary.types.display3D.IMatrix3dTrait;
-	import org.tbyrne.composeLibrary.types.draw.IDrawAwareTrait;
+	import org.tbyrne.composeLibrary.display3D.types.I3dTo2dTrait;
+	import org.tbyrne.composeLibrary.display3D.types.IMatrix3dTrait;
+	import org.tbyrne.composeLibrary.draw.types.IDrawAwareTrait;
 	import org.tbyrne.data.dataTypes.INumberProvider;
 	import org.tbyrne.evolvex.traits.IAllocationTrait;
 	

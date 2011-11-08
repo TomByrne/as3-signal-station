@@ -6,7 +6,7 @@ package org.tbyrne.composeLibrary.display3D
 	import org.tbyrne.acting.actTypes.IAct;
 	import org.tbyrne.acting.acts.Act;
 	import org.tbyrne.composeLibrary.controls.ICameraControls;
-	import org.tbyrne.composeLibrary.types.display3D.IOrientation3dTrait;
+	import org.tbyrne.composeLibrary.display3D.types.IOrientation3dTrait;
 	import org.tbyrne.data.core.BooleanData;
 	import org.tbyrne.data.core.NumberData;
 	import org.tbyrne.data.dataTypes.IBooleanProvider;

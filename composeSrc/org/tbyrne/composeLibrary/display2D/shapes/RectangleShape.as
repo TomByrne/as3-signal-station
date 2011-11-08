@@ -12,7 +12,7 @@ package org.tbyrne.composeLibrary.display2D.shapes
 	import flash.geom.Rectangle;
 	
 	import org.tbyrne.compose.traits.AbstractTrait;
-	import org.tbyrne.composeLibrary.types.draw.IDrawAwareTrait;
+	import org.tbyrne.composeLibrary.draw.types.IDrawAwareTrait;
 	import org.tbyrne.data.dataTypes.IValueProvider;
 	import org.tbyrne.geom.rect.IRectangleProvider;
 	

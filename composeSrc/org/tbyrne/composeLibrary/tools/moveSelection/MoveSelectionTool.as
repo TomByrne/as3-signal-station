@@ -11,8 +11,8 @@ package org.tbyrne.composeLibrary.tools.moveSelection
 	import org.tbyrne.compose.traits.ITrait;
 	import org.tbyrne.composeLibrary.tools.selection2d.ISelectable2dTrait;
 	import org.tbyrne.composeLibrary.tools.selection2d.ISelectorTrait;
-	import org.tbyrne.composeLibrary.types.display2D.IPosition2dTrait;
-	import org.tbyrne.composeLibrary.types.ui.IMouseActsTrait;
+	import org.tbyrne.composeLibrary.display2D.types.IPosition2dTrait;
+	import org.tbyrne.composeLibrary.ui.types.IMouseActsTrait;
 	import org.tbyrne.data.dataTypes.INumberProvider;
 	
 	public class MoveSelectionTool extends AbstractTrait

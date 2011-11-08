@@ -15,9 +15,9 @@ package org.tbyrne.composeLibrary.away3d
 	import org.tbyrne.compose.concerns.Concern;
 	import org.tbyrne.compose.traits.AbstractTrait;
 	import org.tbyrne.compose.traits.ITrait;
-	import org.tbyrne.composeLibrary.types.display3D.I2dTo3dTrait;
-	import org.tbyrne.composeLibrary.types.display3D.IMatrix3dTrait;
-	import org.tbyrne.composeLibrary.types.draw.IDrawAwareTrait;
+	import org.tbyrne.composeLibrary.display3D.types.I2dTo3dTrait;
+	import org.tbyrne.composeLibrary.display3D.types.IMatrix3dTrait;
+	import org.tbyrne.composeLibrary.draw.types.IDrawAwareTrait;
 	
 	use namespace arcane;
 

@@ -1,4 +1,4 @@
-package org.tbyrne.composeLibrary.types.display3D
+package org.tbyrne.composeLibrary.display3D.types
 {
 	import org.tbyrne.acting.actTypes.IAct;
 	import org.tbyrne.compose.traits.ITrait;

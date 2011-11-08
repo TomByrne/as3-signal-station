@@ -3,10 +3,10 @@ package org.tbyrne.composeLibrary.display3D
 	import org.tbyrne.acting.actTypes.IAct;
 	import org.tbyrne.acting.acts.Act;
 	import org.tbyrne.composeLibrary.display2D.Position2d;
-	import org.tbyrne.composeLibrary.types.display3D.I2dTo3dTrait;
-	import org.tbyrne.composeLibrary.types.display3D.I3dTo2dTrait;
-	import org.tbyrne.composeLibrary.types.display3D.IMatrix3dTrait;
-	import org.tbyrne.composeLibrary.types.display3D.IPosition3dTrait;
+	import org.tbyrne.composeLibrary.display3D.types.I2dTo3dTrait;
+	import org.tbyrne.composeLibrary.display3D.types.I3dTo2dTrait;
+	import org.tbyrne.composeLibrary.display3D.types.IMatrix3dTrait;
+	import org.tbyrne.composeLibrary.display3D.types.IPosition3dTrait;
 
 	/**
 	 * Allows positions to exist in both 2D and 3D space simultaneously.

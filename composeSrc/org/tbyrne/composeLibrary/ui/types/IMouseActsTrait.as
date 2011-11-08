@@ -1,4 +1,4 @@
-package org.tbyrne.composeLibrary.types.ui
+package org.tbyrne.composeLibrary.ui.types
 {
 	import org.tbyrne.acting.actTypes.IAct;
 	import org.tbyrne.compose.traits.ITrait;

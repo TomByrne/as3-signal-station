@@ -3,7 +3,7 @@ package org.tbyrne.composeLibrary.adjust
 	import org.tbyrne.compose.concerns.Concern;
 	import org.tbyrne.compose.traits.AbstractTrait;
 	import org.tbyrne.compose.traits.ITrait;
-	import org.tbyrne.composeLibrary.types.adjust.ITogglableTrait;
+	import org.tbyrne.composeLibrary.adjust.types.ITogglableTrait;
 	import org.tbyrne.compose.concerns.IConcern;
 	import org.tbyrne.collections.IndexedList;
 	

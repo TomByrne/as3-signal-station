@@ -19,7 +19,7 @@ package org.tbyrne.composeLibrary.away3d
 	import org.tbyrne.compose.traits.AbstractTrait;
 	import org.tbyrne.compose.traits.ITrait;
 	import org.tbyrne.composeLibrary.away3d.types.IChild3dTrait;
-	import org.tbyrne.composeLibrary.types.display2D.IHitTestTrait;
+	import org.tbyrne.composeLibrary.display2D.types.IHitTestTrait;
 	
 	use namespace arcane;
 	

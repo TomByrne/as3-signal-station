@@ -5,7 +5,7 @@ package org.tbyrne.composeLibrary.adjust
 	import org.tbyrne.compose.concerns.Concern;
 	import org.tbyrne.compose.traits.AbstractTrait;
 	import org.tbyrne.compose.traits.ITrait;
-	import org.tbyrne.composeLibrary.types.adjust.IAdjustableTrait;
+	import org.tbyrne.composeLibrary.adjust.types.IAdjustableTrait;
 	import org.tbyrne.compose.concerns.IConcern;
 	
 	public class AdjustmentManagerTrait extends AbstractTrait

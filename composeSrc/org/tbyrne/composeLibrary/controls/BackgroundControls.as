@@ -1,8 +1,12 @@
 package org.tbyrne.composeLibrary.controls
 {
+	import flash.display.BitmapData;
+	
 	import org.tbyrne.acting.actTypes.IAct;
 	import org.tbyrne.acting.acts.Act;
+	import org.tbyrne.data.BitmapDataData;
 	import org.tbyrne.data.core.NumberData;
+	import org.tbyrne.data.dataTypes.IBitmapDataProvider;
 	import org.tbyrne.data.dataTypes.INumberProvider;
 	
 	public class BackgroundControls implements IBackgroundControls
@@ -23,24 +27,8 @@ package org.tbyrne.composeLibrary.controls
 			_backgroundColourProvider.numericalValue = value;
 		}
 		
-		/**
-		 * @inheritDoc
-		 */
-		public function get backgroundAlphaChanged():IAct{
-			return _backgroundAlphaProvider.numericalValueChanged;
-		}
-		public function get backgroundAlphaProvider():INumberProvider{
-			return _backgroundAlphaProvider;
-		}
-		public function get backgroundAlpha():Number{
-			return _backgroundAlphaProvider.numericalValue;
-		}
-		public function set backgroundAlpha(value:Number):void{
-			_backgroundAlphaProvider.numericalValue = value;
-		}
 		
 		protected var _backgroundColourProvider:NumberData = new NumberData(0);
-		protected var _backgroundAlphaProvider:NumberData = new NumberData(1);
 		
 		
 		public function BackgroundControls()

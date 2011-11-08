@@ -1,4 +1,4 @@
-package org.tbyrne.composeLibrary.types.display3D
+package org.tbyrne.composeLibrary.display3D.types
 {
 	import flash.geom.Matrix;
 	import flash.geom.Matrix3D;

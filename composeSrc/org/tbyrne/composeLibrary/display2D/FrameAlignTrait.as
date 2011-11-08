@@ -3,7 +3,7 @@ package org.tbyrne.composeLibrary.display2D
 	import flash.display.DisplayObject;
 	
 	import org.tbyrne.compose.traits.AbstractTrait;
-	import org.tbyrne.composeLibrary.types.draw.IFrameAwareTrait;
+	import org.tbyrne.composeLibrary.draw.types.IFrameAwareTrait;
 	import org.tbyrne.geom.rect.IRectangleProvider;
 	import org.tbyrne.display.constants.Anchor;
 	

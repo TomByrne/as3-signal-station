@@ -9,7 +9,7 @@ package org.tbyrne.composeLibrary.ui
 	import org.tbyrne.compose.concerns.IConcern;
 	import org.tbyrne.compose.concerns.Concern;
 	import org.tbyrne.compose.traits.ITrait;
-	import org.tbyrne.composeLibrary.types.display2D.IInteractiveObjectTrait;
+	import org.tbyrne.composeLibrary.display2D.types.IInteractiveObjectTrait;
 	
 	public class MouseActsTrait extends AbstractMouseActsTraits
 	{
