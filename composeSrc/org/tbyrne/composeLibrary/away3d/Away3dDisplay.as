@@ -9,8 +9,6 @@ package org.tbyrne.composeLibrary.away3d
 	import away3d.containers.View3D;
 	import away3d.core.math.*;
 	import away3d.entities.Sprite3D;
-	import away3d.materials.BitmapMaterial;
-	import away3d.tools.utils.TextureUtils;
 	
 	import flash.display.DisplayObject;
 	import flash.display.DisplayObjectContainer;
@@ -32,7 +30,6 @@ package org.tbyrne.composeLibrary.away3d
 	import org.tbyrne.composeLibrary.away3d.materials.SpriteMaterial;
 	import org.tbyrne.composeLibrary.away3d.types.IChild3dTrait;
 	import org.tbyrne.composeLibrary.away3d.types.IContainer3dTrait;
-	import org.tbyrne.composeLibrary.away3d.types.IScene3dAwareTrait;
 	import org.tbyrne.composeLibrary.display2D.AbstractLayeredContainer;
 	import org.tbyrne.composeLibrary.display2D.LayeredDisplayTrait;
 	import org.tbyrne.composeLibrary.display2D.types.IDisplayObjectTrait;
@@ -142,6 +139,45 @@ package org.tbyrne.composeLibrary.away3d
 			}
 		}
 		
+		
+		public function get farDist():INumberProvider{
+			return _farDist;
+		}
+		public function set farDist(value:INumberProvider):void{
+			if(_farDist!=value){
+				if(_farDist){
+					_farDist.numericalValueChanged.removeHandler(onFarChanged);
+				}
+				_farDist = value;
+				if(_farDist){
+					_farDist.numericalValueChanged.addHandler(onFarChanged);
+					Binder.bind(_perspectiveLens,"far",_farDist,"numericalValue");
+					Binder.bind(_orthogonalLens,"far",_farDist,"numericalValue");
+					onFarChanged();
+				}else{
+					Binder.unbind(_perspectiveLens,"far");
+					Binder.unbind(_orthogonalLens,"far");
+				}
+			}
+		}
+		
+		public function get nearDist():INumberProvider{
+			return _nearDist;
+		}
+		public function set nearDist(value:INumberProvider):void{
+			if(_nearDist!=value){
+				_nearDist = value;
+				if(_nearDist){
+					Binder.bind(_perspectiveLens,"near",_nearDist,"numericalValue");
+					Binder.bind(_orthogonalLens,"near",_nearDist,"numericalValue");
+				}else{
+					Binder.unbind(_perspectiveLens,"near");
+					Binder.unbind(_orthogonalLens,"near");
+				}
+			}
+		}
+		
+		
 		public function get rootDisplay():DisplayObject{
 			return _rootDisplay;
 		}
@@ -163,7 +199,6 @@ package org.tbyrne.composeLibrary.away3d
 		
 		private var _scene:Scene3D;
 		private var _sceneContainer:ObjectContainer3D;
-		private var _sceneProxy:Away3dSceneProxy;
 		private var _camera:Camera3D;
 		private var _view:View3D;
 		private var _lights:Array;
@@ -183,6 +218,9 @@ package org.tbyrne.composeLibrary.away3d
 		private var _perspectiveLens:PerspectiveLens;
 		private var _orthogonalLens:OrthographicLens;
 		private var _lowerMaterial:SpriteMaterial;
+		
+		private var _nearDist:INumberProvider;
+		private var _farDist:INumberProvider;
 
 		private var _lowerShape:Shape;
 		
@@ -196,7 +234,6 @@ package org.tbyrne.composeLibrary.away3d
 			_rootDisplay.addChild(_view);
 			
 			_scene = _view.scene;
-			_sceneProxy = new Away3dSceneProxy(_scene);
 			
 			_sceneContainer = new ObjectContainer3D();
 			_scene.addChild(_sceneContainer);
@@ -205,9 +242,7 @@ package org.tbyrne.composeLibrary.away3d
 			_camera.z = 0;
 			
 			_perspectiveLens = _camera.lens as PerspectiveLens;
-			_perspectiveLens.far = 100000;
 			_orthogonalLens = new OrthographicLens();
-			_orthogonalLens.far = 100000;
 			_camera.lens = _orthogonalLens;
 			_scene.addChild(_camera);
 			
@@ -223,7 +258,6 @@ package org.tbyrne.composeLibrary.away3d
 			_renderFlag = new ValidationFlag(_view.render,false);
 			_lowerScaleFlag = new ValidationFlag(commitLowerScale,false,null,readyCommitLower);
 			
-			addConcern(new Concern(true,true,false,IScene3dAwareTrait));
 			addConcern(new Concern(true,true,false,IChild3dTrait,[IContainer3dTrait]));
 		}
 		
@@ -236,13 +270,9 @@ package org.tbyrne.composeLibrary.away3d
 			(item as ComposeGroup).removeItem(_viewLayerItem);
 		}
 		override protected function onConcernedTraitAdded(from:IConcern, trait:ITrait):void{
-			var awareTrait:IScene3dAwareTrait;
 			var child3d:IChild3dTrait;
 			var layeredDisplay:ILayeredDisplayTrait;
 			
-			if(awareTrait = (trait as IScene3dAwareTrait)){
-				awareTrait.scene3d = _sceneProxy;
-			}
 			if(child3d = (trait as IChild3dTrait)){
 				_sceneContainer.addChild(child3d.object3d);
 			}
@@ -253,13 +283,9 @@ package org.tbyrne.composeLibrary.away3d
 		}
 		
 		override protected function onConcernedTraitRemoved(from:IConcern, trait:ITrait):void{
-			var awareTrait:IScene3dAwareTrait;
 			var child3d:IChild3dTrait;
 			var layeredDisplay:ILayeredDisplayTrait;
 			
-			if(awareTrait = (trait as IScene3dAwareTrait)){
-				awareTrait.scene3d = null;
-			}
 			if(child3d = (trait as IChild3dTrait)){
 				if(_scene.contains(child3d.object3d))
 					_scene.removeChild(child3d.object3d);
@@ -277,6 +303,8 @@ package org.tbyrne.composeLibrary.away3d
 		}
 		
 		public function setSize(width:Number, height:Number):void{
+			if(_view.height!=height)_focalLengthFlag.invalidate();
+			
 			_height = height;
 			_view.width = width;
 			_view.height = height;
@@ -495,7 +523,7 @@ package org.tbyrne.composeLibrary.away3d
 				
 				_lowerContainer3D = new Sprite3D(_lowerMaterial,100,100);
 				_lowerContainer3D.mouseEnabled = true;
-				_lowerContainer3D.z = _orthogonalLens.far-0.1;
+				_lowerContainer3D.z = _orthogonalLens.far-2;
 				
 				_camera.addChild(_lowerContainer3D);
 				
@@ -506,6 +534,13 @@ package org.tbyrne.composeLibrary.away3d
 				
 				_lowerScaleFlag.invalidate();
 			}
+		}
+		
+		private function onFarChanged(from:INumberProvider=null):void{
+			if(_lowerContainer3D){
+				_lowerContainer3D.z = _farDist.numericalValue-2;
+			}
+			_lowerScaleFlag.invalidate();
 		}
 	}
 }	

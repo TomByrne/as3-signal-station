@@ -4,10 +4,10 @@ package org.tbyrne.composeLibrary.away3d.traits
 	import away3d.lights.LightBase;
 	
 	import org.tbyrne.compose.traits.AbstractTrait;
-	import org.tbyrne.composeLibrary.away3d.AbstractScene3dAwareTrait;
 	import org.tbyrne.composeLibrary.away3d.types.IChild3dTrait;
+	import org.tbyrne.composeLibrary.away3d.types.ILight3dTrait;
 	
-	public class GlobalLightTrait extends AbstractScene3dAwareTrait
+	public class Light3dTrait extends AbstractTrait implements ILight3dTrait, IChild3dTrait
 	{
 		public function get light():LightBase{
 			return _light;
@@ -17,20 +17,15 @@ package org.tbyrne.composeLibrary.away3d.traits
 				_light = value;
 			}
 		}
+		public function get object3d():ObjectContainer3D{
+			return _light;
+		}
 		
 		private var _light:LightBase;
 		
 		
-		public function GlobalLightTrait(){
+		public function Light3dTrait(){
 			super();
-		}
-		
-		override protected function unbindFromScene():void{
-			_scene3d.removeGlobalLight(_light);
-		}
-		
-		override protected function bindToScene():void{
-			_scene3d.addGlobalLight(_light);
 		}
 	}
 }

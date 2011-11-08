@@ -65,6 +65,18 @@ package org.tbyrne.composeLibrary.controls
 		 */
 		function get rotationChanged():IAct;
 		
+		/**
+		 * handler(from:ICameraControls)
+		 */
+		function get nearDistChanged():IAct;
+		function get nearDist():Number;
+		function set nearDist(value:Number):void;
+		/**
+		 * handler(from:ICameraControls)
+		 */
+		function get farDistChanged():IAct;
+		function get farDist():Number;
+		function set farDist(value:Number):void;
 		
 		/**
 		 * handler(from:ICameraControls)

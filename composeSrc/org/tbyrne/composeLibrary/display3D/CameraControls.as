@@ -121,6 +121,40 @@ package org.tbyrne.composeLibrary.display3D
 		/**
 		 * @inheritDoc
 		 */
+		public function get nearDistChanged():IAct{
+			return _nearDistProvider.numericalValueChanged;
+		}
+		public function get nearDistProvider():INumberProvider{
+			return _nearDistProvider;
+		}
+		public function get nearDist():Number{
+			return _nearDistProvider.numericalValue;
+		}
+		public function set nearDist(value:Number):void{
+			_nearDistProvider.numericalValue = value;
+		}
+		protected var _nearDistProvider:NumberData = new NumberData(1);
+		
+		/**
+		 * @inheritDoc
+		 */
+		public function get farDistChanged():IAct{
+			return _farDistProvider.numericalValueChanged;
+		}
+		public function get farDistProvider():INumberProvider{
+			return _farDistProvider;
+		}
+		public function get farDist():Number{
+			return _farDistProvider.numericalValue;
+		}
+		public function set farDist(value:Number):void{
+			_farDistProvider.numericalValue = value;
+		}
+		protected var _farDistProvider:NumberData = new NumberData(1);
+		
+		/**
+		 * @inheritDoc
+		 */
 		public function get rotationChanged():IAct{
 			return rotation3dChanged;
 		}
