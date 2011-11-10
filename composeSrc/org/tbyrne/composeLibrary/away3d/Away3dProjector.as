@@ -1,9 +1,7 @@
 package org.tbyrne.composeLibrary.away3d
 {
-	import away3d.cameras.Camera3D;
 	import away3d.containers.View3D;
 	
-	import flash.geom.Matrix3D;
 	import flash.geom.Point;
 	import flash.geom.Vector3D;
 	
@@ -14,10 +12,7 @@ package org.tbyrne.composeLibrary.away3d
 	import org.tbyrne.compose.traits.AbstractTrait;
 	import org.tbyrne.compose.traits.ITrait;
 	import org.tbyrne.composeLibrary.display3D.types.I3dTo2dTrait;
-	import org.tbyrne.composeLibrary.display3D.types.IMatrix3dTrait;
 	import org.tbyrne.composeLibrary.draw.types.IDrawAwareTrait;
-	import org.tbyrne.data.dataTypes.INumberProvider;
-	import org.tbyrne.evolvex.traits.IAllocationTrait;
 	
 	public class Away3dProjector extends AbstractTrait implements IDrawAwareTrait
 	{

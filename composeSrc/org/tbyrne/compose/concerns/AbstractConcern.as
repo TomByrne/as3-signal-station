@@ -32,6 +32,9 @@ package org.tbyrne.compose.concerns
 		public function get interestedTraitType():Class{
 			return _interestedTraitType;
 		}
+		public function set interestedTraitType(value:Class):void{
+			_interestedTraitType = value;
+		}
 		public function get siblings():Boolean{
 			return _siblings;
 		}

@@ -10,8 +10,6 @@ package org.tbyrne.composeLibrary.tools.snapping
 	import org.tbyrne.compose.traits.ITrait;
 	import org.tbyrne.composeLibrary.display3D.types.IPosition3dTrait;
 	import org.tbyrne.composeLibrary.draw.types.IDrawAwareTrait;
-	import org.tbyrne.evolvex.assembly.Allocation;
-	import org.tbyrne.evolvex.assembly.constraints.JunctionConstraint;
 	
 	public class SnappingRegulator extends AbstractTrait implements IDrawAwareTrait
 	{

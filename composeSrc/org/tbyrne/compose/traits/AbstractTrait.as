@@ -6,6 +6,9 @@ package org.tbyrne.compose.traits
 	
 	public class AbstractTrait implements ITrait
 	{
+		public function get group():ComposeGroup{
+			return _group;
+		}
 		public function get item():ComposeItem{
 			return _item;
 		}
