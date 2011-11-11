@@ -37,7 +37,7 @@ package org.tbyrne.composeLibrary.display2D
 				var castPoint:IPosition2dTrait = trait as IPosition2dTrait;
 				
 				if(castPoint){
-					_points.push(castPoint);
+					_points.add(castPoint);
 				}
 			}
 			

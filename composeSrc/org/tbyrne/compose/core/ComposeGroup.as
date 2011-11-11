@@ -36,7 +36,7 @@ package org.tbyrne.compose.core
 				if(_children.containsItem(item))Log.error("ComposeGroup.addItem already contains child item.");
 			}
 			
-			_children.push(item);
+			_children.add(item);
 			item.parentItem = this;
 			
 			var traitConcern:IConcern;
@@ -104,7 +104,7 @@ package org.tbyrne.compose.core
 		override protected function addTraitConcern(concern:IConcern):void{
 			super.addTraitConcern(concern);
 			if(concern.descendants){
-				_descConcerns.push(concern);
+				_descConcerns.add(concern);
 				for each(var child:ComposeItem in _children.list){
 					child.addParentConcern(concern);
 				}
@@ -153,7 +153,7 @@ package org.tbyrne.compose.core
 		ComposeNamespace function addAscendingConcern(concern:IConcern):void{
 			_childAscendingMarrier.addConcern(concern);
 			if(!_childAscConcerns)_childAscConcerns = new IndexedList();
-			_childAscConcerns.push(concern);
+			_childAscConcerns.add(concern);
 			if(_parentItem)_parentItem.addAscendingConcern(concern);
 		}
 		ComposeNamespace function removeAscendingConcern(concern:IConcern):void{
@@ -167,7 +167,7 @@ package org.tbyrne.compose.core
 			if(concern.shouldDescend(this)){
 				addDescParentConcern(concern);
 			}else{
-				_ignoredParentConcerns.push(concern);
+				_ignoredParentConcerns.add(concern);
 			}
 		}
 		
@@ -187,7 +187,7 @@ package org.tbyrne.compose.core
 				var concern:IConcern = _parentDescConcerns.list[i];
 				if(!concern.shouldDescend(this)){
 					removeDescParentConcern(concern);
-					_ignoredParentConcerns.push(concern);
+					_ignoredParentConcerns.add(concern);
 				}else{
 					++i
 				}
@@ -208,7 +208,7 @@ package org.tbyrne.compose.core
 		
 		
 		protected function addDescParentConcern(concern:IConcern):void{
-			_parentDescConcerns.push(concern);
+			_parentDescConcerns.add(concern);
 			for each(var child:ComposeItem in _children.list){
 				child.addParentConcern(concern);
 			}

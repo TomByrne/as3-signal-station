@@ -33,7 +33,7 @@ package org.tbyrne.composeLibrary.tools.snapping
 			var snapTrait:ISnappableTrait = (trait as ISnappableTrait);
 			
 			if(influence){
-				_influences.push(influence);
+				_influences.add(influence);
 				
 				for each(var group:String in influence.groups){
 					var list:IndexedList = _groups[group];
@@ -41,12 +41,12 @@ package org.tbyrne.composeLibrary.tools.snapping
 						list = new IndexedList();
 						_groups[group] = list;
 					}
-					list.push(influence);
+					list.add(influence);
 				}
 				
 			}
 			if(snapTrait){
-				_traits.push(snapTrait);
+				_traits.add(snapTrait);
 				var posTrait:IPosition3dTrait = trait.item.getTrait(IPosition3dTrait);
 				snapTrait.snappingActiveChanged.addHandler(onSnappingActiveChanged, [posTrait]);
 				if(snapTrait.snappingActive){
@@ -94,7 +94,7 @@ package org.tbyrne.composeLibrary.tools.snapping
 		}
 		private function onPosChanged(posTrait:IPosition3dTrait, snapTrait:ISnappableTrait):void{
 			//if(!_ignoreChanges)assessSnapping(snapTrait, posTrait);
-			if(!_ignoreChanges)_invalid.push(snapTrait);
+			if(!_ignoreChanges)_invalid.add(snapTrait);
 		}
 		public function tick(timeStep:Number):void{
 			if(_invalid.list.length){

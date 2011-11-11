@@ -127,7 +127,7 @@ package org.tbyrne.compose.core
 			}
 			if(concern.ascendants){
 				if(!_ascConcerns)_ascConcerns = new IndexedList();
-				_ascConcerns.push(concern);
+				_ascConcerns.add(concern);
 				if(_parentItem)_parentItem.addAscendingConcern(concern);
 			}
 		}

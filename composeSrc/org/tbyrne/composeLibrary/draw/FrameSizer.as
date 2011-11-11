@@ -35,7 +35,7 @@ package org.tbyrne.composeLibrary.draw
 		
 		override protected function onConcernedTraitAdded(from:IConcern, trait:ITrait):void{
 			var cast:IFrameAwareTrait = trait as IFrameAwareTrait
-			_frameSizeTraits.push(cast);
+			_frameSizeTraits.add(cast);
 			if(_set)cast.setSize(_width,_height);
 		}
 		override protected function onConcernedTraitRemoved(from:IConcern, trait:ITrait):void{

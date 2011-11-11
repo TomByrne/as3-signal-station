@@ -11,9 +11,11 @@ package org.tbyrne.collections
 		private var _list:Array = [];
 		private var _indices:Dictionary = new Dictionary();
 		
-		public function push(value:*):void{
-			_indices[value] = _list.length;
-			_list.push(value);
+		public function add(value:*):void{
+			if(_indices[value]==null){
+				_indices[value] = _list.length;
+				_list.push(value);
+			}
 		}
 		public function remove(value:*):void{
 			var index:* = _indices[value];

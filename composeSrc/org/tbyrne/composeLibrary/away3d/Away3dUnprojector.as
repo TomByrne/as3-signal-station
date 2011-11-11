@@ -74,9 +74,9 @@ package org.tbyrne.composeLibrary.away3d
 			var trait2d:I2dTo3dTrait;
 			
 			if(trait2d = (trait as I2dTo3dTrait)){
-				_2dPositions.push(trait2d);
+				_2dPositions.add(trait2d);
 				trait2d.requestUnprojection.addHandler(onRequestUnprojection);
-				if(!_2dAllInvalid)_2dInvalid.push(trait2d);
+				if(!_2dAllInvalid)_2dInvalid.add(trait2d);
 				
 			}
 		}
@@ -98,7 +98,7 @@ package org.tbyrne.composeLibrary.away3d
 				validatePos(from);
 				_2dInvalid.remove(from);
 			}else{
-				if(!_2dAllInvalid && !_2dInvalid.containsItem(from))_2dInvalid.push(from);
+				if(!_2dAllInvalid && !_2dInvalid.containsItem(from))_2dInvalid.add(from);
 			}
 		}
 		

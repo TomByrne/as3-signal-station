@@ -80,7 +80,7 @@ package org.tbyrne.compose.traits
 			if(!cache.methodCachesSafe){
 				for each(trait in invalid.list){
 					if(trait is matchType){
-						cache.matched.push(trait);
+						cache.matched.add(trait);
 					}
 				}
 				cache.invalid.clear();
@@ -119,7 +119,7 @@ package org.tbyrne.compose.traits
 				if(!cache.methodCachesSafe){
 					for each(trait in invalid.list){
 						if(trait is matchType){
-							if(matchingType)cache.matched.push(trait);
+							if(matchingType)cache.matched.add(trait);
 							func.apply(null,realParams);
 						}
 					}
@@ -135,9 +135,9 @@ package org.tbyrne.compose.traits
 			}
 		}
 		public function addTrait(trait:ITrait):void{
-			_traits.push(trait);
+			_traits.add(trait);
 			for each(var cache:TraitTypeCache in _traitTypeCache){
-				cache.invalid.push(trait);
+				cache.invalid.add(trait);
 				cache.methodCachesSafe = false;
 			}
 			if(_traitAdded)_traitAdded.perform(this,trait);

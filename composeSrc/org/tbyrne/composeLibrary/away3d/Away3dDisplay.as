@@ -9,6 +9,8 @@ package org.tbyrne.composeLibrary.away3d
 	import away3d.containers.View3D;
 	import away3d.core.math.*;
 	import away3d.entities.Sprite3D;
+	import away3d.materials.ColorMaterial;
+	import away3d.primitives.Cube;
 	
 	import flash.display.DisplayObject;
 	import flash.display.DisplayObjectContainer;
@@ -248,6 +250,15 @@ package org.tbyrne.composeLibrary.away3d
 			_scene.addChild(_camera);
 			
 			super();
+			
+			
+			CONFIG::debug{
+				var cube:Cube = new Cube(new ColorMaterial(0xff0000,1),10,10,10);
+				cube.x = 0;
+				cube.y = 0;
+				cube.z = 100;
+				_scene.addChild(cube);
+			}
 			
 			// this will add the View3D into the layer stack
 			_viewLayerItem = new ComposeItem();

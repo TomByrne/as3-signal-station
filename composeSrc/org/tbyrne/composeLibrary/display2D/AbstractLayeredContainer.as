@@ -106,7 +106,7 @@ package org.tbyrne.composeLibrary.display2D
 					addDisplayTrait(displayTrait);
 				}
 				
-				_layerTraits.push(layeredDisplayTrait);
+				_layerTraits.add(layeredDisplayTrait);
 				_layerIdLookup[layeredDisplayTrait.layerId] = layeredDisplayTrait;
 				
 			}else{

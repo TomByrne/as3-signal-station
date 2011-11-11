@@ -36,7 +36,7 @@ package org.tbyrne.composeLibrary.adjust
 			var castTrait:ITogglableTrait = (trait as ITogglableTrait);
 			
 			if(castTrait.togglableGroup==togglableGroupId){
-				_traits.push(castTrait);
+				_traits.add(castTrait);
 				
 				castTrait.isToggledChanged.addHandler(onIsToggledChanged);
 			}
