@@ -142,7 +142,7 @@ package org.tbyrne.display.containers
 		private var _selectedData:Dictionary = new Dictionary();
 		private var _selectedIndices:Array = [];
 		private var _selectedCount:int = 0;
-		private var _ignoreSelectionChanges:Boolean;
+		private var _selectingNow:int = -1;
 		
 		protected var _scrollByLine:Boolean;
 		protected var _autoScrollToSelection:Boolean;
@@ -256,13 +256,17 @@ package org.tbyrne.display.containers
 		class).
 		*/
 		protected function onRendererSelect(renderer:ISelectableRenderer) : void{
-			if(_ignoreSelectionChanges)return;
-			
 			var data:* = renderer[_layout.dataField];
 			var dataIndex:int = getDataIndex(data);
-			_ignoreSelectionChanges = true;
-			renderer.selected = tryRendererSelect(dataIndex, data, renderer.selected);
-			_ignoreSelectionChanges = false;
+			
+			if(_selectingNow == dataIndex)return;
+			
+			_selectingNow = dataIndex;
+			var newValue:Boolean = tryRendererSelect(dataIndex, data, renderer.selected);
+			if(_selectingNow==dataIndex){
+				renderer.selected = newValue;
+				_selectingNow = -1;
+			}
 		}
 		override protected function updateFactory(factory:IInstanceFactory, dataField:String):void{
 			super.updateFactory(factory, dataField);

@@ -21,6 +21,9 @@ package org.tbyrne.composeLibrary.tools.snapping
 		
 		private var _groups:Dictionary = new Dictionary();
 		
+		private var _currentProposals:Dictionary = new Dictionary();
+		private var _currentSnapList:Dictionary = new Dictionary();
+		
 		public function SnappingRegulator()
 		{
 			super();
@@ -85,12 +88,20 @@ package org.tbyrne.composeLibrary.tools.snapping
 		}
 		
 		
-		private function stopSnapping(snapTrait:ISnappableTrait, posTrait:IPosition3dTrait):void{
-			posTrait.position3dChanged.removeHandler(onPosChanged);
-		}
 		private function startSnapping(snapTrait:ISnappableTrait, posTrait:IPosition3dTrait):void{
 			posTrait.position3dChanged.addHandler(onPosChanged, [snapTrait]);
 			assessSnapping(snapTrait, posTrait);
+		}
+		private function stopSnapping(snapTrait:ISnappableTrait, posTrait:IPosition3dTrait):void{
+			posTrait.position3dChanged.removeHandler(onPosChanged);
+			
+			var bestProposal:Vector3D = _currentProposals[snapTrait];
+			var snapList:Dictionary = _currentSnapList[snapTrait];
+			for each(var influence:ISnapInfluenceTrait in _influences.list){
+				influence.setAcceptedProposal(snapTrait,bestProposal,snapList?snapList[influence]:null);
+			}
+			delete _currentProposals[snapTrait];
+			delete _currentSnapList[snapTrait];
 		}
 		private function onPosChanged(posTrait:IPosition3dTrait, snapTrait:ISnappableTrait):void{
 			//if(!_ignoreChanges)assessSnapping(snapTrait, posTrait);
@@ -155,13 +166,20 @@ package org.tbyrne.composeLibrary.tools.snapping
 			if(bestProposal){
 				key = int(bestProposal.x+05)+"_"+int(bestProposal.y+05)+"_"+int(bestProposal.z+05);
 				snapList = snapMap[key];
+				_currentProposals[snapTrait] = bestProposal;
+				_currentSnapList[snapTrait] = snapList;
+				
 				for each(influence in _influences.list){
-					influence.setAcceptedProposal(snapTrait,bestProposal,snapList[influence]);
+					influence.setCurrentProposal(snapTrait,bestProposal,snapList[influence]);
 				}
+				
 				posTrait.setPosition3d(bestProposal.x,bestProposal.y,bestProposal.z);
 			}else{
+				delete _currentProposals[snapTrait];
+				delete _currentSnapList[snapTrait];
+				
 				for each(influence in _influences.list){
-					influence.setAcceptedProposal(snapTrait,bestProposal,null);
+					influence.setCurrentProposal(snapTrait,null,null);
 				}
 			}
 			
