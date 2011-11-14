@@ -68,20 +68,23 @@ package org.tbyrne.display.progress
 		}
 		public var mainClasspath:String;
 		
-		private var _layoutView:ILayoutView;
+		protected var _layoutView:ILayoutView;
 		protected var _progressDisplay:IProgressDisplay;
-		private var _progressDisplayAnim:IOutroView;
-		private var _totalFound:Boolean = false;
-		private var _measureFactor:Number;
-		private var _application:IApplication;
-		private var _nativeFactory:NativeAssetFactory;
-		private var _nativeAsset:DisplayObjectContainerAsset;
+		protected var _progressDisplayAnim:IOutroView;
+		protected var _totalFound:Boolean = false;
+		protected var _measureFactor:Number;
+		protected var _application:IApplication;
+		protected var _nativeFactory:NativeAssetFactory;
+		protected var _nativeAsset:DisplayObjectContainerAsset;
 		
-		private var _messageData:StringData;
-		private var _unitsData:StringData;
-		private var _measurableData:BooleanData;
-		private var _totalData:NumberData;
-		private var _progressData:NumberData;
+		protected var _messageData:StringData;
+		protected var _unitsData:StringData;
+		protected var _measurableData:BooleanData;
+		protected var _totalData:NumberData;
+		protected var _progressData:NumberData;
+		
+		protected var _stageWidth:Number;
+		protected var _stageHeight:Number;
 		
 		public function SWFPreloaderFrame(mainClasspath: String=null, progressDisplay:IProgressDisplay=null, layoutView:ILayoutView=null, runTest:Boolean=false){
 			super();
@@ -102,6 +105,7 @@ package org.tbyrne.display.progress
 			this.stage.align = StageAlign.TOP_LEFT;
 			this.stage.scaleMode = StageScaleMode.NO_SCALE;
 			stage.addEventListener(Event.RESIZE, onStageResize);
+			setStageSize(stage.stageWidth,stage.stageHeight);
 			
 			if(runTest){
 				_messageData.stringValue = "Testing";
@@ -129,6 +133,7 @@ package org.tbyrne.display.progress
 				removeEventListener(Event.ENTER_FRAME, doTest);
 				loadCompleted();
 			}
+			setStageSize(stage.stageWidth,stage.stageHeight);
 		}
 		private function onLoadProgress(event: Event=null): void{
 			if(!_totalFound && root.loaderInfo.bytesTotal>0){
@@ -154,6 +159,7 @@ package org.tbyrne.display.progress
 			if(_totalFound){
 				_progressData.numericalValue = root.loaderInfo.bytesLoaded/_measureFactor;
 			}
+			setStageSize(stage.stageWidth,stage.stageHeight);
 		}
 		private function onLoadComplete(event: Event): void{
 			root.loaderInfo.removeEventListener(ProgressEvent.PROGRESS, onLoadProgress);
@@ -166,14 +172,21 @@ package org.tbyrne.display.progress
 			_measurableData.booleanValue = false;
 		}
 		private function onStageResize(event: Event): void{
-			if(_layoutView)applySizeToProgressDisplay();
-			if(_application)applySizeToApplication();
+			setStageSize(stage.stageWidth,stage.stageHeight);
 		}
-		private function applySizeToProgressDisplay(): void{
-			_layoutView.setSize(stage.stageWidth,stage.stageHeight);
+		private function setStageSize(width:Number, height:Number): void{
+			if(_stageWidth!=width || _stageHeight!=height){
+				_stageWidth = width;
+				_stageHeight = height;
+				if(_layoutView)applySizeToProgressDisplay();
+				if(_application)applySizeToApplication();
+			}
 		}
-		private function applySizeToApplication(): void{
-			_application.setSize(stage.stageWidth,stage.stageHeight);
+		protected function applySizeToProgressDisplay(): void{
+			_layoutView.setSize(_stageWidth,_stageHeight);
+		}
+		protected function applySizeToApplication(): void{
+			_application.setSize(_stageWidth,_stageHeight);
 		}
 		protected function loadCompleted():void{
 			_progressData.numericalValue = _totalData.numericalValue;
@@ -208,7 +221,7 @@ package org.tbyrne.display.progress
 			_nativeAsset.removeAsset(_layoutView.asset);
 			_application.container = _nativeAsset;
 		}
-		private function guessClassName():String{
+		protected function guessClassName():String{
 			var results:Object = CLASS_FILENAME_PATTERN.exec(unescape(stage.loaderInfo.url));
 			return results[1];
 		}
