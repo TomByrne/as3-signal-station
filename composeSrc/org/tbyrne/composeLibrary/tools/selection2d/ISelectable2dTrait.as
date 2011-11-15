@@ -5,7 +5,18 @@ package org.tbyrne.composeLibrary.tools.selection2d
 	
 	public interface ISelectable2dTrait extends ITrait
 	{
-		function setSelected(selected:Boolean):void;
-		function setInterested(interested:Boolean):void;
+		/**
+		 * handler(from:ISelectable2dTrait)
+		 */
+		function get selectedChanged():IAct;
+		function get selected():Boolean;
+		function set selected(selected:Boolean):void;
+		
+		/**
+		 * handler(from:ISelectable2dTrait)
+		 */
+		function get interestedChanged():IAct;
+		function get interested():Boolean;
+		function set interested(interested:Boolean):void;
 	}
 }

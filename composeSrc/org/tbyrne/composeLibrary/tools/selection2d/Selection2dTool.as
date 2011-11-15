@@ -113,8 +113,8 @@ package org.tbyrne.composeLibrary.tools.selection2d
 			}
 			if(selectableTrait = (trait as ISelectable2dTrait)){
 				_depthCollection.addTrait(selectableTrait);
-				selectableTrait.setInterested(false);
-				selectableTrait.setSelected(false);
+				selectableTrait.interested = false;
+				selectableTrait.selected = false;
 			}
 		}
 		override protected function onConcernedTraitRemoved(from:IConcern, trait:ITrait):void{
@@ -154,11 +154,11 @@ package org.tbyrne.composeLibrary.tools.selection2d
 				var selected:int = _selection.indexOf(selectableTrait);
 				if(selected!=-1){
 					_selection.splice(selected,1);
-					selectableTrait.setSelected(false);
+					selectableTrait.selected = false;
 					if(_selectionChanged)_selectionChanged.perform(this);
 				}
 				if(_isOver==selectableTrait){
-					selectableTrait.setInterested(false);
+					selectableTrait.interested = false;
 					_isOver = null;
 				}
 			}
@@ -171,11 +171,11 @@ package org.tbyrne.composeLibrary.tools.selection2d
 				_depthCollection.callOnTraits(checkHit,false,[actInfo,retObj]);
 				if(_isOver!=retObj.hit){
 					if(_isOver){
-						_isOver.setInterested(false);
+						_isOver.interested = false;
 					}
 					_isOver = retObj.hit;
 					if(_isOver){
-						_isOver.setInterested(true);
+						_isOver.interested = true;
 					}
 				}
 			}
@@ -224,9 +224,9 @@ package org.tbyrne.composeLibrary.tools.selection2d
 				if(_interested.length){
 					for each(var trait:ISelectable2dTrait in _interested){
 						if(addToCollection(_selection,trait)){
-							trait.setSelected(true);
+							trait.selected = true;
 						}
-						trait.setInterested(false);
+						trait.interested = false;;
 					}
 					_interested = new Vector.<ISelectable2dTrait>();
 					if(_selectionChanged)_selectionChanged.perform(this);
@@ -256,14 +256,14 @@ package org.tbyrne.composeLibrary.tools.selection2d
 			}
 			var added:Boolean = addToCollection(_selection, trait);
 			if(added || removed){
-				trait.setSelected(true);
+				trait.selected = true;
 				if(_selectionChanged)_selectionChanged.perform(this);
 			}
 		}
 		public function deselect(trait:ISelectable2dTrait):void{
 			var changed:Boolean = removeFromCollection(_selection, trait);
 			if(changed){
-				trait.setSelected(false);
+				trait.selected = false;
 				if(_selectionChanged)_selectionChanged.perform(this);
 			}
 		}
@@ -306,7 +306,7 @@ package org.tbyrne.composeLibrary.tools.selection2d
 				}
 			}
 			if(changed){
-				trait.setSelected(!selected);
+				trait.selected = !selected;
 				if(_selectionChanged)selectionChanged.perform(this);
 			}
 		}
@@ -314,7 +314,7 @@ package org.tbyrne.composeLibrary.tools.selection2d
 		private function doSelect(index:int, trait:ISelectable2dTrait, allowEvents:Boolean):void{
 			var changed:Boolean = addToCollection(_selection, trait);
 			if(changed){
-				trait.setSelected(true);
+				trait.selected = true;
 				if(allowEvents && _selectionChanged)_selectionChanged.perform(this);
 			}
 		}
@@ -322,7 +322,7 @@ package org.tbyrne.composeLibrary.tools.selection2d
 		private function doDeselect(index:int, trait:ISelectable2dTrait, allowEvents:Boolean):void{
 			var changed:Boolean = removeFromCollection(_selection, trait);
 			if(changed){
-				trait.setSelected(false);
+				trait.selected = false;
 				if(allowEvents && _selectionChanged)_selectionChanged.perform(this);
 			}
 		}
@@ -334,12 +334,12 @@ package org.tbyrne.composeLibrary.tools.selection2d
 			if(interested){
 				if(!shouldBe){
 					if(removeFromCollection(_interested, trait)){
-						trait.setInterested(false);
+						trait.interested = false;
 					}
 				}
 			}else if(shouldBe){
 				if(addToCollection(_interested, trait)){
-					trait.setInterested(true);
+					trait.interested = true;
 				}
 			}
 		}
