@@ -3,9 +3,13 @@ package org.tbyrne.composeLibrary.ui.types
 	import org.tbyrne.acting.actTypes.IAct;
 	import org.tbyrne.compose.traits.ITrait;
 	import org.tbyrne.data.dataTypes.IBooleanProvider;
+	import org.tbyrne.data.dataTypes.INumberProvider;
 	
 	public interface IMouseActsTrait extends ITrait
 	{
+		function get localMouseX():INumberProvider;
+		function get localMouseY():INumberProvider;
+		
 		function get mouseIsOver():IBooleanProvider;
 		function get mouseIsDown():IBooleanProvider;
 		function get mouseIsDragging():IBooleanProvider;

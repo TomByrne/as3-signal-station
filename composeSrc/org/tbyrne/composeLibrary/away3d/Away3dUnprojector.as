@@ -1,23 +1,20 @@
 package org.tbyrne.composeLibrary.away3d
 {
 	import away3d.arcane;
-	import away3d.cameras.Camera3D;
 	import away3d.containers.View3D;
-	import away3d.core.math.Plane3D;
-	import away3d.tools.utils.Ray;
 	
 	import flash.geom.Matrix3D;
 	import flash.geom.Vector3D;
 	
 	import org.tbyrne.acting.actTypes.IAct;
 	import org.tbyrne.collections.IndexedList;
-	import org.tbyrne.compose.concerns.IConcern;
 	import org.tbyrne.compose.concerns.Concern;
+	import org.tbyrne.compose.concerns.IConcern;
 	import org.tbyrne.compose.traits.AbstractTrait;
 	import org.tbyrne.compose.traits.ITrait;
 	import org.tbyrne.composeLibrary.display3D.types.I2dTo3dTrait;
-	import org.tbyrne.composeLibrary.display3D.types.IMatrix3dTrait;
 	import org.tbyrne.composeLibrary.draw.types.IDrawAwareTrait;
+	import org.tbyrne.data.dataTypes.INumberProvider;
 	
 	use namespace arcane;
 
@@ -48,6 +45,23 @@ package org.tbyrne.composeLibrary.away3d
 			}
 		}
 		
+		public function get sceneScale():INumberProvider{
+			return _sceneScale;
+		}
+		public function set sceneScale(value:INumberProvider):void{
+			if(_sceneScale!=value){
+				if(_sceneScale){
+					_sceneScale.numericalValueChanged.addHandler(onSceneScaleChanged);
+				}
+				_sceneScale = value;
+				if(_sceneScale){
+					//_sceneScale.numericalValueChanged.addHandler(onSceneScaleChanged);
+				}
+				//invalidateAll();
+			}
+		}
+		
+		private var _sceneScale:INumberProvider;
 		private var _cameraChanged:IAct;
 		private var _view:View3D;
 		
@@ -57,7 +71,7 @@ package org.tbyrne.composeLibrary.away3d
 		
 		private var _dummyVector:Vector3D;
 		
-		public function Away3dUnprojector(view:View3D=null, cameraChanged:IAct=null){
+		public function Away3dUnprojector(view:View3D=null, cameraChanged:IAct=null, sceneScale:INumberProvider=null){
 			super();
 			
 			_2dPositions = new IndexedList();
@@ -68,6 +82,7 @@ package org.tbyrne.composeLibrary.away3d
 			
 			this.cameraChanged = cameraChanged;
 			this.view = view;
+			this.sceneScale = sceneScale;
 		}
 		
 		override protected function onConcernedTraitAdded(from:IConcern, trait:ITrait):void{
@@ -95,7 +110,7 @@ package org.tbyrne.composeLibrary.away3d
 		
 		protected function onRequestUnprojection(from:I2dTo3dTrait, immediate:Boolean):void{
 			if(immediate){
-				validatePos(from);
+				validatePos(from,_sceneScale?_sceneScale.numericalValue:1);
 				_2dInvalid.remove(from);
 			}else{
 				if(!_2dAllInvalid && !_2dInvalid.containsItem(from))_2dInvalid.add(from);
@@ -131,19 +146,21 @@ package org.tbyrne.composeLibrary.away3d
 			var z2d:Number;
 			
 			if(invalid2dList){
+				var sceneScale:Number = _sceneScale?_sceneScale.numericalValue:1;
 				translate = new Vector.<Number>();
 				output = new Vector.<Number>();
 				var readyTraits:Vector.<I2dTo3dTrait> = new Vector.<I2dTo3dTrait>();
 				for(i=0; i<invalid2dList.length; ++i){
 					pos2d = invalid2dList[i];
-					validatePos(pos2d);
+					validatePos(pos2d,sceneScale);
 					
 				}
 			}
 		}
 		
-		private function validatePos(pos2d:I2dTo3dTrait):void
+		private function validatePos(pos2d:I2dTo3dTrait,sceneScale:Number):void
 		{
+			
 			var planePos:Vector3D;
 			var planeNormal:Vector3D;
 			if(pos2d.planeTransform){
@@ -178,9 +195,9 @@ package org.tbyrne.composeLibrary.away3d
 			
 			if(isNaN(m))m = 0;
 			
-			var x3d:Number = ray.x + ( camPos.x - ray.x ) * m;
-			var y3d:Number = ray.y + ( camPos.y - ray.y ) * m;
-			var z3d:Number = ray.z + ( camPos.z - ray.z ) * m;
+			var x3d:Number = (ray.x + ( camPos.x - ray.x ) * m) / sceneScale;
+			var y3d:Number = (ray.y + ( camPos.y - ray.y ) * m) / sceneScale;
+			var z3d:Number = (ray.z + ( camPos.z - ray.z ) * m) / sceneScale;
 			
 			//trace("unproject: "+pos2d.x2d,pos2d.y2d,pos2d.cameraDistance,x3d,y3d,z3d,planeNormal,camPos);
 			pos2d.setUnprojectedPoint(x3d,y3d,z3d);
@@ -201,6 +218,10 @@ package org.tbyrne.composeLibrary.away3d
 			);*/
 		}
 		
+		
+		private function onSceneScaleChanged(from:INumberProvider):void{
+			invalidateAll();
+		}
 		private function onCameraChanged(... params):void{
 			invalidateAll();
 		}

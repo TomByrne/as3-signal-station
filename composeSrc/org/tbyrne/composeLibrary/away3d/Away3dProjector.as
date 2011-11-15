@@ -13,6 +13,7 @@ package org.tbyrne.composeLibrary.away3d
 	import org.tbyrne.compose.traits.ITrait;
 	import org.tbyrne.composeLibrary.display3D.types.I3dTo2dTrait;
 	import org.tbyrne.composeLibrary.draw.types.IDrawAwareTrait;
+	import org.tbyrne.data.dataTypes.INumberProvider;
 	
 	public class Away3dProjector extends AbstractTrait implements IDrawAwareTrait
 	{
@@ -41,6 +42,23 @@ package org.tbyrne.composeLibrary.away3d
 			}
 		}
 		
+		public function get sceneScale():INumberProvider{
+			return _sceneScale;
+		}
+		public function set sceneScale(value:INumberProvider):void{
+			if(_sceneScale!=value){
+				if(_sceneScale){
+					_sceneScale.numericalValueChanged.addHandler(onSceneScaleChanged);
+				}
+				_sceneScale = value;
+				if(_sceneScale){
+					//_sceneScale.numericalValueChanged.addHandler(onSceneScaleChanged);
+				}
+				//invalidateAll();
+			}
+		}
+		
+		private var _sceneScale:INumberProvider;
 		private var _cameraChanged:IAct;
 		private var _view:View3D;
 		
@@ -48,7 +66,7 @@ package org.tbyrne.composeLibrary.away3d
 		private var _3dInvalid:IndexedList;
 		private var _3dAllInvalid:Boolean;
 		
-		public function Away3dProjector(view:View3D=null, cameraChanged:IAct=null){
+		public function Away3dProjector(view:View3D=null, cameraChanged:IAct=null, sceneScale:INumberProvider=null){
 			super();
 			
 			_3dPositions = new IndexedList();
@@ -58,6 +76,7 @@ package org.tbyrne.composeLibrary.away3d
 			
 			this.cameraChanged = cameraChanged;
 			this.view = view;
+			this.sceneScale = sceneScale;
 		}
 		
 		override protected function onConcernedTraitAdded(from:IConcern, trait:ITrait):void{
@@ -85,7 +104,7 @@ package org.tbyrne.composeLibrary.away3d
 		
 		protected function on3dPositionChanged(from:I3dTo2dTrait, immediate:Boolean):void{
 			if(immediate){
-				validatePos(from);
+				validatePos(from,_sceneScale?_sceneScale.numericalValue:1);
 				_3dInvalid.remove(from)
 			}else{
 				if(!_3dAllInvalid && !_3dInvalid.containsItem(from))_3dInvalid.add(from);
@@ -117,22 +136,23 @@ package org.tbyrne.composeLibrary.away3d
 				invalid3dList = _3dInvalid.list;
 				_3dInvalid.clear();
 			}
+			var sceneScale:Number = _sceneScale?_sceneScale.numericalValue:1;
 			
 			if(invalid3dList && _view && _view.camera.lens){
 				
 				for(i=0; i<invalid3dList.length; ++i){
 					pos3d = invalid3dList[i];
-					validatePos(pos3d);
+					validatePos(pos3d,sceneScale);
 				}
 			}
 		}
 		
-		private function validatePos(pos3d:I3dTo2dTrait):void{
+		private function validatePos(pos3d:I3dTo2dTrait,sceneScale:Number):void{
 			if(!isNaN(pos3d.x3d) && !isNaN(pos3d.y3d) && !isNaN(pos3d.z3d)){
 				
-				DUMMY_VECTOR.x = pos3d.x3d;
-				DUMMY_VECTOR.y = pos3d.y3d;
-				DUMMY_VECTOR.z = pos3d.z3d;
+				DUMMY_VECTOR.x = pos3d.x3d*sceneScale;
+				DUMMY_VECTOR.y = pos3d.y3d*sceneScale;
+				DUMMY_VECTOR.z = pos3d.z3d*sceneScale;
 				
 				var test:Point = _view.project(DUMMY_VECTOR);
 				
@@ -145,6 +165,9 @@ package org.tbyrne.composeLibrary.away3d
 			}
 		}
 		
+		private function onSceneScaleChanged(from:INumberProvider):void{
+			invalidateAll();
+		}
 		private function onCameraChanged(... params):void{
 			invalidateAll();
 		}

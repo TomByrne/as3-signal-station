@@ -123,21 +123,21 @@ package org.tbyrne.composeLibrary.ui
 					Log.error("Two IInteractiveObjectTrait objects were found, unsure which to use");
 				}
 			}
-			if(_mouseIsDown.booleanValue){
+			if(_down){
 				
-				_mouseIsDown.booleanValue = false;
+				setIsDown(false);
 				
 				
 				_stage.removeEventListener(MouseEvent.MOUSE_MOVE, onDownMove);
 				_stage.removeEventListener(MouseEvent.MOUSE_UP, onMouseUp);
 				_stage = null;
 				
-				if(_mouseIsDragging.booleanValue){
-					_mouseIsDragging.booleanValue = false;
+				if(_dragging){
+					setDragging(false);
 					if(_mouseDragFinish)_mouseDragFinish.perform(this);
 				}
 			}
-			_mouseIsOver.booleanValue = false;
+			setIsOver(false);
 			
 			if(!_interactiveObject)setInteractiveObject(null);
 			
@@ -146,14 +146,15 @@ package org.tbyrne.composeLibrary.ui
 		}
 		
 		protected function onMouseOver(event:MouseEvent):void{
-			_mouseIsOver.booleanValue = true;
+			setIsOver(true);
 		}
 		
 		protected function onMouseOut(event:MouseEvent):void{
-			_mouseIsOver.booleanValue = false;
+			setIsOver(false);
 		}
 		
 		protected function onMouseMove(event:MouseEvent):void{
+			setLocalPos(event.localX,event.localY);
 			if(_mouseMoved)_mouseMoved.perform(this,createActInfo(event));
 		}
 		
@@ -163,7 +164,7 @@ package org.tbyrne.composeLibrary.ui
 		}
 		
 		protected function onMouseDown(event:MouseEvent):void{
-			_mouseIsDown.booleanValue = true;
+			setIsDown(true);
 			
 			_stage = _usedInteractiveObject.stage;
 			_stage.addEventListener(MouseEvent.MOUSE_MOVE, onDownMove);
@@ -176,20 +177,21 @@ package org.tbyrne.composeLibrary.ui
 		}
 		
 		protected function onDownMove(event:MouseEvent):void{
+			setLocalPos(event.localX,event.localY);
 			var xDist:Number = _stage.mouseX-_dragX;
 			var yDist:Number = _stage.mouseY-_dragY;
-			if(!_mouseIsDragging.booleanValue){
+			if(!_dragging){
 				var dist:Number = Math.sqrt((xDist*xDist)+(yDist*yDist));
 				if(dist>_dragTreshold){
 					// start dragging
-					_mouseIsDragging.booleanValue = true;
+					setDragging(true);
 					var mouseActInfo:MouseActInfo = createActInfo(event);
 					mouseActInfo.screenX = _dragX;
 					mouseActInfo.screenY = _dragY;
 					if(_mouseDragStart)_mouseDragStart.perform(this,mouseActInfo);
 				}
 			}
-			if(_mouseIsDragging.booleanValue){
+			if(_dragging){
 				if(_mouseDrag)_mouseDrag.perform(this,createActInfo(event),xDist,yDist);
 				
 				_dragX = _stage.mouseX;
@@ -199,16 +201,16 @@ package org.tbyrne.composeLibrary.ui
 		}
 		
 		protected function onMouseUp(event:MouseEvent):void{
-			_mouseIsDown.booleanValue = false;
+			setIsDown(false);
 			
 			_stage.removeEventListener(MouseEvent.MOUSE_MOVE, onDownMove);
 			_stage.removeEventListener(MouseEvent.MOUSE_UP, onMouseUp);
 			_stage = null;
 			
-			if(_mouseIsDragging.booleanValue){
-				_mouseIsDragging.booleanValue = false;
+			if(_dragging){
+				setDragging(false);
 				if(_mouseDragFinish)_mouseDragFinish.perform(this,createActInfo(event));
-			}else if(_mouseIsOver.booleanValue){
+			}else if(_over){
 				var timeDiff:int = getTimer()-_clickBegan;
 				if(timeDiff<_clickSpeedMS){
 					if(_mouseClick)_mouseClick.perform(this,createActInfo(event));

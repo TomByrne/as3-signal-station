@@ -133,7 +133,7 @@ package org.tbyrne.composeLibrary.tools.snapping
 					influence = list.list[i];
 					pos = influence.makeProposal(snapTrait,snapPoint);
 					if(pos){
-						key = int(pos.x+05)+"_"+int(pos.y+05)+"_"+int(pos.z+05);
+						key = int(pos.x+0.5)+"_"+int(pos.y+0.5)+"_"+int(pos.z+0.5);
 						if(!proposals[key]){
 							proposals[key] = pos;
 							snapList = new Dictionary();
@@ -164,7 +164,7 @@ package org.tbyrne.composeLibrary.tools.snapping
 				}
 			}
 			if(bestProposal){
-				key = int(bestProposal.x+05)+"_"+int(bestProposal.y+05)+"_"+int(bestProposal.z+05);
+				key = int(bestProposal.x+0.5)+"_"+int(bestProposal.y+0.5)+"_"+int(bestProposal.z+0.5);
 				snapList = snapMap[key];
 				_currentProposals[snapTrait] = bestProposal;
 				_currentSnapList[snapTrait] = snapList;
