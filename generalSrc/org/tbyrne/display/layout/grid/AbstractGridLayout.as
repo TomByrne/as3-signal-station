@@ -904,6 +904,13 @@ package org.tbyrne.display.layout.grid
 				return _verticalAxis.scrollMetrics;
 			}
 		}
+		public function getPixScrollMetrics(direction:String):IScrollMetrics{
+			if(direction==Direction.HORIZONTAL){
+				return _horizontalAxis.pixScrollMetrics;
+			}else{
+				return _verticalAxis.pixScrollMetrics;
+			}
+		}
 		public function onVScrollMetricsChanged(from:IScrollMetrics):void{
 			if(!_ignoreScrollChanges){
 				_propsFlag.validate();
