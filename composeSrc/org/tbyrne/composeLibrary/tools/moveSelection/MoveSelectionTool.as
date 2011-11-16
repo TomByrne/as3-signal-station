@@ -103,8 +103,8 @@ package org.tbyrne.composeLibrary.tools.moveSelection
 			
 			//trace("start: "+from.localMouseX.numericalValue, from.localMouseY.numericalValue);
 			
-			var localX:Number = from.localMouseX.numericalValue;
-			var localY:Number = from.localMouseY.numericalValue;
+			/*var localX:Number = from.localMouseX.numericalValue;
+			var localY:Number = from.localMouseY.numericalValue;*/
 			
 			var dragPositions:Vector.<Point> = new Vector.<Point>();
 			for each(var position2d:IPosition2dTrait in _positions){
@@ -121,8 +121,8 @@ package org.tbyrne.composeLibrary.tools.moveSelection
 			
 			//trace("\t"+from.localMouseX.numericalValue, from.localMouseY.numericalValue);
 			
-			var localX:Number = from.localMouseX.numericalValue;
-			var localY:Number = from.localMouseY.numericalValue;
+			/*var localX:Number = from.localMouseX.numericalValue;
+			var localY:Number = from.localMouseY.numericalValue;*/
 			
 			for(var i:int=0; i<_positions.length; ++i){
 				

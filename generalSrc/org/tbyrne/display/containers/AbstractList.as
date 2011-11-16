@@ -2,7 +2,6 @@ package org.tbyrne.display.containers
 {
 	import flash.geom.Point;
 	import flash.geom.Rectangle;
-	import flash.utils.Dictionary;
 	
 	import org.tbyrne.display.DisplayNamespace;
 	import org.tbyrne.display.assets.AssetNames;
@@ -81,8 +80,12 @@ package org.tbyrne.display.containers
 		protected var _rendererFactory:IInstanceFactory;
 		protected var _scrollBar:ScrollBar;
 		protected var _layout:RendererGridLayout;
+		
 		protected var _vScrollMetrics:IScrollMetrics;
 		protected var _hScrollMetrics:IScrollMetrics;
+		protected var _vPixScrollMetrics:IScrollMetrics;
+		protected var _hPixScrollMetrics:IScrollMetrics;
+		
 		protected var _container:IDisplayObjectContainer;
 		protected var _scrollBarShown:Boolean;
 		
@@ -107,10 +110,15 @@ package org.tbyrne.display.containers
 			super.init();
 			createLayout();
 			_layout.scrollRectMode = true;
+			
 			_vScrollMetrics = _layout.getScrollMetrics(Direction.VERTICAL);
-			_vScrollMetrics.scrollMetricsChanged.addHandler(onScrollChange);
+			_vPixScrollMetrics = _layout.getPixScrollMetrics(Direction.VERTICAL);
+			_vPixScrollMetrics.scrollMetricsChanged.addHandler(onScrollChange);
+			
 			_hScrollMetrics = _layout.getScrollMetrics(Direction.HORIZONTAL);
-			_hScrollMetrics.scrollMetricsChanged.addHandler(onScrollChange);
+			_hPixScrollMetrics = _layout.getPixScrollMetrics(Direction.HORIZONTAL);
+			_hPixScrollMetrics.scrollMetricsChanged.addHandler(onScrollChange);
+			
 			_layout.measurementsChanged.addHandler(onLayoutMeasChange);
 			_layout.addRendererAct.addHandler(onAddRenderer);
 			_layout.removeRendererAct.addHandler(onRemoveRenderer);
@@ -149,9 +157,10 @@ package org.tbyrne.display.containers
 			}else{
 				wheelDirection = _layout.flowDirection;
 			}
-			_mouseWheelScroller.scrollMetrics = new ScrollMultiplier(30,getScrollMetrics(wheelDirection));
+			var scrollMet:IScrollMetrics = getScrollMetrics(wheelDirection);
+			_mouseWheelScroller.scrollMetrics = new ScrollMultiplier(30,scrollMet);
 			_mouseWheelScroller.interactiveObject = _interactiveObjectAsset;
-			_mouseDragScroller.scrollMetrics = getScrollMetrics(wheelDirection);
+			_mouseDragScroller.scrollMetrics = scrollMet;
 			_mouseDragScroller.interactiveObject = _interactiveObjectAsset;
 		}
 		protected function setScrollBarMetrics(scrollMetrics:IScrollMetrics):void{
@@ -297,11 +306,11 @@ package org.tbyrne.display.containers
 		
 		protected function commitScrollRect():void{
 			if(_alwaysUseScrollRect ||
-				_hScrollMetrics.pageSize<_hScrollMetrics.maximum-_hScrollMetrics.minimum ||
-				_vScrollMetrics.pageSize<_vScrollMetrics.maximum-_vScrollMetrics.minimum){
+				_hPixScrollMetrics.pageSize<_hPixScrollMetrics.maximum-_hPixScrollMetrics.minimum ||
+				_vPixScrollMetrics.pageSize<_vPixScrollMetrics.maximum-_vPixScrollMetrics.minimum){
 			
-				_scrollRect.x = _layout.marginLeft+_hScrollMetrics.scrollValue;
-				_scrollRect.y = _layout.marginTop+_vScrollMetrics.scrollValue;
+				_scrollRect.x = _layout.marginLeft+_hPixScrollMetrics.scrollValue;
+				_scrollRect.y = _layout.marginTop+_vPixScrollMetrics.scrollValue;
 				_scrollRect.width = _layout.size.x-_layout.marginLeft-_layout.marginRight;
 				_scrollRect.height = _layout.size.y-_layout.marginTop-_layout.marginBottom;
 				

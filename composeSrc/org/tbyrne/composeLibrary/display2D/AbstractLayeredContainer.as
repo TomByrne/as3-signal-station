@@ -58,9 +58,19 @@ package org.tbyrne.composeLibrary.display2D
 			
 			if(displayTrait){
 				doSuper = false;
-				displayTrait.displayObjectChanged.addHandler(onDisplayObjectChanged);
-				if(displayTrait.displayObject){
-					assessAddDisplayTrait(displayTrait);
+				var layeredDisplayTrait:ILayeredDisplayTrait = (displayTrait as ILayeredDisplayTrait);
+				if(layeredDisplayTrait){
+					_layerTraits.add(layeredDisplayTrait);
+					_layerIdLookup[layeredDisplayTrait.layerId] = layeredDisplayTrait;
+					displayTrait.displayObjectChanged.addHandler(onLayeredDisplayChanged);
+					if(displayTrait.displayObject){
+						assessAddDisplayTrait(layeredDisplayTrait);
+					}
+				}else{
+					displayTrait.displayObjectChanged.addHandler(onDisplayObjectChanged);
+					if(displayTrait.displayObject){
+						addDisplayTrait(displayTrait);
+					}
 				}
 			}
 			if(layerSortingTrait){
@@ -81,36 +91,35 @@ package org.tbyrne.composeLibrary.display2D
 				removeDisplayTrait(displayTrait, oldDisplayObject);
 			}
 			if(displayTrait.displayObject){
+				addDisplayTrait(displayTrait);
+			}
+		}
+		
+		private function onLayeredDisplayChanged(displayTrait:ILayeredDisplayTrait, oldDisplayObject:DisplayObject):void{
+			if(oldDisplayObject){
+				removeDisplayTrait(displayTrait, oldDisplayObject);
+			}
+			if(displayTrait.displayObject){
 				assessAddDisplayTrait(displayTrait);
 			}
 		}
 		
-		private function assessAddDisplayTrait(displayTrait:IDisplayObjectTrait):void{
-			var layeredDisplayTrait:ILayeredDisplayTrait = (displayTrait as ILayeredDisplayTrait);
-			
-			if(layeredDisplayTrait){
-				var index:int;
-				if(_defaultLayerArrangement && (index = _defaultLayerArrangement.indexOf(layeredDisplayTrait.layerId))!=-1){
-					var addIndex:int = index>_layerTraits.list.length?_layerTraits.list.length:index;
-					for each(var layerTrait:ILayeredDisplayTrait in _layerTraits.list){
-						var idealIndex:int = _defaultLayerArrangement.indexOf(layerTrait.layerId);
-						var realIndex:int = getLayerIndex(layerTrait);
-						if(idealIndex<index && realIndex>addIndex){
-							addIndex = realIndex+1;
-						}else if(idealIndex>index && realIndex<addIndex){
-							addIndex = realIndex;
-						}
+		private function assessAddDisplayTrait(layeredDisplayTrait:ILayeredDisplayTrait):void{
+			var index:int;
+			if(_defaultLayerArrangement && (index = _defaultLayerArrangement.indexOf(layeredDisplayTrait.layerId))!=-1){
+				var addIndex:int = index>_layerTraits.list.length?_layerTraits.list.length:index;
+				for each(var layerTrait:ILayeredDisplayTrait in _layerTraits.list){
+					var idealIndex:int = _defaultLayerArrangement.indexOf(layerTrait.layerId);
+					var realIndex:int = getLayerIndex(layerTrait);
+					if(idealIndex<index && realIndex>addIndex){
+						addIndex = realIndex+1;
+					}else if(idealIndex>index && realIndex<addIndex){
+						addIndex = realIndex;
 					}
-					addLayerAt(layeredDisplayTrait, addIndex);
-				}else{
-					addDisplayTrait(displayTrait);
 				}
-				
-				_layerTraits.add(layeredDisplayTrait);
-				_layerIdLookup[layeredDisplayTrait.layerId] = layeredDisplayTrait;
-				
+				addLayerAt(layeredDisplayTrait, addIndex);
 			}else{
-				addDisplayTrait(displayTrait);
+				addDisplayTrait(layeredDisplayTrait);
 			}
 		}
 		override protected function onConcernedTraitRemoved(from:IConcern, trait:ITrait):void{

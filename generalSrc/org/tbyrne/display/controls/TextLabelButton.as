@@ -7,8 +7,13 @@ package org.tbyrne.display.controls
 	public class TextLabelButton extends ToggleButton
 	{
 		override public function set data(value:IControlData):void{
-			_textLabel.data = value;
 			super.data = value;
+			_textLabel.data = value;
+			/*
+			_textLabel.data should be set after super.data otherwise:
+				_textLabel fires measurements changed
+				a list might catch the event and use the old data for data>index lookup
+			*/
 		}
 		public function get paddingTop():Number{
 			return _textLabel.paddingTop;
@@ -52,6 +57,9 @@ package org.tbyrne.display.controls
 		
 		public function TextLabelButton(asset:IDisplayObject=null){
 			super(asset);
+		}
+		override protected function init() : void{
+			super.init();
 			createTextLabel();
 			_textLabel.measurementsChanged.addHandler(onMeasurementsChange);
 		}

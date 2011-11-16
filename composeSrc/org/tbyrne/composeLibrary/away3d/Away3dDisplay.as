@@ -18,6 +18,7 @@ package org.tbyrne.composeLibrary.away3d
 	import flash.display.Shape;
 	import flash.display.Sprite;
 	import flash.events.Event;
+	import flash.events.KeyboardEvent;
 	import flash.geom.Rectangle;
 	import flash.geom.Vector3D;
 	
@@ -235,6 +236,7 @@ package org.tbyrne.composeLibrary.away3d
 			_view.antiAlias = 2;
 			_view.backgroundAlpha = 0;
 			_rootDisplay.addChild(_view);
+			_view.addEventListener(KeyboardEvent.KEY_DOWN, onKeyDown);
 			
 			_scene = _view.scene;
 			
@@ -271,6 +273,11 @@ package org.tbyrne.composeLibrary.away3d
 			_lowerScaleFlag = new ValidationFlag(commitLowerScale,false,null,readyCommitLower);
 			
 			addConcern(new Concern(true,true,false,IChild3dTrait,[IContainer3dTrait]));
+		}
+		
+		protected function onKeyDown(event:KeyboardEvent):void
+		{
+			event = event;
 		}
 		
 		override protected function onItemAdd():void{

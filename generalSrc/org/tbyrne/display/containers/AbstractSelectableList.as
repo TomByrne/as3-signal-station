@@ -27,7 +27,12 @@ package org.tbyrne.display.containers
 			if(_layout.dataProvider != value){
 				_layout.dataProvider = value;
 				if(_protoRenderer)checkDataSelection();
-				checkAutoScroll();
+				
+				if(_autoScrollToSelection && _selectedIndices.length){
+					checkAutoScroll();
+				}else{
+					resetScroll();
+				}
 			}
 		}
 		/**
@@ -413,6 +418,10 @@ package org.tbyrne.display.containers
 					}
 				}
 			}
+		}
+		protected function resetScroll():void{
+			var metrics:IScrollMetrics = getScrollMetrics(_layout.flowDirection);
+			metrics.scrollValue = 0;
 		}
 	}
 }

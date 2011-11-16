@@ -44,6 +44,17 @@ package org.tbyrne.display.controls
 			}
 		}
 		
+		public function get scrollMetrics():IScrollMetrics{
+			return _scrollMetrics;
+		}
+		public function set scrollMetrics(value:IScrollMetrics):void{
+			if(_explicitScrollMetrics!=value){
+				_explicitScrollMetrics = value;
+				assessScrollMetrics();
+			}
+		}
+		
+		private var _explicitScrollMetrics:IScrollMetrics;
 		private var _scrollable:IScrollable;
 		private var _scrollDirection:String = Direction.VERTICAL;
 		private var _foreButton:Button;
@@ -74,6 +85,16 @@ package org.tbyrne.display.controls
 			_holdTimer = new Timer(DEF_INITIAL_HOLD_DELAY,1);
 			
 			validateScroll();
+		}
+		
+		private function assessScrollMetrics():void{
+			if(_explicitScrollMetrics){
+				setScrollMetrics(_explicitScrollMetrics);
+			}else if(_scrollable && _scrollDirection){
+				setScrollMetrics(_scrollable.getScrollMetrics(_scrollDirection));
+			}else{
+				setScrollMetrics(null);
+			}
 		}
 		protected function setScrollMetrics(scrollMetrics:IScrollMetrics) : void{
 			if(_scrollMetrics!=scrollMetrics){
