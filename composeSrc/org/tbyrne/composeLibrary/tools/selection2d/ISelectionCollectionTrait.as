@@ -1,5 +1,5 @@
 package org.tbyrne.composeLibrary.tools.selection2d
-{
+{ 
 	import org.tbyrne.compose.traits.ITrait;
 	import org.tbyrne.composeLibrary.controls.ISelectableCollection;
 
