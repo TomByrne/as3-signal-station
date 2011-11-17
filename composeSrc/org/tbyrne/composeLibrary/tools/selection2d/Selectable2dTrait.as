@@ -4,7 +4,7 @@ package org.tbyrne.composeLibrary.tools.selection2d
 	import org.tbyrne.acting.acts.Act;
 	import org.tbyrne.compose.traits.AbstractTrait;
 	
-	public class Selectable2dTrait extends AbstractTrait implements ISelectable2dTrait
+	public class Selectable2dTrait extends AbstractTrait implements ISelectableTrait
 	{
 		
 		public function get selected():Boolean{

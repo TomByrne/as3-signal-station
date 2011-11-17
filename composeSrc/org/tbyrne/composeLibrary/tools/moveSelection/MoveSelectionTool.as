@@ -9,88 +9,100 @@ package org.tbyrne.composeLibrary.tools.moveSelection
 	import org.tbyrne.compose.core.ComposeGroup;
 	import org.tbyrne.compose.traits.AbstractTrait;
 	import org.tbyrne.compose.traits.ITrait;
+	import org.tbyrne.composeLibrary.controls.ISelectableCollection;
 	import org.tbyrne.composeLibrary.display2D.types.IPosition2dTrait;
-	import org.tbyrne.composeLibrary.tools.selection2d.ISelectable2dTrait;
-	import org.tbyrne.composeLibrary.tools.selection2d.ISelectorTrait;
+	import org.tbyrne.composeLibrary.tools.selection2d.ISelectableTrait;
+	import org.tbyrne.composeLibrary.tools.selection2d.ISelectionCollectionTrait;
 	import org.tbyrne.composeLibrary.ui.types.IMouseActsTrait;
 	import org.tbyrne.data.dataTypes.INumberProvider;
 	
 	public class MoveSelectionTool extends AbstractTrait
 	{
 		public function get moving():Boolean{
-			return _movingCount>0;
+			return _moving;
 		}
 		
 		
-		private var _movingCount:int;
-		private var _selection:Vector.<IMouseActsTrait>;
+		private var _moving:Boolean;
 		private var _positions:Vector.<IPosition2dTrait>;
-		private var _selectorTrait:ISelectorTrait;
+		private var _moveTraits:Vector.<IMoveTrait>;
+		private var _selectorTrait:ISelectionCollectionTrait;
+		private var _mouseActTrait:IMouseActsTrait;
 		
 		public function MoveSelectionTool()
 		{
 			super();
-			addConcern(new Concern(true, false,false, ISelectorTrait));
+			addConcern(new Concern(true, false,false, ISelectionCollectionTrait));
+			addConcern(new Concern(true, false,false, IMouseActsTrait));
 		}
 		override protected function onConcernedTraitAdded(from:IConcern, trait:ITrait):void{
-			var selectorTrait:ISelectorTrait;
+			var selectorTrait:ISelectionCollectionTrait;
+			var mouseActTrait:IMouseActsTrait;
 			
-			if(selectorTrait = (trait as ISelectorTrait)){
+			if(selectorTrait = (trait as ISelectionCollectionTrait)){
 				_selectorTrait = selectorTrait;
-				selectorTrait.selectionChanged.addHandler(onSelectionChanged);
-				setSelection(selectorTrait.selection);
+				selectorTrait.selection.collectionChanged.addHandler(onSelectionChanged);
+				setSelection(selectorTrait.selection.list);
+			}
+			if(mouseActTrait = (trait as IMouseActsTrait)){
+				_mouseActTrait = mouseActTrait;
+				_mouseActTrait.mouseDragStart.addHandler(onDragStart);
 			}
 		}
 		
 		override protected function onConcernedTraitRemoved(from:IConcern, trait:ITrait):void{
-			var selectorTrait:ISelectorTrait;
+			var selectorTrait:ISelectionCollectionTrait;
+			var mouseActTrait:IMouseActsTrait;
 			
-			if(selectorTrait = (trait as ISelectorTrait)){
-				_selectorTrait.selectionChanged.removeHandler(onSelectionChanged);
+			if(selectorTrait = (trait as ISelectionCollectionTrait)){
+				_selectorTrait.selection.collectionChanged.removeHandler(onSelectionChanged);
 				_selectorTrait = null;
 			}
+			if(mouseActTrait = (trait as IMouseActsTrait)){
+				_mouseActTrait = mouseActTrait;
+				_mouseActTrait.mouseDragStart.removeHandler(onDragStart);
+			}
 		}
 		
 		
-		private function onSelectionChanged(selectorTrait:ISelectorTrait):void{
-			setSelection(_selectorTrait.selection);
+		private function onSelectionChanged(selectorTrait:ISelectableCollection):void{
+			setSelection(_selectorTrait.selection.list);
 		}
 		
-		private function setSelection(selection:Vector.<ISelectable2dTrait>):void{
-			var selectable:ISelectable2dTrait;
-			var mouseActTrait:IMouseActsTrait;
+		private function setSelection(selection:Vector.<ISelectableTrait>):void{
+			var selectable:ISelectableTrait;
 			var positionTrait:IPosition2dTrait;
-			
-			if(_selection){
-				for each(mouseActTrait in _selection){
-					mouseActTrait.mouseDragStart.removeHandler(onDragStart);
+			if(selection){
+				
+				if(_mouseActTrait && _mouseActTrait.mouseIsDragging.booleanValue){
+					onDragFinish(_mouseActTrait, null);
 				}
 			}
-			_selection = null;
+			
+			_positions = null;
+			_moveTraits = null;
 			if(selection){
 				for each(selectable in selection){
-					mouseActTrait = getAct(selectable, IMouseActsTrait, false);
 					positionTrait = getAct(selectable, IPosition2dTrait, false);
-					if(mouseActTrait && positionTrait){
-						if(!_selection){
-							_selection = new Vector.<IMouseActsTrait>();
+					if(positionTrait){
+						if(!_positions){
 							_positions = new Vector.<IPosition2dTrait>();
+							_moveTraits = new Vector.<IMoveTrait>();
 						}
 						var moveTrait:IMoveTrait = getAct(selectable, IMoveTrait, true);
-						mouseActTrait.mouseDragStart.addHandler(onDragStart,[moveTrait]);
 						
-						_selection.push(mouseActTrait);
 						_positions.push(positionTrait);
+						if(moveTrait)_moveTraits.push(moveTrait);
 						
-						if(mouseActTrait.mouseIsDragging.booleanValue){
-							onDragStart(mouseActTrait, null, moveTrait);
-						}
 					}
+				}
+				if(_mouseActTrait && _mouseActTrait.mouseIsDragging.booleanValue){
+					onDragStart(_mouseActTrait, null);
 				}
 			}
 		}
 		
-		private function getAct(selectable:ISelectable2dTrait, traitType:Class, doDesc:Boolean):*{
+		private function getAct(selectable:ISelectableTrait, traitType:Class, doDesc:Boolean):*{
 			var ret:* = (selectable as traitType) || selectable.item.getTrait(traitType);
 			if(!ret && doDesc){
 				ret = (selectable.item as ComposeGroup).getDescTrait(traitType);
@@ -98,31 +110,23 @@ package org.tbyrne.composeLibrary.tools.moveSelection
 			return ret;
 		}
 		
-		private function onDragStart(from:IMouseActsTrait, info:IMouseActInfo, moveTrait:IMoveTrait):void{
-			++_movingCount;
-			
-			//trace("start: "+from.localMouseX.numericalValue, from.localMouseY.numericalValue);
-			
-			/*var localX:Number = from.localMouseX.numericalValue;
-			var localY:Number = from.localMouseY.numericalValue;*/
+		private function onDragStart(from:IMouseActsTrait, info:IMouseActInfo):void{
+			_moving = true;
 			
 			var dragPositions:Vector.<Point> = new Vector.<Point>();
 			for each(var position2d:IPosition2dTrait in _positions){
 				dragPositions.push(new Point(position2d.x2d, position2d.y2d));
-				
 			}
 			from.mouseDrag.addHandler(onDrag,[dragPositions]);
-			from.mouseDragFinish.addHandler(onDragFinish,[moveTrait]);
-			if(moveTrait)moveTrait.isMoving = true;
+			from.mouseDragFinish.addHandler(onDragFinish);
+			
+			for each(var moveTrait:IMoveTrait in _moveTraits){
+				moveTrait.isMoving = true;
+			}
 		}
 		
 		private function onDrag(from:IMouseActsTrait, info:IMouseActInfo, byX:Number, byY:Number, dragPositions:Vector.<Point>):void{
-			
-			
-			//trace("\t"+from.localMouseX.numericalValue, from.localMouseY.numericalValue);
-			
-			/*var localX:Number = from.localMouseX.numericalValue;
-			var localY:Number = from.localMouseY.numericalValue;*/
+			if(!_positions)return;
 			
 			for(var i:int=0; i<_positions.length; ++i){
 				
@@ -135,11 +139,14 @@ package org.tbyrne.composeLibrary.tools.moveSelection
 			}
 		}
 		
-		private function onDragFinish(from:IMouseActsTrait, info:IMouseActInfo, moveTrait:IMoveTrait):void{
-			--_movingCount;
+		private function onDragFinish(from:IMouseActsTrait, info:IMouseActInfo):void{
+			_moving = false;
 			from.mouseDrag.removeHandler(onDrag);
 			from.mouseDragFinish.removeHandler(onDragFinish);
-			if(moveTrait)moveTrait.isMoving = false;
+			
+			for each(var moveTrait:IMoveTrait in _moveTraits){
+				moveTrait.isMoving = false;
+			}
 		}
 	}
 }

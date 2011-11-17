@@ -66,7 +66,7 @@ package org.tbyrne.actInfo
 		private var _keyLocation:uint;
 		
 		
-		public function KeyActInfo(keyTarget:*, altKey:Boolean, ctrlKey:Boolean, shiftKey:Boolean, charCode:uint, keyCode:uint, keyLocation:uint){
+		public function KeyActInfo(keyTarget:*=null, altKey:Boolean=false, ctrlKey:Boolean=false, shiftKey:Boolean=false, charCode:uint=0, keyCode:uint=0, keyLocation:uint=0){
 			this.keyTarget = keyTarget;
 			this.charCode = charCode;
 			this.keyCode = keyCode;

@@ -83,6 +83,8 @@ package org.tbyrne.composeLibrary.ui
 		private var _keyLocationsUpAct:Dictionary = new Dictionary();
 		private var _charsUpAct:Dictionary = new Dictionary();
 		
+		private var _keyActInfo:KeyActInfo = new KeyActInfo();
+		
 		public function KeyActsTrait(interactiveObject:InteractiveObject=null, stageMode:Boolean=false)
 		{
 			super();
@@ -175,8 +177,13 @@ package org.tbyrne.composeLibrary.ui
 			if(_keyPressed)_keyPressed.perform(this,actInfo);
 		}
 		private function createActInfo(event:KeyboardEvent):IKeyActInfo{
-			var ret:KeyActInfo = new KeyActInfo(null,event.altKey,event.ctrlKey,event.shiftKey,event.charCode,event.keyCode,event.keyLocation);
-			return ret;
+			_keyActInfo.altKey = event.altKey;
+			_keyActInfo.ctrlKey = event.ctrlKey;
+			_keyActInfo.shiftKey = event.shiftKey;
+			_keyActInfo.charCode = event.charCode;
+			_keyActInfo.keyCode = event.keyCode;
+			_keyActInfo.keyLocation = event.keyLocation;
+			return _keyActInfo;
 		}
 		
 		protected function onKeyUp(e:KeyboardEvent):void{

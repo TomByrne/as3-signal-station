@@ -159,7 +159,7 @@ package org.tbyrne.composeLibrary.away3d
 		
 		private function globalToLocalPos(screenX:Number, screenY:Number):void
 		{
-			if(_pos2dTrait){
+			if(_pos2dTrait && (_localX || _localY)){
 				var viewMat:Matrix = _away3dDisplay.view3D.transform.concatenatedMatrix;
 				var scale:Number = (_object3d.sceneTransform.rawData[0]+_object3d.sceneTransform.rawData[5]+_object3d.sceneTransform.rawData[10])/3;
 				//trace(((screenX-viewMat.tx)-_pos2dTrait.x2d)*scale*viewMat.a,((screenY-viewMat.ty)-_pos2dTrait.y2d)*scale*viewMat.d);

@@ -6,8 +6,8 @@ package org.tbyrne.composeLibrary.ui
 	import flash.utils.getTimer;
 	
 	import org.tbyrne.actInfo.MouseActInfo;
-	import org.tbyrne.compose.concerns.IConcern;
 	import org.tbyrne.compose.concerns.Concern;
+	import org.tbyrne.compose.concerns.IConcern;
 	import org.tbyrne.compose.traits.ITrait;
 	import org.tbyrne.composeLibrary.display2D.types.IInteractiveObjectTrait;
 	
@@ -61,6 +61,7 @@ package org.tbyrne.composeLibrary.ui
 		private var _dragY:int;
 		private var _stage:Stage;
 		
+		private var _mouseActInfo:MouseActInfo = new MouseActInfo();
 		
 		public function MouseActsTrait(interactiveObject:InteractiveObject=null){
 			super();
@@ -159,8 +160,12 @@ package org.tbyrne.composeLibrary.ui
 		}
 		
 		private function createActInfo(event:MouseEvent):MouseActInfo{
-			var ret:MouseActInfo = new MouseActInfo(null, event.altKey, event.ctrlKey, event.shiftKey, event.stageX, event.stageY);
-			return ret;
+			_mouseActInfo.altKey = event.altKey;
+			_mouseActInfo.ctrlKey = event.ctrlKey;
+			_mouseActInfo.shiftKey = event.shiftKey;
+			_mouseActInfo.screenX = event.stageX;
+			_mouseActInfo.screenY = event.stageY;
+			return _mouseActInfo;
 		}
 		
 		protected function onMouseDown(event:MouseEvent):void{

@@ -52,7 +52,7 @@ package org.tbyrne.actInfo
 		private var _altKey:Boolean;
 		private var _mouseTarget:*;
 		
-		public function MouseActInfo(mouseTarget:*, altKey:Boolean, ctrlKey:Boolean, shiftKey:Boolean, screenX:Number, screenY:Number){
+		public function MouseActInfo(mouseTarget:*=null, altKey:Boolean=false, ctrlKey:Boolean=false, shiftKey:Boolean=false, screenX:Number=NaN, screenY:Number=NaN){
 			this.mouseTarget = mouseTarget;
 			this.altKey = altKey;
 			this.ctrlKey = ctrlKey;
