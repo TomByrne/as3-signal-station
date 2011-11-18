@@ -104,8 +104,8 @@ package org.tbyrne.composeLibrary.tools.snapping
 			delete _currentSnapList[snapTrait];
 		}
 		private function onPosChanged(posTrait:IPosition3dTrait, snapTrait:ISnappableTrait):void{
-			//if(!_ignoreChanges)assessSnapping(snapTrait, posTrait);
-			if(!_ignoreChanges)_invalid.add(snapTrait);
+			if(!_ignoreChanges)assessSnapping(snapTrait, posTrait);
+			//if(!_ignoreChanges)_invalid.add(snapTrait);
 		}
 		public function tick(timeStep:Number):void{
 			if(_invalid.list.length){
