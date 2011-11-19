@@ -1,5 +1,8 @@
 package org.tbyrne.composeLibrary.tools.selection2d
 {
+	import flash.events.TimerEvent;
+	import flash.utils.Timer;
+	
 	import org.tbyrne.actInfo.IMouseActInfo;
 	import org.tbyrne.compose.concerns.Concern;
 	import org.tbyrne.compose.concerns.IConcern;
@@ -32,6 +35,8 @@ package org.tbyrne.composeLibrary.tools.selection2d
 		
 		private var _addToSelection:IBooleanProvider;
 		private var _selectionColl:ISelectionCollectionTrait;
+		private var _mouseActsTrait:IMouseActsTrait;
+		private var _deselectTimer:Timer;
 		
 		public function ClickSelectionTool(addToSelection:IBooleanProvider=null, selectOnDrag:Boolean=false)
 		{
@@ -42,20 +47,38 @@ package org.tbyrne.composeLibrary.tools.selection2d
 			
 			addConcern(new Concern(true,true,false,ISelectableTrait));
 			addConcern(new Concern(true,false,false,ISelectionCollectionTrait));
+			addConcern(new Concern(true,false,false,IMouseActsTrait));
 		}
 		override protected function onConcernedTraitAdded(from:IConcern, trait:ITrait):void{
 			var selectableTrait:ISelectableTrait;
 			var selectionColl:ISelectionCollectionTrait;
+			var mouseActsTrait:IMouseActsTrait;
 			
 			if(selectableTrait = (trait as ISelectableTrait)){
-				var mouseActsTrait:IMouseActsTrait = trait.item.getTrait(IMouseActsTrait);
+				mouseActsTrait = trait.item.getTrait(IMouseActsTrait);
 				mouseActsTrait.mouseClick.addHandler(onMouseClicked, [selectableTrait]);
 				mouseActsTrait.mouseDragStart.addHandler(onMouseDragStart, [selectableTrait]);
 				mouseActsTrait.mouseIsOver.booleanValueChanged.addHandler(onMouseOverChanged, [selectableTrait]);
 			}
+			if(mouseActsTrait = (trait as IMouseActsTrait)){
+				mouseActsTrait.mouseClick.addHandler(onBroadMouseClicked);
+			}
 			if(selectionColl = (trait as ISelectionCollectionTrait)){
 				_selectionColl = selectionColl;
 			}
+		}
+		
+		private function onBroadMouseClicked(from:IMouseActsTrait, info:IMouseActInfo):void{
+			if(!_deselectTimer){
+				_deselectTimer = new Timer(1,1);
+				_deselectTimer.addEventListener(TimerEvent.TIMER_COMPLETE, onDeselectTimer);
+			}
+			_deselectTimer.reset();
+			_deselectTimer.start();
+		}
+		
+		protected function onDeselectTimer(event:TimerEvent):void{
+			_selectionColl.selection.removeAll();
 		}
 		
 		private function onMouseOverChanged(from:IBooleanProvider, selectableTrait:ISelectableTrait):void{
@@ -68,12 +91,16 @@ package org.tbyrne.composeLibrary.tools.selection2d
 		override protected function onConcernedTraitRemoved(from:IConcern, trait:ITrait):void{
 			var selectableTrait:ISelectableTrait;
 			var selectionColl:ISelectionCollectionTrait;
+			var mouseActsTrait:IMouseActsTrait;
 			
 			if(selectableTrait = (trait as ISelectableTrait)){
-				var mouseActsTrait:IMouseActsTrait = trait.item.getTrait(IMouseActsTrait);
+				mouseActsTrait = trait.item.getTrait(IMouseActsTrait);
 				mouseActsTrait.mouseClick.removeHandler(onMouseClicked);
 				mouseActsTrait.mouseDragStart.removeHandler(onMouseDragStart);
 				mouseActsTrait.mouseIsOver.booleanValueChanged.addHandler(onMouseOverChanged, [selectableTrait]);
+			}
+			if(mouseActsTrait = (trait as IMouseActsTrait)){
+				mouseActsTrait.mouseClick.removeHandler(onBroadMouseClicked);
 			}
 			if(selectionColl = (trait as ISelectionCollectionTrait)){
 				_selectionColl = null;
@@ -81,6 +108,7 @@ package org.tbyrne.composeLibrary.tools.selection2d
 		}
 		
 		private function onMouseClicked(from:IMouseActsTrait, mouseActInfo:IMouseActInfo, selectableTrait:ISelectableTrait):void{
+			_deselectTimer.stop();
 			var add:Boolean = _addToSelection.booleanValue;
 			if(!selectableTrait.selected){
 				_selectionColl.selection.add(selectableTrait,add);
