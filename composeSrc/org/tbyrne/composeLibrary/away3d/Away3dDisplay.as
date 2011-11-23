@@ -9,6 +9,7 @@ package org.tbyrne.composeLibrary.away3d
 	import away3d.containers.View3D;
 	import away3d.core.math.*;
 	import away3d.entities.Sprite3D;
+	import away3d.events.Stage3DEvent;
 	import away3d.materials.ColorMaterial;
 	import away3d.primitives.Cube;
 	
@@ -41,6 +42,8 @@ package org.tbyrne.composeLibrary.away3d
 	import org.tbyrne.composeLibrary.display3D.types.IMatrix3dTrait;
 	import org.tbyrne.composeLibrary.draw.types.IDrawAwareTrait;
 	import org.tbyrne.composeLibrary.draw.types.IFrameAwareTrait;
+	import org.tbyrne.data.core.BooleanData;
+	import org.tbyrne.data.dataTypes.IBooleanProvider;
 	import org.tbyrne.data.dataTypes.INumberProvider;
 	import org.tbyrne.display.validation.ValidationFlag;
 	
@@ -181,6 +184,10 @@ package org.tbyrne.composeLibrary.away3d
 			}
 		}
 		
+		public function get gpuMode():IBooleanProvider{
+			return _gpuMode;
+		}
+		
 		
 		public function get rootDisplay():DisplayObject{
 			return _rootDisplay;
@@ -207,6 +214,8 @@ package org.tbyrne.composeLibrary.away3d
 		private var _view:View3D;
 		private var _lights:Array;
 		
+		private var _gpuMode:BooleanData;
+		
 		private var _focalLengthFlag:ValidationFlag;
 		private var _matrixFlag:ValidationFlag;
 		private var _renderFlag:ValidationFlag;
@@ -231,12 +240,14 @@ package org.tbyrne.composeLibrary.away3d
 		public function Away3dDisplay()
 		{
 			_rootDisplay = new Sprite();
+			_gpuMode = new BooleanData();
 			
 			_view = new View3D();
 			_view.antiAlias = 2;
 			_view.backgroundAlpha = 0;
 			_rootDisplay.addChild(_view);
 			_view.addEventListener(KeyboardEvent.KEY_DOWN, onKeyDown);
+			_view.addEventListener(Event.ADDED_TO_STAGE, onAddedToStage);
 			
 			_scene = _view.scene;
 			
@@ -273,6 +284,15 @@ package org.tbyrne.composeLibrary.away3d
 			_lowerScaleFlag = new ValidationFlag(commitLowerScale,false,null,readyCommitLower);
 			
 			addConcern(new Concern(true,true,false,IChild3dTrait,[IContainer3dTrait]));
+		}
+		
+		protected function onAddedToStage(event:Event):void
+		{
+			_view.stage3DProxy.addEventListener(Stage3DEvent.CONTEXT3D_CREATED, onContextCreated);
+		}
+		
+		protected function onContextCreated(event:Event):void{
+			_gpuMode.booleanValue = (_view.stage3DProxy.context3D.driverInfo.indexOf("Software")==-1);
 		}
 		
 		protected function onKeyDown(event:KeyboardEvent):void

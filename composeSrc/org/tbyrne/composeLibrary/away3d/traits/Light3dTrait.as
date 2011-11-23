@@ -13,9 +13,7 @@ package org.tbyrne.composeLibrary.away3d.traits
 			return _light;
 		}
 		public function set light(value:LightBase):void{
-			if(_light!=value){
-				_light = value;
-			}
+			_light = value;
 		}
 		public function get object3d():ObjectContainer3D{
 			return _light;
@@ -23,9 +21,9 @@ package org.tbyrne.composeLibrary.away3d.traits
 		
 		private var _light:LightBase;
 		
-		
-		public function Light3dTrait(){
+		public function Light3dTrait(light:LightBase=null){
 			super();
+			this.light = light;
 		}
 	}
 }

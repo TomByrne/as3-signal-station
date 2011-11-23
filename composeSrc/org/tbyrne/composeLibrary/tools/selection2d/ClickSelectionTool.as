@@ -36,11 +36,12 @@ package org.tbyrne.composeLibrary.tools.selection2d
 		private var _addToSelection:IBooleanProvider;
 		private var _selectionColl:ISelectionCollectionTrait;
 		private var _mouseActsTrait:IMouseActsTrait;
-		private var _deselectTimer:Timer;
+		private var _deselectTimer:Timer = new Timer(1,1);;
 		
 		public function ClickSelectionTool(addToSelection:IBooleanProvider=null, selectOnDrag:Boolean=false)
 		{
 			super();
+			_deselectTimer.addEventListener(TimerEvent.TIMER_COMPLETE, onDeselectTimer);
 			
 			this.addToSelection = addToSelection;
 			this.selectOnDrag = selectOnDrag;
@@ -69,10 +70,6 @@ package org.tbyrne.composeLibrary.tools.selection2d
 		}
 		
 		private function onBroadMouseClicked(from:IMouseActsTrait, info:IMouseActInfo):void{
-			if(!_deselectTimer){
-				_deselectTimer = new Timer(1,1);
-				_deselectTimer.addEventListener(TimerEvent.TIMER_COMPLETE, onDeselectTimer);
-			}
 			_deselectTimer.reset();
 			_deselectTimer.start();
 		}
