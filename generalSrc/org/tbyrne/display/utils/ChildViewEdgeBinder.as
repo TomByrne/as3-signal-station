@@ -177,13 +177,13 @@ package org.tbyrne.display.utils
 			var minW:Number;
 			var minH:Number;
 			
-			if(_childAsset){
-				minW = _childAsset.naturalWidth;
-				minH = _childAsset.naturalHeight;
-			}else if(overrideMeasurements){
+			if(overrideMeasurements){
 				minW = overrideMeasurements.x;
 				minH = overrideMeasurements.y;
-			}else{
+			}else if(_childAsset){
+				minW = _childAsset.naturalWidth;
+				minH = _childAsset.naturalHeight;
+			}else {
 				var meas:Point = _childLayout.measurements;
 				minW = meas.x;
 				minH = meas.y;
