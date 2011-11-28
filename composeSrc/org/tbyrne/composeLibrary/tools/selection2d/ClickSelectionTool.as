@@ -1,6 +1,7 @@
 package org.tbyrne.composeLibrary.tools.selection2d
 {
 	import flash.events.TimerEvent;
+	import flash.utils.Dictionary;
 	import flash.utils.Timer;
 	
 	import org.tbyrne.actInfo.IMouseActInfo;
@@ -36,7 +37,8 @@ package org.tbyrne.composeLibrary.tools.selection2d
 		private var _addToSelection:IBooleanProvider;
 		private var _selectionColl:ISelectionCollectionTrait;
 		private var _mouseActsTrait:IMouseActsTrait;
-		private var _deselectTimer:Timer = new Timer(1,1);;
+		private var _deselectTimer:Timer = new Timer(1,1);
+		private var _selectToMouseTrait:Dictionary = new Dictionary();
 		
 		public function ClickSelectionTool(addToSelection:IBooleanProvider=null, selectOnDrag:Boolean=false)
 		{
@@ -60,6 +62,7 @@ package org.tbyrne.composeLibrary.tools.selection2d
 				mouseActsTrait.mouseClick.addHandler(onMouseClicked, [selectableTrait]);
 				mouseActsTrait.mouseDragStart.addHandler(onMouseDragStart, [selectableTrait]);
 				mouseActsTrait.mouseIsOver.booleanValueChanged.addHandler(onMouseOverChanged, [selectableTrait]);
+				_selectToMouseTrait[selectableTrait] = mouseActsTrait;
 			}
 			if(mouseActsTrait = (trait as IMouseActsTrait)){
 				mouseActsTrait.mouseClick.addHandler(onBroadMouseClicked);
@@ -91,10 +94,11 @@ package org.tbyrne.composeLibrary.tools.selection2d
 			var mouseActsTrait:IMouseActsTrait;
 			
 			if(selectableTrait = (trait as ISelectableTrait)){
-				mouseActsTrait = trait.item.getTrait(IMouseActsTrait);
+				mouseActsTrait = _selectToMouseTrait[selectableTrait];
 				mouseActsTrait.mouseClick.removeHandler(onMouseClicked);
 				mouseActsTrait.mouseDragStart.removeHandler(onMouseDragStart);
 				mouseActsTrait.mouseIsOver.booleanValueChanged.addHandler(onMouseOverChanged, [selectableTrait]);
+				delete _selectToMouseTrait[selectableTrait];
 			}
 			if(mouseActsTrait = (trait as IMouseActsTrait)){
 				mouseActsTrait.mouseClick.removeHandler(onBroadMouseClicked);

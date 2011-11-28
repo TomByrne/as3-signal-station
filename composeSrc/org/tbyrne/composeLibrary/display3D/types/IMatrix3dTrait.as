@@ -10,7 +10,7 @@ package org.tbyrne.composeLibrary.display3D.types
 	{
 		
 		/**
-		 * handler()
+		 * handler(from:IMatrix3dTrait)
 		 */
 		function get matrix3dChanged():IAct;
 		function get matrix3d():Matrix3D;

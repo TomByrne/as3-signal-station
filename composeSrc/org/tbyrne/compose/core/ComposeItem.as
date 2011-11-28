@@ -111,12 +111,14 @@ package org.tbyrne.compose.core
 					Log.trace("WARNING:: ITrait being removed while ComposeItem added to root");
 				}
 			}*/
-			_traitCollection.removeTrait(trait);
-			if(_parentItem)_parentItem.removeChildTrait(trait);
 			
 			for each(var concern:IConcern in trait.concerns){
 				removeTraitConcern(concern);
 			}
+			
+			_traitCollection.removeTrait(trait);
+			if(_parentItem)_parentItem.removeChildTrait(trait);
+			
 			trait.item = null;
 		}
 		

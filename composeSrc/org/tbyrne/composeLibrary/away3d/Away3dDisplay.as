@@ -235,7 +235,7 @@ package org.tbyrne.composeLibrary.away3d
 		private var _nearDist:INumberProvider;
 		private var _farDist:INumberProvider;
 
-		private var _lowerShape:Shape;
+		//private var _lowerShape:Shape;
 		
 		public function Away3dDisplay()
 		{
@@ -364,11 +364,11 @@ package org.tbyrne.composeLibrary.away3d
 				_lowerContainer3D.width = _lowerContainer.width;
 				_lowerContainer3D.height = _lowerContainer.height;
 				
-				_lowerShape.visible = false;
+				//_lowerShape.visible = false;
 				var bounds:Rectangle = _lowerContainer.getBounds(_lowerContainer);
-				_lowerShape.x = bounds.left;
+				/*_lowerShape.x = bounds.left;
 				_lowerShape.y = bounds.top;
-				_lowerShape.visible = true;
+				_lowerShape.visible = true;*/
 				
 				_lowerMaterial.redraw();
 			}
@@ -552,10 +552,10 @@ package org.tbyrne.composeLibrary.away3d
 			if(!_lowerContainer){
 				_lowerContainer = new MovieClip();
 				
-				_lowerShape = new Shape();
+				/*_lowerShape = new Shape();
 				_lowerShape.graphics.beginFill(0,0);
 				_lowerShape.graphics.drawRect(0,0,2,2);
-				_lowerContainer.addChild(_lowerShape);
+				_lowerContainer.addChild(_lowerShape);*/
 				
 				_lowerMaterial = new SpriteMaterial(_lowerContainer);
 				

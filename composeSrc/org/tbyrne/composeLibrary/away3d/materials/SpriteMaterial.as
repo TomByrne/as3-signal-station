@@ -87,11 +87,11 @@ package org.tbyrne.composeLibrary.away3d.materials
 					text.lock();
 					text.fillRect(text.rect,0x00FFFFFF);
 				}
-				
-				_matrix.tx = -rect.left;
-				_matrix.ty = -rect.top;
 				_matrix.a = W/rect.width;
 				_matrix.d = H/rect.height;
+				
+				_matrix.tx = -rect.left*_matrix.a;
+				_matrix.ty = -rect.top*_matrix.d;
 				
 				text.draw(_displayObject, _matrix, null, null, null, true);
 				text.unlock();

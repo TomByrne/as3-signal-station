@@ -53,7 +53,7 @@ package org.tbyrne.compose.concerns
 			for each(var trait:ITrait in _traits.traits.list){
 				compareTrait(trait, traitConcern);
 			}
-			testCheck();
+			//testCheck();
 		}
 		public function removeConcern(traitConcern:IConcern):void{
 			CONFIG::debug{
@@ -74,10 +74,10 @@ package org.tbyrne.compose.concerns
 				traits.clear();
 				delete _concernLookup[traitConcern];
 			}
-			testCheck();
+			//testCheck();
 		}
 		
-		private function testCheck():void
+		/*private function testCheck():void
 		{
 			for each(var traitLookup:IndexedList in _traitLookup){
 				if(traitLookup.list.length>_traitConcerns.list.length){
@@ -89,13 +89,13 @@ package org.tbyrne.compose.concerns
 					Log.error("Holy Funk");
 				}
 			}
-		}
+		}*/
 		
 		protected function onTraitAdded(from:TraitCollection, trait:ITrait):void{
 			for each(var traitConcern:IConcern in _traitConcerns.list){
 				compareTrait(trait, traitConcern);
 			}
-			testCheck();
+			//testCheck();
 		}
 		
 		protected function onTraitRemoved(from:TraitCollection, trait:ITrait):void{
@@ -110,7 +110,7 @@ package org.tbyrne.compose.concerns
 				concerns.clear();
 				delete _traitLookup[trait];
 			}
-			testCheck();
+			//testCheck();
 		}
 		
 		
@@ -135,7 +135,7 @@ package org.tbyrne.compose.concerns
 				
 				traitConcern.concernAdded(trait);
 			}
-			testCheck();
+			//testCheck();
 		}
 	}
 }
