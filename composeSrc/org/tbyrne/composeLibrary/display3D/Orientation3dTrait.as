@@ -1,6 +1,9 @@
 package org.tbyrne.composeLibrary.display3D
 {
-	public class Orientation3dTrait extends AbsOrientation3dTrait
+	import org.tbyrne.composeLibrary.display3D.types.IMatrix3dTrait;
+	import org.tbyrne.composeLibrary.display3D.types.IOrientation3dTrait;
+
+	public class Orientation3dTrait extends AbsOrientation3dTrait implements IMatrix3dTrait, IOrientation3dTrait
 	{
 		public function set posX(value:Number):void{
 			setPosX(value);

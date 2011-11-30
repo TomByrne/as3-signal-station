@@ -33,9 +33,10 @@ package org.tbyrne.composeLibrary.factory
 		private var _initedItems:Dictionary = new Dictionary(true);
 		
 		
-		public function ComposeItemFactory(useGroup:Boolean=false, traitTypes:*=null){
+		public function ComposeItemFactory(useGroup:Boolean=false, traitTypes:*=null, traitFactories:*=null){
 			this.useGroup = useGroup;
 			if(traitTypes)addTraitTypes(traitTypes);
+			if(traitFactories)addTraitFactories(traitFactories);
 		}
 		
 		

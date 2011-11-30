@@ -56,11 +56,40 @@ package org.tbyrne.composeLibrary.display3D
 		public function get x3d():Number{
 			return _x3d;
 		}
+		public function set x3d(value:Number):void{
+			if(_x3d!=value){
+				_x3d = value;
+				_empirical3d = true;
+				_empirical2d = false;
+				if(_requestProjection)_requestProjection.perform(this,true);
+				if(_position3dChanged)_position3dChanged.perform(this);
+			}
+		}
+		
 		public function get y3d():Number{
 			return _y3d;
 		}
+		public function set y3d(value:Number):void{
+			if(_y3d!=value){
+				_y3d = value;
+				_empirical3d = true;
+				_empirical2d = false;
+				if(_requestProjection)_requestProjection.perform(this,true);
+				if(_position3dChanged)_position3dChanged.perform(this);
+			}
+		}
+		
 		public function get z3d():Number{
 			return _z3d;
+		}
+		public function set z3d(value:Number):void{
+			if(_z3d!=value){
+				_z3d = value;
+				_empirical3d = true;
+				_empirical2d = false;
+				if(_requestProjection)_requestProjection.perform(this,true);
+				if(_position3dChanged)_position3dChanged.perform(this);
+			}
 		}
 		
 		public function get planeTransform():IMatrix3dTrait{

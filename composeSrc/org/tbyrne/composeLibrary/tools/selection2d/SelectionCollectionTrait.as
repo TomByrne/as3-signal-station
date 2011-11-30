@@ -24,13 +24,19 @@ package org.tbyrne.composeLibrary.tools.selection2d
 		
 		private var _selectables:Vector.<ISelectableTrait> = new Vector.<ISelectableTrait>();
 		
-		public function SelectionCollectionTrait(){
+		public function SelectionCollectionTrait(selection:Array=null){
 			super();
 			
 			_selection = new SelectableCollection(_selectables,"selected");
 			_interested = new SelectableCollection(_selectables,"interested");
 			
 			addConcern(new Concern(true,true,false,ISelectableTrait));
+			
+			if(selection){
+				for each(var selectable:ISelectableTrait in selection){
+					_selection.add(selectable,true);
+				}
+			}
 		}
 		
 		override protected function onConcernedTraitAdded(from:IConcern, trait:ITrait):void{
@@ -38,8 +44,12 @@ package org.tbyrne.composeLibrary.tools.selection2d
 			
 			if(selectableTrait){
 				_selectables.push(selectableTrait);
-				selectableTrait.selected = false;
-				selectableTrait.interested = false;
+				if(selectableTrait.selected){
+					_selection.add(selectableTrait,true);
+				}
+				if(selectableTrait.interested){
+					_interested.add(selectableTrait,true);
+				}
 			}
 		}
 		override protected function onConcernedTraitRemoved(from:IConcern, trait:ITrait):void{

@@ -10,7 +10,7 @@ package org.tbyrne.composeLibrary.display3D
 	import org.tbyrne.composeLibrary.display3D.types.IOrientation3dTrait;
 	import org.tbyrne.display.validation.ValidationFlag;
 	
-	public class AbsOrientation3dTrait extends AbstractTrait implements IOrientation3dTrait, IMatrix3dTrait
+	public class AbsOrientation3dTrait extends AbstractTrait
 	{
 		public function AbsOrientation3dTrait(){
 			super();
@@ -191,6 +191,21 @@ package org.tbyrne.composeLibrary.display3D
 			_matrix3d.appendRotation( _rotY, Vector3D.Y_AXIS );
 			_matrix3d.appendRotation( _rotZ, Vector3D.Z_AXIS );
 			_matrix3d.appendTranslation(_posX,_posY,_posZ);
+			
+			/*
+			var comps:Vector.<Vector3D> = _matrix3d.decompose();
+			var pos:Vector3D = comps[0];
+			var rot:Vector3D = comps[1];
+			
+			pos.x = _posX;
+			pos.y = _posY;
+			pos.z = _posZ;
+			
+			rot.x = _rotX*Math.PI/180;
+			rot.y = _rotY*Math.PI/180;
+			rot.z = _rotZ*Math.PI/180;
+			
+			_matrix3d.recompose(comps);*/
 		}
 		private function createInvMatrix():void{
 			_matrixFlag.validate();

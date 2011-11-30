@@ -1,11 +1,13 @@
 package org.tbyrne.composeLibrary.display3D
 {
 	import flash.geom.Matrix3D;
+	import flash.geom.Orientation3D;
 	import flash.geom.Vector3D;
 	
 	import org.tbyrne.acting.actTypes.IAct;
 	import org.tbyrne.acting.acts.Act;
 	import org.tbyrne.composeLibrary.controls.ICameraControls;
+	import org.tbyrne.composeLibrary.display3D.types.IMatrix3dTrait;
 	import org.tbyrne.composeLibrary.display3D.types.IOrientation3dTrait;
 	import org.tbyrne.data.core.BooleanData;
 	import org.tbyrne.data.core.NumberData;
@@ -159,6 +161,15 @@ package org.tbyrne.composeLibrary.display3D
 			return rotation3dChanged;
 		}
 		
+		
+		
+		public function get offsetMatrixTrait():IMatrix3dTrait{
+			return _offsetMatrixTrait;
+		}
+		public function get matrixTrait():IMatrix3dTrait{
+			return _matrixTrait;
+		}
+		
 		protected var _focalLengthProvider:NumberData = new NumberData(Number.POSITIVE_INFINITY);
 		protected var _fieldOfViewProvider:NumberData = new NumberData(Number.POSITIVE_INFINITY);
 		protected var _orthographicProvider:BooleanData = new BooleanData();
@@ -172,12 +183,37 @@ package org.tbyrne.composeLibrary.display3D
 		
 		protected var _ignoreEvents:Boolean;
 		
+		protected var _offsetMatrixTrait:Matrix3dTrait;
+		protected var _matrixTrait:Matrix3dTrait;
+		
+		protected var _ignoreChanges:Boolean;
+		
 		public function CameraControls(){
 			super();
+			
+			_offsetMatrixTrait = new Matrix3dTrait(new Matrix3D());
+			_matrixTrait = new Matrix3dTrait(_matrix3d);
+			
+			_matrixTrait.matrix3dChanged.addHandler(onMatrixChanged);
+			
 			_positionOffsetProvider.numericalValueChanged.addHandler(onPosOffsetChanged);
 			_focalLengthProvider.numericalValueChanged.addHandler(onFocalLengthChanged);
 			_fieldOfViewProvider.numericalValueChanged.addHandler(onFieldOfViewChanged);
 			_orthographicProvider.booleanValueChanged.addHandler(onOrthographicChanged);
+		}
+		
+		private function onMatrixChanged(from:Matrix3dTrait):void{
+			if(!_ignoreChanges){
+				var eular:Vector.<Vector3D> = from.matrix3d.decompose(Orientation3D.EULER_ANGLES);
+				
+				var pos:Vector3D = eular[0];
+				var rot:Vector3D = eular[1];
+				
+				if(_setPosition(pos.x,pos.y,pos.z) || _setRotation(rot.x*RADS_TO_DEGS,rot.y*RADS_TO_DEGS,rot.z*RADS_TO_DEGS)){
+					invalidateOffsetMatrix();
+				}
+				
+			}
 		}
 		
 		private function onFieldOfViewChanged(from:NumberData):void{
@@ -193,7 +229,7 @@ package org.tbyrne.composeLibrary.display3D
 			}
 		}
 		private function onPosOffsetChanged(from:NumberData):void{
-			invalidateMatrix();
+			invalidateOffsetMatrix();
 		}
 		private function onOrthographicChanged(from:BooleanData):void{
 			if(!_ignoreEvents){
@@ -243,6 +279,12 @@ package org.tbyrne.composeLibrary.display3D
 			_ignoreEvents = false;
 		}
 		public function setPosition(x:Number, y:Number, z:Number):void{
+			if(_setPosition(x,y,z)){
+				if(_position3dChanged)_position3dChanged.perform(this);
+				invalidateMatrix();
+			}
+		}
+		protected function _setPosition(x:Number, y:Number, z:Number):Boolean{
 			var xDif:Boolean = (_posX!=x);
 			var yDif:Boolean = (_posY!=y);
 			var zDif:Boolean = (_posZ!=z);
@@ -259,11 +301,18 @@ package org.tbyrne.composeLibrary.display3D
 					_posZ = z;
 					if(_posZChanged)_posZChanged.perform(this);
 				}
-				if(_position3dChanged)_position3dChanged.perform(this);
-				invalidateMatrix();
+				return true;
+			}else{
+				return false;
 			}
 		}
 		public function setRotation(x:Number, y:Number, z:Number):void{
+			if(_setRotation(x,y,z)){
+				if(_rotation3dChanged)_rotation3dChanged.perform(this);
+				invalidateMatrix();
+			}
+		}
+		protected function _setRotation(x:Number, y:Number, z:Number):Boolean{
 			var xDif:Number = (x-_rotX);
 			var yDif:Number = (y-_rotY);
 			var zDif:Number = (z-_rotZ);
@@ -281,24 +330,38 @@ package org.tbyrne.composeLibrary.display3D
 					_rotZ = z;
 					if(_rotZChanged)_rotZChanged.perform(this);
 				}
-				if(_rotation3dChanged)_rotation3dChanged.perform(this);
-				invalidateMatrix();
-				
+				return true;
+			}else{
+				return false;
 			}
-		}	
-		override protected function compileMatrix():void{
-			_matrix3d.identity()
-			_matrix3d.appendRotation( _rotX, Vector3D.X_AXIS );
-			_matrix3d.appendRotation( _rotY, Vector3D.Y_AXIS );
-			_matrix3d.appendRotation( _rotZ, Vector3D.Z_AXIS );
+		}
+		override protected function invalidateMatrix():void{
+			compileMatrix();
+			_ignoreChanges = true;
+			_matrixTrait.matrix3dChanged.perform(_matrixTrait);
+			_ignoreChanges = false;
+			invalidateOffsetMatrix();
+		}
+		protected function invalidateOffsetMatrix():void{
+			compileOffsetMatrix();
+			_offsetMatrixTrait.matrix3dChanged.perform(_offsetMatrixTrait);
+		}
+		protected function compileOffsetMatrix():void{
+			
+			var offsetMatrix:Matrix3D = _offsetMatrixTrait.matrix3d;
+			
+			offsetMatrix.identity()
+			offsetMatrix.appendRotation( _rotX, Vector3D.X_AXIS );
+			offsetMatrix.appendRotation( _rotY, Vector3D.Y_AXIS );
+			offsetMatrix.appendRotation( _rotZ, Vector3D.Z_AXIS );
 			
 			if(!isNaN(_positionOffsetProvider.numericalValue) && _positionOffsetProvider.numericalValue!=0){
 				var distVec:Vector3D = new Vector3D(0,0,_positionOffsetProvider.numericalValue);
-				distVec = _matrix3d.transformVector(distVec);
+				distVec = offsetMatrix.transformVector(distVec);
 				
-				_matrix3d.appendTranslation(_posX+distVec.x,_posY+distVec.y,_posZ+distVec.z);
+				offsetMatrix.appendTranslation(_posX+distVec.x,_posY+distVec.y,_posZ+distVec.z);
 			}else{
-				_matrix3d.appendTranslation(_posX,_posY,_posZ);
+				offsetMatrix.appendTranslation(_posX,_posY,_posZ);
 			}
 		}
 	}

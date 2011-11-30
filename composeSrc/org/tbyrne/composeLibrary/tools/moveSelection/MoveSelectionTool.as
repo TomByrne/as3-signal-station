@@ -35,11 +35,11 @@ package org.tbyrne.composeLibrary.tools.moveSelection
 		{
 			super();
 			addConcern(new Concern(true, false,false, ISelectionCollectionTrait));
-			addConcern(new Concern(true, false,false, IMouseActsTrait));
+			//addConcern(new Concern(true, false,false, IMouseActsTrait));
 		}
 		override protected function onConcernedTraitAdded(from:IConcern, trait:ITrait):void{
 			var selectorTrait:ISelectionCollectionTrait;
-			var mouseActTrait:IMouseActsTrait;
+			//var mouseActTrait:IMouseActsTrait;
 			
 			if(selectorTrait = (trait as ISelectionCollectionTrait)){
 				_selectorTrait = selectorTrait;
@@ -54,7 +54,7 @@ package org.tbyrne.composeLibrary.tools.moveSelection
 		
 		override protected function onConcernedTraitRemoved(from:IConcern, trait:ITrait):void{
 			var selectorTrait:ISelectionCollectionTrait;
-			var mouseActTrait:IMouseActsTrait;
+			//var mouseActTrait:IMouseActsTrait;
 			
 			if(selectorTrait = (trait as ISelectionCollectionTrait)){
 				setSelection(null);

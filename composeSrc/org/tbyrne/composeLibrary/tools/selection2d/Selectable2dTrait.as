@@ -48,9 +48,11 @@ package org.tbyrne.composeLibrary.tools.selection2d
 		protected var _selected:Boolean;
 		
 		
-		public function Selectable2dTrait()
+		public function Selectable2dTrait(selected:Boolean=false, interested:Boolean=false)
 		{
 			super();
+			this.selected = selected;
+			this.interested = interested;
 		}
 	}
 }

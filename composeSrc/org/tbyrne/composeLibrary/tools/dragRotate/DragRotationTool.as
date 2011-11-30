@@ -66,11 +66,10 @@ package org.tbyrne.composeLibrary.tools.dragRotate
 		private var _startVector:Vector3D = new Vector3D();
 		private var _dragVector:Vector3D = new Vector3D();
 		
-		private var _startQuat:Vector3D = new Vector3D();
 		private var _dragQuat:Vector3D = new Vector3D();
-		private var _newQuat:Vector3D = new Vector3D();
 		
-		private var transformComponents:Vector.<Vector3D>;
+		private var _startComps:Vector.<Vector3D>;
+		private var _dummyComps:Vector.<Vector3D>;
 		private var _dummyMatrix:Matrix3D = new Matrix3D();
 		
 		public function DragRotationTool(cameraControls:ICameraControls=null, matrix:IMatrix3dTrait=null, centerPos:IPosition2dTrait=null){
@@ -128,12 +127,12 @@ package org.tbyrne.composeLibrary.tools.dragRotate
 		protected function startDragThis(vector3D:Vector3D):void
 		{
 			
-			transformComponents = _matrix.matrix3d.decompose(Orientation3D.QUATERNION);
-			var quat:Vector3D = transformComponents[1];
-			_startQuat.x = quat.x;
-			_startQuat.y = quat.y;
-			_startQuat.z = quat.z;
-			_startQuat.w = quat.w;
+			_startComps = _matrix.matrix3d.decompose(Orientation3D.EULER_ANGLES);
+			
+			_dummyMatrix.identity();
+			_dummyComps = _dummyMatrix.decompose(Orientation3D.QUATERNION);
+			
+			_dragQuat = _dummyComps[1];
 			_dragQuat.x = _dragQuat.y = _dragQuat.z = _dragQuat.w = 0;
 		}
 		protected function dragTo(vector:Vector3D):void
@@ -143,17 +142,20 @@ package org.tbyrne.composeLibrary.tools.dragRotate
 			_dragQuat.y = v.y;
 			_dragQuat.z = v.z;
 			_dragQuat.w = _startVector.dotProduct(_dragVector);
-			multiplyQuats(_dragQuat, _startQuat, _newQuat);
-			transformComponents[1] = _newQuat;
-			//_matrix.matrix3d.recompose(transformComponents, Orientation3D.QUATERNION);
+			//multiplyQuats(_dragQuat, _startQuat, _newQuat);
+			//_transformComponents[1] = _newQuat;
+			//_matrix.matrix3d.recompose(_transformComponents, Orientation3D.QUATERNION);
 			//_matrix.matrix3dChanged.perform(_matrix);
 			
-			_dummyMatrix.recompose(transformComponents, Orientation3D.QUATERNION);
+			_dummyMatrix.recompose(_dummyComps, Orientation3D.QUATERNION);
 			var eular:Vector.<Vector3D> = _dummyMatrix.decompose();
 			var rots:Vector3D = eular[1];
-			_cameraControls.rotX = rots.x*180/Math.PI;
-			_cameraControls.rotY = rots.y*180/Math.PI;
-			_cameraControls.rotZ = rots.z*180/Math.PI;
+			
+			var startRot:Vector3D = _startComps[1];
+			trace("\ndra: "+(rots.x*180/Math.PI),(rots.y*180/Math.PI),(rots.z*180/Math.PI));
+			_cameraControls.rotX = (startRot.x+rots.x)*180/Math.PI;
+			_cameraControls.rotY = (startRot.y+rots.y)*180/Math.PI;
+			_cameraControls.rotZ = (startRot.z+rots.z)*180/Math.PI;
 		}
 		protected function coordinate2DToSphere(x:Number, y:Number, targetVector:Vector3D):Vector3D{
 			
