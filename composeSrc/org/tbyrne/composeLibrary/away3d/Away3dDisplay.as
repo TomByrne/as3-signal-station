@@ -361,8 +361,8 @@ package org.tbyrne.composeLibrary.away3d
 		
 		private function checkLowerContainerDims():void{
 			if(_lowerContainer3D.width != _lowerContainer.width || _lowerContainer3D.height != _lowerContainer.height){
-				_lowerContainer3D.width = _lowerContainer.width;
-				_lowerContainer3D.height = _lowerContainer.height;
+				_lowerContainer3D.width = (_lowerContainer.width || 1);
+				_lowerContainer3D.height = (_lowerContainer.height || 1);
 				
 				//_lowerShape.visible = false;
 				var bounds:Rectangle = _lowerContainer.getBounds(_lowerContainer);
