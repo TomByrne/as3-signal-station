@@ -246,14 +246,17 @@ package org.tbyrne.siteStream.parsers
 						if(castPropInfo.bestData.nodeKind()==XMLNodeKinds.ATTRIBUTE && simpleValue){
 							var isArray:Boolean = (castPropInfo.classRef==Array);
 							if(isArray || VECTOR_TEST.test(String(castPropInfo.classRef))){
-									parsedValue = simpleValue.split(",");
-									if(!isArray){
-										var vec:* = new castPropInfo.classRef();
-										for each(var value:* in parsedValue){
-											vec.push(value);
-										}
-										parsedValue = vec;
+								if(simpleValue.charAt(0)=="[" && simpleValue.charAt(simpleValue.length-1)=="]"){
+									simpleValue = simpleValue.slice(1,simpleValue.length-1);
+								}
+								parsedValue = simpleValue.length?simpleValue.split(","):[];
+								if(!isArray){
+									var vec:* = new castPropInfo.classRef();
+									for each(var value:* in parsedValue){
+										vec.push(value);
 									}
+									parsedValue = vec;
+								}
 							}else{
 								var isDict:Boolean = (castPropInfo.classRef==Dictionary);
 								var isObject:Boolean = OBJECT_TEST.test(simpleValue) && (castPropInfo.classRef==Object || isDict);

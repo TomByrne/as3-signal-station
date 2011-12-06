@@ -16,7 +16,7 @@ package org.tbyrne.reflection
 		protected static const OBJECT_INNER:RegExp = /([\w.]+?):([^,]+)/g;
 		protected static const EXPRESSION:RegExp = /^{.*}$/;
 		
-		public static function deliterate(string:String, unquote:Boolean=false):*{
+		public static function deliterate(string:String, deep:Boolean=true, unquote:Boolean=false):*{
 			if(unquote){
 				var results:Object = QUOTED.exec(string);
 				if(results){
@@ -34,16 +34,9 @@ package org.tbyrne.reflection
 			}else if(NUMBER_16.test(string)){
 				return parseInt(string,16);
 			}else{
-				results = ARRAY.exec(string);
-				if(results){
-					string = results[1];
-					results = ARRAY_INNER.exec(string);
-					var retArray:Array = [];
-					while(results){
-						retArray.push(deliterate(results[0]));
-						results = ARRAY_INNER.exec(string)
-					}
-					return retArray;
+				var array:Array = deliterateArray(string,deep);
+				if(array){
+					return array;
 				}else{
 					results = OBJECT.exec(string)
 					if(results){
@@ -51,7 +44,7 @@ package org.tbyrne.reflection
 						results = OBJECT_INNER.exec(string)
 						var retObject:Object = {};
 						while(results){
-							retObject[results[1]] = deliterate(results[2]);
+							retObject[results[1]] = deep?deliterate(results[2]):results[2];
 							results = OBJECT_INNER.exec(string)
 						}
 						return retObject;
@@ -59,6 +52,21 @@ package org.tbyrne.reflection
 				}
 			}
 			return string;
+		}
+		public static function deliterateArray(string:String, deep:Boolean=true):Array{
+			
+			var results:Object = ARRAY.exec(string);
+			if(results){
+				string = results[1];
+				results = ARRAY_INNER.exec(string);
+				var retArray:Array = [];
+				while(results){
+					retArray.push(deep?deliterate(results[0]):results[0]);
+					results = ARRAY_INNER.exec(string)
+				}
+				return retArray;
+			}
+			return null;
 		}
 
 	}

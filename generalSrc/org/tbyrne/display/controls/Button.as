@@ -104,6 +104,13 @@ package org.tbyrne.display.controls
 			}
 		}
 		
+		override public function set active(value:Boolean):void{
+			if(_active!=value){
+				super.active = value;
+				if(down)killMouseDown();
+			}
+		}
+		
 		
 		/**
 		 * This is a number representing the amount of pixels the mouse can move between
@@ -269,12 +276,12 @@ package org.tbyrne.display.controls
 		protected function killMouseDown():void{
 			_pressedStage.mouseMoved.removeHandler(onMouseMove);
 			_pressedStage.mouseReleased.removeHandler(onMouseUp);
-			if(_active){
+			//if(_active){
 				_pressedStage = null;
 				_downState.selection = 1;
 				_down = false;
 				if(_mouseReleased)_mouseReleased.perform(this);
-			}
+			//}
 		}
 		
 		protected final function onClick(from:IInteractiveObject, info:IMouseActInfo):void{
