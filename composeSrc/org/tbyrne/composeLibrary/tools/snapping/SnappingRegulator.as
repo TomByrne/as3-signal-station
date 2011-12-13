@@ -90,7 +90,10 @@ package org.tbyrne.composeLibrary.tools.snapping
 		
 		private function startSnapping(snapTrait:ISnappableTrait, posTrait:IPosition3dTrait):void{
 			posTrait.position3dChanged.addHandler(onPosChanged, [snapTrait]);
-			assessSnapping(snapTrait, posTrait);
+			//assessSnapping(snapTrait, posTrait);
+			for each(var influence:ISnapInfluenceTrait in _influences.list){
+				influence.beginSnapping(snapTrait);
+			}
 		}
 		private function stopSnapping(snapTrait:ISnappableTrait, posTrait:IPosition3dTrait):void{
 			posTrait.position3dChanged.removeHandler(onPosChanged);
@@ -125,6 +128,8 @@ package org.tbyrne.composeLibrary.tools.snapping
 			var snapMap:Dictionary = new Dictionary(); // key > influence > snapPoint
 			var snapList:Dictionary;
 			var key:String;
+			
+			var model:* = snapTrait.snapPoints[0]["allocation"].allocatedPart.model;
 			
 			for each(var snapPoint:ISnapPoint in snapTrait.snapPoints){
 				var list:IndexedList = (snapPoint.snappingGroup?_groups[snapPoint.snappingGroup]:_influences);

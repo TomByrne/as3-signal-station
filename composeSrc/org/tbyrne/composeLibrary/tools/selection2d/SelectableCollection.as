@@ -56,7 +56,7 @@ package org.tbyrne.composeLibrary.tools.selection2d
 			if(changed && _collectionChanged)_collectionChanged.perform(this);
 		}
 		public function remove(trait:ISelectableTrait):void{
-			if(_remove(trait)){
+			if(_remove(trait,true)){
 				if(_collectionChanged)_collectionChanged.perform(this);
 			}
 		}
@@ -69,10 +69,15 @@ package org.tbyrne.composeLibrary.tools.selection2d
 			}
 			return false;
 		}
-		private function _remove(trait:ISelectableTrait):Boolean{
+		public function removeNoUpdate(trait:ISelectableTrait):void{
+			if(_remove(trait,false)){
+				if(_collectionChanged)_collectionChanged.perform(this);
+			}
+		}
+		private function _remove(trait:ISelectableTrait, doUpdate:Boolean):Boolean{
 			var index:int = _list.indexOf(trait);
 			if(index!=-1){
-				trait[_updateProp] = false;
+				if(doUpdate)trait[_updateProp] = false;
 				_list.splice(index,1);
 				return true;
 			}
@@ -93,7 +98,7 @@ package org.tbyrne.composeLibrary.tools.selection2d
 			var arrMatch:Boolean = traits==_list;
 			while(i<traits.length){
 				var trait:ISelectableTrait = traits[i];
-				if(_remove(trait)){
+				if(_remove(trait,true)){
 					ret = true;
 					if(!arrMatch)++i;
 				}else{

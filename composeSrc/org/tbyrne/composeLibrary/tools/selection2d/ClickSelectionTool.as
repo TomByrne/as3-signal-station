@@ -97,7 +97,7 @@ package org.tbyrne.composeLibrary.tools.selection2d
 				mouseActsTrait = _selectToMouseTrait[selectableTrait];
 				mouseActsTrait.mouseClick.removeHandler(onMouseClicked);
 				mouseActsTrait.mouseDragStart.removeHandler(onMouseDragStart);
-				mouseActsTrait.mouseIsOver.booleanValueChanged.addHandler(onMouseOverChanged, [selectableTrait]);
+				mouseActsTrait.mouseIsOver.booleanValueChanged.removeHandler(onMouseOverChanged);
 				delete _selectToMouseTrait[selectableTrait];
 			}
 			if(mouseActsTrait = (trait as IMouseActsTrait)){

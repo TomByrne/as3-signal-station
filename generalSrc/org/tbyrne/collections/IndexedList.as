@@ -11,13 +11,16 @@ package org.tbyrne.collections
 		private var _list:Array = [];
 		private var _indices:Dictionary = new Dictionary();
 		
-		public function add(value:*):void{
+		public function add(value:*):Boolean{
 			if(_indices[value]==null){
 				_indices[value] = _list.length;
 				_list.push(value);
+				return true;
+			}else{
+				return false;
 			}
 		}
-		public function remove(value:*):void{
+		public function remove(value:*):Boolean{
 			var index:* = _indices[value];
 			if(index!=null){
 				delete _indices[value];
@@ -26,6 +29,9 @@ package org.tbyrne.collections
 					_indices[_list[index]] = index;
 					++index;
 				}
+				return true;
+			}else{
+				return false;
 			}
 		}
 		public function containsItem(value:*):Boolean{

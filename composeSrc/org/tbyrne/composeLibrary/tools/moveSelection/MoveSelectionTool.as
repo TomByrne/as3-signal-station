@@ -126,6 +126,7 @@ package org.tbyrne.composeLibrary.tools.moveSelection
 		
 		private function onDragStart(from:IMouseActsTrait, info:IMouseActInfo):void{
 			_moving = true;
+			_activeMouse = from;
 			
 			var dragPositions:Vector.<Point> = new Vector.<Point>();
 			for each(var position2d:IPosition2dTrait in _posTraits){
@@ -137,7 +138,6 @@ package org.tbyrne.composeLibrary.tools.moveSelection
 			for each(var moveTrait:IMoveTrait in _moveTraits){
 				moveTrait.isMoving = true;
 			}
-			_activeMouse = from;
 		}
 		
 		private function onDrag(from:IMouseActsTrait, info:IMouseActInfo, byX:Number, byY:Number, dragPositions:Vector.<Point>):void{

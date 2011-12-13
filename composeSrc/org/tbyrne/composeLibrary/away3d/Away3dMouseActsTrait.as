@@ -94,7 +94,7 @@ package org.tbyrne.composeLibrary.away3d
 			var away3dDisplay:Away3dDisplay = trait as Away3dDisplay;
 			
 			if(away3dObjectTrait){
-				if(_down){
+				/*if(_down){
 					setIsDown(false);
 					
 					_scene.removeEventListener(MouseEvent3D.MOUSE_MOVE, onDownMove);
@@ -106,7 +106,7 @@ package org.tbyrne.composeLibrary.away3d
 						if(_mouseDragFinish)_mouseDragFinish.perform(this, new MouseActInfo(trait,false,false,false,0,0));
 					}
 				}
-				setIsOver(false);
+				setIsOver(false);*/
 				
 				setObjectContainer3d(null);
 				

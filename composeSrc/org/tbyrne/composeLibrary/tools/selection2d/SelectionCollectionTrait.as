@@ -58,8 +58,8 @@ package org.tbyrne.composeLibrary.tools.selection2d
 			if(selectableTrait){
 				var index:int = _selectables.indexOf(selectableTrait);
 				_selectables.splice(index,1);
-				_selection.remove(selectableTrait);
-				_interested.remove(selectableTrait);
+				_selection.removeNoUpdate(selectableTrait);
+				_interested.removeNoUpdate(selectableTrait);
 			}
 		}
 	}
