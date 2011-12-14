@@ -111,7 +111,7 @@ package org.tbyrne.display.core
 		}
 		public final function showIntro():void{
 			if(asset && asset.stage && !_introShown){
-				if(_finaliseOutroDelay){
+				if(_finaliseOutroDelay && _finaliseOutroDelay.running){
 					_finaliseOutroDelay.clear();
 					finaliseOutro();
 				}

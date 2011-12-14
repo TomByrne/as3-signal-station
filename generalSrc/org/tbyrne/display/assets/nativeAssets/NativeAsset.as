@@ -92,12 +92,10 @@ package org.tbyrne.display.assets.nativeAssets
 				_display.height = value;
 			}
 		}
-		
-		
-		
 		public function get height():Number {
-			return _height;
+			return _display.height;
 		}
+		
 		public function set width(value:Number):void {
 			_width = value;
 			_widthSet = true;
@@ -107,11 +105,10 @@ package org.tbyrne.display.assets.nativeAssets
 				_display.width = value;
 			}
 		}
-		
-		
 		public function get width():Number {
-			return _width;
+			return _display.width;
 		}
+		
 		public function get stage():IStage {
 			if(_isAddedToStage && !_stageAsset){
 				_stageAsset = findStageRef();
