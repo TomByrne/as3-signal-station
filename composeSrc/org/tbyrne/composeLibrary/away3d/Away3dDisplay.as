@@ -526,7 +526,7 @@ package org.tbyrne.composeLibrary.away3d
 			}
 		}
 		override protected function addDisplayTrait(displayTrait:IDisplayObjectTrait):void{
-			if(displayTrait.item!=_viewLayerItem){
+			if(displayTrait.item!=_viewLayerItem && displayTrait.displayObject!=_rootDisplay){
 				checkUpperContainer();
 				_upperContainer.addChild(displayTrait.displayObject);
 			}
