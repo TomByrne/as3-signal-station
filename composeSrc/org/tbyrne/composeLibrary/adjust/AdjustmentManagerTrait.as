@@ -17,7 +17,7 @@ package org.tbyrne.composeLibrary.adjust
 			
 			_adjustmentManager = new AdjustmentManager();
 			
-			addConcern(new Concern(false,true,false,IAdjustableTrait,[AdjustmentManagerTrait]));
+			addConcern(new Concern(true,true,false,IAdjustableTrait,[AdjustmentManagerTrait]));
 		}
 		
 		override protected function onConcernedTraitAdded(from:IConcern, trait:ITrait):void{
