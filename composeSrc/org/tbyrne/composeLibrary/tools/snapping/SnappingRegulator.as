@@ -124,10 +124,8 @@ package org.tbyrne.composeLibrary.tools.snapping
 			var influence:ISnapInfluenceTrait;
 			var pos:Vector3D;
 			
-			var proposals:Dictionary = new Dictionary();
-			var snapMap:Dictionary = new Dictionary(); // key > influence > snapPoint
-			var snapList:Dictionary;
-			var key:String;
+			var props:Dictionary = new Dictionary();
+			var snapPoints:Dictionary = new Dictionary();
 			
 			var model:* = snapTrait.snapPoints[0]["allocation"].allocatedPart.model;
 			
@@ -138,21 +136,14 @@ package org.tbyrne.composeLibrary.tools.snapping
 					influence = list.list[i];
 					pos = influence.makeProposal(snapTrait,snapPoint);
 					if(pos){
-						key = int(pos.x+0.5)+"_"+int(pos.y+0.5)+"_"+int(pos.z+0.5);
-						if(!proposals[key]){
-							proposals[key] = pos;
-							snapList = new Dictionary();
-							snapMap[key] = snapList;
-						}else{
-							snapList = snapMap[key];
-						}
-						snapList[influence] = snapPoint;
+						snapPoints[influence] = snapPoint;
+						props[influence] = pos;
 					}
 				}
 			}
 			var bestProposal:Vector3D;
 			var bestProposalValue:Number;
-			for each(pos in proposals){
+			for each(pos in props){
 				var propValue:Number = 0;
 				var validCount:int = 0;
 				for each(var influence2:ISnapInfluenceTrait in _influences.list){
@@ -169,13 +160,15 @@ package org.tbyrne.composeLibrary.tools.snapping
 				}
 			}
 			if(bestProposal){
-				key = int(bestProposal.x+0.5)+"_"+int(bestProposal.y+0.5)+"_"+int(bestProposal.z+0.5);
-				snapList = snapMap[key];
-				_currentProposals[snapTrait] = bestProposal;
-				_currentSnapList[snapTrait] = snapList;
+				var snapList:Dictionary = new Dictionary();
 				
 				for each(influence in _influences.list){
-					influence.setCurrentProposal(snapTrait,bestProposal,snapList[influence]);
+					pos = props[influence];
+					if(pos && (pos==bestProposal || pos.subtract(bestProposal).length<=influence.maxAcceptDistance)){
+						influence.setCurrentProposal(snapTrait,bestProposal,snapPoints[influence]);
+					}else{
+						influence.setCurrentProposal(snapTrait,bestProposal,null);
+					}
 				}
 				
 				posTrait.setPosition3d(bestProposal.x,bestProposal.y,bestProposal.z);
