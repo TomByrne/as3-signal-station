@@ -1,20 +1,13 @@
 package org.tbyrne.display.controls
 {
+	import mx.states.OverrideBase;
+	
 	import org.tbyrne.data.controls.IControlData;
 	import org.tbyrne.display.assets.nativeTypes.IDisplayObject;
 	import org.tbyrne.display.layout.ILayoutSubject;
 	
 	public class TextLabelButton extends ToggleButton
 	{
-		override public function set data(value:IControlData):void{
-			super.data = value;
-			_textLabel.data = value;
-			/*
-			_textLabel.data should be set after super.data otherwise:
-				_textLabel fires measurements changed
-				a list might catch the event and use the old data for data>index lookup
-			*/
-		}
 		public function get paddingTop():Number{
 			return _textLabel.paddingTop;
 		}
@@ -57,6 +50,15 @@ package org.tbyrne.display.controls
 		
 		public function TextLabelButton(asset:IDisplayObject=null){
 			super(asset);
+		}
+		override protected function assessData():void{
+			_textLabel.data = _data;
+			/*
+			_textLabel.data should be set after super.data otherwise:
+			_textLabel fires measurements changed
+			a list might catch the event and use the old data for data>index lookup
+			*/
+			super.assessData();
 		}
 		override protected function init() : void{
 			super.init();

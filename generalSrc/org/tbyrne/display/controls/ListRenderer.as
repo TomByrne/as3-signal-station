@@ -50,10 +50,10 @@ package org.tbyrne.display.controls
 			attemptInit()
 			if(_data){
 				_hasChildrenState.selection = (_data.childData==null)?0:1;
-				if(!_data.active)active = true;
+				if(!_data.active && !_activeProvider)active = true;
 			}else{
 				_hasChildrenState.selection = 0;
-				if(!_data.active && (_data.selected!=null || _data.selectedAction!=null)){
+				if(!_data.active && (_data.selected!=null || _data.selectedAction!=null) && !_activeProvider){
 					active = true;
 				}
 			}
