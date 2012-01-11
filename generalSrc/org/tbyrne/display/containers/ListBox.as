@@ -89,20 +89,20 @@ package org.tbyrne.display.containers
 			}
 		}
 		
-		public function get maxSelected():int{
+		public function get maxSelected():Number{
 			return _maxSelected;
 		}
-		public function set maxSelected(value:int):void{
+		public function set maxSelected(value:Number):void{
 			if(_maxSelected!=value){
 				_maxSelected = value;
 				validateSelectionCount();
 			}
 		}
 		
-		public function get minSelected():int{
+		public function get minSelected():Number{
 			return _minSelected;
 		}
-		public function set minSelected(value:int):void{
+		public function set minSelected(value:Number):void{
 			if(_minSelected!=value){
 				_minSelected = value;
 				validateSelectionCount();

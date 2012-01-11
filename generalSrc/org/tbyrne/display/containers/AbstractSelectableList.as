@@ -6,6 +6,7 @@ package org.tbyrne.display.containers
 	
 	import org.tbyrne.acting.actTypes.IAct;
 	import org.tbyrne.acting.acts.Act;
+	import org.tbyrne.collections.ICollection;
 	import org.tbyrne.display.DisplayNamespace;
 	import org.tbyrne.display.assets.nativeTypes.IDisplayObject;
 	import org.tbyrne.display.constants.Direction;
@@ -25,6 +26,11 @@ package org.tbyrne.display.containers
 		public function set dataProvider(value:*):void{
 			attemptInit();
 			if(_layout.dataProvider != value){
+				if(_collection){
+					_collection.collectionChanged.removeHandler(onCollectionChanged);
+				}
+				
+				
 				_layout.dataProvider = value;
 				if(_protoRenderer)checkDataSelection();
 				
@@ -32,6 +38,11 @@ package org.tbyrne.display.containers
 					checkAutoScroll();
 				}else{
 					resetScroll();
+				}
+				
+				_collection = (value as ICollection);
+				if(_collection){
+					_collection.collectionChanged.addHandler(onCollectionChanged);
 				}
 			}
 		}
@@ -141,13 +152,15 @@ package org.tbyrne.display.containers
 			return _selectionChangeAct;
 		}
 		
-		protected var _maxSelected:int = 1;
-		protected var _minSelected:int = 0;
+		protected var _maxSelected:Number = 1; // NaN to disable checking
+		protected var _minSelected:Number = 0; // NaN to disable checking
 		
 		private var _selectedData:Dictionary = new Dictionary();
 		private var _selectedIndices:Array = [];
 		private var _selectedCount:int = 0;
 		private var _selectingNow:int = -1;
+		
+		private var _collection:ICollection;
 		
 		protected var _scrollByLine:Boolean;
 		protected var _autoScrollToSelection:Boolean;
@@ -165,6 +178,13 @@ package org.tbyrne.display.containers
 		override protected function init() : void{
 			super.init();
 			_layout.setRendererDataAct.addHandler(onRendererDataSet);
+		}
+		override protected function bindToAsset():void{
+			super.bindToAsset();
+			if(_collection)checkDataSelection();
+		}
+		protected function onCollectionChanged(from:ICollection, fromX:int, toX:int):void{
+			if(isBound)checkDataSelection();
 		}
 		override protected function onAddRenderer(layout:RendererGridLayout, renderer:ILayoutView) : void{
 			super.onAddRenderer(layout, renderer);
@@ -208,7 +228,7 @@ package org.tbyrne.display.containers
 			}
 			var change:Boolean;
 			if(selected){
-				if(_maxSelected>0){
+				if(!isNaN(_maxSelected) && _maxSelected>0){
 					change = true;
 					_selectedData[dataIndex] = data;
 					_selectedIndices.push(dataIndex);
@@ -230,7 +250,7 @@ package org.tbyrne.display.containers
 					selected = false;
 				}
 			}else{
-				if(_selectedCount>_minSelected){
+				if(!isNaN(_minSelected) && _selectedCount>_minSelected){
 					change = true;
 					_selectedIndices.splice(selIndex,1);
 					delete _selectedData[dataIndex];
@@ -341,8 +361,8 @@ package org.tbyrne.display.containers
 					++i;
 				}
 			}
-			if(change && _selectionChangeAct){
-				_selectionChangeAct.perform(this, _selectedIndices, _selectedData);
+			if(change){
+				if(_selectionChangeAct)_selectionChangeAct.perform(this, _selectedIndices, _selectedData);
 				checkAutoScroll();
 			}
 			return change;

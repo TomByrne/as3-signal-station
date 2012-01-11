@@ -7,6 +7,7 @@ package org.tbyrne.display.progress
 	import flash.events.IOErrorEvent;
 	import flash.events.ProgressEvent;
 	import flash.events.TimerEvent;
+	import flash.events.UncaughtErrorEvent;
 	import flash.utils.Timer;
 	import flash.utils.getDefinitionByName;
 	import flash.utils.getTimer;
@@ -106,6 +107,8 @@ package org.tbyrne.display.progress
 			this.stage.scaleMode = StageScaleMode.NO_SCALE;
 			stage.addEventListener(Event.RESIZE, onStageResize);
 			setStageSize(stage.stageWidth,stage.stageHeight);
+			
+			root.loaderInfo.uncaughtErrorEvents.addEventListener(UncaughtErrorEvent.UNCAUGHT_ERROR, onUncaughtError);
 			
 			if(runTest){
 				_messageData.stringValue = "Testing";
@@ -243,6 +246,10 @@ package org.tbyrne.display.progress
 			_progressDisplay.progress = _progressData;
 			_progressDisplay.units = _unitsData;
 			_progressDisplay.message = _messageData;
+		}
+		
+		protected function onUncaughtError(event:UncaughtErrorEvent):void{
+			Log.log(Log.DEV_ERROR,"Unhandled exception: "+event.error);
 		}
 	}
 }

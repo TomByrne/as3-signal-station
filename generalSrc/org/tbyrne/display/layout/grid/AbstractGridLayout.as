@@ -506,8 +506,7 @@ package org.tbyrne.display.layout.grid
 				
 				
 				// optimised way of finding max flow/across
-				var maxAcross:int = int(getChildKeyCount()/maxFlow);
-				if(maxAcross%1)maxAcross += 1; // round up
+				var maxAcross:int = Math.ceil(getChildKeyCount()/maxFlow);
 				
 				for(i=0; i<maxFlowCount; ++i){
 					_flowDirectionAxis.maxCellSizes[i] = sameMeasFlow;
@@ -560,7 +559,7 @@ package org.tbyrne.display.layout.grid
 					}
 				}
 				
-				// if either of these succeeded and the cell has measurements we attmpet to position it in the visible grid
+				// if either of these succeeded and the cell has measurements we attempt to position it in the visible grid
 				if(subMeas){
 					var subAcrossDim:Number = subMeas[_acrossFlowAxis.coordRef];
 					var subFlowDim:Number = subMeas[_flowDirectionAxis.coordRef];
