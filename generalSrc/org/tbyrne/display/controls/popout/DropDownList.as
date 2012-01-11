@@ -44,6 +44,22 @@ package org.tbyrne.display.controls.popout {
 				assessSelected();
 			}
 		}
+		public function get validateSelectionCount():Boolean{
+			return _validateSelectionCount;
+		}
+		public function set validateSelectionCount(value:Boolean):void{
+			if(_validateSelectionCount!=value){
+				_validateSelectionCount = value;
+				if(value){
+					_listBox.maxSelected = 1;
+					_listBox.minSelected = 0;
+				}else{
+					_listBox.maxSelected = NaN;
+					_listBox.minSelected = NaN;
+				}
+			}
+		}
+		
 		
 		public function get prompt():String{
 			return _prompt;
@@ -62,6 +78,7 @@ package org.tbyrne.display.controls.popout {
 			return _selectionChangeAct;
 		}
 		
+		private var _validateSelectionCount:Boolean = true;
 		private var _prompt:String;
 		private var _selectedIndex:int=-2; // -1 is unselected (initially -2 so that -1 is seen as a change)
 		private var _selectedData:*;

@@ -127,7 +127,7 @@ package org.tbyrne.data.core
 			this.options = options;
 		}
 		
-		public function onCollectionChanged(from:ICollection, fromX:Number, toX:Number):void{
+		protected function onCollectionChanged(from:ICollection, fromX:Number, toX:Number):void{
 			if(_collectionChanged)_collectionChanged.perform(this,fromX,toX);
 		}
 		public function getIterator():IIterator{

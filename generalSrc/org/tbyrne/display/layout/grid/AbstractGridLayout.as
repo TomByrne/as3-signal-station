@@ -491,8 +491,10 @@ package org.tbyrne.display.layout.grid
 				
 				
 				// optimised way of finding max breadth/lengths
-				var maxLength:int = int(getChildKeyCount()/maxBreadth);
-				if(maxLength%1)maxLength += 1; // round up
+				/*var maxLength:int = int(getChildKeyCount()/maxBreadth);
+				if(maxLength%1)maxLength += 1; // round up*/
+				var keyCount:int = getChildKeyCount();
+				var maxLength:int = Math.ceil(keyCount/maxBreadth);
 				
 				for(i=0; i<maxBreadthCount; ++i){
 					_breadthAxis.maxCellSizes[i] = sameMeasBreadth;
@@ -545,7 +547,7 @@ package org.tbyrne.display.layout.grid
 					}
 				}
 				
-				// if either of these succeeded and the cell has measurements we attmpet to position it in the visible grid
+				// if either of these succeeded and the cell has measurements we attempt to position it in the visible grid
 				if(subMeas){
 					var subLengthDim:Number = subMeas[_lengthAxis.coordRef];
 					var subBreadthDim:Number = subMeas[_breadthAxis.coordRef];
