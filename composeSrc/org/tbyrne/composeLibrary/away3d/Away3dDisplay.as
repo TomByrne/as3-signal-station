@@ -245,7 +245,7 @@ package org.tbyrne.composeLibrary.away3d
 			_view.antiAlias = 2;
 			_view.backgroundAlpha = 0;
 			_rootDisplay.addChild(_view);
-			_view.addEventListener(KeyboardEvent.KEY_DOWN, onKeyDown);
+			//_view.addEventListener(KeyboardEvent.KEY_DOWN, onKeyDown);
 			_view.addEventListener(Event.ADDED_TO_STAGE, onAddedToStage);
 			
 			_scene = _view.scene;
@@ -294,10 +294,10 @@ package org.tbyrne.composeLibrary.away3d
 			_gpuMode.booleanValue = (_view.stage3DProxy.context3D.driverInfo.indexOf("Software")==-1);
 		}
 		
-		protected function onKeyDown(event:KeyboardEvent):void
+		/*protected function onKeyDown(event:KeyboardEvent):void
 		{
 			event = event;
-		}
+		}*/
 		
 		override protected function onItemAdd():void{
 			super.onItemAdd();

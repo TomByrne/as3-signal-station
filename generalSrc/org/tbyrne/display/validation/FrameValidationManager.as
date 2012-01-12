@@ -251,7 +251,12 @@ package org.tbyrne.display.validation
 				if(existingRun){
 					existingRun.forceExecute(flag);
 				}else{
-					createNewRun(flagToBundle[flag], childRuns);
+					bundle = flagToBundle[flag];
+					if(bundle.key!=null){
+						createNewRun(bundle, childRuns);
+					}else{
+						flag.execute();
+					}
 				}
 			}else{
 				for each(var bundle:FlagBundle in rootBundles){

@@ -54,7 +54,7 @@ package org.tbyrne.display.validation
 			return false;
 		}
 		public function get hierarchyKey():*{
-			return -1; // will put them all in the same bundle
+			return null; // will put them all in the same bundle
 		}
 	}
 }
