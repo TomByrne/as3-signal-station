@@ -146,13 +146,19 @@ package org.tbyrne.composeLibrary.tools.snapping
 			for each(pos in props){
 				var propValue:Number = 0;
 				var validCount:int = 0;
+				var skip:Boolean = false;
 				for each(var influence2:ISnapInfluenceTrait in _influences.list){
 					var value:Number = influence2.testProposal(snapTrait,pos);
+					if(value==Number.POSITIVE_INFINITY){
+						skip = true;
+						break;
+					}
 					if(!isNaN(value)){
 						++validCount;
 						propValue += value;
 					}
 				}
+				if(skip)continue;
 				propValue /= validCount;
 				if(!bestProposal || bestProposalValue>propValue){
 					bestProposal = pos;
