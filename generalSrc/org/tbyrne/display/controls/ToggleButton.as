@@ -102,13 +102,13 @@ package org.tbyrne.display.controls
 			}
 		}
 		
-		private var _useDataForSelected:Boolean = true;
+		protected var _useDataForSelected:Boolean = true;
 		
-		private var _booleanProvider:IBooleanProvider;
-		private var _booleanConsumer:IBooleanConsumer;
+		protected var _booleanProvider:IBooleanProvider;
+		protected var _booleanConsumer:IBooleanConsumer;
 		protected var _selected:Boolean;
-		private var _tabFocusable:InteractiveAssetFocusWrapper;
-		private var _ignoreDataChanges:Boolean;
+		protected var _tabFocusable:InteractiveAssetFocusWrapper;
+		protected var _ignoreDataChanges:Boolean;
 		
 		protected var _selectedState:StateDef = new StateDef([STATE_UNSELECTABLE,STATE_SELECTED,STATE_UNSELECTED],0);
 		
