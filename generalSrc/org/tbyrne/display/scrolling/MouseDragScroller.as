@@ -94,7 +94,7 @@ package org.tbyrne.display.scrolling
 		public var dragThreshold:Number = 0;
 		
 		public var snappingInterval:Number;
-		public var snappingInfluence:Number = 2500;
+		public var snappingInfluence:Number = 0.75;
 		public var snappingVelThreshold:Number = 5;
 		
 		private var _interactiveObject:IInteractiveObject;
@@ -186,6 +186,7 @@ package org.tbyrne.display.scrolling
 		protected function doVelocity():void{
 			var time:int = getTimer();
 			var timeStep:Number = (time-_lastTime)/1000;
+			if(timeStep>1)timeStep = 1;
 			_lastTime = time;
 			
 			var velocity:Number;
@@ -211,9 +212,13 @@ package org.tbyrne.display.scrolling
 					dif = endDif;
 				}
 				
-				
-				var difFract:Number = dif/(snappingInterval/2);
-				_snapVelocity = difFract*snappingInfluence;
+				if(isNaN(_snapVelocity)){
+					_snapVelocity = dif;
+				}else{
+					_snapVelocity = (_snapVelocity*snappingInfluence)+(dif*(1-snappingInfluence));
+				}
+				//var difFract:Number = dif/(snappingInterval/2);
+				//_snapVelocity = difFract*snappingInfluence;
 				
 				var ratio:Number = _dragVelocity/snappingVelThreshold;
 				if(ratio<0)ratio = -ratio;
@@ -240,6 +245,7 @@ package org.tbyrne.display.scrolling
 				velocity = snapV+dragV;
 				newScrollValue = _scrollMetrics.scrollValue+velocity;
 			}else{
+				_snapVelocity = NaN;
 				velocity = _dragVelocity;
 			}
 			
