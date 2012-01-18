@@ -174,6 +174,15 @@ package org.tbyrne.display.layout.grid
 		public function set scrollRectMode(value:Boolean):void{
 			_scrollRectMode = value;
 		}
+		public function get collectDataPositions():Boolean{
+			return _collectDataPositions;
+		}
+		public function set collectDataPositions(value:Boolean):void{
+			if(_collectDataPositions!=value){
+				_collectDataPositions = value;
+				invalidatePos();
+			}
+		}
 		
 		/**
 		 * handler(layout:RendererGridLayout, fitRenderers:int)
@@ -208,6 +217,8 @@ package org.tbyrne.display.layout.grid
 		protected var _fitRenderersAct:Act;
 		protected var _setRendererDataAct:Act;
 		
+		
+		private var _collectDataPositions:Boolean;
 		private var _renderEmptyCells:Boolean;
 		protected var _dataField:String;
 		private var _dataProvider:*;
@@ -280,6 +291,10 @@ package org.tbyrne.display.layout.grid
 			return _dataMap[index];
 		}
 		public function getDataPosition(index:int, fillRect:Rectangle=null):Rectangle{
+			if(!_collectDataPositions){
+				Log.error("RendererGridLayout.collectDataPositions must be set to true to use getDataPosition");
+			}
+			
 			validate();
 			index *= int(4);
 			if(!fillRect){
@@ -291,6 +306,7 @@ package org.tbyrne.display.layout.grid
 			fillRect.height = _positionCache[index+3];
 			return fillRect;
 		}
+		
 		public function getDataCoords(index:int, fillPoint:Point=null):Point{
 			validate();
 			index *= int(2);
@@ -593,27 +609,65 @@ package org.tbyrne.display.layout.grid
 			}
 		}
 		override protected function validateScroll(scrollMetrics:ScrollMetrics, axis:GridAxis) : void{
-			var pixScroll:Number;
-			var pixScrollMax:Number;
 			var realDim:Number = _size[axis.coordRef];
 			var realMeas:Number = _measurements[axis.coordRef];
+			
+			var pixScroll:Number;
+			var pixScrollMax:Number;
 			var newIndex:int;
 			var newIndexMax:int;
 			
-			if(realMeas>realDim){
+			if(_renderersSameSize){
+				if(_sameCellMeas){
+					scrollMetrics.maximum = 0;
+					scrollMetrics.pageSize = 0;
+					
+					var meas:Number = _sameCellMeas[axis.coordRef];
+					
+					if(axis.scrollByLine){
+						scrollMetrics.pageSize = int(realDim/meas);
+						scrollMetrics.maximum = axis.maxCellSizes.length;
+						
+						pixScroll = scrollMetrics.scrollValue*meas;
+					}else{
+						scrollMetrics.maximum = realMeas;
+						scrollMetrics.pageSize = realDim;
+						
+						pixScroll = scrollMetrics.scrollValue;
+					}
+					
+					newIndex = int(pixScroll/meas);
+					var bottom:Number = pixScroll+realDim;
+					if(bottom%meas){
+						newIndexMax = int(bottom/meas)+1;
+					}else{
+						newIndexMax = int(bottom/meas);
+					}
+				}else{
+					pixScroll = 0;
+					
+					if(axis.scrollByLine){
+						scrollMetrics.pageSize = 0;
+						scrollMetrics.maximum = 0;
+					}else{
+						scrollMetrics.maximum = realMeas;
+						scrollMetrics.pageSize = realDim;
+					}
+				}
+			}else if(realMeas>realDim){
 				pixScrollMax = realMeas-realDim;
 				newIndexMax = -1;
 				var stack:Number = axis.foreMargin;
 				var total:Number = 0;
 				var foundPixMax:Boolean;
 				
-				if(isNaN(scrollMetrics.scrollValue)){
-					scrollMetrics.scrollValue = 0;
-				}
-				
 				var scrollByPxValue:int = scrollMetrics.scrollValue;
-				if(scrollByPxValue<scrollMetrics.minimum || isNaN(scrollByPxValue))scrollByPxValue = scrollMetrics.minimum;
-				else if(scrollByPxValue>scrollMetrics.maximum-scrollMetrics.pageSize)scrollByPxValue = scrollMetrics.maximum-scrollMetrics.pageSize;
+				if(isNaN(scrollByPxValue)){
+					scrollByPxValue = 0;
+				}else{
+					if(scrollByPxValue<scrollMetrics.minimum || isNaN(scrollByPxValue))scrollByPxValue = scrollMetrics.minimum;
+					else if(scrollByPxValue>scrollMetrics.maximum-scrollMetrics.pageSize)scrollByPxValue = scrollMetrics.maximum-scrollMetrics.pageSize;
+				}
 				var scrollByLineValue:int = Math.round(scrollByPxValue);
 				
 				
@@ -623,7 +677,8 @@ package org.tbyrne.display.layout.grid
 				re-adding the last renderer everytime a renderer scrolls out of view.
 				*/
 				var comparePixScroll:Number;
-				for(var i:int=0; i<axis.maxCellSizes.length; i++){
+				var tot:int = axis.maxCellSizes.length;
+				for(var i:int=0; i<tot; i++){
 					var measurement:Number = axis.maxCellSizes[i];
 					if(axis.scrollByLine){
 						if(i==scrollByLineValue){
@@ -687,8 +742,13 @@ package org.tbyrne.display.layout.grid
 				}
 				newIndexMax = max;
 				
-				scrollMetrics.pageSize = realDim;
-				scrollMetrics.maximum = realDim;
+				if(axis.scrollByLine){
+					scrollMetrics.pageSize = axis.maxCellSizes.length;
+					scrollMetrics.maximum = axis.maxCellSizes.length;
+				}else{
+					scrollMetrics.maximum = realDim;
+					scrollMetrics.pageSize = realDim;
+				}
 			}
 			var castAxis:RendererGridAxis = (axis as RendererGridAxis);
 			castAxis.dimIndex = newIndex;
@@ -729,9 +789,11 @@ package org.tbyrne.display.layout.grid
 			var maxLength:int = _lengthRendAxis.dimIndexMax;
 			var minBreadth:int = _breadthRendAxis.dimIndex;
 			var maxBreadth:int = _breadthRendAxis.dimIndexMax;
-			var renderIndex:int = ((maxBreadth-minBreadth)*(length-minLength))+(breadth-minBreadth);
-			var renderer:ILayoutSubject = _renderers[renderIndex];
 			if(length>=minLength && length<maxLength && breadth>=minBreadth && breadth<maxBreadth && (key<_dataCount || _renderEmptyCells)){
+				
+				var renderIndex:int = ((maxBreadth-minBreadth)*(length-minLength))+(breadth-minBreadth);
+				var renderer:ILayoutSubject = _renderers[renderIndex];
+				
 				var data:* = _dataMap[key];
 				var addRenderer:Boolean = (renderer==null);
 				if(addRenderer){
@@ -752,6 +814,68 @@ package org.tbyrne.display.layout.grid
 					rendererRemoved(renderer);
 				}
 				return null;
+			}
+		}
+		override protected function validateCellPos():void{
+			var lengthStart:int;
+			var lengthEnd:int;
+			var breadthStart:int;
+			var breadthEnd:int;
+			
+			var lengthStack:Number;
+			var startBreadthStack:Number;
+			
+			var i:int;
+			
+			if(_collectDataPositions){
+				lengthEnd = _cellPosCache.length;
+				breadthEnd = _breadthAxis.maxCellSizes.length;
+				lengthStack = _lengthAxis.foreMargin;
+				startBreadthStack = _breadthAxis.foreMargin;
+			}else{
+				lengthStart = _lengthRendAxis.dimIndex;
+				lengthEnd = _lengthRendAxis.dimIndexMax;
+				
+				if(_renderersSameSize){
+					breadthStart = _breadthRendAxis.dimIndex;
+					breadthEnd = _breadthRendAxis.dimIndexMax;
+					if(_sameCellMeas){
+						lengthStack = _lengthAxis.foreMargin+lengthStart*_sameCellMeas[_lengthAxis.coordRef];
+						startBreadthStack = _breadthAxis.foreMargin+breadthStart*_sameCellMeas[_breadthAxis.coordRef];
+					}else{
+						lengthStack = _lengthAxis.foreMargin+lengthStart;
+						startBreadthStack = _breadthAxis.foreMargin+breadthStart;
+					}
+				}else{
+					breadthStart = 0;
+					breadthEnd = _breadthAxis.maxCellSizes.length;
+					startBreadthStack = _breadthAxis.foreMargin;
+					lengthStack = _lengthAxis.foreMargin;
+					for(i=0; i<lengthStack; i++){
+						lengthStack += _lengthAxis.cellSizes[i];
+					}
+				}
+			}
+			
+			
+			var equaliseLengths:Boolean = _lengthAxis.equaliseCells;
+			var equaliseBreadths:Boolean = _breadthAxis.equaliseCells;
+			
+			var lengthScroll:Number = __scrollRectMode?0:_lengthAxis.pixScrollMetrics.scrollValue;
+			var breadthScroll:Number = __scrollRectMode?0:_breadthAxis.pixScrollMetrics.scrollValue;
+			
+			for(i=lengthStart; i<lengthEnd; i++){
+				var breadthIndices:Array = _cellPosCache[i];
+				var length:Number = _lengthAxis.maxCellSizes[i];
+				if(breadthIndices){
+					var breadthStack:Number = startBreadthStack;
+					
+					for(var j:int=breadthStart; j<breadthEnd; j++){
+						var key:* = breadthIndices[j];
+						breadthStack += stackCellPosition(key, i, j, lengthStack, breadthStack, equaliseLengths, equaliseBreadths, lengthScroll, breadthScroll);
+					}
+				}
+				lengthStack += length+_lengthAxis.gap;
 			}
 		}
 	}

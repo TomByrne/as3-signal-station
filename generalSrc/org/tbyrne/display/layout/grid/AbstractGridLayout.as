@@ -779,62 +779,72 @@ package org.tbyrne.display.layout.grid
 		protected function validateCellPos():void{
 			var equaliseLengths:Boolean = _lengthAxis.equaliseCells;
 			var equaliseBreadths:Boolean = _breadthAxis.equaliseCells;
-			var lengthStack:Number = _lengthAxis.foreMargin;
-			var lengthCount:int=  _cellPosCache.length;
 			
 			var lengthScroll:Number = __scrollRectMode?0:_lengthAxis.pixScrollMetrics.scrollValue;
 			var breadthScroll:Number = __scrollRectMode?0:_breadthAxis.pixScrollMetrics.scrollValue;
 			
-			var breadthCount:int = _breadthAxis.maxCellSizes.length;
-			
-			for(var i:int=0; i<lengthCount; i++){
+			var lengthStack:Number = _lengthAxis.foreMargin;
+			for(var i:int=0; i<_cellPosCache.length; i++){
 				var breadthIndices:Array = _cellPosCache[i];
 				var length:Number = _lengthAxis.maxCellSizes[i];
 				if(breadthIndices){
 					var breadthStack:Number = _breadthAxis.foreMargin;
 					
-					for(var j:int=0; j<breadthCount; j++){
+					for(var j:int=0; j<_breadthAxis.maxCellSizes.length; j++){
 						var key:* = breadthIndices[j];
-						var subMeas:Point = _cellMeasCache[key];
-						
-						var subBreadthDim:Number;
-						if(equaliseBreadths || !subMeas){
-							subBreadthDim = _breadthAxis.maxCellSizes[j];
-						}else{
-							subBreadthDim = subMeas[_breadthAxis.coordRef];
-						}
-						
-						var subLengthDim:Number;
-						if(equaliseLengths || !subMeas){
-							subLengthDim = length;
-						}else{
-							subLengthDim = subMeas[_lengthAxis.coordRef];
-						}
-						
-						if(_isVertical){
-							positionRenderer(key,i,j,
-								_position.x+lengthStack-lengthScroll,_position.y+breadthStack-breadthScroll,
-								subLengthDim,subBreadthDim);
-						}else{
-							positionRenderer(key,i,j,
-								_position.x+breadthStack-breadthScroll,_position.y+lengthStack-lengthScroll,
-								subBreadthDim,subLengthDim);
-						}
-						breadthStack += subBreadthDim+_breadthAxis.gap;
+						breadthStack += stackCellPosition(key, i, j, lengthStack, breadthStack, equaliseLengths, equaliseBreadths, lengthScroll, breadthScroll);
 					}
 				}
 				lengthStack += length+_lengthAxis.gap;
 			}
 		}
+		protected function stackCellPosition(key:*, i:int, j:int, lengthStack:Number, breadthStack:Number, equaliseLengths:Boolean, equaliseBreadths:Boolean, lengthScroll:Number, breadthScroll:Number):Number{
+			var subMeas:Point = _cellMeasCache[key];
+			
+			var subBreadthDim:Number;
+			if(equaliseBreadths || !subMeas){
+				subBreadthDim = _breadthAxis.maxCellSizes[j];
+			}else{
+				subBreadthDim = subMeas[_breadthAxis.coordRef];
+			}
+			
+			var subLengthDim:Number;
+			if(equaliseLengths || !subMeas){
+				subLengthDim = length;
+			}else{
+				subLengthDim = subMeas[_lengthAxis.coordRef];
+			}
+			
+			if(_isVertical){
+				positionRenderer(key,i,j,
+					_position.x+lengthStack-lengthScroll,_position.y+breadthStack-breadthScroll,
+					subLengthDim,subBreadthDim);
+			}else{
+				positionRenderer(key,i,j,
+					_position.x+breadthStack-breadthScroll,_position.y+lengthStack-lengthScroll,
+					subBreadthDim,subLengthDim);
+			}
+			return subBreadthDim+_breadthAxis.gap;
+		}
+		
+		
+		/*protected function positionLengthStart():int{return 0}
+		protected function positionLengthEnd():int{return _cellPosCache.length}
+		protected function positionLengthStack():Number{return _lengthAxis.foreMargin}
+		
+		protected function positionBreadthStart():int{return 0}
+		protected function positionBreadthEnd():int{return _breadthAxis.maxCellSizes.length}
+		protected function positionBreadthStack(lengthIndex:int):Number{return _breadthAxis.foreMargin}*/
+		
 		// TODO: avoid casting all the time
 		protected function positionRenderer(key:*, length:int, breadth:int, x:Number, y:Number, width:Number, height:Number):void{
 			var renderer:ILayoutSubject = getChildRenderer(key,length,breadth);
-			var cast:IGridLayoutSubject = (renderer as IGridLayoutSubject);
-			if(cast){
-				cast[_lengthAxis.indexRef] = length;
-				cast[_breadthAxis.indexRef] = breadth;
-			}
 			if(renderer){
+				var cast:IGridLayoutSubject = (renderer as IGridLayoutSubject);
+				if(cast){
+					cast[_lengthAxis.indexRef] = length;
+					cast[_breadthAxis.indexRef] = breadth;
+				}
 				renderer.setPosition(x,y);
 				renderer.setSize(width,height);
 			}
