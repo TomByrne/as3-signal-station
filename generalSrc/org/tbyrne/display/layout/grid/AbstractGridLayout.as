@@ -881,15 +881,16 @@ package org.tbyrne.display.layout.grid
 				acrossStack += acrossMax+_acrossFlowAxis.gap;
 			}
 		}
+		
 		// TODO: avoid casting all the time
 		protected function positionRenderer(key:*, acrossSize:int, flowSize:int, x:Number, y:Number, width:Number, height:Number):void{
 			var renderer:ILayoutSubject = getChildRenderer(key,acrossSize,flowSize);
-			var cast:IGridLayoutSubject = (renderer as IGridLayoutSubject);
-			if(cast){
-				cast[_acrossFlowAxis.indexRef] = acrossSize;
-				cast[_flowDirectionAxis.indexRef] = flowSize;
-			}
 			if(renderer){
+				var cast:IGridLayoutSubject = (renderer as IGridLayoutSubject);
+				if(cast){
+					cast[_acrossFlowAxis.indexRef] = acrossSize;
+					cast[_flowDirectionAxis.indexRef] = flowSize;
+				}
 				renderer.setPosition(x,y);
 				renderer.setSize(width,height);
 			}
