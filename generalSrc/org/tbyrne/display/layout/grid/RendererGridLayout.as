@@ -872,7 +872,7 @@ package org.tbyrne.display.layout.grid
 					
 					for(var j:int=breadthStart; j<breadthEnd; j++){
 						var key:* = breadthIndices[j];
-						breadthStack += stackCellPosition(key, i, j, lengthStack, breadthStack, equaliseLengths, equaliseBreadths, lengthScroll, breadthScroll);
+						breadthStack += stackCellPosition(key, i, j, lengthStack, breadthStack, equaliseLengths, equaliseBreadths, lengthScroll, breadthScroll, length);
 					}
 				}
 				lengthStack += length+_lengthAxis.gap;

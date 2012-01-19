@@ -792,13 +792,13 @@ package org.tbyrne.display.layout.grid
 					
 					for(var j:int=0; j<_breadthAxis.maxCellSizes.length; j++){
 						var key:* = breadthIndices[j];
-						breadthStack += stackCellPosition(key, i, j, lengthStack, breadthStack, equaliseLengths, equaliseBreadths, lengthScroll, breadthScroll);
+						breadthStack += stackCellPosition(key, i, j, lengthStack, breadthStack, equaliseLengths, equaliseBreadths, lengthScroll, breadthScroll, length);
 					}
 				}
 				lengthStack += length+_lengthAxis.gap;
 			}
 		}
-		protected function stackCellPosition(key:*, i:int, j:int, lengthStack:Number, breadthStack:Number, equaliseLengths:Boolean, equaliseBreadths:Boolean, lengthScroll:Number, breadthScroll:Number):Number{
+		protected function stackCellPosition(key:*, i:int, j:int, lengthStack:Number, breadthStack:Number, equaliseLengths:Boolean, equaliseBreadths:Boolean, lengthScroll:Number, breadthScroll:Number, length:Number):Number{
 			var subMeas:Point = _cellMeasCache[key];
 			
 			var subBreadthDim:Number;
