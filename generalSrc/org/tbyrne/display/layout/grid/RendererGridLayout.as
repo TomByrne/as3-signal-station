@@ -797,9 +797,11 @@ package org.tbyrne.display.layout.grid
 			var maxAcross:int = _acrossRendAxis.dimIndexMax;
 			var minFlow:int = _flowRendAxis.dimIndex;
 			var maxFlow:int = _flowRendAxis.dimIndexMax;
+			
+			var renderIndex:int = ((maxFlow-minFlow)*(acrossIndex-minAcross))+(flowIndex-minFlow);
+			var renderer:ILayoutSubject = _renderers[renderIndex];
+			
 			if(acrossIndex>=minAcross && acrossIndex<maxAcross && flowIndex>=minFlow && flowIndex<maxFlow && (key<_dataCount || _renderEmptyCells)){
-				var renderIndex:int = ((maxFlow-minFlow)*(acrossIndex-minAcross))+(flowIndex-minFlow);
-				var renderer:ILayoutSubject = _renderers[renderIndex];
 				
 				var data:* = _dataMap[key];
 				var addRenderer:Boolean = (renderer==null);
