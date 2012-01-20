@@ -789,10 +789,11 @@ package org.tbyrne.display.layout.grid
 			var maxLength:int = _lengthRendAxis.dimIndexMax;
 			var minBreadth:int = _breadthRendAxis.dimIndex;
 			var maxBreadth:int = _breadthRendAxis.dimIndexMax;
+			
+			var renderIndex:int = ((maxBreadth-minBreadth)*(length-minLength))+(breadth-minBreadth);
+			var renderer:ILayoutSubject = _renderers[renderIndex];
+			
 			if(length>=minLength && length<maxLength && breadth>=minBreadth && breadth<maxBreadth && (key<_dataCount || _renderEmptyCells)){
-				
-				var renderIndex:int = ((maxBreadth-minBreadth)*(length-minLength))+(breadth-minBreadth);
-				var renderer:ILayoutSubject = _renderers[renderIndex];
 				
 				var data:* = _dataMap[key];
 				var addRenderer:Boolean = (renderer==null);
