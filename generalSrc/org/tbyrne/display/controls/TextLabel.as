@@ -272,6 +272,10 @@ package org.tbyrne.display.controls
 			
 			var labelWidth:Number = size.x-_labelFieldSizer.paddingLeft-_labelFieldSizer.paddingRight+TextFieldGutter.TEXT_FIELD_GUTTER*2;
 			var labelHeight:Number = size.y-_labelFieldSizer.paddingTop-_labelFieldSizer.paddingBottom+TextFieldGutter.TEXT_FIELD_GUTTER*2;
+			
+			if(labelWidth<0)labelWidth = 0;
+			if(labelHeight<0)labelHeight = 0;
+			
 			if(labelWidth!=_labelField.width){
 				var textHeightWas:Number = _labelField.textHeight;
 				_labelField.setSize(labelWidth,labelHeight);

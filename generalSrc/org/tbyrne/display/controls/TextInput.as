@@ -98,8 +98,8 @@ package org.tbyrne.display.controls
 		override public function set active(value:Boolean):void{
 			if(super.active!=value){
 				if(_labelField){
-					_labelField.type = (_active?TextFieldType.INPUT:TextFieldType.DYNAMIC);
-					_labelField.selectable = _active;
+					_labelField.type = (value?TextFieldType.INPUT:TextFieldType.DYNAMIC);
+					_labelField.selectable = value;
 				}
 				super.active = value;
 			}

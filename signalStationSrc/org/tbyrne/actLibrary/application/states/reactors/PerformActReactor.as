@@ -5,6 +5,7 @@ package org.tbyrne.actLibrary.application.states.reactors
 	import org.tbyrne.actLibrary.application.states.AppStateMatch;
 	import org.tbyrne.actLibrary.core.IRevertableAct;
 	import org.tbyrne.acting.actTypes.IAct;
+	import org.tbyrne.actLibrary.application.states.serialisers.IPropSerialiser;
 	
 	public class PerformActReactor implements IAppStateReactor
 	{
@@ -29,6 +30,18 @@ package org.tbyrne.actLibrary.application.states.reactors
 			}
 		}
 		
+		
+		/*public function get serialisers():Object{
+			return _serialisers;
+		}
+		public function set serialisers(value:Object):void{
+			if(_serialisers!=value){
+				_serialisers = value;
+			}
+		}
+		
+		private var _serialisers:Object;*/
+		
 		private var _actProps:Dictionary;
 		private var _act:IAct;
 		private var _revertableAct:IRevertableAct;
@@ -40,9 +53,16 @@ package org.tbyrne.actLibrary.application.states.reactors
 		}
 		public function enable(newMatch:AppStateMatch, oldMatch:AppStateMatch):IAct{
 			if(_actProps){
+				//var serialiser:IPropSerialiser;
 				for(var destProp:String in _actProps){
 					var sourceProp:String = _actProps[destProp];
-					_act[destProp] = lastPropValues[sourceProp] = newMatch.parameters[sourceProp];
+					/*if(_serialisers){
+						serialiser = _serialisers[sourceProp];
+					}*/
+					var value:* = newMatch.parameters[sourceProp];
+					lastPropValues[sourceProp] = value;
+					//if(serialiser)value = serialiser.deserialise(value);
+					_act[destProp] = value;
 				}
 			}
 			return _act;
@@ -58,11 +78,17 @@ package org.tbyrne.actLibrary.application.states.reactors
 		public function refresh(newMatch:AppStateMatch, oldMatch:AppStateMatch):IAct{
 			if(_actProps){
 				var doReturn:Boolean;
+				//var serialiser:IPropSerialiser;
 				for(var destProp:String in _actProps){
 					var sourceProp:String = _actProps[destProp];
 					var newValue:* = newMatch.parameters[sourceProp];
 					if(newValue!=lastPropValues[sourceProp]){
-						_act[destProp] = lastPropValues[sourceProp] = newValue;
+						lastPropValues[sourceProp] = newValue;
+						/*if(_serialisers){
+							serialiser = _serialisers[sourceProp];
+							if(serialiser)newValue = serialiser.deserialise(newValue);
+						}*/
+						_act[destProp] = newValue;
 						doReturn = true;
 					}
 				}

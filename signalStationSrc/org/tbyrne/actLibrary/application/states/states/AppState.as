@@ -2,6 +2,7 @@ package org.tbyrne.actLibrary.application.states.states
 {
 	import org.tbyrne.actLibrary.application.states.AppStateConstants;
 	import org.tbyrne.actLibrary.application.states.AppStateMatch;
+	import org.tbyrne.actLibrary.application.states.serialisers.IPropSerialiser;
 
 	public class AppState extends RegExpAppState
 	{
@@ -19,12 +20,17 @@ package org.tbyrne.actLibrary.application.states.states
 		override public function reconstitute(match:AppStateMatch):String{
 			var ret:String = path;
 			for(var prop:String in match.parameters){
+				var value:* = match.parameters[prop];
+				var serialiser:IPropSerialiser;
+				if(_serialisers && (serialiser=_serialisers[prop])){
+					value = serialiser.serialise(value);
+				}
 				if(prop=="*"){
-					ret = ret.replace(AppStateConstants.STAR_MATCHER,match.parameters[prop]);
+					ret = ret.replace(AppStateConstants.STAR_MATCHER,value);
 				}else{
 					var matchStr:String = AppStateConstants.LABEL_RECON.replace("$name",prop);
 					var matcher:RegExp = new RegExp(matchStr);
-					var replaceWith:String = match.parameters[prop];
+					var replaceWith:String = value;
 					if(replaceWith==null)replaceWith = "";
 					var replaceStr:String = AppStateConstants.LABEL_RECON_REPLACE.replace("$value",replaceWith);
 					ret = ret.replace(matcher,replaceStr);

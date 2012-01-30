@@ -348,32 +348,36 @@ package org.tbyrne.display.layout.grid
 			return _cellKeyCount;
 		}
 		override protected function getChildKeys() : Dictionary{
-			if(!_dataChecked && _dataProviderCollection){
+			if(!_dataChecked){
 				_dataChecked = true;
-				var iterator:IIterator = _dataProviderCollection.getIterator();
-				var iterator2D:IIterator2D = (iterator as IIterator2D);
-				var i:int=0;
-				var data:*;
-				if(iterator2D){
-					_anyGridInfos = true;
-					while(data = iterator2D.next()){
-						_dataIndices[data] = i;
-						_dataMap[i] = data;
-						_dataLayouts[i] = new GridLayoutInfo(iterator2D.x,iterator2D.y);
-						++i;
+				if(_dataProviderCollection){
+					var iterator:IIterator = _dataProviderCollection.getIterator();
+					var iterator2D:IIterator2D = (iterator as IIterator2D);
+					var i:int=0;
+					var data:*;
+					if(iterator2D){
+						_anyGridInfos = true;
+						while(data = iterator2D.next()){
+							_dataIndices[data] = i;
+							_dataMap[i] = data;
+							_dataLayouts[i] = new GridLayoutInfo(iterator2D.x,iterator2D.y);
+							++i;
+						}
+						iterator.release();
+					}else if(iterator){
+						_anyGridInfos = false;
+						while((data = iterator.next())!=null){
+							_dataIndices[data] = i;
+							_dataMap[i] = data;
+							_dataLayouts[i] = new ListLayoutInfo(i);
+							++i;
+						}
+						iterator.release();
 					}
-					iterator.release();
-				}else if(iterator){
-					_anyGridInfos = false;
-					while((data = iterator.next())!=null){
-						_dataIndices[data] = i;
-						_dataMap[i] = data;
-						_dataLayouts[i] = new ListLayoutInfo(i);
-						++i;
-					}
-					iterator.release();
+					_dataCount = i;
+				}else{
+					_dataCount = 0;
 				}
-				_dataCount = i;
 			}
 			var keyCount:int = (_fitRenderers>_dataCount?_fitRenderers:_dataCount);
 			if(!_cellKeys || _cellKeyCount!=keyCount){
