@@ -185,7 +185,7 @@ package org.tbyrne.display.core
 			_bindFlag.validate();
 		}
 		protected function get isBound():Boolean{
-			return (_asset && _bindFlag.valid);
+			return (_asset && (_bindFlag.valid || _bindFlag.validating));
 		}
 		protected function checkIsUnbound():void{
 			if(_asset && _bindFlag.valid){

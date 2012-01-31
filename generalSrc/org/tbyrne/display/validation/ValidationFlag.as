@@ -25,6 +25,9 @@ package org.tbyrne.display.validation
 		public function get valid():Boolean{
 			return _valid;
 		}
+		public function get validating():Boolean{
+			return _validating;
+		}
 		
 		public function get readyForExecution():Boolean{
 			return (readyChecker==null || readyChecker.call(null,this));
@@ -69,6 +72,7 @@ package org.tbyrne.display.validation
 		
 		protected var _validator:Function;
 		protected var _valid:Boolean;
+		protected var _validating:Boolean;
 		protected var _executing:Boolean;
 		
 		public function ValidationFlag(validator:Function, valid: Boolean, parameters:Array=null, readyChecker:Function=null){
@@ -90,8 +94,10 @@ package org.tbyrne.display.validation
 				if(readyForExecution && !_executing){
 					_pending = false;
 					_executing = true;
+					_validating = true;
 					if(parameters)_validator.apply(null,parameters);
 					else _validator();
+					_validating = false;
 					_valid = true;
 					_executing = false;
 					

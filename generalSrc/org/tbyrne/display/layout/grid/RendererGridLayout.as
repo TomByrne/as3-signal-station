@@ -345,7 +345,7 @@ package org.tbyrne.display.layout.grid
 		}
 		override protected function getChildKeyCount():int{
 			getChildKeys();
-			return _cellKeyCount;
+			return _dataCount;
 		}
 		override protected function getChildKeys() : Dictionary{
 			if(!_dataChecked){

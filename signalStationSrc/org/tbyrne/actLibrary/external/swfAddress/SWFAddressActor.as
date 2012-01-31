@@ -127,6 +127,13 @@ package org.tbyrne.actLibrary.external.swfAddress
 			}
 			execution.continueExecution();
 		}
+		
+		public var goBackSWFAddressPhases:Array = [SWFAddressPhases.GO_BACK];
+		[ActRule(ActClassRule)]
+		[ActReaction(phases="<goBackSWFAddressPhases>")]
+		public function goBackSWFAddress(execution:UniversalActExecution, cause:IGoBackSWFAddessAct):void{
+			SWFAddress.back();
+		}
 		public function fillGetSWFAddress(act:IGetSWFAddressAct):void{
 			if(_strictRootPathAlias && (_swfAddress=="" || _swfAddress=="/")){
 				act.swfAddress = _strictRootPathAlias;

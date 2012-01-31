@@ -6,13 +6,13 @@ package org.tbyrne.actLibrary.application.states
 	import org.tbyrne.actLibrary.application.states.acts.*;
 	import org.tbyrne.actLibrary.application.states.reactors.IAppStateReactor;
 	import org.tbyrne.actLibrary.application.states.states.IAppState;
-	import org.tbyrne.acting.universal.phases.LogicPhases;
 	import org.tbyrne.actLibrary.core.UniversalActorHelper;
 	import org.tbyrne.acting.ActingNamspace;
 	import org.tbyrne.acting.actTypes.IAct;
 	import org.tbyrne.acting.actTypes.IUniversalAct;
 	import org.tbyrne.acting.metadata.MetadataActorRegistry;
 	import org.tbyrne.acting.universal.UniversalActExecution;
+	import org.tbyrne.acting.universal.phases.LogicPhases;
 	
 	
 	use namespace ActingNamspace;
@@ -25,6 +25,8 @@ package org.tbyrne.actLibrary.application.states
 	 */
 	public class AppStateActor extends UniversalActorHelper
 	{
+		private var _historyPos:int;
+		private var _history:Vector.<String>;
 		private var _state:String;
 		private var _states:Array;
 		private var _currentState:IAppState;
@@ -38,6 +40,8 @@ package org.tbyrne.actLibrary.application.states
 			
 			metadataTarget = this;
 			
+			_history = new Vector.<String>();
+			
 			_setSerialisedStateAct = new SetSerialisedStateAct();
 			addChild(_setSerialisedStateAct);
 			
@@ -46,6 +50,24 @@ package org.tbyrne.actLibrary.application.states
 		}
 		
 		
+		public var moveInHistoryPhases:Array = [AppStatePhases.MOVE_IN_STATE_HISTORY];
+		[ActRule(ActClassRule)]
+		[ActReaction(phases="<moveInHistoryPhases>")]
+		public function moveInHistory(execution:UniversalActExecution, cause:IMoveInStateHistoryAct):void{
+			var newPos:int = _historyPos+cause.steps;
+			if(newPos<0)newPos = 0;
+			else if(newPos>=_history.length){
+				newPos = _history.length-1;
+			}
+			if(newPos!=_historyPos){
+				_historyPos = newPos;
+				_state = _history[_historyPos];
+				_setSerialisedStateAct.serialisedState = _state;
+				_setSerialisedStateAct.perform(execution);
+				commitState(execution);
+			}
+			execution.continueExecution();
+		}
 		
 		public var setSerialisedStatePhases:Array = [AppStatePhases.SET_SERIALISED_STATE];
 		[ActRule(ActClassRule)]
@@ -54,11 +76,21 @@ package org.tbyrne.actLibrary.application.states
 			
 			if(cause!=_setSerialisedStateAct){
 				if(_state!=cause.serialisedState){
+					addHistoryPoint(_state);
+					
 					_state = cause.serialisedState;
 					commitState(execution);
 				}
 			}
 			execution.continueExecution();
+		}
+		
+		private function addHistoryPoint(state:String):void{
+			if(_historyPos<_history.length-1){
+				_history.splice(_historyPos+1,_history.length-(_historyPos+1));
+			}
+			_history.push(state);
+			_historyPos = _history.length-1;
 		}
 		
 		public var setAppStatesPhases:Array = [AppStatePhases.SET_APP_STATES];
@@ -111,6 +143,7 @@ package org.tbyrne.actLibrary.application.states
 				_currentState = newState;
 				if(cause!=_setAppStateAct){
 					_state = _currentState.reconstitute(_currentStateMatch);
+					addHistoryPoint(_state);
 					_setSerialisedStateAct.serialisedState = _state;
 					_setSerialisedStateAct.perform(execution);
 				}

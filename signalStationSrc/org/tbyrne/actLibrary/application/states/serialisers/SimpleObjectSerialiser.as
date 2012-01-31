@@ -36,6 +36,9 @@ package org.tbyrne.actLibrary.application.states.serialisers
 		
 		public function deserialise(string:String):*
 		{
+			if(!string || !string.length){
+				return null;
+			}
 			if(begin && string.indexOf(begin)==0){
 				string = string.substr(begin.length);
 			}
