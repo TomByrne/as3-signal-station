@@ -376,6 +376,12 @@
 			}
 			return false;
 		}
+		
+		public static function isPropReadable(type:Class, prop:String):Boolean{
+			var typeDesc:XML = describeClass(type);
+			var element:XMLList = typeDesc.factory.children().((name()=="variable" || (name()=="accessor" && @access.toString()=="readwrite")) && @name.toString()==prop);
+			return element.length();
+		}
 	}
 	
 }

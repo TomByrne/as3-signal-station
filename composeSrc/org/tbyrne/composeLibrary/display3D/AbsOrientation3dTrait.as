@@ -6,8 +6,6 @@ package org.tbyrne.composeLibrary.display3D
 	import org.tbyrne.acting.actTypes.IAct;
 	import org.tbyrne.acting.acts.Act;
 	import org.tbyrne.compose.traits.AbstractTrait;
-	import org.tbyrne.composeLibrary.display3D.types.IMatrix3dTrait;
-	import org.tbyrne.composeLibrary.display3D.types.IOrientation3dTrait;
 	import org.tbyrne.display.validation.ValidationFlag;
 	
 	public class AbsOrientation3dTrait extends AbstractTrait
@@ -165,6 +163,35 @@ package org.tbyrne.composeLibrary.display3D
 		protected var _rotZ:Number = 0;
 		
 		
+		public function setRotation3d(x:Number, y:Number, z:Number):void{
+			if(_setRotation3d(x,y,z)){
+				if(_rotation3dChanged)_rotation3dChanged.perform(this);
+				invalidateMatrix();
+			}
+		}
+		protected function _setRotation3d(x:Number, y:Number, z:Number):Boolean{
+			var xDif:Number = (x-_rotX);
+			var yDif:Number = (y-_rotY);
+			var zDif:Number = (z-_rotZ);
+			if(xDif || yDif || zDif){
+				
+				if(xDif){
+					_rotX = x;
+					if(_rotXChanged)_rotXChanged.perform(this);
+				}
+				if(yDif){
+					_rotY = y;
+					if(_rotYChanged)_rotYChanged.perform(this);
+				}
+				if(zDif){
+					_rotZ = z;
+					if(_rotZChanged)_rotZChanged.perform(this);
+				}
+				return true;
+			}else{
+				return false;
+			}
+		}
 		
 		/**
 		 * @inheritDoc
@@ -187,8 +214,8 @@ package org.tbyrne.composeLibrary.display3D
 		}
 		protected function compileMatrix():void{
 			_matrix3d.identity()
-			_matrix3d.appendRotation( _rotX, Vector3D.X_AXIS );
 			_matrix3d.appendRotation( _rotY, Vector3D.Y_AXIS );
+			_matrix3d.appendRotation( _rotX, Vector3D.X_AXIS );
 			_matrix3d.appendRotation( _rotZ, Vector3D.Z_AXIS );
 			_matrix3d.appendTranslation(_posX,_posY,_posZ);
 			

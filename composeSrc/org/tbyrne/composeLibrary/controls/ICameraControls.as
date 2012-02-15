@@ -2,7 +2,7 @@ package org.tbyrne.composeLibrary.controls
 {
 	import org.tbyrne.acting.actTypes.IAct;
 
-	public interface ICameraControls
+	public interface ICameraControls extends IRotationControls
 	{
 		/**
 		 * handler(from:ICameraControls)
@@ -42,28 +42,6 @@ package org.tbyrne.composeLibrary.controls
 		function get posZChanged():IAct;
 		function get posZ():Number;
 		function set posZ(value:Number):void;
-		/**
-		 * handler(from:ICameraControls)
-		 */
-		function get rotXChanged():IAct;
-		function get rotX():Number;
-		function set rotX(value:Number):void;
-		/**
-		 * handler(from:ICameraControls)
-		 */
-		function get rotYChanged():IAct;
-		function get rotY():Number;
-		function set rotY(value:Number):void;
-		/**
-		 * handler(from:ICameraControls)
-		 */
-		function get rotZChanged():IAct;
-		function get rotZ():Number;
-		function set rotZ(value:Number):void;
-		/**
-		 * handler(from:ICameraControls)
-		 */
-		function get rotationChanged():IAct;
 		
 		/**
 		 * handler(from:ICameraControls)
@@ -94,7 +72,6 @@ package org.tbyrne.composeLibrary.controls
 		function set positionOffset(value:Number):void;
 		
 		function setPosition(x:Number, y:Number, z:Number):void;
-		function setRotation(x:Number, y:Number, z:Number):void;
 		
 	}
 }

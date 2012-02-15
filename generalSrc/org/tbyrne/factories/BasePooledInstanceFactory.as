@@ -1,6 +1,8 @@
 package org.tbyrne.factories
 {
 	import flash.utils.Dictionary;
+	
+	import org.tbyrne.reflection.ReflectionUtils;
 
 	public class BasePooledInstanceFactory implements IInstanceFactory
 	{
@@ -69,7 +71,7 @@ package org.tbyrne.factories
 			while(path.length>1){
 				subject = subject[path.shift()];
 			}
-			if(cacheForDeinit){
+			if(cacheForDeinit && ReflectionUtils.isPropReadable(subject["constructor"],prop)){
 				var props:Dictionary = _deinitCache[subject];
 				if(!props){
 					props = new Dictionary();

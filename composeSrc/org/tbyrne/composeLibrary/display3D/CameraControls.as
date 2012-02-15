@@ -5,16 +5,14 @@ package org.tbyrne.composeLibrary.display3D
 	import flash.geom.Vector3D;
 	
 	import org.tbyrne.acting.actTypes.IAct;
-	import org.tbyrne.acting.acts.Act;
 	import org.tbyrne.composeLibrary.controls.ICameraControls;
 	import org.tbyrne.composeLibrary.display3D.types.IMatrix3dTrait;
-	import org.tbyrne.composeLibrary.display3D.types.IOrientation3dTrait;
 	import org.tbyrne.data.core.BooleanData;
 	import org.tbyrne.data.core.NumberData;
 	import org.tbyrne.data.dataTypes.IBooleanProvider;
 	import org.tbyrne.data.dataTypes.INumberProvider;
 	
-	public class CameraControls extends AbsOrientation3dTrait implements IOrientation3dTrait, ICameraControls
+	public class CameraControls extends RotationControls implements ICameraControls
 	{
 		private static const RADS_TO_DEGS:Number = 180/Math.PI;
 		private static const DEGS_TO_RADS:Number = Math.PI/180;
@@ -76,15 +74,6 @@ package org.tbyrne.composeLibrary.display3D
 		}
 		public function set posZ(value:Number):void{
 			setPosZ(value);
-		}
-		public function set rotX(value:Number):void{
-			setRotX(value);
-		}
-		public function set rotY(value:Number):void{
-			setRotY(value);
-		}
-		public function set rotZ(value:Number):void{
-			setRotZ(value);
 		}
 		/**
 		 * @inheritDoc
@@ -154,12 +143,6 @@ package org.tbyrne.composeLibrary.display3D
 		}
 		protected var _farDistProvider:NumberData = new NumberData(1);
 		
-		/**
-		 * @inheritDoc
-		 */
-		public function get rotationChanged():IAct{
-			return rotation3dChanged;
-		}
 		
 		
 		
@@ -209,7 +192,7 @@ package org.tbyrne.composeLibrary.display3D
 				var pos:Vector3D = eular[0];
 				var rot:Vector3D = eular[1];
 				
-				if(_setPosition(pos.x,pos.y,pos.z) || _setRotation(rot.x*RADS_TO_DEGS,rot.y*RADS_TO_DEGS,rot.z*RADS_TO_DEGS)){
+				if(_setPosition(pos.x,pos.y,pos.z) || _setRotation3d(rot.x*RADS_TO_DEGS,rot.y*RADS_TO_DEGS,rot.z*RADS_TO_DEGS)){
 					invalidateOffsetMatrix();
 				}
 				
@@ -300,35 +283,6 @@ package org.tbyrne.composeLibrary.display3D
 				if(zDif){
 					_posZ = z;
 					if(_posZChanged)_posZChanged.perform(this);
-				}
-				return true;
-			}else{
-				return false;
-			}
-		}
-		public function setRotation(x:Number, y:Number, z:Number):void{
-			if(_setRotation(x,y,z)){
-				if(_rotation3dChanged)_rotation3dChanged.perform(this);
-				invalidateMatrix();
-			}
-		}
-		protected function _setRotation(x:Number, y:Number, z:Number):Boolean{
-			var xDif:Number = (x-_rotX);
-			var yDif:Number = (y-_rotY);
-			var zDif:Number = (z-_rotZ);
-			if(xDif || yDif || zDif){
-				
-				if(xDif){
-					_rotX = x;
-					if(_rotXChanged)_rotXChanged.perform(this);
-				}
-				if(yDif){
-					_rotY = y;
-					if(_rotYChanged)_rotYChanged.perform(this);
-				}
-				if(zDif){
-					_rotZ = z;
-					if(_rotZChanged)_rotZChanged.perform(this);
 				}
 				return true;
 			}else{
