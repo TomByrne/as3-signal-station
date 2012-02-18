@@ -13,6 +13,7 @@ package org.tbyrne.composeLibrary.away3d
 	import org.tbyrne.compose.traits.AbstractTrait;
 	import org.tbyrne.compose.traits.ITrait;
 	import org.tbyrne.composeLibrary.display3D.types.I2dTo3dTrait;
+	import org.tbyrne.composeLibrary.display3D.types.IMatrix3dTrait;
 	import org.tbyrne.composeLibrary.draw.types.IDrawAwareTrait;
 	import org.tbyrne.data.dataTypes.INumberProvider;
 	
@@ -60,6 +61,24 @@ package org.tbyrne.composeLibrary.away3d
 				//invalidateAll();
 			}
 		}
+		
+		
+		public function get sceneTransform():IMatrix3dTrait{
+			return _sceneTransform;
+		}
+		public function set sceneTransform(value:IMatrix3dTrait):void{
+			if(_sceneTransform!=value){
+				if(_sceneTransform){
+					_sceneTransform.matrix3dChanged.removeHandler(onSceneTransformChanged);
+				}
+				_sceneTransform = value;
+				if(_sceneTransform){
+					_sceneTransform.matrix3dChanged.addHandler(onSceneTransformChanged);
+				}
+			}
+		}
+		
+		private var _sceneTransform:IMatrix3dTrait;
 		
 		private var _sceneScale:INumberProvider;
 		private var _cameraChanged:IAct;
@@ -173,9 +192,11 @@ package org.tbyrne.composeLibrary.away3d
 				values[12] = 0;
 				values[13] = 0; // reset translation
 				values[14] = 0;
+				
 				var matrix:Matrix3D = new Matrix3D(values);
 				
 				planeNormal = matrix.transformVector(planeNormal);
+				
 				
 				planePos = _view.camera.sceneTransform.position.clone();
 				planePos.x += planeNormal.x;
@@ -199,6 +220,16 @@ package org.tbyrne.composeLibrary.away3d
 			var y3d:Number = (ray.y + ( camPos.y - ray.y ) * m) / sceneScale;
 			var z3d:Number = (ray.z + ( camPos.z - ray.z ) * m) / sceneScale;
 			
+			
+			if(_sceneTransform){
+				var vec:Vector3D = new Vector3D(x3d,y3d,z3d);
+				vec = _sceneTransform.invMatrix3d.transformVector(vec);
+				
+				x3d = vec.x;
+				y3d = vec.y;
+				z3d = vec.z;
+			}
+			
 			//trace("unproject: "+pos2d.x2d,pos2d.y2d,pos2d.cameraDistance,x3d,y3d,z3d,planeNormal,camPos);
 			pos2d.setUnprojectedPoint(x3d,y3d,z3d);
 			
@@ -219,6 +250,9 @@ package org.tbyrne.composeLibrary.away3d
 		}
 		
 		
+		private function onSceneTransformChanged(from:IMatrix3dTrait):void{
+			invalidateAll();
+		}
 		private function onSceneScaleChanged(from:INumberProvider):void{
 			invalidateAll();
 		}

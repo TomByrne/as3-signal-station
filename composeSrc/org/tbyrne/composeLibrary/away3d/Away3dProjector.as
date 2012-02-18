@@ -2,6 +2,7 @@ package org.tbyrne.composeLibrary.away3d
 {
 	import away3d.containers.View3D;
 	
+	import flash.geom.Matrix3D;
 	import flash.geom.Point;
 	import flash.geom.Vector3D;
 	
@@ -12,12 +13,13 @@ package org.tbyrne.composeLibrary.away3d
 	import org.tbyrne.compose.traits.AbstractTrait;
 	import org.tbyrne.compose.traits.ITrait;
 	import org.tbyrne.composeLibrary.display3D.types.I3dTo2dTrait;
+	import org.tbyrne.composeLibrary.display3D.types.IMatrix3dTrait;
 	import org.tbyrne.composeLibrary.draw.types.IDrawAwareTrait;
 	import org.tbyrne.data.dataTypes.INumberProvider;
 	
 	public class Away3dProjector extends AbstractTrait implements IDrawAwareTrait
 	{
-		private const DUMMY_VECTOR:Vector3D = new Vector3D();
+		private var DUMMY_VECTOR:Vector3D = new Vector3D();
 		
 		
 		public function get view():View3D{
@@ -57,6 +59,24 @@ package org.tbyrne.composeLibrary.away3d
 				//invalidateAll();
 			}
 		}
+		
+		
+		public function get sceneTransform():IMatrix3dTrait{
+			return _sceneTransform;
+		}
+		public function set sceneTransform(value:IMatrix3dTrait):void{
+			if(_sceneTransform!=value){
+				if(_sceneTransform){
+					_sceneTransform.matrix3dChanged.removeHandler(onSceneTransformChanged);
+				}
+				_sceneTransform = value;
+				if(_sceneTransform){
+					_sceneTransform.matrix3dChanged.addHandler(onSceneTransformChanged);
+				}
+			}
+		}
+		
+		private var _sceneTransform:IMatrix3dTrait;
 		
 		private var _sceneScale:INumberProvider;
 		private var _cameraChanged:IAct;
@@ -150,21 +170,35 @@ package org.tbyrne.composeLibrary.away3d
 		private function validatePos(pos3d:I3dTo2dTrait,sceneScale:Number):void{
 			if(!isNaN(pos3d.x3d) && !isNaN(pos3d.y3d) && !isNaN(pos3d.z3d)){
 				
-				DUMMY_VECTOR.x = pos3d.x3d*sceneScale;
-				DUMMY_VECTOR.y = pos3d.y3d*sceneScale;
-				DUMMY_VECTOR.z = pos3d.z3d*sceneScale;
+				DUMMY_VECTOR.x = pos3d.x3d;
+				DUMMY_VECTOR.y = pos3d.y3d;
+				DUMMY_VECTOR.z = pos3d.z3d;
 				
-				var test:Point = _view.project(DUMMY_VECTOR);
+				//var test:Point = _view.project(DUMMY_VECTOR);
+				
+				if(_sceneTransform){
+					DUMMY_VECTOR = _sceneTransform.matrix3d.transformVector(DUMMY_VECTOR);
+				}
+				
+				DUMMY_VECTOR.x *= sceneScale;
+				DUMMY_VECTOR.y *= sceneScale;
+				DUMMY_VECTOR.z *= sceneScale;
 				
 				var cameraPos:Vector3D = _view.camera.inverseSceneTransform.transformVector(DUMMY_VECTOR);
 				var v : Vector3D = _view.camera.lens.matrix.transformVector(cameraPos);
 				var x:Number = ((v.x/v.w) + 1.0)*_view.width/2.0;
 				var y:Number = ((-v.y/v.w) + 1.0)*_view.height/2.0;
+				var z:Number = cameraPos.z;
 				
-				pos3d.setProjectedPoint(x, y, 1/v.w, cameraPos.z);
+				
+				pos3d.setProjectedPoint(x, y, 1/v.w, z);
 			}
 		}
 		
+		
+		private function onSceneTransformChanged(from:IMatrix3dTrait):void{
+			invalidateAll();
+		}
 		private function onSceneScaleChanged(from:INumberProvider):void{
 			invalidateAll();
 		}

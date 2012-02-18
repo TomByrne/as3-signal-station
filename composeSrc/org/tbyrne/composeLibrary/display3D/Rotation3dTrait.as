@@ -18,5 +18,8 @@ package org.tbyrne.composeLibrary.display3D
 		{
 			super();
 		}
+		override protected function compileMatrix():void{
+			super.compileMatrix();
+		}
 	}
 }
