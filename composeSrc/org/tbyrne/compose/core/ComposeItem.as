@@ -101,7 +101,7 @@ package org.tbyrne.compose.core
 		}
 		public function removeAllTraits():void{
 			var list:Array = _traitCollection.traits.list;
-			while(list.length){
+			while(list.length>0){
 				_removeTrait(list[0]);
 			}
 		}

@@ -105,6 +105,7 @@ package org.tbyrne.compose.traits
 			
 			if(cache){
 				for each(trait in cache.matched.list){
+					realParams[1] = trait;
 					func.apply(null,realParams);
 				}
 				invalid = cache.invalid;
@@ -116,9 +117,10 @@ package org.tbyrne.compose.traits
 				invalid = _traits;
 			}
 			if(matchingType){
-				if(!cache.methodCachesSafe){
+				if(cache && !cache.methodCachesSafe){
 					for each(trait in invalid.list){
 						if(trait is matchType){
+							realParams[1] = trait;
 							if(matchingType)cache.matched.add(trait);
 							func.apply(null,realParams);
 						}
@@ -130,6 +132,7 @@ package org.tbyrne.compose.traits
 				}
 			}else{
 				for each(trait in invalid.list){
+					realParams[1] = trait;
 					func.apply(null,realParams);
 				}
 			}

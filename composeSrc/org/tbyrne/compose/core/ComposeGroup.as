@@ -130,7 +130,7 @@ package org.tbyrne.compose.core
 		}
 		override protected function onParentAdd():void{
 			super.onParentAdd();
-			for each(var trait:ITrait in _descendantTraits.traits){
+			for each(var trait:ITrait in _descendantTraits.traits.list){
 				_parentItem.addChildTrait(trait);
 			}
 			if(_childAscConcerns){
@@ -141,7 +141,7 @@ package org.tbyrne.compose.core
 		}
 		override protected function onParentRemove():void{
 			super.onParentRemove();
-			for each(var trait:ITrait in _descendantTraits.traits){
+			for each(var trait:ITrait in _descendantTraits.traits.list){
 				_parentItem.removeChildTrait(trait);
 			}
 			if(_childAscConcerns){
