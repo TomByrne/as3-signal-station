@@ -27,10 +27,26 @@ package org.tbyrne.data.operators
 				_target = value;
 				if(_target){
 					_target.booleanValueChanged.addHandler(onTargetChanged);
-					setValue(_target.booleanValue);
+					setValue(!_target.booleanValue);
+				}else{
+					setValue(_unsetValue);
 				}
 			}
 		}
+		
+		public function get unsetValue():Boolean{
+			return _unsetValue;
+		}
+		public function set unsetValue(value:Boolean):void{
+			if(_unsetValue!=value){
+				_unsetValue = value;
+				if(!_target){
+					setValue(_unsetValue);
+				}
+			}
+		}
+		
+		private var _unsetValue:Boolean;
 		
 		public function get booleanValue():Boolean{
 			return _booleanValue;
@@ -41,12 +57,12 @@ package org.tbyrne.data.operators
 		
 		public function BooleanInverter(target:IBooleanProvider=null, unsetValue:Boolean=false)
 		{
+			this.unsetValue = unsetValue;
 			this.target = target;
-			_booleanValue = unsetValue;
 		}
 		
 		private function onTargetChanged(from:IBooleanProvider):void{
-			setValue(_target.booleanValue);
+			setValue(!_target.booleanValue);
 		}
 		
 		protected function setValue(value:Boolean):void{

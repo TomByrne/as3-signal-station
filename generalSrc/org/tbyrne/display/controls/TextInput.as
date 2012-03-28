@@ -94,6 +94,13 @@ package org.tbyrne.display.controls
 			if(!_focusedChanged)_focusedChanged = new Act();
 			return _focusedChanged;
 		}
+		/**
+		 * handler(from:TextInput)
+		 */
+		public function get userChanged():IAct{
+			if(!_userChanged)_userChanged = new Act();
+			return _userChanged;
+		}
 		
 		override public function set active(value:Boolean):void{
 			if(super.active!=value){
@@ -107,6 +114,7 @@ package org.tbyrne.display.controls
 		
 		protected var _focusedChanged:Act;
 		protected var _enterKeyPressed:Act;
+		protected var _userChanged:Act;
 		
 		protected var _showingPrompt:Boolean;
 		protected var _focused:Boolean;
@@ -177,7 +185,10 @@ package org.tbyrne.display.controls
 			}
 		}
 		protected function onTextChange(from:ITextField) : void{
-			if(!_ignoreChanges)syncDataToField();
+			if(!_ignoreChanges){
+				syncDataToField();
+				if(_userChanged)_userChanged.perform(this);
+			}
 		}
 		override protected function unbindFromAsset() : void{
 			_tabFocusable.interactiveAsset = null;

@@ -7,6 +7,7 @@ package org.tbyrne.display.containers
 	import org.tbyrne.acting.actTypes.IAct;
 	import org.tbyrne.acting.acts.Act;
 	import org.tbyrne.collections.ICollection;
+	import org.tbyrne.data.dataTypes.IValueProvider;
 	import org.tbyrne.display.DisplayNamespace;
 	import org.tbyrne.display.assets.nativeTypes.IDisplayObject;
 	import org.tbyrne.display.constants.Direction;
@@ -29,7 +30,9 @@ package org.tbyrne.display.containers
 				if(_collection){
 					_collection.collectionChanged.removeHandler(onCollectionChanged);
 				}
-				
+				if(_valueProv){
+					_valueProv.valueChanged.removeHandler(onValueProvChanged);
+				}
 				
 				_layout.dataProvider = value;
 				if(_protoRenderer)checkDataSelection();
@@ -38,6 +41,10 @@ package org.tbyrne.display.containers
 				_collection = (value as ICollection);
 				if(_collection){
 					_collection.collectionChanged.addHandler(onCollectionChanged);
+				}
+				_valueProv = (value as IValueProvider);
+				if(_valueProv){
+					_valueProv.valueChanged.addHandler(onValueProvChanged);
 				}
 			}
 		}
@@ -145,6 +152,12 @@ package org.tbyrne.display.containers
 		public function get selectionChangeAct() : IAct{
 			return _selectionChangeAct;
 		}
+		/**
+		 * handler(listBox:AbstractSelectableList, selectedIndices:Array, selectedData:Dictionary)
+		 */
+		public function get userSelectionChangeAct() : IAct{
+			return _userSelectionChangeAct;
+		}
 		
 		protected var _maxSelected:Number = 1; // NaN to disable checking
 		protected var _minSelected:Number = 0; // NaN to disable checking
@@ -154,12 +167,16 @@ package org.tbyrne.display.containers
 		private var _selectedCount:int = 0;
 		
 		private var _collection:ICollection;
+		private var _valueProv:IValueProvider;
 		
 		protected var _scrollByLine:Boolean;
 		protected var _autoScrollToSelection:Boolean;
 		protected var _protoRenderer:ISelectableRenderer; // used to which data is selected 
 		
+		protected var _ignoreChanges:Boolean;
+		
 		private var _selectionChangeAct:Act = new Act();
+		private var _userSelectionChangeAct:Act = new Act();
 		
 		// remember, in some cases (CascadingMenuBar for example), selected renderers and selected data are different.
 		//private var _selectedRenderers:Dictionary = new Dictionary(); 
@@ -179,11 +196,14 @@ package org.tbyrne.display.containers
 		protected function onCollectionChanged(from:ICollection, fromX:int, toX:int):void{
 			if(isBound)checkDataSelection();
 		}
+		protected function onValueProvChanged(from:IValueProvider):void{
+			if(isBound)checkDataSelection();
+		}
 		override protected function onAddRenderer(layout:RendererGridLayout, renderer:ILayoutView) : void{
 			super.onAddRenderer(layout, renderer);
 			var selRenderer:ISelectableRenderer = (renderer as ISelectableRenderer);
 			if(selRenderer){
-				selRenderer.selectedChanged.addHandler(onRendererSelect);
+				selRenderer.selectedChanged.addHandler(onRendererSelectedChanged);
 			}
 		}
 		protected function onRendererDataSet(layout:RendererGridLayout, renderer:ILayoutView, data:*, dataField:String) : void{
@@ -202,7 +222,7 @@ package org.tbyrne.display.containers
 			super.onRemoveRenderer(layout, renderer);
 			var selRenderer:ISelectableRenderer = (renderer as ISelectableRenderer);
 			if(selRenderer){
-				selRenderer.selectedChanged.removeHandler(onRendererSelect);
+				selRenderer.selectedChanged.removeHandler(onRendererSelectedChanged);
 			}
 		}
 		/*protected function onDataSelectedChanged(from:IBooleanProvider) : void{
@@ -259,12 +279,18 @@ package org.tbyrne.display.containers
 			return selected;
 		}
 		protected function setDataSelected(dataIndex:int, data:*, value:Boolean) : void{
+			if(!_layout.rendererFactory){
+				return;
+			}
+			
+			_ignoreChanges = true;
 			var renderer:ISelectableRenderer = _layout.getRenderer(dataIndex) as ISelectableRenderer;
 			if(!renderer){
 				renderer = _protoRenderer;
 				renderer[_layout.dataField] = data;
 			}
 			renderer.selected = value;
+			_ignoreChanges = false;
 		}
 		/*
 		In most renderers there is a relationship between the renderer's selection state
@@ -273,10 +299,15 @@ package org.tbyrne.display.containers
 		is normally governed by the 'useDataForSelection' property (within the ToggleButton
 		class).
 		*/
-		protected function onRendererSelect(renderer:ISelectableRenderer) : void{
+		protected function onRendererSelectedChanged(renderer:ISelectableRenderer) : void{
+			if(_ignoreChanges)return;
 			var data:* = renderer[_layout.dataField];
 			var dataIndex:int = getDataIndex(data);
-			renderer.selected = tryRendererSelect(dataIndex, data, renderer.selected);
+			var newVal:Boolean = tryRendererSelect(dataIndex, data, renderer.selected);
+			//if(renderer.selected != newVal){
+				renderer.selected = newVal;
+				if(_userSelectionChangeAct)_userSelectionChangeAct.perform(this, _selectedIndices, _selectedData);
+			//}
 		}
 		override protected function updateFactory(factory:IInstanceFactory, dataField:String):void{
 			super.updateFactory(factory, dataField);

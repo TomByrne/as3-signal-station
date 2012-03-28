@@ -78,6 +78,13 @@ package org.tbyrne.display.controls.popout {
 			return _selectionChangeAct;
 		}
 		
+		/**
+		 * handler(dropDownList:DropDownList, selectedIndex:int, selectedData:*)
+		 */
+		public function get userSelectionChangeAct() : IAct{
+			return _userSelectionChangeAct;
+		}
+		
 		private var _validateSelectionCount:Boolean = true;
 		private var _prompt:String;
 		private var _selectedIndex:int=-2; // -1 is unselected (initially -2 so that -1 is seen as a change)
@@ -86,6 +93,7 @@ package org.tbyrne.display.controls.popout {
 		private var _proxyStringProvider:ProxyStringProvider;
 		
 		private var _selectionChangeAct:Act = new Act(); 
+		private var _userSelectionChangeAct:Act = new Act(); 
 		
 		public function DropDownList(asset:IDisplayObject=null) {
 			super(asset);
@@ -93,7 +101,9 @@ package org.tbyrne.display.controls.popout {
 			_textLabelButton.useDataForSelected = false;
 			_textLabelButton.measurementsChanged.addHandler(onTextMeasureChange);
 			_textLabelButton.clicked.addHandler(onButtonClicked);
+			
 			_listBox.selectionChangeAct.addHandler(onListSelect);
+			_listBox.userSelectionChangeAct.addHandler(onListUserSelect);
 			
 			_proxyStringProvider = new ProxyStringProvider();
 			_textLabelButton.data = _proxyStringProvider;
@@ -101,6 +111,9 @@ package org.tbyrne.display.controls.popout {
 		protected function onListSelect(list:ListBox, selectedIndices:Array, selectedData:Dictionary):void {
 			assessSelected();
 			_popoutDisplay.popoutShown = false;
+		}
+		protected function onListUserSelect(list:ListBox, selectedIndices:Array, selectedData:Dictionary):void {
+			if(_userSelectionChangeAct)_userSelectionChangeAct.perform(this,_selectedIndex,_selectedData);
 		}
 		override protected function onPopoutOpen(popoutDisplay:PopoutDisplay, popout:ListBox):void {
 			super.onPopoutOpen(popoutDisplay, popout);

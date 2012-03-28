@@ -142,15 +142,15 @@ package org.tbyrne.data.core
 					var found:Boolean;
 					
 					_ignoreChanges = true;
+					if(value){
+						(value as IBooleanConsumer).booleanValue = true;
+					}
 					while(current = iterator.next()){
 						consumer = (current as IBooleanConsumer);
-						var selected:Boolean = (current==value);
-						if(selected){
+						if(current!=value){
+							consumer.booleanValue = false;
+						}else{
 							found = true;
-							//selected = true;
-						}
-						if(consumer){
-							consumer.booleanValue = selected;
 						}
 					}
 					iterator.release();
@@ -188,7 +188,7 @@ package org.tbyrne.data.core
 			}
 		}
 		protected function onValueChanged(from:IValueProvider):void{
-			if(_valueChanged)_valueChanged.perform(this);
+			if(!_ignoreChanges && _valueChanged)_valueChanged.perform(this);
 		}
 	}
 }

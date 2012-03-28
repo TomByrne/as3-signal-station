@@ -2,6 +2,7 @@ package org.tbyrne.acting.acts
 {
 	import flash.utils.Dictionary;
 	
+	import org.tbyrne.actLibrary.display.visualSockets.mappers.NullPlugMapper;
 	import org.tbyrne.acting.actTypes.IAct;
 	import org.tbyrne.hoborg.IPoolable;
 	import org.tbyrne.hoborg.ObjectPool;
@@ -18,25 +19,37 @@ package org.tbyrne.acting.acts
 			return _handlerCount;
 		}
 		
+		
+		public function get postponeRemoval():Boolean{
+			return _postponeRemoval;
+		}
+		public function set postponeRemoval(value:Boolean):void{
+			if(_postponeRemoval!=value){
+				_postponeRemoval = value;
+			}
+		}
+		
+		private var _postponeRemoval:Boolean;
+		
 		protected var _handlers:Array = new Array();
 		protected var _handlerCount:int = 0;
 		protected var _handlerIndices:Dictionary = new Dictionary();
 		protected var _handlerExecCount:Dictionary = new Dictionary();
 		
 		protected var _performing:Boolean;
-		protected var _removeAll:Boolean;
-		protected var _toRemove:Array = new Array();
-		protected var _checkRemove:Boolean;
+		
+		protected var _removeTracker:HandlerRemovalTracker = new HandlerRemovalTracker();
 		
 		public function Act(){
 		}
 		
 		public function perform(... params):void{
-			_checkRemove = false;
 			_performing = true;
 			var hasParams:Boolean = (params.length>0);
 			for each(var actHandler:ActHandler in _handlers){
-				if(!actHandler.checkExecutions || actHandler.executions){ // if the event gets dispatched again as a result of a handler
+				if((!actHandler.checkExecutions || actHandler.executions) && // if the event gets dispatched again as a result of a handler
+					(_postponeRemoval || _removeTracker.removeHandlerCount==0 || !_removeTracker.removeHandlers[actHandler.handler])){
+					
 					if(actHandler.additionalArguments && actHandler.additionalArguments.length){
 						if(hasParams){
 							actHandler.handler.apply(null,params.concat(actHandler.additionalArguments));
@@ -51,31 +64,32 @@ package org.tbyrne.acting.acts
 					if(actHandler.checkExecutions){
 						--actHandler.executions;
 						if(actHandler.executions==0){
-							_toRemove.push(actHandler.handler);
-							_checkRemove = true;
+							_removeTracker.addRemove(actHandler.handler);
 						}
 					}
 				}
 			}
 			_performing = false;
-			if(_checkRemove){
-				var toRemoveCount:int = _toRemove.length;
-				if(_removeAll || toRemoveCount==_handlers.length){
+			checkRemove(_removeTracker, _handlerIndices, _handlers);
+		}
+		
+		protected function checkRemove(removeTracker:HandlerRemovalTracker, handlerIndices:Dictionary, handlers:Array):void{
+			if(removeTracker.checkRemove){
+				if(removeTracker.removeAll || removeTracker.removeHandlerCount==_handlers.length){
 					removeAllHandlers();
-					_removeAll = false;
-				}else if(toRemoveCount){
-					for each(var handler:Function in _toRemove){
-						removeHandler(handler);
+				}else if(removeTracker.removeHandlerCount){
+					for(var handler:* in removeTracker.removeHandlers){
+						_removeHandler(handler, handlerIndices, handlers, removeTracker, false);
 					}
-					_toRemove = new Array();
 				}
+				removeTracker.clear();
 			}
 		}
 		
 		public function addHandler(handler:Function, additionalArguments:Array=null):void{
-			_addHandler(handler, additionalArguments, _handlerIndices, _handlers);
+			_addHandler(handler, additionalArguments, _handlerIndices, _handlers, _removeTracker);
 		}
-		protected function _addHandler(handler:Function, additionalArguments:Array, handlerIndices:Dictionary, handlers:Array):ActHandler{
+		protected function _addHandler(handler:Function, additionalArguments:Array, handlerIndices:Dictionary, handlers:Array, removeTracker:HandlerRemovalTracker):ActHandler{
 			var ret:ActHandler;
 			if(handlerIndices[handler]==null){
 				handlerIndices[handler] = handlers.length;
@@ -83,18 +97,17 @@ package org.tbyrne.acting.acts
 				handlers.push(ret);
 				setHandlerCount(++_handlerCount);
 			}else{
-				if(_removeAll){
-					_removeAll = false;
-					_toRemove = [];
+				if(_removeTracker.removeAll){
+					// change from remove all to remove all but this handler
+					_removeTracker.clear();
 					for each(var actHandler:ActHandler in _handlers){
-						_toRemove.push(actHandler.handler);
+						if(actHandler.handler!=handler)removeTracker.addRemove(actHandler.handler);
 					}
 				}else{
-					var removeIndex:int = _toRemove.indexOf(handler);
-					if(removeIndex!=-1)_toRemove.splice(index,1);
 					CONFIG::debug{
-						if(removeIndex==-1)Log.log(Log.PERFORMANCE,"attempting to add handler twice (Act._addHandler())");
+						if(!removeTracker.removeHandlerCount || !removeTracker.removeHandlers[handler])Log.log(Log.PERFORMANCE,"attempting to add handler twice (Act._addHandler())");
 					}
+					removeTracker.deleteRemove(handler);
 				}
 				var index:int = handlerIndices[handler];
 				ret = handlers[index];
@@ -102,19 +115,18 @@ package org.tbyrne.acting.acts
 			return ret;
 		}
 		public function addTempHandler(handler:Function, additionalArguments:Array=null):void{
-			var actHandler:ActHandler = _addHandler(handler, additionalArguments, _handlerIndices, _handlers);
+			var actHandler:ActHandler = _addHandler(handler, additionalArguments, _handlerIndices, _handlers, _removeTracker);
 			actHandler.executions = 1;
 		}
 		
 		public function removeHandler(handler:Function):void{
-			_removeHandler(handler, _handlerIndices, _handlers, _toRemove, _performing);
+			_removeHandler(handler, _handlerIndices, _handlers, _removeTracker, _performing);
 		}
-		protected function _removeHandler(handler:Function, handlerIndices:Dictionary, handlers:Array, toRemove:Array, performing:Boolean):void{
+		protected function _removeHandler(handler:Function, handlerIndices:Dictionary, handlers:Array, removeTracker:HandlerRemovalTracker, performing:Boolean):void{
 			var _index:* = handlerIndices[handler];
 			if(_index!=null){
 				if(performing){
-					_checkRemove = true;
-					toRemove.push(handler);
+					if(!removeTracker.removeAll)removeTracker.addRemove(handler);
 				}else{
 					var index:int = int(_index);
 					var actHandler:ActHandler = handlers.splice(index,1)[0];
@@ -131,15 +143,13 @@ package org.tbyrne.acting.acts
 		
 		public function removeAllHandlers():void{
 			if(_performing){
-				_removeAll = true;
+				_removeTracker.removeAll = true;
 			}else{
 				if(_handlers.length){
 					_handlers = new Array();
 					_handlerIndices = new Dictionary();
 				}
-				if(_toRemove){
-					_toRemove = [];
-				}
+				_removeTracker.clear();
 				setHandlerCount(0);
 			}
 		}

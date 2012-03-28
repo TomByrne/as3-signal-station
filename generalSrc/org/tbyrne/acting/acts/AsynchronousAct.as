@@ -10,8 +10,7 @@ package org.tbyrne.acting.acts
 		private var asyncHandlerIndices:Dictionary = new Dictionary();
 		
 		private var performingStacks:Array = [];
-		private var removeAllAsync:Boolean;
-		private var toRemoveAsync:Array = new Array();
+		protected var _removeAsyncTracker:HandlerRemovalTracker = new HandlerRemovalTracker();
 		
 		public function AsynchronousAct(){
 			super();
@@ -29,36 +28,26 @@ package org.tbyrne.acting.acts
 		protected function onStackFinish(stack:AsyncHandlerStack) : void{
 			var index:int = performingStacks.indexOf(stack);
 			performingStacks.splice(index,1);
-			
-			if(!performingStacks.length){
-				if(removeAllAsync || toRemoveAsync.length==asyncHandlers.length){
-					removeAllAsyncHandlers();
-					removeAllAsync = false;
-				}else if(toRemoveAsync.length){
-					for each(var handler:Function in toRemoveAsync){
-						removeAsyncHandler(handler);
-					}
-					toRemoveAsync = new Array();
-				}
-			}
+			checkRemove(_removeAsyncTracker, asyncHandlerIndices, asyncHandlers);
 		}
 		
 		public function addAsyncHandler(handler:Function, additionalArguments:Array=null):void{
-			_addHandler(handler, additionalArguments, asyncHandlerIndices, asyncHandlers);
+			_addHandler(handler, additionalArguments, asyncHandlerIndices, asyncHandlers, _removeAsyncTracker);
 		}
 		
 		public function removeAsyncHandler(handler:Function):void{
-			_removeHandler(handler, asyncHandlerIndices, asyncHandlers, toRemoveAsync, performingStacks.length>0);
+			_removeHandler(handler, asyncHandlerIndices, asyncHandlers, _removeAsyncTracker, performingStacks.length>0)
 		}
 		
 		public function removeAllAsyncHandlers():void{
 			if(performingStacks.length>0){
-				removeAllAsync = true;
+				_removeAsyncTracker.removeAll = true;
 			}else{
 				if(asyncHandlers.length){
 					asyncHandlers = new Array();
 					asyncHandlerIndices = new Dictionary();
 				}
+				_removeAsyncTracker.clear();
 			}
 		}
 	}

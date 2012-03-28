@@ -131,6 +131,9 @@ package org.tbyrne.display.controls
 			super.unbindFromAsset();
 		}
 		private function onProviderChanged(from:IBooleanProvider):void{
+			// a curious bug with the proto-renderer of lists can occur here
+			//if(from!=_data)return;
+			
 			if(useDataForSelected && !_ignoreDataChanges)this.selected = from.booleanValue;
 			assessSelectedState();
 		}
