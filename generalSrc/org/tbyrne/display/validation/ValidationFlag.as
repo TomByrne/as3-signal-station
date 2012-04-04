@@ -51,18 +51,6 @@ package org.tbyrne.display.validation
 		
 		protected var _readyChecker:Function;
 		
-		
-		/*public function get ready():Boolean{
-			return _ready;
-		}
-		public function set ready(value:Boolean):void{
-			if(_ready!=value){
-				_ready = value;
-				if(value && _pending)validate();
-			}
-		}
-		
-		private var _ready:Boolean;*/
 		protected var _pending:Boolean;
 		
 		public var parameters:Array;

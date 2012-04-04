@@ -62,17 +62,20 @@ package org.tbyrne.formatters.patternFormatters
 		protected var _stringValueChanged:Act;
 		protected var _pattern:IStringProvider;
 		protected var _tokens:Dictionary;
+		protected var _tokenOrder:Vector.<String>;
 		
 		public function AbstractPatternFormatter(pattern:IStringProvider=null){
 			_stringValueFlag = new ValidationFlag(validateString,false);
 			this.pattern = pattern;
 			_tokens = new Dictionary();
+			_tokenOrder = new Vector.<String>();
 		}
 		protected function _addToken(token:String, stringProvider:IStringProvider):void{
 			if(_tokens[token]){
 				_removeToken(token);
 			}
 			_tokens[token] = stringProvider;
+			_tokenOrder.push(token);
 			if(stringProvider)stringProvider.stringValueChanged.addHandler(onTokenChanged);
 			doStringChanged();
 		}
@@ -81,6 +84,9 @@ package org.tbyrne.formatters.patternFormatters
 			var stringProvider:IStringProvider = _tokens[token];
 			if(stringProvider)stringProvider.stringValueChanged.removeHandler(onTokenChanged);
 			delete _tokens[token];
+			
+			var index:int = _tokenOrder.indexOf(token);
+			_tokenOrder.splice(index,1);
 			doStringChanged();
 		}
 		protected function _removeAllTokens():void{
@@ -109,7 +115,7 @@ package org.tbyrne.formatters.patternFormatters
 			if(_pattern){
 				_stringValue = _pattern.stringValue;
 				if(_stringValue){
-					for(var token:String in _tokens){
+					for each(var token:String in _tokenOrder){
 						var provider:IStringProvider = _tokens[token];
 						if(!provider){
 							_stringValue = null;

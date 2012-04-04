@@ -55,6 +55,14 @@ package org.tbyrne.display.assets.nativeAssets {
 			applyChildStates();
 		}
 		protected function applyChildStates():void{
+			/**
+			 * There is a runtime error in the player where using gotoAndPlay(label) while not
+			 * added to stage changes the frame number but not the frame contents. Meaning that when readded
+			 * to the stage the asset looks wrong. I've only seen this happen in AIR so far.
+			 * So we avoid changing child assets till they're added to the stage.
+			 */
+			if(!_stageAsset)return;
+			
 			for(var i:* in _childClips){
 				setAllStateListsIn(_childClips[i],true);
 			}
@@ -105,6 +113,7 @@ package org.tbyrne.display.assets.nativeAssets {
 		override protected function onAddedToStage():void{
 			super.onAddedToStage();
 			applyAvailableStates();
+			applyChildStates();
 		}
 		override protected function onAdded(e:Event, from:IAsset):void{
 			super.onAdded(e, from);

@@ -18,6 +18,7 @@ package org.tbyrne.display.assets.schema
 	import flash.text.TextFormat;
 	import flash.text.TextLineMetrics;
 	import flash.utils.Dictionary;
+	import flash.display.NativeMenu;
 	
 	import org.tbyrne.acting.actTypes.IAct;
 	import org.tbyrne.acting.acts.Act;
@@ -457,6 +458,9 @@ package org.tbyrne.display.assets.schema
 		public function get transform():Transform{return _displayObject.transform};
 		
 		public function get bitmapDrawable():IBitmapDrawable{return _displayObject};
+		
+		public function get contextMenu():NativeMenu{return _interactiveObject.contextMenu;}
+		public function set contextMenu(value:NativeMenu):void{_interactiveObject.contextMenu = value;}
 		
 		
 		public function set mask(value:IDisplayObject):void {

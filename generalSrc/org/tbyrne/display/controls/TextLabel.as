@@ -101,6 +101,7 @@ package org.tbyrne.display.controls
 		public function set multiline(value:Boolean):void{
 			if(_multiline!=value){
 				_multiline = value;
+				_multilineSet = true;
 				if(_labelField){
 					_labelField.multiline = _multiline;
 					_labelField.wordWrap = _multiline;
@@ -110,6 +111,9 @@ package org.tbyrne.display.controls
 		}
 		
 		private var _multiline:Boolean;
+		private var _multilineSet:Boolean;
+		private var _assumedMultiline:Boolean;
+		
 		protected var _textFormat:TextFormat;
 		protected var _assumedTextFormat:TextFormat;
 		
@@ -138,8 +142,11 @@ package org.tbyrne.display.controls
 		override protected function bindToAsset():void{
 			super.bindToAsset();
 			bindTextField();
-			_labelField.multiline = _multiline;
-			_labelField.wordWrap = _multiline;
+			_assumedMultiline = _labelField.multiline;
+			if(_multilineSet){
+				_labelField.multiline = _multiline;
+				_labelField.wordWrap = _multiline;
+			}
 			if(!_data && _labelField.text.length){
 				_data = _labelField.htmlText;
 				_stringData = _data;
@@ -166,6 +173,13 @@ package org.tbyrne.display.controls
 			syncFieldToData();
 			applyFormat();
 		}
+		public function unsetMultiline():void{
+			_multilineSet = false;
+			if(isBound){
+				_labelField.multiline = _assumedMultiline;
+				_labelField.wordWrap = _assumedMultiline;
+			}
+		}
 		protected function bindTextField():void{
 			if(asset.conformsToType(ITextField)){
 				_labelField = (asset as ITextField);
@@ -180,6 +194,9 @@ package org.tbyrne.display.controls
 			_labelFieldSizer.assumedPaddingLeft = NaN;
 			_labelFieldSizer.assumedPaddingBottom = NaN;
 			_labelFieldSizer.assumedPaddingRight = NaN;
+			
+			_labelField.multiline = _assumedMultiline;
+			_labelField.wordWrap = _assumedMultiline;
 			
 			if(_assumedTextFormat){
 				_labelField.defaultTextFormat = _assumedTextFormat;
@@ -232,7 +249,7 @@ package org.tbyrne.display.controls
 			super.setSize(width, height);
 		}
 		protected function useMeasuredWidth():Boolean{
-			return (!multiline);
+			return !(isBound?_labelField.multiline:_multiline);
 		}
 		protected function getMeasurementText():String{
 			return _labelField.htmlText;

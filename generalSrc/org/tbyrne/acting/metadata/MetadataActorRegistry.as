@@ -82,7 +82,8 @@ package org.tbyrne.acting.metadata
 								}
 							}
 							if(!classPath)classPath = ReflectionUtils.getClassPath(actor);
-							fillObject(reaction, ReflectionUtils.getClassName(reaction), actor, props);
+							//fillObject(reaction, ReflectionUtils.getClassName(reaction), actor, props);
+							fillObject(reaction, classPath, actor, props);
 							break;
 					}
 				}

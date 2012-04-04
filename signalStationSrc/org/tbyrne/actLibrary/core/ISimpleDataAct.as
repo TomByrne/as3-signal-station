@@ -5,5 +5,6 @@ package org.tbyrne.actLibrary.core
 	public interface ISimpleDataAct extends IUniversalTypeAct
 	{
 		function get actData():*;
+		function set actData(value:*):void;
 	}
 }

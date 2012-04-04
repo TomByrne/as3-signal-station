@@ -62,10 +62,10 @@ package org.tbyrne.display.layout
 		protected var _positionChanged:Act;
 		protected var _measurementsChanged:Act;
 		
-		private var _measureFlag:ValidationFlag;
-		private var _sizeDrawFlag:ViewValidationFlag;
-		private var _posDrawFlag:ViewValidationFlag;
-		private var _drawFlag:ViewValidationFlag;
+		protected var _measureFlag:ValidationFlag;
+		protected var _sizeDrawFlag:ViewValidationFlag;
+		protected var _posDrawFlag:ViewValidationFlag;
+		protected var _drawFlag:ViewValidationFlag;
 		
 		protected var _scopeView:IView;
 		

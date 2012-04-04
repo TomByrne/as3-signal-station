@@ -36,7 +36,7 @@ package org.tbyrne.display.wrappers
 		
 		public function TweenWrapper(target:ILayoutSubject=null, scopeView:IView=null, doTweenX:Boolean=true, doTweenY:Boolean=true, tweenThreshold:Number=NaN){
 			super(target);
-			setScopeView(scopeView);
+			if(scopeView)setScopeView(scopeView); // conditional ensures we aren't replacing the ILayoutSubject as scopeView
 			this.doTweenX = doTweenX;
 			this.doTweenY = doTweenY;
 			this.tweenThreshold = tweenThreshold;

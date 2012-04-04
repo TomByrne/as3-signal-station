@@ -1,5 +1,7 @@
 package org.tbyrne.display.assets.nativeTypes
 {
+	import flash.display.NativeMenu;
+	
 	import org.tbyrne.acting.actTypes.IAct;
 
 	public interface IInteractiveObject extends IDisplayObject
@@ -19,6 +21,9 @@ package org.tbyrne.display.assets.nativeTypes
 		
 		function get focusRect():Object;
 		function set focusRect(value:Object):void;
+		
+		function get contextMenu():NativeMenu;
+		function set contextMenu(value:NativeMenu):void;
 		
 		
 		/**

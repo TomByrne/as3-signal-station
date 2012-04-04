@@ -5,16 +5,17 @@ package org.tbyrne.display.assets.nativeAssets
 	import flash.events.FocusEvent;
 	import flash.events.KeyboardEvent;
 	import flash.events.MouseEvent;
+	import flash.display.NativeMenu;
 	
 	import org.tbyrne.acting.actTypes.IAct;
 	import org.tbyrne.acting.acts.Act;
 	import org.tbyrne.acting.acts.NativeAct;
 	import org.tbyrne.display.actInfo.IKeyActInfo;
 	import org.tbyrne.display.actInfo.IMouseActInfo;
-	import org.tbyrne.display.assets.nativeTypes.IDisplayObject;
-	import org.tbyrne.display.assets.nativeTypes.IInteractiveObject;
 	import org.tbyrne.display.assets.nativeAssets.actInfo.KeyActInfo;
 	import org.tbyrne.display.assets.nativeAssets.actInfo.MouseActInfo;
+	import org.tbyrne.display.assets.nativeTypes.IDisplayObject;
+	import org.tbyrne.display.assets.nativeTypes.IInteractiveObject;
 
 	public class InteractiveObjectAsset extends DisplayObjectAsset implements IInteractiveObject
 	{
@@ -198,6 +199,14 @@ package org.tbyrne.display.assets.nativeAssets
 		public function set focusRect(value:Object):void{
 			_interactiveObject.focusRect = value;
 		}
+		
+		public function get contextMenu():NativeMenu{
+			return _interactiveObject.contextMenu;
+		}
+		public function set contextMenu(value:NativeMenu):void{
+			_interactiveObject.contextMenu = value;
+		}
+		
 		
 		protected var _focusIn:NativeAct;
 		protected var _focusOut:NativeAct;
