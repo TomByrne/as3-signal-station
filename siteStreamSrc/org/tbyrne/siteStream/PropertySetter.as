@@ -1,16 +1,15 @@
 package org.tbyrne.siteStream
 {
-	import flash.events.EventDispatcher;
 	import flash.utils.Dictionary;
 	
+	import org.tbyrne.acting.actTypes.IAct;
+	import org.tbyrne.acting.acts.Act;
 	import org.tbyrne.hoborg.IPoolable;
 	import org.tbyrne.hoborg.ObjectPool;
-	import org.tbyrne.siteStream.events.SiteStreamEvent;
 	import org.tbyrne.siteStream.parsers.ISiteStreamParser;
 	import org.tbyrne.siteStream.propertyInfo.IPropertyInfo;
 	
-	[Event(name="parsed",type="org.farmcode.siteStream.SiteStreamEvent")]
-	public class PropertySetter extends EventDispatcher implements IPropertySetter, IPoolable
+	public class PropertySetter implements IPropertySetter, IPoolable
 	{
 		/*CONFIG::debug{
 			private static var gettingNew:Boolean;
@@ -29,6 +28,26 @@ package org.tbyrne.siteStream
 			return ret;
 		}
 		
+		
+		/**
+		 * @inheritDoc
+		 */
+		public function get wasParsed():IAct{
+			return (_wasParsed || (_wasParsed = new Act()));
+		}
+		
+		/**
+		 * @inheritDoc
+		 */
+		public function get wasResolved():IAct{
+			return (_wasResolved || (_wasResolved = new Act()));
+		}
+		
+		protected var _wasResolved:Act;
+		protected var _wasParsed:Act;
+		
+		
+		
 		public function get propertyInfo():IPropertyInfo{
 			return _propertyInfo;
 		}
@@ -36,8 +55,10 @@ package org.tbyrne.siteStream
 			_propertyInfo = value;
 		}
 		public function get allParsed():Boolean{
-			checkParsed();
 			return _allParsed;
+		}
+		public function get allResolved():Boolean{
+			return _allResolved;
 		}
 		public function get siteStreamItem():ISiteStreamParser{
 			return _siteStreamItem;
@@ -53,13 +74,14 @@ package org.tbyrne.siteStream
 		}
 		public function set isReference(value:Boolean):void{
 			_isReference = value;
+			checkAllParsed();
 		}
 		public function get isReference():Boolean{
 			return _isReference;
 		}
 		public function set value(value:*):void{
 			propertyInfo.value = value;
-			checkParsed();
+			checkAllParsed();
 		}
 		protected function get valueSet():Boolean{
 			return propertyInfo.valueSet;
@@ -70,9 +92,12 @@ package org.tbyrne.siteStream
 		protected var valueCommited:Boolean = false;
 		protected var _isReference:Boolean = false;
 		protected var _allParsed:Boolean = false;
+		protected var _allResolved:Boolean = false;
 		protected var _siteStreamItem:ISiteStreamParser;
 		protected var pendingChildren:Dictionary = new Dictionary();
 		protected var pendingRefChildren:Dictionary = new Dictionary();
+		
+		public var testReference:Boolean;
 		
 		public function PropertySetter(siteStreamItem:ISiteStreamParser=null, propertyInfo:IPropertyInfo=null){
 			/*CONFIG::debug{
@@ -82,52 +107,67 @@ package org.tbyrne.siteStream
 			this.propertyInfo = propertyInfo;
 		}
 		public function addPropertyChild(child:IPropertySetter):void{
-			if(child.isReference){
-				// This is high priority to make sure its value is commited immediately when
-				// children references are parsed. Otherwise the child parsing triggers the
-				// complete in the sitestream request before objects with reference children
-				// are commited. Maybe site stream requests or the resolved property need
-				// to take in to account the commited status
-				child.addEventListener(SiteStreamEvent.PARSED, onPendingRefParsed, false, int.MAX_VALUE);
-				pendingRefChildren[child] = true;
-			}else{
-				if(!child.allParsed){
-					child.addEventListener(SiteStreamEvent.PARSED, onPendingParsed, false, int.MAX_VALUE);
+			if(!child.allResolved){
+				child.wasParsed.addHandler(onChildParsed);
+				if(child.isReference){
+					// This is high priority to make sure its value is commited immediately when
+					// children references are parsed. Otherwise the child parsing triggers the
+					// complete in the sitestream request before objects with reference children
+					// are commited. Maybe site stream requests or the resolved property need
+					// to take in to account the commited status
+					
+					child.wasResolved.addHandler(onPendingRefResolved);
+					
+					pendingRefChildren[child] = true;
+					testReference = true;
+				}else{
+					child.wasResolved.addHandler(onPendingResolved);
 					pendingChildren[child] = true;
 				}
 			}
 		}
-		protected function onPendingParsed(e:SiteStreamEvent):void{
-			var child:IPropertySetter = (e.target as IPropertySetter);
-			child.removeEventListener(SiteStreamEvent.PARSED, onPendingParsed);
+		protected function onChildParsed(child:IPropertySetter):void{
+			checkAllParsed();
+		}
+		protected function onPendingResolved(child:IPropertySetter):void{
+			child.wasParsed.removeHandler(onChildParsed);
+			child.wasResolved.removeHandler(onPendingResolved);
 			delete pendingChildren[child];
-			checkParsed();
+			checkAllParsed();
 		}
-		protected function onPendingRefParsed(e:SiteStreamEvent):void{
-			var child:IPropertySetter = (e.target as IPropertySetter);
-			child.removeEventListener(SiteStreamEvent.PARSED, onPendingParsed);
+		protected function onPendingRefResolved(child:IPropertySetter):void{
+			child.wasParsed.removeHandler(onChildParsed);
+			child.wasResolved.removeHandler(onPendingRefResolved);
 			delete pendingRefChildren[child];
-			checkParsed();
+			checkAllParsed();
 		}
-		public function checkParsed():void{
+		public function checkAllParsed():void{
 			var oldVal:Boolean = _allParsed;
 			_allParsed = testAllParsed();
 			commitValue();
-			if(!oldVal && _allParsed){
-				dispatchEvent(new SiteStreamEvent(SiteStreamEvent.PARSED));
+			if(_allParsed){
+				if(!oldVal && _wasParsed)_wasParsed.perform(this);
+				checkResolved();
+			}
+		}
+		protected function checkResolved():void{
+			var oldVal:Boolean = _allResolved;
+			_allResolved = testAllResolved();
+			if(!oldVal && _allResolved){
+				if(_wasResolved)_wasResolved.perform(this);
 			}
 		}
 		protected function commitValue():void{
 			if(_allParsed && !valueCommited && (valueSet || !_isReference)){
-				var allRef:Boolean = true;
+				/*var allRef:Boolean = true;
 				for(var i:* in pendingRefChildren){
 					allRef = false;
 					break;
 				}
-				if(allRef){
+				if(allRef){*/
 					_siteStreamItem.commitValue(propertyInfo,parentNode);
 					valueCommited = true;
-				}
+				//}
 			}
 		}
 		protected function unloadData():void{
@@ -146,17 +186,36 @@ package org.tbyrne.siteStream
 		}
 		public function reset():void{
 			unloadData();
+			isReference = false;
 			parentNode = null;
 			value = null;
 			siteStreamItem = null;
 			propertyInfo = null;
-			isReference = false;
 		}
 		protected function testAllParsed():Boolean{
+			if(isReference){
+				return true;
+			}
 			for(var i:* in pendingChildren){
-				return false;
+				var child:IPropertySetter = i;
+				if(!child.allParsed){
+					return false;
+				}
 			}
 			return valueSet && (propertyInfo!=null);
+		}
+		protected function testAllResolved():Boolean{
+			if(_allParsed && valueCommited){
+				var i:*;
+				for(i in pendingChildren){
+					return false;
+				}
+				for(i in pendingRefChildren){
+					return false;
+				}
+				return true;
+			}
+			return false;
 		}
 		public function release():void{
 			pool.releaseObject(this);

@@ -1,18 +1,14 @@
 package org.tbyrne.siteStream
 {
-	import flash.events.Event;
-	
 	import org.tbyrne.collections.IIterator;
 	import org.tbyrne.collections.linkedList.LinkedList;
 	import org.tbyrne.core.IPendingResult;
 	import org.tbyrne.hoborg.ObjectPool;
-	import org.tbyrne.siteStream.events.SiteStreamEvent;
 	import org.tbyrne.siteStream.parsers.ISiteStreamParser;
 	import org.tbyrne.siteStream.propertyInfo.IPropertyInfo;
 	
 	use namespace SiteStreamNamespace;
 	
-	[Event(name="resolved",type="org.farmcode.siteStream.SiteStreamEvent")]
 	public class SiteStreamNode extends PropertySetter
 	{
 		/*CONFIG::debug{
@@ -55,10 +51,6 @@ package org.tbyrne.siteStream
 			}
 			return path;
 		}
-		public function get allResolved():Boolean{
-			checkResolved();
-			return _allResolved;
-		}
 		protected function get rootNode():SiteStreamNode{
 			if(!_rootNode){
 				_rootNode = this;
@@ -74,7 +66,6 @@ package org.tbyrne.siteStream
 		
 		private var children:LinkedList = LinkedList.getNew();
 		private var _id:String;
-		private var _allResolved:Boolean = false;
 		private var loadingData:Boolean = false;
 		private var parsedLazy:Boolean = false;
 		private var isCreating:Boolean = false;
@@ -82,10 +73,6 @@ package org.tbyrne.siteStream
 		
 		public function SiteStreamNode(siteStreamItem:ISiteStreamParser=null, propertyInfo:IPropertyInfo=null){
 			super(siteStreamItem, propertyInfo);
-			/*CONFIG::debug{
-				if(!gettingNew)Log.error("SiteStreamNode should be created via SiteStreamNode.getNew");
-			}*/
-			this.addEventListener(SiteStreamEvent.PARSED,checkResolved,false,0,true);
 		}
 		public function getChildIterator():IIterator{
 			return children.getIterator();
@@ -97,14 +84,19 @@ package org.tbyrne.siteStream
 		public function addChild(child:SiteStreamNode):void{
 			child.parentNode = this;
 			children.unshift(child);
-			child.addEventListener(SiteStreamEvent.RESOLVED,checkResolved,false,0,true);
-			child.addEventListener(SiteStreamEvent.PARSED, onChildParsed);
+			child.wasResolved.addHandler(onChildNodeResolved);
+			child.wasParsed.addHandler(onChildParsed);
+		}
+		
+		protected function onChildNodeResolved(from:SiteStreamNode):void{
+			checkResolved();
 		}
 		public function beginResolve():void{
 			beginProcess(false);
 		}
 		public function beginProcess(lazy:Boolean):void{
 			parsedLazy = lazy;
+			_allResolved = false;
 			if(!loadingData){
 				if(lazy){
 					parseObject();
@@ -236,7 +228,7 @@ package org.tbyrne.siteStream
 				}
 			}
 			isCreating = false;
-			checkParsed();
+			checkAllParsed();
 		}
 		protected function createObject(propertyInfo:IPropertyInfo, propertySetter:IPropertySetter, lazy:Boolean):IPendingResult{
 			var pendingResult:IPendingResult = siteStreamItem.createObject(propertyInfo);
@@ -281,7 +273,7 @@ package org.tbyrne.siteStream
 						}
 						propertySetter.addPropertyChild(_propSetter);
 						propSetter = _propSetter;
-						_propSetter.checkParsed();
+						_propSetter.checkAllParsed();
 					}
 					if(reference){
 						var referenceNode:ReferenceNodeResolver = new ReferenceNodeResolver(rootNode,reference,propSetter);
@@ -289,7 +281,7 @@ package org.tbyrne.siteStream
 					}
 				}
 			}
-			propertySetter.allParsed; // will trigger event (should be a better way to achieve this)
+			propertySetter.checkAllParsed();
 		}
 		public function getChildNode(id:String):SiteStreamNode{
 			var iterator:IIterator = children.getIterator();
@@ -310,13 +302,6 @@ package org.tbyrne.siteStream
 			return ret;
 		}
 		
-		override protected function onPendingRefParsed(e:SiteStreamEvent):void{
-			super.onPendingRefParsed(e);
-			checkResolved();
-		}
-		protected function onChildParsed(e:Event):void{
-			checkParsed();
-		}
 		override protected function testAllParsed():Boolean{
 			var ret:Boolean = false;
 			
@@ -348,15 +333,8 @@ package org.tbyrne.siteStream
 			}
 			return ret;
 		}
-		protected function checkResolved(e:Event=null):void{
-			var oldVal:Boolean = _allResolved;
-			_allResolved = testAllResolved();
-			if((!oldVal || e!=null) && _allResolved){
-				dispatchEvent(new SiteStreamEvent(SiteStreamEvent.RESOLVED));
-			}
-		}
-		protected function testAllResolved():Boolean{
-			if(allParsed && !parsedLazy && valueCommited){
+		override protected function testAllResolved():Boolean{
+			if(super.testAllResolved() && !parsedLazy){
 				var iterator:IIterator = children.getIterator();
 				var child:SiteStreamNode;
 				var ret:Boolean = true;
@@ -369,7 +347,7 @@ package org.tbyrne.siteStream
 				iterator.release();
 				return ret;
 			}
-			return false;
+			return parsedLazy;
 		}
 	}
 }

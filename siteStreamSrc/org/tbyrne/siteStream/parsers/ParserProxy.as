@@ -1,32 +1,58 @@
 package org.tbyrne.siteStream.parsers
 {
-	import flash.events.Event;
-	import flash.events.EventDispatcher;
-	
+	import org.tbyrne.acting.actTypes.IAct;
+	import org.tbyrne.acting.acts.Act;
 	import org.tbyrne.core.IPendingResult;
 	import org.tbyrne.siteStream.SiteStreamNamespace;
 	import org.tbyrne.siteStream.SiteStreamNode;
-	import org.tbyrne.siteStream.events.SiteStreamErrorEvent;
+	import org.tbyrne.siteStream.classLoader.IClassLoader;
+	import org.tbyrne.siteStream.dataLoader.IDataLoader;
 	import org.tbyrne.siteStream.propertyInfo.IPropertyInfo;
 	
 	use namespace SiteStreamNamespace;
 
-	public class ParserProxy extends EventDispatcher implements ISiteStreamParser
+	public class ParserProxy implements ISiteStreamParser
 	{
+		
+		/**
+		 * @inheritDoc
+		 */
+		public function get dataLoadFailure():IAct{
+			return (_dataLoadFailure || (_dataLoadFailure = new Act()));
+		}
+		
+		/**
+		 * @inheritDoc
+		 */
+		public function get classLoadFailure():IAct{
+			return (_classLoadFailure || (_classLoadFailure = new Act()));
+		}
+		
+		protected var _classLoadFailure:Act;
+		protected var _dataLoadFailure:Act;
+		
+		
 		
 		public function get siteStreamItem():ISiteStreamParser{
 			return _siteStreamItem;
 		}
 		public function set siteStreamItem(value:ISiteStreamParser):void{
 			if(_siteStreamItem){
-				_siteStreamItem.removeEventListener(SiteStreamErrorEvent.CLASS_FAILURE, bubbleEvent);
-				_siteStreamItem.removeEventListener(SiteStreamErrorEvent.DATA_FAILURE, bubbleEvent);
+				_siteStreamItem.classLoadFailure.removeHandler(onClassLoadFailure);
+				_siteStreamItem.dataLoadFailure.removeHandler(onDataLoadFailure);
 			}
 			_siteStreamItem = value;
 			if(_siteStreamItem){
-				_siteStreamItem.addEventListener(SiteStreamErrorEvent.CLASS_FAILURE, bubbleEvent);
-				_siteStreamItem.addEventListener(SiteStreamErrorEvent.DATA_FAILURE, bubbleEvent);
+				_siteStreamItem.classLoadFailure.addHandler(onClassLoadFailure);
+				_siteStreamItem.dataLoadFailure.addHandler(onDataLoadFailure);
 			}
+		}
+		
+		private function onDataLoadFailure(from:IDataLoader):void{
+			if(_dataLoadFailure)_dataLoadFailure.perform(this);
+		}
+		private function onClassLoadFailure(from:IClassLoader):void{
+			if(_classLoadFailure)_classLoadFailure.perform(this);
 		}
 		public function set parentParser(value:ISiteStreamParser):void{
 			_siteStreamItem.parentParser = value;
@@ -80,9 +106,6 @@ package org.tbyrne.siteStream.parsers
 		}
 		public function initPropertyInfo(propertyInfo:IPropertyInfo):void{
 			siteStreamItem.initPropertyInfo(propertyInfo);
-		}
-		protected function bubbleEvent(e:Event):void{
-			dispatchEvent(e);
 		}
 	}
 }

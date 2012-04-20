@@ -1,12 +1,15 @@
 package org.tbyrne.siteStream.classLoader
 {
-	import flash.events.IEventDispatcher;
-	
+	import org.tbyrne.acting.actTypes.IAct;
 	import org.tbyrne.core.IPendingResult;
 	
-	[Event(name="classFailure",type="org.tbyrne.siteStream.events.SiteStreamErrorEvent")]
-	public interface IClassLoader extends IEventDispatcher
+	public interface IClassLoader
 	{
+		/**
+		 * handler(from:IClassLoader)
+		 */
+		function get classLoadFailure():IAct;
+		
 		function isClassLoaded(classInfo:IClassInfo):Boolean;
 		function loadClass(classInfo:IClassInfo):IPendingResult;
 		function releaseClass(classInfo:IClassInfo):void;

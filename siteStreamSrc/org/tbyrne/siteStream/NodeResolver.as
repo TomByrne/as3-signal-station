@@ -1,18 +1,39 @@
 package org.tbyrne.siteStream
 {
-	import flash.events.Event;
-	import flash.events.EventDispatcher;
-	import flash.events.IOErrorEvent;
-	
-	import org.tbyrne.siteStream.events.SiteStreamEvent;
+	import org.tbyrne.acting.actTypes.IAct;
+	import org.tbyrne.acting.acts.Act;
 	
 	use namespace SiteStreamNamespace;
 	
-	[Event(name="parsed",type="org.farmcode.siteStream.SiteStreamEvent")]
-	[Event(name="resolved",type="org.farmcode.siteStream.SiteStreamEvent")]
-	[Event(name="ioError",type="flash.events.IOErrorEvent")]
-	public class NodeResolver extends EventDispatcher
+	public class NodeResolver 
 	{
+		
+		/**
+		 * handler(from:NodeResolver)
+		 */
+		public function get wasParsed():IAct{
+			return (_wasParsed || (_wasParsed = new Act()));
+		}
+		
+		/**
+		 * handler(from:NodeResolver, resolvedValue:*)
+		 */
+		public function get wasResolved():IAct{
+			return (_wasResolved || (_wasResolved = new Act()));
+		}
+		
+		/**
+		 * handler(from:NodeResolver)
+		 */
+		public function get ioErrorThrown():IAct{
+			return (_ioErrorThrown || (_ioErrorThrown = new Act()));
+		}
+		
+		protected var _ioErrorThrown:Act;
+		protected var _wasResolved:Act;
+		protected var _wasParsed:Act;
+		
+		
 		public function get loaded():Boolean{
 			validate();
 			return _loaded;
@@ -92,20 +113,20 @@ package org.tbyrne.siteStream
 				}
 			}
 		}
-		protected function isNodeReady(_node:SiteStreamNode):Boolean{
-			return _node.dataLoaded && _node.allResolved;
+		protected function isNodeReady(node:SiteStreamNode):Boolean{
+			return node.dataLoaded && node.allResolved;
 		}
-		protected function waitForNode(_node:SiteStreamNode):void{
-			_node.addEventListener(SiteStreamEvent.RESOLVED, onNodeReady);
-			if(!_node.dataLoaded)_node.beginResolve();
+		protected function waitForNode(node:SiteStreamNode):void{
+			node.wasResolved.addHandler(onNodeReady);
+			if(!node.dataLoaded)node.beginResolve();
 		}
-		protected function stopWaitingForNode(_node:SiteStreamNode):void{
-			_node.removeEventListener(SiteStreamEvent.RESOLVED, onNodeReady);
+		protected function stopWaitingForNode(node:SiteStreamNode):void{
+			node.wasResolved.removeHandler(onNodeReady);
 		}
 		protected function dispatchResolved():void{
-			dispatchEvent(new SiteStreamEvent(SiteStreamEvent.RESOLVED,_node.propertyInfo.value));
+			if(_wasResolved)_wasResolved.perform(this,_node.propertyInfo.value);
 		}
-		protected function onNodeReady(e:Event):void{
+		protected function onNodeReady(from:SiteStreamNode):void{
 			if(_node.dataLoaded){ // otherwise it's still a stub
 				if(_node==_rootNode){
 					// remove first part if it matches the root page id

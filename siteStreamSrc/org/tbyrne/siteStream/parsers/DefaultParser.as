@@ -1,11 +1,11 @@
 package org.tbyrne.siteStream.parsers
 {
-	import flash.events.Event;
-	import flash.events.EventDispatcher;
 	import flash.utils.Dictionary;
 	import flash.utils.getQualifiedClassName;
 	import flash.xml.XMLNodeKinds;
 	
+	import org.tbyrne.acting.actTypes.IAct;
+	import org.tbyrne.acting.acts.Act;
 	import org.tbyrne.core.IPendingResult;
 	import org.tbyrne.queueing.IQueue;
 	import org.tbyrne.queueing.queueItems.functional.MethodCallQI;
@@ -16,20 +16,37 @@ package org.tbyrne.siteStream.parsers
 	import org.tbyrne.siteStream.classLoader.IClassLoader;
 	import org.tbyrne.siteStream.dataLoader.IDataInfo;
 	import org.tbyrne.siteStream.dataLoader.IDataLoader;
-	import org.tbyrne.siteStream.events.SiteStreamErrorEvent;
 	import org.tbyrne.siteStream.propertyInfo.IPropertyInfo;
 	import org.tbyrne.siteStream.propertyInfo.PropertyInfo;
-	import org.tbyrne.utils.ObjectUtils;
 	
 	/**
 	 * This class gets used to describe the behaviour of any item being parsed which
 	 * does not extend ISiteStreamItem. Only one instance of this class is made (by default).
 	 */
-	public class DefaultParser extends EventDispatcher implements ISiteStreamParser
+	public class DefaultParser implements ISiteStreamParser
 	{
 		private static const NODE_REFERENCE_EXP:RegExp = /^\{([^\s:]*)\}$/;
 		private static const VECTOR_TEST:RegExp = /\[class Vector\.<.*>\]/;
 		private static const OBJECT_TEST:RegExp = /^\{.*\}$/;
+		
+		
+		/**
+		 * @inheritDoc
+		 */
+		public function get dataLoadFailure():IAct{
+			return (_dataLoadFailure || (_dataLoadFailure = new Act()));
+		}
+		
+		/**
+		 * @inheritDoc
+		 */
+		public function get classLoadFailure():IAct{
+			return (_classLoadFailure || (_classLoadFailure = new Act()));
+		}
+		
+		protected var _classLoadFailure:Act;
+		protected var _dataLoadFailure:Act;
+		
 		
 		public function get idAttribute():String{
 			return _idAttribute;
@@ -61,25 +78,26 @@ package org.tbyrne.siteStream.parsers
 		public function set dataLoader(value:IDataLoader):void{
 			if(_dataLoader != value){
 				if(_dataLoader){
-					_dataLoader.removeEventListener(SiteStreamErrorEvent.DATA_FAILURE, bubbleEvent);
+					_dataLoader.dataLoadFailure.removeHandler(onDataLoadFailure);
 				}
 				_dataLoader = value;
 				if(_dataLoader){
-					_dataLoader.addEventListener(SiteStreamErrorEvent.DATA_FAILURE, bubbleEvent, false, 0, true);
+					_dataLoader.dataLoadFailure.addHandler(onDataLoadFailure);
 				}
 			}
 		}
+		
 		public function get classLoader():IClassLoader{
 			return _classLoader;
 		}
 		public function set classLoader(value:IClassLoader):void{
 			if(_classLoader != value){
 				if(_classLoader){
-					_classLoader.removeEventListener(SiteStreamErrorEvent.CLASS_FAILURE, bubbleEvent);
+					_classLoader.classLoadFailure.removeHandler(onClassLoadFailure);
 				}
 				_classLoader = value;
 				if(_classLoader){
-					_classLoader.addEventListener(SiteStreamErrorEvent.CLASS_FAILURE, bubbleEvent, false, 0, true);
+					_classLoader.classLoadFailure.addHandler(onClassLoadFailure);
 				}
 			}
 		}
@@ -121,15 +139,18 @@ package org.tbyrne.siteStream.parsers
 				return null;
 			}
 		}
-		protected function bubbleEvent(e:Event):void{
-			dispatchEvent(e);
+		private function onDataLoadFailure(from:IDataLoader):void{
+			if(_dataLoadFailure)_dataLoadFailure.perform(this);
+		}
+		private function onClassLoadFailure(from:IClassLoader):void{
+			if(_classLoadFailure)_classLoadFailure.perform(this);
 		}
 		public function isDataLoaded(propertyInfo:IPropertyInfo):Boolean{
 			return dataLoader.isDataLoaded(propertyInfo as IDataInfo);
 		}
 		public function loadData(propertyInfo:IPropertyInfo):IPendingResult{
 			var castPropInfo:PropertyInfo = (propertyInfo as PropertyInfo);
-			castPropInfo.value = null; // if this was a stub we must clear it up a bit (to avoid early event dispatches)
+			castPropInfo.value = null; // if this was a stub we must clear it up a bit (to avoid early notifications)
 			var ret:IPendingResult = dataLoader.loadData(propertyInfo as IDataInfo);
 			// after data loads, we should reassess/refill the PropertyInfo object (in case the loaded data is different, e.g. uses a different class).
 			ret.success.addHandler(onDataLoaded,[propertyInfo]);
@@ -225,14 +246,17 @@ package org.tbyrne.siteStream.parsers
 						if(castPropInfo.bestData.nodeKind()==XMLNodeKinds.ATTRIBUTE && simpleValue){
 							var isArray:Boolean = (castPropInfo.classRef==Array);
 							if(isArray || VECTOR_TEST.test(String(castPropInfo.classRef))){
-									parsedValue = simpleValue.split(",");
-									if(!isArray){
-										var vec:* = new castPropInfo.classRef();
-										for each(var value:* in parsedValue){
-											vec.push(value);
-										}
-										parsedValue = vec;
+								if(simpleValue.charAt(0)=="[" && simpleValue.charAt(simpleValue.length-1)=="]"){
+									simpleValue = simpleValue.slice(1,simpleValue.length-1);
+								}
+								parsedValue = simpleValue.length?simpleValue.split(","):[];
+								if(!isArray){
+									var vec:* = new castPropInfo.classRef();
+									for each(var value:* in parsedValue){
+										vec.push(value);
 									}
+									parsedValue = vec;
+								}
 							}else{
 								var isDict:Boolean = (castPropInfo.classRef==Dictionary);
 								var isObject:Boolean = OBJECT_TEST.test(simpleValue) && (castPropInfo.classRef==Object || isDict);
@@ -492,13 +516,6 @@ package org.tbyrne.siteStream.parsers
 				}
 				if(type && type.length)return type;
 				else return null;
-			}
-		}
-		override public function dispatchEvent(event:Event):Boolean{
-			if(parentParser){
-				return parentParser.dispatchEvent(event);
-			}else{
-				return super.dispatchEvent(event);
 			}
 		}
 	}

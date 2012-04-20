@@ -1,20 +1,30 @@
 package org.tbyrne.siteStream.classLoader
 {
 	import flash.display.Loader;
-	import flash.events.EventDispatcher;
 	import flash.net.URLRequest;
 	import flash.system.ApplicationDomain;
 	import flash.system.LoaderContext;
 	import flash.utils.Dictionary;
 	
+	import org.tbyrne.acting.actTypes.IAct;
+	import org.tbyrne.acting.acts.Act;
 	import org.tbyrne.core.IPendingResult;
 	import org.tbyrne.queueing.IQueue;
 	import org.tbyrne.queueing.queueItems.external.LoaderQI;
 	import org.tbyrne.reflection.ReflectionUtils;
-	import org.tbyrne.siteStream.events.SiteStreamErrorEvent;
 	
-	public class SWFLibraryClassLoader extends EventDispatcher implements IClassLoader
+	public class SWFLibraryClassLoader implements IClassLoader
 	{
+		
+		/**
+		 * @inheritDoc
+		 */
+		public function get classLoadFailure():IAct{
+			return (_classLoadFailure || (_classLoadFailure = new Act()));
+		}
+		
+		protected var _classLoadFailure:Act;
+		
 		public function get libraryDelimiter():String{
 			return _libraryDelimiter;
 		}
@@ -150,9 +160,7 @@ package org.tbyrne.siteStream.classLoader
 			delete _loadedLibraries[pendingLoad.loader];
 			delete _loadingLibraries[libraryID];
 			
-			var errorEvent:SiteStreamErrorEvent = new SiteStreamErrorEvent(SiteStreamErrorEvent.CLASS_FAILURE);
-			errorEvent.text = "Failed to load class Library: "+pendingLoad.urlRequest.url;
-			dispatchEvent(errorEvent);
+			if(_classLoadFailure)_classLoadFailure.perform(this);
 		}
 	}
 }

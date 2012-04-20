@@ -99,7 +99,7 @@ package org.tbyrne.display.controls
 			return _multiline;
 		}
 		public function set multiline(value:Boolean):void{
-			if(_multiline!=value){
+			if(_multiline!=value || !_multilineSet){
 				_multiline = value;
 				_multilineSet = true;
 				if(_labelField){
@@ -228,9 +228,10 @@ package org.tbyrne.display.controls
 					
 					_measurements.x = _labelField.textWidth+_labelFieldSizer.paddingLeft+_labelFieldSizer.paddingRight;
 				}else{
-					var width:Number = (_size.x>0?_size.x:_asset.naturalWidth);
-					_measurements.x = _size.x;
-					_labelField.width = _size.x-_labelFieldSizer.paddingLeft-_labelFieldSizer.paddingRight+TextFieldGutter.TEXT_FIELD_GUTTER*2;
+					var hPadding:Number = _labelFieldSizer.paddingLeft+_labelFieldSizer.paddingRight;
+					var width:Number = (_size.x>hPadding?_size.x:hPadding);
+					_measurements.x = width;
+					_labelField.width = width-_labelFieldSizer.paddingLeft-_labelFieldSizer.paddingRight+TextFieldGutter.TEXT_FIELD_GUTTER*2;
 					_labelField.height = _labelField.textHeight+TextFieldGutter.TEXT_FIELD_GUTTER*2; // if height is less than one line then wrapping doesn't occur
 				}
 				_measurements.y = _labelField.textHeight+_labelFieldSizer.paddingTop+_labelFieldSizer.paddingBottom;

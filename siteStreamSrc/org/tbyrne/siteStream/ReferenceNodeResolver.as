@@ -1,8 +1,5 @@
 package org.tbyrne.siteStream
 {
-	import flash.events.Event;
-	
-	import org.tbyrne.siteStream.events.SiteStreamEvent;
 	
 	public class ReferenceNodeResolver extends NodeResolver
 	{
@@ -18,11 +15,11 @@ package org.tbyrne.siteStream
 			return _node.dataLoaded && _node.allParsed;
 		}
 		override protected function waitForNode(_node:SiteStreamNode):void{
-			_node.addEventListener(SiteStreamEvent.PARSED, onNodeReady);
+			_node.wasParsed.addHandler(onNodeReady);
 			if(!_node.dataLoaded)_node.beginResolve();
 		}
 		override protected function stopWaitingForNode(_node:SiteStreamNode):void{
-			_node.removeEventListener(SiteStreamEvent.PARSED, onNodeReady);
+			_node.wasParsed.removeHandler(onNodeReady);
 		}
 		override protected function dispatchResolved():void{
 			var value:* = _node.propertyInfo.value;
