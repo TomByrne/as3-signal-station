@@ -74,7 +74,7 @@ package org.tbyrne.display.tabFocus
 		private var _focused:Boolean;
 		private var _lastStage:IStage;
 
-		private var _tabIndex:int;
+		private var _tabIndex:int = -1;
 		private var _tabEnabled:Boolean = true;
 		
 		public function InteractiveAssetFocusWrapper(interactiveAsset:IInteractiveObject=null){

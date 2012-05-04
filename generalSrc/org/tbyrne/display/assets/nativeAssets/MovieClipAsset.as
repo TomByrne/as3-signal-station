@@ -28,6 +28,8 @@ package org.tbyrne.display.assets.nativeAssets {
 				_mainAnalysis.movieClip = _movieClip;
 			}
 		}
+		public function get currentFrame():int{return _movieClip.currentFrame};
+		public function get totalFrames():int{return _movieClip.totalFrames};
 		
 		private var _movieClip:MovieClip;
 		private var _mainAnalysis:MovieClipFrameAnalysis = new MovieClipFrameAnalysis();
@@ -36,6 +38,18 @@ package org.tbyrne.display.assets.nativeAssets {
 		
 		public function MovieClipAsset(factory:NativeAssetFactory=null){
 			super(factory);
+		}
+		public function stop():void{
+			_movieClip.stop();
+		}
+		public function play():void{
+			_movieClip.play();
+		}
+		public function gotoAndStop(frame:Object, scene:String=null):void{
+			_movieClip.gotoAndStop(frame,scene);
+		}
+		public function gotoAndPlay(frame:Object, scene:String=null):void{
+			_movieClip.gotoAndPlay(frame,scene);
 		}
 		override protected function _addStateList(stateList:Array):void{
 			super._addStateList(stateList);

@@ -68,7 +68,7 @@ package org.tbyrne.display.assets.nativeAssets
 		
 		
 		public function get x():Number {
-			return _x;
+			return _xSet || !_display?_x:_display.x;
 		}
 		public function set y(value:Number):void {
 			_y = value;
@@ -81,7 +81,7 @@ package org.tbyrne.display.assets.nativeAssets
 			}
 		}
 		public function get y():Number {
-			return _y;
+			return _ySet || !_display?_y:_display.y;
 		}
 		public function set height(value:Number):void {
 			_height = value;

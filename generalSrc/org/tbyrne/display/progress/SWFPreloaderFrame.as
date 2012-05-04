@@ -183,10 +183,16 @@ package org.tbyrne.display.progress
 			addEventListener(Event.ENTER_FRAME, instantiateApp);
 		}
 		protected function instantiateApp(e:Event):void{
-			removeEventListener(Event.ENTER_FRAME, instantiateApp);
 			
 			var className:String = (mainClasspath?mainClasspath:guessClassName());
-			var mainClass:Class = getDefinitionByName(className) as Class;
+			try{
+				var mainClass:Class = getDefinitionByName(className) as Class;
+			}catch(e:ReferenceError){
+				// for whatever reason, sometimes it takes a few frames to get the classes set up.
+				return;
+			}
+			removeEventListener(Event.ENTER_FRAME, instantiateApp);
+			
 			_application = new mainClass();
 			
 			CONFIG::debug{

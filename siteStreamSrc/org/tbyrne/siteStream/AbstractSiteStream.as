@@ -99,10 +99,10 @@ package org.tbyrne.siteStream
 			_defaultItem.classLoadFailure.addHandler(onClassLoadFailure);
 			_defaultItem.dataLoadFailure.addHandler(onDataLoadFailure);
 		}
-		private function onDataLoadFailure():void{
+		private function onDataLoadFailure(from:ISiteStreamParser):void{
 			if(_dataLoadFailure)_dataLoadFailure.perform(this);
 		}
-		private function onClassLoadFailure():void{
+		private function onClassLoadFailure(from:ISiteStreamParser):void{
 			if(_classLoadFailure)_classLoadFailure.perform(this);
 		}
 		public function isObjectLoaded(path:String):Boolean{

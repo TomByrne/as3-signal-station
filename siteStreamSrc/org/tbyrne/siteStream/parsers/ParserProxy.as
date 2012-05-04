@@ -48,10 +48,10 @@ package org.tbyrne.siteStream.parsers
 			}
 		}
 		
-		private function onDataLoadFailure(from:IDataLoader):void{
+		private function onDataLoadFailure(from:ISiteStreamParser):void{
 			if(_dataLoadFailure)_dataLoadFailure.perform(this);
 		}
-		private function onClassLoadFailure(from:IClassLoader):void{
+		private function onClassLoadFailure(from:ISiteStreamParser):void{
 			if(_classLoadFailure)_classLoadFailure.perform(this);
 		}
 		public function set parentParser(value:ISiteStreamParser):void{
