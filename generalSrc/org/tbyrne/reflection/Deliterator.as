@@ -8,7 +8,7 @@ package org.tbyrne.reflection
 		
 		protected static const QUOTED:RegExp = /^(?:'(.*)')|(?:"(.*)")$/;
 		
-		protected static const NUMBER:RegExp = /^[\d.]*$/;
+		protected static const NUMBER:RegExp = /^(\d+)?\.?\d+$/;
 		protected static const NUMBER_16:RegExp = /^((#)|(0x))[0-9A-F]*$/;
 		protected static const ARRAY:RegExp = /^\[((?:.+?,)*(?:.+?)?)\]$/;
 		protected static const ARRAY_INNER:RegExp = /[^,]+/g;

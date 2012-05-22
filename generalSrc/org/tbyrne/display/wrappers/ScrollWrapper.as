@@ -90,8 +90,8 @@ package org.tbyrne.display.wrappers
 			}
 		}
 		override protected function commitPos():void{
-			if(_targetAsset)_targetAsset.setPosition(_position.x,_position.y);
 			if(_target)_target.setPosition(_position.x,_position.y);
+			else if(_targetAsset)_targetAsset.setPosition(_position.x,_position.y);
 			validateSize(true);
 		}
 		override protected function commitSize():void{

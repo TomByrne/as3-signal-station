@@ -193,8 +193,10 @@ package org.tbyrne.core
 				_listening = false;
 				if(_startDelay){
 					if(seconds){
-						_timer.removeEventListener(TimerEvent.TIMER,executeCall);
-						_timer = null;
+						if(_timer){
+							_timer.removeEventListener(TimerEvent.TIMER,executeCall);
+							_timer = null;
+						}
 					}else{
 						FRAME_DISPATCHER.removeEventListener(Event.ENTER_FRAME,frameTick);
 						_frameCount = 0;

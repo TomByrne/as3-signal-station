@@ -59,9 +59,9 @@ package org.tbyrne.display.layout
 					_target.setPosition(_position.x,_position.y);
 					_target.setSize(_size.x,_size.y);
 					_target.measurementsChanged.addHandler(onMeasurementsChanged);
-					if(!_forceMeasurements){
-						invalidateMeasurements();
-					}
+				}
+				if(!_forceMeasurements){
+					invalidateMeasurements();
 				}
 			}
 
