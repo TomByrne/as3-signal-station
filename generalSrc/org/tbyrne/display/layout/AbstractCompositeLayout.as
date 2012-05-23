@@ -3,6 +3,7 @@ package org.tbyrne.display.layout
 	import flash.geom.Point;
 	
 	import org.tbyrne.display.core.IView;
+	import org.tbyrne.display.validation.ViewValidationFlag;
 	
 	public class AbstractCompositeLayout extends AbstractLayout
 	{
@@ -32,6 +33,15 @@ package org.tbyrne.display.layout
 		}
 		protected function doLayout() : void{
 			// override me
+		}
+		protected function isAddedToStage():Boolean{
+			return scopeView && scopeView.asset && scopeView.asset.stage;
+		}
+		override protected function readyForPosition(from:ViewValidationFlag):Boolean{
+			return super.readyForPosition(from) && isAddedToStage();
+		}
+		override protected function readyForSize(from:ViewValidationFlag):Boolean{
+			return super.readyForSize(from) && isAddedToStage();
 		}
 	}
 }

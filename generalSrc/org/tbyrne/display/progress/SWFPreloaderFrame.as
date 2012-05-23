@@ -55,6 +55,7 @@ package org.tbyrne.display.progress
 				_layoutView = value;
 				if(_progressDisplay){
 					if(_layoutView){
+						_layoutView.setPosition(0,0);
 						applySizeToProgressDisplay();
 						_nativeAsset.addAsset(_layoutView.asset);
 					}
@@ -198,6 +199,7 @@ package org.tbyrne.display.progress
 			CONFIG::debug{
 				_application = DebugManager.addApplication(_application);
 			}
+			_application.setPosition(0,0);
 			applySizeToApplication();
 			
 			if(_progressDisplayAnim){

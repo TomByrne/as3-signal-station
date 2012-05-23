@@ -167,7 +167,11 @@ package org.tbyrne.debug.display
 			invalidatePos();
 			invalidateSize();
 		}
+		override public function setPosition(x:Number, y:Number):void{
+			super.setPosition(x,y);
+		}
 		override protected function commitPosition():void{
+			super.commitPosition();
 			var pos:Point = position;
 			var meas:Point = measurements;
 			if(_application){

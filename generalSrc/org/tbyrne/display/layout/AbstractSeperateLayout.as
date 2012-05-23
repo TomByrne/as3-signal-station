@@ -5,8 +5,8 @@ package org.tbyrne.display.layout
 	import flash.utils.Dictionary;
 	
 	import org.tbyrne.display.core.IView;
-	import org.tbyrne.display.validation.ViewValidationFlag;
 	import org.tbyrne.display.validation.ValidationFlag;
+	import org.tbyrne.display.validation.ViewValidationFlag;
 
 	/**
 	 * This is the base class for layouts that affect their subjects independently
@@ -28,7 +28,7 @@ package org.tbyrne.display.layout
 		 * measurements change (to check whether the total measurements
 		 * actually change) or should it wait until measurements are requested.
 		 */
-		protected function measureImmediately(): Boolean{
+		protected function measureImmediately(subject:ILayoutSubject): Boolean{
 			return false;
 		}
 		/**
@@ -74,7 +74,7 @@ package org.tbyrne.display.layout
 		 * NOT only when a subject's measurements have changed.
 		 */
 		protected function subjMeasurementsChanged(subject:ILayoutSubject) : void{
-			if(measureImmediately()){
+			if(measureImmediately(subject)){
 				var subjMeas:Point = _subjectMeas[subject];
 				var oldMeasWidth:Number = subjMeas.x;
 				var oldMeasHeight:Number = subjMeas.y;

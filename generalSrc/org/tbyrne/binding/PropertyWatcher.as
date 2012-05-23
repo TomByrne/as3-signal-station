@@ -27,8 +27,11 @@ package org.tbyrne.binding
 		}
 		public function set property(value:String):void{
 			if(_property!=value){
-				if(_bindable && _changeProp){
-					_bindable[_changeProp].removeHandler(onValueChanged);
+				if(_changeProp){
+					if(_bindable){
+						_bindable[_changeProp].removeHandler(onValueChanged);
+					}
+					_changeProp = null;
 				}
 				
 				_property = value;

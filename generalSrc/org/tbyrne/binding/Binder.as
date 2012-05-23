@@ -4,6 +4,19 @@ package org.tbyrne.binding
 
 	public class Binder
 	{
+		private static var pool:Vector.<Binder>;
+		public static function getNew(destObject:Object=null, destProp:String=null, srcBindable:Object=null, srcProp:String=null):Binder{
+			if(pool && pool.length){
+				var ret:Binder = pool.pop();
+				ret.addDestination(destObject, destProp);
+				ret.srcBindable = srcBindable;
+				ret.srcProp = srcProp;
+				return ret;
+			}else{
+				return new Binder(destObject, destProp, srcBindable, srcProp);
+			}
+		}
+		
 		private static var _srcPropLookup:Dictionary;
 		private static var _destPropLookup:Dictionary;
 		
@@ -44,7 +57,7 @@ package org.tbyrne.binding
 			if(binder){
 				binder.addDestination(destObject,destProp);
 			}else{
-				binder = new Binder(destObject,destProp,srcBindable,srcProp);
+				binder = Binder.getNew(destObject,destProp,srcBindable,srcProp);
 				srcObjectLookup[srcBindable] = binder;
 			}
 			destObjectLookup[destObject] = binder;
@@ -60,7 +73,7 @@ package org.tbyrne.binding
 						if(!binder.destinationCount){
 							var srcObjectLookup:Dictionary = _srcPropLookup[binder.srcProp];
 							delete srcObjectLookup[binder.srcBindable];
-							binder.clear();
+							binder.release();
 						}
 					}
 				}
@@ -121,7 +134,15 @@ package org.tbyrne.binding
 					setDestValueIn(_numberMode?NaN:null,destObject,destProp);
 				}
 				--_destinationCount;
+				if(_destinationCount==0 || dictIsEmpty(destLookup)){
+					delete _destinations[destProp];
+				}
 			}
+		}
+		
+		private function dictIsEmpty(dict:Dictionary):Boolean{
+			for(var i:* in dict)return false;
+			return true;
 		}
 		
 		protected function setValue(value:*):void{
@@ -147,8 +168,12 @@ package org.tbyrne.binding
 			subject[propPath[propCount-1]] = value;
 		}
 		
-		public function clear():void{
+		public function release():void{
 			_propWatcher.clear();
+			if(!pool){
+				pool = new Vector.<Binder>();
+			}
+			pool.push(this);
 		}
 	}
 }

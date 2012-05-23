@@ -43,5 +43,17 @@ package org.tbyrne.display.assets.nativeAssets
 			_loader.unload();
 			_content = null;
 		}
+		override public function set width(value:Number):void{
+			super.width = value;
+			if(displayObject.scaleX==0){
+				displayObject.scaleX;
+			}
+		}
+		override public function set height(value:Number):void{
+			super.height = value;
+			if(displayObject.scaleY==0){
+				displayObject.scaleY;
+			}
+		}
 	}
 }

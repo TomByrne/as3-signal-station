@@ -1,17 +1,11 @@
 package org.tbyrne.display.layout
 {
 	
-	import flash.geom.Point;
 	import flash.utils.Dictionary;
 	
 	import org.tbyrne.acting.actTypes.IAct;
-	import org.tbyrne.acting.acts.Act;
 	import org.tbyrne.binding.PropertyWatcher;
-	import org.tbyrne.binding.Watchable;
 	import org.tbyrne.display.core.IView;
-	import org.tbyrne.display.layout.core.ILayoutInfo;
-	import org.tbyrne.display.validation.ViewValidationFlag;
-	import org.tbyrne.display.validation.ValidationFlag;
 	
 	public class AbstractLayout extends LayoutSubject implements ILayout
 	{
@@ -28,6 +22,8 @@ package org.tbyrne.display.layout
 		
 		public function AbstractLayout(scopeView:IView){
 			super([scopeView_name]);
+			_position.x = 0;
+			_position.y = 0;
 			new PropertyWatcher(scopeView_name,setScopeView,null,null,this);
 			
 			this.scopeView = scopeView;

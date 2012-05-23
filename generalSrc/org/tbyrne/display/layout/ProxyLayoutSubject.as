@@ -56,8 +56,8 @@ package org.tbyrne.display.layout
 				_target = value;
 				if(!_scopeView)setScopeView(value as ILayoutView);
 				if(_target){
-					_target.setPosition(_position.x,_position.y);
-					_target.setSize(_size.x,_size.y);
+					if(!isNaN(_position.x) && !isNaN(_position.y))_target.setPosition(_position.x,_position.y);
+					if(!isNaN(_size.x) && !isNaN(_size.y))_target.setSize(_size.x,_size.y);
 					_target.measurementsChanged.addHandler(onMeasurementsChanged);
 				}
 				if(!_forceMeasurements){

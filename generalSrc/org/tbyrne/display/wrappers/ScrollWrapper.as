@@ -113,6 +113,8 @@ package org.tbyrne.display.wrappers
 			super.onMeasurementsChanged(from, oldWidth, oldHeight);
 		}
 		protected function checkScrolling():void{
+			if(isNaN(_size.x) || isNaN(_size.y))return;
+			
 			_ignoreMetricsChanges = true;
 			if(target){
 				var meas:Point = target.measurements;

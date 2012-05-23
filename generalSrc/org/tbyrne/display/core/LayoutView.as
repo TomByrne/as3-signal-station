@@ -79,8 +79,8 @@ package org.tbyrne.display.core
 		private var _measuring:Boolean;
 		
 		protected var _measurements:Point;
-		protected var _size:Point = new Point();
-		protected var _position:Point = new Point();
+		protected var _size:Point = new Point(NaN,NaN);
+		protected var _position:Point = new Point(NaN,NaN);
 		//private var _scrollRect:Rectangle;
 		//private var _maskDisplay:Boolean;
 		private var _layoutInfo:ILayoutInfo;
@@ -98,6 +98,9 @@ package org.tbyrne.display.core
 			
 			addDrawFlag(_posDrawFlag = new ViewValidationFlag(this,commitPosition,false,null,readyForPosition));
 			addDrawFlag(_sizeDrawFlag = new ViewValidationFlag(this,commitSize,false,null,readyForSize));
+			
+			_posDrawFlag.testName = "viewPos";
+			_sizeDrawFlag.testName = "viewSize";
 			
 			super.init();
 			
@@ -235,14 +238,14 @@ package org.tbyrne.display.core
 		}
 		protected function readyForSize(from:ViewValidationFlag):Boolean{
 			_bindFlag.validate();
-			return _bindFlag.valid;
+			return _bindFlag.valid && !isNaN(_size.x) && !isNaN(_size.y);
 		}
 		protected function commitSize():void{
 			asset.setSize(_size.x,_size.y);
 		}
 		protected function readyForPosition(from:ViewValidationFlag):Boolean{
 			_bindFlag.validate();
-			return _bindFlag.valid;
+			return _bindFlag.valid && !isNaN(_position.x) && !isNaN(_position.y);
 		}
 		protected function commitPosition():void{
 			asset.setPosition(_position.x,_position.y);

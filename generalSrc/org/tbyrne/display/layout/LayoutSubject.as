@@ -70,8 +70,8 @@ package org.tbyrne.display.layout
 		protected var _scopeView:IView;
 		
 		protected var _layoutInfo:ILayoutInfo;
-		protected var _size:Point = new Point();
-		protected var _position:Point = new Point();
+		protected var _size:Point = new Point(NaN,NaN);
+		protected var _position:Point = new Point(NaN,NaN);
 		protected var _measurements:Point;
 		
 		private var _lastMeasX:Number;
@@ -86,8 +86,13 @@ package org.tbyrne.display.layout
 			_measureFlag = new ValidationFlag(measure, false);
 			_measurements = new Point();
 			
-			addDrawFlag(_posDrawFlag = new ViewValidationFlag(null,commitPos,true));
-			addDrawFlag(_sizeDrawFlag = new ViewValidationFlag(null,commitSize,true));
+			addDrawFlag(_posDrawFlag = new ViewValidationFlag(null,commitPos,true,null,readyForPosition));
+			addDrawFlag(_sizeDrawFlag = new ViewValidationFlag(null,commitSize,true,null,readyForSize));
+			
+			
+			_drawFlag.testName = "layoutDraw";
+			_posDrawFlag.testName = "layoutPos";
+			_sizeDrawFlag.testName = "layoutSize";
 		}
 		protected function addDrawFlag(frameValidationFlag:ViewValidationFlag):void{
 			if(!_childDrawFlags)_childDrawFlags = new Vector.<ViewValidationFlag>();
@@ -97,6 +102,8 @@ package org.tbyrne.display.layout
 			if(_scopeView!=value){
 				_scopeView = value;
 				_drawFlag.view = _scopeView;
+				_posDrawFlag.view = _scopeView;
+				_sizeDrawFlag.view = _scopeView;
 				for each(var frameValidationFlag:ViewValidationFlag in _childDrawFlags){
 					frameValidationFlag.view = value;
 				}
@@ -174,11 +181,17 @@ package org.tbyrne.display.layout
 		protected function validatePos(force:Boolean=false):void{
 			_posDrawFlag.validate(force);
 		}
+		protected function readyForPosition(from:ViewValidationFlag):Boolean{
+			return _scopeView && _scopeView.asset && !isNaN(_position.x) && !isNaN(_position.y);
+		}
 		protected function commitPos():void{
 			// override me
 		}
 		protected function validateSize(force:Boolean=false):void{
 			_sizeDrawFlag.validate(force);
+		}
+		protected function readyForSize(from:ViewValidationFlag):Boolean{
+			return _scopeView && _scopeView.asset && !isNaN(_size.x) && !isNaN(_size.y);
 		}
 		protected function commitSize():void{
 			// override me

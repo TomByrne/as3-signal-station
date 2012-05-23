@@ -46,6 +46,7 @@ package org.tbyrne.display.validation
 			}
 		}
 		
+		public var testName:String;
 		
 		private var _view:IView;
 		private var _asset:IDisplayObject;
