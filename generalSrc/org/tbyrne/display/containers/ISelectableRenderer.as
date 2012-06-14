@@ -12,5 +12,9 @@ package org.tbyrne.display.containers
 		 * handler(from:ISelectableRenderer)
 		 */
 		function get selectedChanged():IAct;
+		/**
+		 * handler(from:ISelectableRenderer)
+		 */
+		function get userSelectedChanged():IAct;
 	}
 }

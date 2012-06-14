@@ -112,14 +112,12 @@ package org.tbyrne.debug.data.core
 		public function DebugData(stringProvider:IStringProvider=null, selectData:ITriggerableAction=null){
 			super(stringProvider);
 			this.selectData = selectData;
+			_childData = new LinkedList();
 		}
 		protected function onBitmapChanged():void{
 			if(_bitmapDataChanged)_bitmapDataChanged.perform(this);
 		}
 		public function addChildData(data:IStringProvider):void{
-			if(!_childData){
-				_childData = new LinkedList();
-			}
 			_childData.push(data);
 			checkSelected();
 		}

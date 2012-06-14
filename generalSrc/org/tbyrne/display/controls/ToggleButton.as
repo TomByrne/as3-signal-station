@@ -85,6 +85,16 @@ package org.tbyrne.display.controls
 		protected var _selectedChanged:Act;
 		
 		/**
+		 * @inheritDoc
+		 */
+		public function get userSelectedChanged():IAct{
+			if(!_userSelectedChanged)_userSelectedChanged = new Act();
+			return _userSelectedChanged;
+		}
+		
+		protected var _userSelectedChanged:Act;
+		
+		/**
 		 * Whether the selected property of the data should be used to get/set
 		 * the state of the ToggleButton. Only changes behaviour if the data
 		 * implements IBooleanConsumer.
@@ -145,9 +155,13 @@ package org.tbyrne.display.controls
 			}
 		}
 		override protected function acceptClick():void{
+			var selectedWas:Boolean = selectedWas;
 			selected = !selected;
 			if(!useDataForSelected && _booleanConsumer){
 				_booleanConsumer.booleanValue = !_booleanProvider.booleanValue;
+			}
+			if(_userSelectedChanged && selectedWas!=selected){
+				_userSelectedChanged.perform(this);
 			}
 			super.acceptClick();
 		}

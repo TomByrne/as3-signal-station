@@ -1,10 +1,13 @@
 package org.tbyrne.debug.display
 {
 	import flash.geom.Point;
+	import flash.utils.Dictionary;
 	
+	import org.tbyrne.collections.IIterator;
 	import org.tbyrne.collections.linkedList.LinkedList;
 	import org.tbyrne.core.IApplication;
 	import org.tbyrne.data.core.StringData;
+	import org.tbyrne.data.dataTypes.IDataProvider;
 	import org.tbyrne.debug.data.core.DebugData;
 	import org.tbyrne.debug.nodeTypes.IDebugDataNode;
 	import org.tbyrne.debug.nodeTypes.IDebugNode;
@@ -44,6 +47,8 @@ package org.tbyrne.debug.display
 		private var _graphLabelPattern:StringData;
 		private var _graphItems:Array = [];
 		private var _graph:DebugGraph;
+		private var _debugDataToNode:Dictionary = new Dictionary();
+		private var _debugDataToParentList:Dictionary = new Dictionary();
 		
 		public function DebugDisplay(asset:IDisplayObject=null, application:IApplication=null){
 			super(asset);
@@ -90,19 +95,39 @@ package org.tbyrne.debug.display
 			var dataNode:IDebugDataNode = (descendant as IDebugDataNode);
 			if(dataNode){
 				var parentPath:String = dataNode.parentPath;
+				var list:LinkedList = _menuItems;
 				if(parentPath && parentPath.length){
 					var path:Array = parentPath.split(/\/\\/);
-					//var list:
-					/*for(var i:int=0; i<parts.length; i++){
-					var pathPart:String = path[i];
-					if(pathPart.length){
-					for(var j:int=0; j<list.length; j++){
-					
+					var i:int=0;
+					var pathPart:String;
+					while(i<path.length){
+						pathPart = path[i];
+						if(!pathPart.length){
+							path.splice(i,1);
+						}else{
+							i++;
+						}
 					}
+					for(i=0; i<path.length; i++){
+						pathPart = path[i];
+						if(pathPart.length){
+							var iterator:IIterator = list.getIterator();
+							var next:*;
+							while(next = iterator.next()){
+								var debugData:DebugData = (next as DebugData);
+								if(debugData){
+									var node:IDebugDataNode = _debugDataToNode[next];
+									if(node && node.pathId==pathPart){
+										list = debugData.data;
+									}
+								}
+							}
+						}
 					}
-					}*/
 				}
-				_menuItems.push(dataNode.rendererData);
+				list.push(dataNode.rendererData);
+				_debugDataToNode[dataNode.rendererData] = dataNode;
+				_debugDataToParentList[dataNode.rendererData] = list;
 			}
 		}
 		public function removeDebugNode(descendant:IDebugNode):void{
@@ -116,7 +141,10 @@ package org.tbyrne.debug.display
 			}
 			var dataNode:IDebugDataNode = (descendant as IDebugDataNode);
 			if(dataNode){
-				_menuItems.removeFirst(dataNode.rendererData);
+				var list:LinkedList = _debugDataToParentList[dataNode.rendererData];
+				list.removeFirst(dataNode.rendererData);
+				delete _debugDataToNode[dataNode.rendererData];
+				delete _debugDataToParentList[dataNode.rendererData];
 			}
 		}
 		protected function assessGraphLabel() : void{

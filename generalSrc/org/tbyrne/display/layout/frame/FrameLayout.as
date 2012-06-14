@@ -23,6 +23,7 @@ package org.tbyrne.display.layout.frame
 		override protected function onSubjectMeasChanged(from:ILayoutSubject, oldWidth:Number, oldHeight:Number): void{
 			super.onSubjectMeasChanged(from, oldWidth, oldHeight);
 			subjMeasurementsChanged(from);
+			invalidateSize();
 			if(doUrgent[from]){
 				delete doUrgent[from];
 				validate();

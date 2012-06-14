@@ -235,6 +235,7 @@ package org.tbyrne.display.layout.grid
 		private var _dataIndices:Dictionary = new Dictionary();
 		protected var _dataToRenderers:Dictionary = new Dictionary();
 		private var _renderers:Array = [];
+		private var _spareRenderers:Array = [];
 		protected var _positionCache:Array = [];
 		protected var _coordCache:Array = [];
 		
@@ -435,13 +436,14 @@ package org.tbyrne.display.layout.grid
 				if(!_protoRenderer){
 					_protoRenderer = _rendererFactory.createInstance();
 				}
+				var oldData:* = _protoRenderer[_dataField];
 				_protoRenderer[_dataField] = data;
 				if(_setRendererDataAct)_setRendererDataAct.perform(this,_protoRenderer,data,_dataField);
 				renderer = _protoRenderer;
 				
 				meas = renderer.measurements;
 				
-				_protoRenderer[_dataField] = null;
+				_protoRenderer[_dataField] = oldData;
 				if(_setRendererDataAct)_setRendererDataAct.perform(this,_protoRenderer,null,_dataField);
 			}else{
 				meas = renderer.measurements;
@@ -471,9 +473,14 @@ package org.tbyrne.display.layout.grid
 				cast.columnIndex = -1;
 				cast.rowIndex = -1;
 			}
-			delete _dataToRenderers[renderer[_dataField]];
+			var data:* = renderer[_dataField];
+			if(_dataToRenderers[data]==renderer){
+				delete _dataToRenderers[data];
+			}
 			renderer.measurementsChanged.removeHandler(onRendMeasChanged);
 			if(_removeRendererAct)_removeRendererAct.perform(this,renderer);
+			
+			renderer[_dataField] = _protoRenderer[_dataField]; // this avoids null being converted to 0, which can cause other issues
 		}
 		protected function cullRenderers():void{
 			/*
@@ -502,7 +509,7 @@ package org.tbyrne.display.layout.grid
 						/* must remove before setting data to null to avoid the layout responding to
 						the resulting measurement and throwing an error for not finding the renderers data.*/
 						rendererRemoved(renderer); 
-						renderer[_dataField] = null;
+						//_spareRenderers.push(renderer);
 					}
 				}
 			}
@@ -600,10 +607,14 @@ package org.tbyrne.display.layout.grid
 								// test whether the renderer is still needed
 								renderIndex = (breadthRange*newLength)+newBreadth;
 								if(renderIndex<_fitRenderers && !newRenderers[renderIndex]){
-									if(dataChanged)delete _dataToRenderers[renderer[_dataField]];
+									if(dataChanged){
+										var data:* = renderer[_dataField];
+										if(_dataToRenderers[data]==renderer)delete _dataToRenderers[data];
+									}
 									newRenderers[renderIndex] = renderer;
 								}else{
 									rendererRemoved(renderer);
+									//_spareRenderers.push(renderer);
 								}
 							}
 						}
@@ -769,6 +780,7 @@ package org.tbyrne.display.layout.grid
 				rendererRemoved(renderer);
 			}
 			_renderers = [];
+			_spareRenderers = [];
 			clearMeasurements();
 		}
 		protected function clearMeasurements():void{
@@ -802,21 +814,22 @@ package org.tbyrne.display.layout.grid
 				var data:* = _dataMap[key];
 				var addRenderer:Boolean = (renderer==null);
 				if(addRenderer){
-					renderer = _rendererFactory.createInstance();
+					renderer = _spareRenderers.pop() || _rendererFactory.createInstance();
 					_renderers[renderIndex] = renderer;
 					_cullRenderersFlag.invalidate();
 				}
-				if(renderer[_dataField] != data){
-					renderer[_dataField] = data;
-					if(addRenderer)rendererAdded(renderer);
-					if(_setRendererDataAct)_setRendererDataAct.perform(this,renderer,data,_dataField);
-				}
+				var setData:Boolean = (renderer[_dataField] != data);
+				if(setData)renderer[_dataField] = data;
+				if(addRenderer)rendererAdded(renderer);
+				if(setData && _setRendererDataAct)_setRendererDataAct.perform(this,renderer,data,_dataField);
+				
 				_dataToRenderers[data] = renderer;
 				return renderer;
 			}else{
 				if(renderer){
 					delete _renderers[renderIndex];
 					rendererRemoved(renderer);
+					_spareRenderers.push(renderer);
 				}
 				return null;
 			}

@@ -4,9 +4,9 @@ package org.tbyrne.debug.logging
 
 	import flash.events.Event;
 	import flash.events.IOErrorEvent;
-	
-	//PLATFORM::air{
+	import flash.events.OutputProgressEvent;
 	import flash.filesystem.*;
+
 	//}
 
 	public class XMLFileLogger extends AbstractLogger implements ILogger
@@ -98,10 +98,20 @@ package org.tbyrne.debug.logging
 			_busy = true;
 			_fileStream = new FileStream();
 			_fileStream.addEventListener(IOErrorEvent.IO_ERROR, writeIOErrorHandler);
+			_fileStream.addEventListener(Event.CLOSE, fileWriteHandler);
+			_fileStream.addEventListener(OutputProgressEvent.OUTPUT_PROGRESS, writeProgressHandler);
 			_fileStream.openAsync(_file, FileMode.WRITE);
 			_fileStream.writeUTFBytes(_log.toXMLString());
-			_fileStream.close();
+			//_fileStream.close();
+		}
+		public function writeProgressHandler(event:OutputProgressEvent):void{
+			if (event.bytesPending==0) event.target.close();
+		}
+		protected function fileWriteHandler(event:Event):void{
+			_busy = false;
 			_fileStream.removeEventListener(IOErrorEvent.IO_ERROR, writeIOErrorHandler);
+			_fileStream.removeEventListener(Event.CLOSE, fileWriteHandler);
+			_fileStream.removeEventListener(OutputProgressEvent.OUTPUT_PROGRESS, writeProgressHandler);
 		}
 		
 		protected function writeIOErrorHandler(event:Event):void{

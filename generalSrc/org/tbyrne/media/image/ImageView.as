@@ -34,10 +34,12 @@ package org.tbyrne.media.image
 			invalidateSize();
 			applySmoothing();
 		}
-		/*override protected function commitSize():void{
-			Log.trace("commitSize: "+_size);
+		override public function setSize(width:Number, height:Number):void{
+			super.setSize(width,height);
+		}
+		override protected function commitSize():void{
 			super.commitSize();
-		}*/
+		}
 		protected function applySmoothing():void{
 			var loader:ILoader = (asset as ILoader);
 			var bitmap:IBitmap = (loader.content as IBitmap);

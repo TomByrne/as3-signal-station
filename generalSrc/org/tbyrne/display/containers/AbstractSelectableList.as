@@ -197,13 +197,14 @@ package org.tbyrne.display.containers
 			if(isBound)checkDataSelection();
 		}
 		protected function onValueProvChanged(from:IValueProvider):void{
-			if(isBound)checkDataSelection();
+			if(isBound && !_ignoreChanges)checkDataSelection();
 		}
 		override protected function onAddRenderer(layout:RendererGridLayout, renderer:ILayoutView) : void{
 			super.onAddRenderer(layout, renderer);
 			var selRenderer:ISelectableRenderer = (renderer as ISelectableRenderer);
 			if(selRenderer){
-				selRenderer.selectedChanged.addHandler(onRendererSelectedChanged);
+				selRenderer.selectedChanged.addHandler(onRendererSelectedChanged,[false]);
+				selRenderer.userSelectedChanged.addHandler(onRendererSelectedChanged,[true]);
 			}
 		}
 		protected function onRendererDataSet(layout:RendererGridLayout, renderer:ILayoutView, data:*, dataField:String) : void{
@@ -223,6 +224,7 @@ package org.tbyrne.display.containers
 			var selRenderer:ISelectableRenderer = (renderer as ISelectableRenderer);
 			if(selRenderer){
 				selRenderer.selectedChanged.removeHandler(onRendererSelectedChanged);
+				selRenderer.userSelectedChanged.removeHandler(onRendererSelectedChanged);
 			}
 		}
 		/*protected function onDataSelectedChanged(from:IBooleanProvider) : void{
@@ -299,14 +301,17 @@ package org.tbyrne.display.containers
 		is normally governed by the 'useDataForSelection' property (within the ToggleButton
 		class).
 		*/
-		protected function onRendererSelectedChanged(renderer:ISelectableRenderer) : void{
+		protected function onRendererSelectedChanged(renderer:ISelectableRenderer, userInitiated:Boolean) : void{
 			if(_ignoreChanges)return;
 			var data:* = renderer[_layout.dataField];
 			var dataIndex:int = getDataIndex(data);
 			var newVal:Boolean = tryRendererSelect(dataIndex, data, renderer.selected);
 			//if(renderer.selected != newVal){
 				renderer.selected = newVal;
-				if(_userSelectionChangeAct)_userSelectionChangeAct.perform(this, _selectedIndices, _selectedData);
+				if(userInitiated){
+					if(_userSelectionChangeAct)_userSelectionChangeAct.perform(this, _selectedIndices, _selectedData);
+				}
+				if(_selectionChangeAct)_selectionChangeAct.perform(this, _selectedIndices, _selectedData);
 			//}
 		}
 		override protected function updateFactory(factory:IInstanceFactory, dataField:String):void{
