@@ -90,8 +90,8 @@ package org.tbyrne.display.layout.grid
 		public function set rendererFactory(value:IInstanceFactory):void{
 			if(_rendererFactory!=value){
 				_rendererFactory = value;
-				_protoRenderer = null;
 				removeAllRenderers();
+				_protoRenderer = null;
 			}
 		}
 		
@@ -544,8 +544,8 @@ package org.tbyrne.display.layout.grid
 				var shiftBreadth:int = oldBreadthIndex-breadthIndex;
 				var shiftLength:int = oldLengthIndex-lengthIndex;
 				
-				var oldTotal:Number = (oldBreadthRange)*(oldLengthRange);
-				_fitRenderers = (breadthRange)*(lengthRange);
+				var oldTotal:Number = oldBreadthRange*oldLengthRange;
+				_fitRenderers = breadthRange*lengthRange;
 				if(oldTotal!=_fitRenderers && _fitRenderersAct){
 					_fitRenderersAct.perform(this,_fitRenderers);
 					_cullRenderersFlag.invalidate();
@@ -633,11 +633,14 @@ package org.tbyrne.display.layout.grid
 			var newIndexMax:int;
 			
 			if(_renderersSameSize){
+				realDim -= axis.aftMargin+axis.foreMargin;
+				realMeas -= axis.aftMargin+axis.foreMargin;
+				
 				if(_sameCellMeas){
 					scrollMetrics.maximum = 0;
 					scrollMetrics.pageSize = 0;
 					
-					var meas:Number = _sameCellMeas[axis.coordRef];
+					var meas:Number = _sameCellMeas[axis.coordRef]+axis.gap;
 					
 					if(axis.scrollByLine){
 						scrollMetrics.pageSize = int(realDim/meas);
@@ -652,11 +655,25 @@ package org.tbyrne.display.layout.grid
 					}
 					
 					newIndex = int(pixScroll/meas);
-					var bottom:Number = pixScroll+realDim;
-					if(bottom%meas){
-						newIndexMax = int(bottom/meas)+1;
+					if(realDim%meas){
+						newIndexMax = newIndex+int(realDim/meas)+1;
 					}else{
-						newIndexMax = int(bottom/meas);
+						newIndexMax = newIndex+int(realDim/meas);
+					}
+					if(_pixelFlow && axis==_lengthAxis){
+						newIndexMax += 1;
+					}
+					if(newIndexMax>axis.maxCellSizes.length){
+						newIndexMax = axis.maxCellSizes.length;
+						if(realDim%meas){
+							newIndex = newIndexMax-int(realDim/meas)-1;
+						}else{
+							newIndex = newIndexMax-int(realDim/meas);
+						}
+						if(_pixelFlow && axis==_lengthAxis){
+							newIndex -= 1;
+						}
+						if(newIndex<0)newIndex = 0;
 					}
 				}else{
 					pixScroll = 0;
@@ -706,7 +723,7 @@ package org.tbyrne.display.layout.grid
 						comparePixScroll = stack+measurement;
 						newIndex = i;
 					}
-					if(!isNaN(pixScroll) && newIndexMax==-1 && stack>realDim+comparePixScroll){
+					if(!isNaN(pixScroll) && newIndexMax==-1 && stack>realDim-axis.aftMargin+comparePixScroll){
 						// find the first row after all visible rows
 						newIndexMax = i;
 						if(foundPixMax)break;
@@ -719,8 +736,8 @@ package org.tbyrne.display.layout.grid
 							scrollMetrics.pageSize = axis.maxCellSizes.length-i;
 							scrollMetrics.maximum = axis.maxCellSizes.length;
 						}else{
-							scrollMetrics.maximum = realMeas;
-							scrollMetrics.pageSize = realDim;
+							scrollMetrics.maximum = realMeas-axis.aftMargin-axis.foreMargin;
+							scrollMetrics.pageSize = realDim-axis.aftMargin-axis.foreMargin;
 						}
 						if(isNaN(pixScroll)){
 							pixScroll = pixScrollMax;

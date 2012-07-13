@@ -33,6 +33,18 @@ package org.tbyrne.display.scrolling
 				}
 			}
 		}
+		/*override public function get maximum():Number{
+			if(_target){
+				if(!isNaN(roundTo)){
+					var max:Number = _target.maximum;
+					return max-(max%roundTo);
+				}else{
+					return _target.maximum;
+				}
+			}else{
+				return NaN;
+			}
+		}*/
 		private function round(value:Number): int{
 			return value%1 ? (value>0?int(value+0.5) : int(value-0.5)) :value;
 		}
