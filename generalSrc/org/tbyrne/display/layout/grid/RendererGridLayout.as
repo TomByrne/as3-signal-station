@@ -674,6 +674,7 @@ package org.tbyrne.display.layout.grid
 							newIndex -= 1;
 						}
 						if(newIndex<0)newIndex = 0;
+						if(newIndexMax<1)newIndexMax = 1;
 					}
 				}else{
 					pixScroll = 0;
